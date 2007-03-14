@@ -10,8 +10,8 @@ namespace OpenDental.Reporting{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormParameterInput : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private OpenDental.UI.ContrMultInput MultInput2;
 		/// <summary>
 		/// Required designer variable.
@@ -55,8 +55,8 @@ namespace OpenDental.Reporting{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormParameterInput));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.MultInput2 = new OpenDental.UI.ContrMultInput();
 			this.SuspendLayout();
 			// 

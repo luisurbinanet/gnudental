@@ -1,81 +1,60 @@
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
-using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
-///<summary></summary>
+	/// <summary>
+	/// Summary description for FormBasicTemplate.
+	/// </summary>
 	public class FormRecallEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Label label10;
-		private System.Windows.Forms.ListBox listStatus;
-		private System.Windows.Forms.TextBox textWorkPhone;
-		private System.Windows.Forms.TextBox textWireless;
-		private System.Windows.Forms.TextBox textAddrNotes;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textHomePhone;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.Label label4;
+		private OpenDental.UI.Button butCancel;
+		/// <summary>
+		/// Required designer variable.
+		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Panel panel1;
-		private OpenDental.ContrAccount contrAccount3;
-		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label11;
-		private System.Windows.Forms.Label label13;
-		private System.Windows.Forms.TextBox textCreditType;
-		private System.Windows.Forms.TextBox textPriIns;
-		private PatientNotes PatientNotes=new PatientNotes();
-		///<summary>If Pin clicked, this allows FormRecall to know about it.</summary>
-		public bool PinClicked=false;
-		///<summary>Needed just in case send to pinboard to check when due for BW.</summary>
-		public DateTime DueDate;
-		private System.Windows.Forms.TextBox textBillingType;
-		private OpenDental.XPButton butPin;
-		private System.Windows.Forms.Label label14;
-		private System.Windows.Forms.ColumnHeader columnHeader1;
-		private System.Windows.Forms.ColumnHeader columnHeader2;
-		private System.Windows.Forms.ColumnHeader columnHeader3;
-		private System.Windows.Forms.ListView listFamily;
-		private System.Windows.Forms.ColumnHeader columnHeader4;
-		private System.Windows.Forms.ColumnHeader columnHeader5;
-		//private ArrayList ALCommItems;
-		private Procedure[] ProcList;
-		//public RecallItem DisplayedRecallItem;
-		public int RecallStatus;//foreign key to DefNum
-		public int PatNum;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.Label label4;
+		private OpenDental.ValidNum textYears;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.ComboBox comboStatus;
+		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.TextBox textDatePrevious;
+		private OpenDental.ValidNum textMonths;
+		private OpenDental.ValidNum textDays;
+		private OpenDental.ValidNum textWeeks;
+		private System.Windows.Forms.CheckBox checkIsDisabled;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butDelete;
+		///<summary>The recall object to edit.</summary>
+		public Recall RecallCur;
+		private System.Windows.Forms.TextBox textDateDueCalc;
+		private OpenDental.ValidDate textDateDue;
+		///<summary></summary>
+		public bool IsNew;
+		private OpenDental.ODtextBox textNote;
+		private Patient PatCur;
 
-		///<summary>This form causes the current patient to change.</summary>
-		public FormRecallEdit(){
+		///<summary>Don't forget to set the RecallCur before opening this form.</summary>
+		public FormRecallEdit(Patient patCur){
+			//
+			// Required for Windows Form Designer support
+			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label10,
-				label7,
-				label2,
-				label5,
-				label4,
-				panel1,
-				groupBox1,
-				label1,
-				//label6,
-				label11,
-				//label12,
-				label13,
-				butPin,
-				label14,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			PatCur=patCur;
+			Lan.F(this);
 		}
 
-		///<summary></summary>
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
 		protected override void Dispose( bool disposing )
 		{
 			if( disposing )
@@ -96,331 +75,300 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormRecallEdit));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
-			this.label10 = new System.Windows.Forms.Label();
-			this.listStatus = new System.Windows.Forms.ListBox();
-			this.textWorkPhone = new System.Windows.Forms.TextBox();
-			this.textWireless = new System.Windows.Forms.TextBox();
-			this.textAddrNotes = new System.Windows.Forms.TextBox();
-			this.label7 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.textHomePhone = new System.Windows.Forms.TextBox();
-			this.label5 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
-			this.contrAccount3 = new OpenDental.ContrAccount();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.listFamily = new System.Windows.Forms.ListView();
-			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-			this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
-			this.textBillingType = new System.Windows.Forms.TextBox();
-			this.label14 = new System.Windows.Forms.Label();
-			this.textPriIns = new System.Windows.Forms.TextBox();
-			this.label11 = new System.Windows.Forms.Label();
-			this.textCreditType = new System.Windows.Forms.TextBox();
+			this.butCancel = new OpenDental.UI.Button();
+			this.textDatePrevious = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.label13 = new System.Windows.Forms.Label();
-			this.butPin = new OpenDental.XPButton();
+			this.label2 = new System.Windows.Forms.Label();
+			this.textDateDueCalc = new System.Windows.Forms.TextBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.textDateDue = new OpenDental.ValidDate();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.textWeeks = new OpenDental.ValidNum();
+			this.label7 = new System.Windows.Forms.Label();
+			this.textDays = new OpenDental.ValidNum();
+			this.label6 = new System.Windows.Forms.Label();
+			this.textMonths = new OpenDental.ValidNum();
+			this.label5 = new System.Windows.Forms.Label();
+			this.textYears = new OpenDental.ValidNum();
+			this.label4 = new System.Windows.Forms.Label();
+			this.label8 = new System.Windows.Forms.Label();
+			this.comboStatus = new System.Windows.Forms.ComboBox();
+			this.checkIsDisabled = new System.Windows.Forms.CheckBox();
+			this.label9 = new System.Windows.Forms.Label();
+			this.butOK = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
+			this.textNote = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(852, 644);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butCancel.Location = new System.Drawing.Point(589, 405);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
-			this.butCancel.TabIndex = 6;
+			this.butCancel.TabIndex = 0;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// butOK
+			// textDatePrevious
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(768, 644);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 26);
-			this.butOK.TabIndex = 5;
-			this.butOK.Text = "&OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// label10
-			// 
-			this.label10.Location = new System.Drawing.Point(5, 2);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(63, 18);
-			this.label10.TabIndex = 46;
-			this.label10.Text = "Status";
-			// 
-			// listStatus
-			// 
-			this.listStatus.Location = new System.Drawing.Point(5, 18);
-			this.listStatus.Name = "listStatus";
-			this.listStatus.Size = new System.Drawing.Size(166, 173);
-			this.listStatus.TabIndex = 0;
-			// 
-			// textWorkPhone
-			// 
-			this.textWorkPhone.BackColor = System.Drawing.Color.White;
-			this.textWorkPhone.Location = new System.Drawing.Point(501, 33);
-			this.textWorkPhone.Name = "textWorkPhone";
-			this.textWorkPhone.ReadOnly = true;
-			this.textWorkPhone.TabIndex = 41;
-			this.textWorkPhone.Text = "";
-			// 
-			// textWireless
-			// 
-			this.textWireless.BackColor = System.Drawing.Color.White;
-			this.textWireless.Location = new System.Drawing.Point(501, 53);
-			this.textWireless.Name = "textWireless";
-			this.textWireless.ReadOnly = true;
-			this.textWireless.TabIndex = 40;
-			this.textWireless.Text = "";
-			// 
-			// textAddrNotes
-			// 
-			this.textAddrNotes.BackColor = System.Drawing.Color.White;
-			this.textAddrNotes.Location = new System.Drawing.Point(501, 73);
-			this.textAddrNotes.Multiline = true;
-			this.textAddrNotes.Name = "textAddrNotes";
-			this.textAddrNotes.ReadOnly = true;
-			this.textAddrNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textAddrNotes.Size = new System.Drawing.Size(240, 48);
-			this.textAddrNotes.TabIndex = 39;
-			this.textAddrNotes.Text = "";
-			// 
-			// label7
-			// 
-			this.label7.Location = new System.Drawing.Point(400, 35);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(100, 16);
-			this.label7.TabIndex = 38;
-			this.label7.Text = "Work Phone";
-			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(398, 55);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(100, 16);
-			this.label2.TabIndex = 37;
-			this.label2.Text = "Wireless Phone";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textHomePhone
-			// 
-			this.textHomePhone.BackColor = System.Drawing.Color.White;
-			this.textHomePhone.Location = new System.Drawing.Point(501, 13);
-			this.textHomePhone.Name = "textHomePhone";
-			this.textHomePhone.ReadOnly = true;
-			this.textHomePhone.TabIndex = 36;
-			this.textHomePhone.Text = "";
-			// 
-			// label5
-			// 
-			this.label5.Location = new System.Drawing.Point(422, 15);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(80, 16);
-			this.label5.TabIndex = 35;
-			this.label5.Text = "Home Phone";
-			this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(406, 74);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(96, 44);
-			this.label4.TabIndex = 34;
-			this.label4.Text = "Address/Phone Notes";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// contrAccount3
-			// 
-			this.contrAccount3.Location = new System.Drawing.Point(4, 164);
-			this.contrAccount3.Name = "contrAccount3";
-			this.contrAccount3.Size = new System.Drawing.Size(931, 477);
-			this.contrAccount3.TabIndex = 53;
-			// 
-			// panel1
-			// 
-			this.panel1.Location = new System.Drawing.Point(6, 162);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(929, 32);
-			this.panel1.TabIndex = 54;
-			// 
-			// groupBox1
-			// 
-			this.groupBox1.Controls.Add(this.listFamily);
-			this.groupBox1.Controls.Add(this.textBillingType);
-			this.groupBox1.Controls.Add(this.label14);
-			this.groupBox1.Controls.Add(this.textPriIns);
-			this.groupBox1.Controls.Add(this.label11);
-			this.groupBox1.Controls.Add(this.textAddrNotes);
-			this.groupBox1.Controls.Add(this.textCreditType);
-			this.groupBox1.Controls.Add(this.label1);
-			this.groupBox1.Controls.Add(this.label4);
-			this.groupBox1.Controls.Add(this.textWireless);
-			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.label5);
-			this.groupBox1.Controls.Add(this.textHomePhone);
-			this.groupBox1.Controls.Add(this.textWorkPhone);
-			this.groupBox1.Controls.Add(this.label7);
-			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(179, 3);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(752, 187);
-			this.groupBox1.TabIndex = 55;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Patient Information";
-			// 
-			// listFamily
-			// 
-			this.listFamily.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-																																								 this.columnHeader1,
-																																								 this.columnHeader2,
-																																								 this.columnHeader4,
-																																								 this.columnHeader3,
-																																								 this.columnHeader5});
-			this.listFamily.GridLines = true;
-			this.listFamily.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.listFamily.Location = new System.Drawing.Point(7, 24);
-			this.listFamily.Name = "listFamily";
-			this.listFamily.Size = new System.Drawing.Size(384, 97);
-			this.listFamily.TabIndex = 55;
-			this.listFamily.View = System.Windows.Forms.View.Details;
-			// 
-			// columnHeader1
-			// 
-			this.columnHeader1.Text = "Family Member";
-			this.columnHeader1.Width = 120;
-			// 
-			// columnHeader2
-			// 
-			this.columnHeader2.Text = "Age";
-			this.columnHeader2.Width = 40;
-			// 
-			// columnHeader4
-			// 
-			this.columnHeader4.Text = "Gender";
-			this.columnHeader4.Width = 50;
-			// 
-			// columnHeader3
-			// 
-			this.columnHeader3.Text = "Due Date";
-			this.columnHeader3.Width = 74;
-			// 
-			// columnHeader5
-			// 
-			this.columnHeader5.Text = "Scheduled";
-			this.columnHeader5.Width = 74;
-			// 
-			// textBillingType
-			// 
-			this.textBillingType.BackColor = System.Drawing.Color.White;
-			this.textBillingType.Location = new System.Drawing.Point(501, 141);
-			this.textBillingType.Name = "textBillingType";
-			this.textBillingType.ReadOnly = true;
-			this.textBillingType.Size = new System.Drawing.Size(120, 20);
-			this.textBillingType.TabIndex = 54;
-			this.textBillingType.Text = "";
-			// 
-			// label14
-			// 
-			this.label14.Location = new System.Drawing.Point(420, 144);
-			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(79, 16);
-			this.label14.TabIndex = 53;
-			this.label14.Text = "Billing Type";
-			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textPriIns
-			// 
-			this.textPriIns.BackColor = System.Drawing.Color.White;
-			this.textPriIns.Location = new System.Drawing.Point(501, 161);
-			this.textPriIns.Name = "textPriIns";
-			this.textPriIns.ReadOnly = true;
-			this.textPriIns.Size = new System.Drawing.Size(247, 20);
-			this.textPriIns.TabIndex = 50;
-			this.textPriIns.Text = "";
-			// 
-			// label11
-			// 
-			this.label11.Location = new System.Drawing.Point(400, 164);
-			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(100, 16);
-			this.label11.TabIndex = 49;
-			this.label11.Text = "Primary Insurance";
-			this.label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textCreditType
-			// 
-			this.textCreditType.BackColor = System.Drawing.Color.White;
-			this.textCreditType.Location = new System.Drawing.Point(501, 121);
-			this.textCreditType.Name = "textCreditType";
-			this.textCreditType.ReadOnly = true;
-			this.textCreditType.Size = new System.Drawing.Size(23, 20);
-			this.textCreditType.TabIndex = 46;
-			this.textCreditType.Text = "";
+			this.textDatePrevious.Location = new System.Drawing.Point(184, 42);
+			this.textDatePrevious.Name = "textDatePrevious";
+			this.textDatePrevious.ReadOnly = true;
+			this.textDatePrevious.Size = new System.Drawing.Size(85, 20);
+			this.textDatePrevious.TabIndex = 1;
+			this.textDatePrevious.Text = "";
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(434, 123);
+			this.label1.Location = new System.Drawing.Point(11, 41);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(65, 16);
-			this.label1.TabIndex = 42;
-			this.label1.Text = "Credit Type";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.label1.Size = new System.Drawing.Size(170, 19);
+			this.label1.TabIndex = 2;
+			this.label1.Text = "Previous Date";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// label13
+			// label2
 			// 
-			this.label13.BackColor = System.Drawing.Color.White;
-			this.label13.Location = new System.Drawing.Point(474, 231);
-			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(203, 15);
-			this.label13.TabIndex = 56;
-			this.label13.Text = "(view only mode - no editing allowed)";
+			this.label2.Location = new System.Drawing.Point(11, 67);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(170, 19);
+			this.label2.TabIndex = 4;
+			this.label2.Text = "Calculated Due Date";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// butPin
+			// textDateDueCalc
 			// 
-			this.butPin.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPin.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
-			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPin.Location = new System.Drawing.Point(574, 644);
-			this.butPin.Name = "butPin";
-			this.butPin.Size = new System.Drawing.Size(98, 26);
-			this.butPin.TabIndex = 57;
-			this.butPin.Text = "&Pinboard";
-			this.butPin.Click += new System.EventHandler(this.butPin_Click);
+			this.textDateDueCalc.Location = new System.Drawing.Point(184, 68);
+			this.textDateDueCalc.Name = "textDateDueCalc";
+			this.textDateDueCalc.ReadOnly = true;
+			this.textDateDueCalc.Size = new System.Drawing.Size(85, 20);
+			this.textDateDueCalc.TabIndex = 3;
+			this.textDateDueCalc.Text = "";
+			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(12, 94);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(170, 19);
+			this.label3.TabIndex = 5;
+			this.label3.Text = "Actual Due Date";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textDateDue
+			// 
+			this.textDateDue.Location = new System.Drawing.Point(184, 94);
+			this.textDateDue.Name = "textDateDue";
+			this.textDateDue.Size = new System.Drawing.Size(86, 20);
+			this.textDateDue.TabIndex = 6;
+			this.textDateDue.Text = "";
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.textWeeks);
+			this.groupBox1.Controls.Add(this.label7);
+			this.groupBox1.Controls.Add(this.textDays);
+			this.groupBox1.Controls.Add(this.label6);
+			this.groupBox1.Controls.Add(this.textMonths);
+			this.groupBox1.Controls.Add(this.label5);
+			this.groupBox1.Controls.Add(this.textYears);
+			this.groupBox1.Controls.Add(this.label4);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(79, 123);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(170, 115);
+			this.groupBox1.TabIndex = 7;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Recall Interval";
+			// 
+			// textWeeks
+			// 
+			this.textWeeks.Location = new System.Drawing.Point(105, 63);
+			this.textWeeks.MaxVal = 255;
+			this.textWeeks.MinVal = 0;
+			this.textWeeks.Name = "textWeeks";
+			this.textWeeks.Size = new System.Drawing.Size(51, 20);
+			this.textWeeks.TabIndex = 12;
+			this.textWeeks.Text = "";
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(11, 63);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(92, 19);
+			this.label7.TabIndex = 11;
+			this.label7.Text = "Weeks";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textDays
+			// 
+			this.textDays.Location = new System.Drawing.Point(105, 85);
+			this.textDays.MaxVal = 255;
+			this.textDays.MinVal = 0;
+			this.textDays.Name = "textDays";
+			this.textDays.Size = new System.Drawing.Size(51, 20);
+			this.textDays.TabIndex = 10;
+			this.textDays.Text = "";
+			// 
+			// label6
+			// 
+			this.label6.Location = new System.Drawing.Point(11, 85);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(92, 19);
+			this.label6.TabIndex = 9;
+			this.label6.Text = "Days";
+			this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textMonths
+			// 
+			this.textMonths.Location = new System.Drawing.Point(105, 40);
+			this.textMonths.MaxVal = 255;
+			this.textMonths.MinVal = 0;
+			this.textMonths.Name = "textMonths";
+			this.textMonths.Size = new System.Drawing.Size(51, 20);
+			this.textMonths.TabIndex = 8;
+			this.textMonths.Text = "";
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(11, 40);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(92, 19);
+			this.label5.TabIndex = 7;
+			this.label5.Text = "Months";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textYears
+			// 
+			this.textYears.Location = new System.Drawing.Point(105, 17);
+			this.textYears.MaxVal = 127;
+			this.textYears.MinVal = 0;
+			this.textYears.Name = "textYears";
+			this.textYears.Size = new System.Drawing.Size(51, 20);
+			this.textYears.TabIndex = 6;
+			this.textYears.Text = "";
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(11, 17);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(92, 19);
+			this.label4.TabIndex = 5;
+			this.label4.Text = "Years";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// label8
+			// 
+			this.label8.Location = new System.Drawing.Point(12, 243);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(170, 19);
+			this.label8.TabIndex = 8;
+			this.label8.Text = "Status";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// comboStatus
+			// 
+			this.comboStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboStatus.Location = new System.Drawing.Point(184, 243);
+			this.comboStatus.MaxDropDownItems = 50;
+			this.comboStatus.Name = "comboStatus";
+			this.comboStatus.Size = new System.Drawing.Size(188, 21);
+			this.comboStatus.TabIndex = 9;
+			// 
+			// checkIsDisabled
+			// 
+			this.checkIsDisabled.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkIsDisabled.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkIsDisabled.Location = new System.Drawing.Point(29, 17);
+			this.checkIsDisabled.Name = "checkIsDisabled";
+			this.checkIsDisabled.Size = new System.Drawing.Size(169, 18);
+			this.checkIsDisabled.TabIndex = 10;
+			this.checkIsDisabled.Text = "Disabled";
+			this.checkIsDisabled.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkIsDisabled.Click += new System.EventHandler(this.checkIsDisabled_Click);
+			// 
+			// label9
+			// 
+			this.label9.Location = new System.Drawing.Point(65, 269);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(117, 92);
+			this.label9.TabIndex = 11;
+			this.label9.Text = "Administrative Note (this note will get deleted every time recall gets reset)";
+			this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// butOK
+			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(589, 363);
+			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.TabIndex = 13;
+			this.butOK.Text = "&OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			// 
+			// butDelete
+			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(31, 406);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(83, 26);
+			this.butDelete.TabIndex = 14;
+			this.butDelete.Text = "&Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
+			// 
+			// textNote
+			// 
+			this.textNote.AcceptsReturn = true;
+			this.textNote.Location = new System.Drawing.Point(184, 271);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Recall;
+			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNote.Size = new System.Drawing.Size(350, 112);
+			this.textNote.TabIndex = 15;
+			this.textNote.Text = "";
 			// 
 			// FormRecallEdit
 			// 
-			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(937, 677);
+			this.ClientSize = new System.Drawing.Size(685, 454);
+			this.Controls.Add(this.textNote);
+			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butOK);
-			this.Controls.Add(this.butPin);
-			this.Controls.Add(this.label13);
-			this.Controls.Add(this.groupBox1);
-			this.Controls.Add(this.listStatus);
+			this.Controls.Add(this.textDateDue);
+			this.Controls.Add(this.textDateDueCalc);
+			this.Controls.Add(this.textDatePrevious);
 			this.Controls.Add(this.butCancel);
-			this.Controls.Add(this.panel1);
-			this.Controls.Add(this.contrAccount3);
-			this.Controls.Add(this.label10);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.Controls.Add(this.label9);
+			this.Controls.Add(this.checkIsDisabled);
+			this.Controls.Add(this.comboStatus);
+			this.Controls.Add(this.label8);
+			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.label1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormRecallEdit";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Edit Recall Status";
+			this.Text = "Edit Recall";
 			this.Load += new System.EventHandler(this.FormRecallEdit_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -429,224 +377,134 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRecallEdit_Load(object sender, System.EventArgs e) {
-			contrAccount3.ViewingInRecall=true;
-			contrAccount3.InstantClasses();
-			listStatus.Items.Add(Lan.g(this,"None"));
-			listStatus.SelectedIndex=0;
+			checkIsDisabled.Checked=RecallCur.IsDisabled;
+			if(checkIsDisabled.Checked){
+				textDateDue.ReadOnly=true;
+			}
+			if(RecallCur.DatePrevious.Year>1880){
+				textDatePrevious.Text=RecallCur.DatePrevious.ToShortDateString();
+			}
+			if(RecallCur.DateDueCalc.Year>1880){
+				textDateDueCalc.Text=RecallCur.DateDueCalc.ToShortDateString();
+			}
+			if(RecallCur.DateDue.Year>1880){
+				textDateDue.Text=RecallCur.DateDue.ToShortDateString();
+			}
+			textYears.Text=RecallCur.RecallInterval.Years.ToString();
+			textMonths.Text=RecallCur.RecallInterval.Months.ToString();
+			textWeeks.Text=RecallCur.RecallInterval.Weeks.ToString();
+			textDays.Text=RecallCur.RecallInterval.Days.ToString();
+			comboStatus.Items.Add(Lan.g(this,"None"));
+			comboStatus.SelectedIndex=0;
 			for(int i=0;i<Defs.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
-				listStatus.Items.Add(Defs.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
-				if(Defs.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==RecallStatus)
-					listStatus.SelectedIndex=i+1;
+				comboStatus.Items.Add(Defs.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
+				if(Defs.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==RecallCur.RecallStatus)
+					comboStatus.SelectedIndex=i+1;
 			}
-			Patients.PatIsLoaded=true;
-			Patient PatCur=Patients.Cur;
-			//Debug.WriteLine(DisplayedRecallItem.PatNum);
-			PatCur.PatNum=PatNum;
-			Patients.Cur=PatCur;
-			contrAccount3.ModuleSelected();//also refreshes patient,procedures,claims,adjustments,
-				//paysplits,insplans,covpats and patientnotes.
-			//MessageBox.Show(Patients.FamilyList.Length.ToString());
-			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
-			Text="Recall for "+Patients.GetCurNameLF();
-			textCreditType.Text=Patients.Cur.CreditType;
-			textBillingType.Text=Defs.GetName(DefCat.BillingTypes,Patients.Cur.BillingType);
-			//textAge.Text=Shared.DateToAge(Patients.Cur.Birthdate);
-			//textDueDate.Text=DueDate.ToString("d");
-			textPriIns.Text=InsPlans.GetDescript(Patients.Cur.PriPlanNum);
-      textHomePhone.Text=Patients.Cur.HmPhone;
-			textWorkPhone.Text=Patients.Cur.WkPhone;
-			textWireless.Text=Patients.Cur.WirelessPhone;
-			textAddrNotes.Text=Patients.Cur.AddrNote;	
-			Appointment[] aptsOnePat;
-			ListViewItem item;
-			DateTime dueDate;
-			for(int i=0;i<Patients.FamilyList.Length;i++){
-				item=new ListViewItem(Patients.GetNameInFamFLI(i));
-				if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
-					item.BackColor=Color.Silver;
-				}
-				item.SubItems.Add(Shared.AgeToString(Patients.FamilyList[i].Age));
-				item.SubItems.Add(Patients.FamilyList[i].Gender.ToString());
-				dueDate=Patients.GetRecallDue(Patients.FamilyList[i].PatNum);
-				if(dueDate.Year<1880){
-					item.SubItems.Add("");
-				}
-				else{
-					item.SubItems.Add(dueDate.ToShortDateString());
-				}
-				if(dueDate<=DateTime.Today){
-					item.ForeColor=Color.Red;
-				}
-				aptsOnePat=Appointments.GetForPat(Patients.FamilyList[i].PatNum);
-				for(int a=0;a<aptsOnePat.Length;a++){
-					if(aptsOnePat[a].AptDateTime.Date<=DateTime.Today){
-						continue;//disregard old appts.
-					}
-					item.SubItems.Add(aptsOnePat[a].AptDateTime.ToShortDateString());
-					break;//we only want one appt
-					//could add condition here to add blank subitem if no date found
-				}
-				listFamily.Items.Add(item);
-				//if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
-				//	listFamily.Items[i].Selected=true;//doesn't work
-				//}
-			}
-			/*
-			ListViewItem item;
-			for(int i=0;i<Patients.FamilyList.Length;i++){
-				item=new ListViewItem(Patients.GetNameInFamFLI(i));
-				item.SubItems.Add(Patients.FamilyList[i].Age.ToString());
-				item.SubItems.Add(Patients.FamilyList[i].Gender.ToString());
-				item.SubItems.Add(Patients.GetRecallDue(Patients.FamilyList[i].PatNum).ToShortDateString());
-				item.SubItems.Add("");
-				listFamily.Items.Add(item);
-			}*/
+			textNote.Text=RecallCur.Note;
 		}
 
-		/// <summary>Creates appointment and appropriate procedures, and places data in ContrAppt.CurInfo so it will display on pinboard.</summary>
-		private void CreateCurInfo(){
-			ContrAppt.CurInfo=new InfoApt();
-			Appointments.Cur=new Appointment();
-			Appointments.Cur.PatNum=Patients.Cur.PatNum;
-			Appointments.Cur.AptStatus=ApptStatus.Scheduled;
-			//convert time pattern to 5 minute increment
-			StringBuilder savePattern=new StringBuilder();
-			for(int i=0;i<Prefs.GetString("RecallPattern").Length;i++){
-				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
-				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
-				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
-					savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
-				}
-			}
-			Appointments.Cur.Pattern=savePattern.ToString();
-				//((Pref)Prefs.HList["RecallPattern"]).ValueString;
-			Appointments.Cur.Note="";
-			if(Patients.Cur.PriProv==0)
-				Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
-			else
-				Appointments.Cur.ProvNum=Patients.Cur.PriProv;
-			Appointments.Cur.ProvHyg=Patients.Cur.SecProv;
-			Appointments.InsertCur();
-			Appointments.CurOld=Appointments.Cur;
-      string[] procs=((Pref)Prefs.HList["RecallProcedures"]).ValueString.Split(',');
-			if(((Pref)Prefs.HList["RecallBW"]).ValueString!=""){//BWs
-				bool dueBW=true;
-				//DateTime dueDate=PIn.PDate(listFamily.Items[
-				for(int i=0;i<ProcList.Length;i++){//loop through all procedures for this pt.
-					//if any BW found within last year, then dueBW=false.
-					if(Prefs.GetString("RecallBW")==ProcList[i].ADACode
-						&& DueDate.Year>1880
-						&& ProcList[i].ProcDate > DueDate.AddYears(-1)){
-						dueBW=false;
-					}
-				}
-				if(dueBW){
-					string[] procs2=new string[procs.Length+1];
-					procs.CopyTo(procs2,0);
-					procs2[procs2.Length-1]=((Pref)Prefs.HList["RecallBW"]).ValueString;
-					procs=new string[procs2.Length];
-					procs2.CopyTo(procs,0);
-				}
-			}
-			Procedure ProcCur;
-			//ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
-			for(int i=0;i<procs.Length;i++){
-				ProcCur=new Procedure();//this will be an insert
-				//procnum
-				ProcCur.PatNum=Patients.Cur.PatNum;
-				ProcCur.AptNum=Appointments.Cur.AptNum;
-				ProcCur.ADACode=procs[i];
-				ProcCur.ProcDate=DateTime.Now;
-				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,ContrChart.GetFeeSched());
-				//ProcCur.OverridePri=-1;
-				//ProcCur.OverrideSec=-1;
-				//surf
-				//toothnum
-				//Procedures.Cur.ToothRange="";
-				//ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
-				//priority
-				ProcCur.ProcStatus=ProcStat.TP;
-				ProcCur.ProcNote="";
-				//Procedures.Cur.PriEstim=
-				//Procedures.Cur.SecEstim=
-				//claimnum
-				ProcCur.ProvNum=Patients.Cur.PriProv;
-				//Procedures.Cur.Dx=
-				//nextaptnum
-				ProcCur.Insert();
-				ProcCur.ComputeEstimates(Patients.Cur.PatNum,Patients.Cur.PriPlanNum
-					,Patients.Cur.SecPlanNum,new ClaimProc[0],false);
-			}
-			ContrAppt.CurInfo.MyApt=Appointments.Cur;
-			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
-			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
-			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
-			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
-			ContrAppt.CurInfo.Production=procDesc.Production;
-			ContrAppt.CurInfo.MyPatient=Patients.Cur;
-		}
-
-		private void SaveStatus(){
-			int newStatus;
-			if(listStatus.SelectedIndex==0){
-				newStatus=0;
+		private void checkIsDisabled_Click(object sender, System.EventArgs e) {
+			if(checkIsDisabled.Checked){
+				textDateDue.Text="";
+				textDateDue.ReadOnly=true;
 			}
 			else{
-				newStatus=Defs.Short[(int)DefCat.RecallUnschedStatus][listStatus.SelectedIndex-1].DefNum;
+				textDateDue.Text=textDateDueCalc.Text;
+				textDateDue.ReadOnly=false;
 			}
-			//if the status has changed, but no recall commlog entry for today, then make an auto entry.
-			if(newStatus!=Patients.Cur.RecallStatus){
-				bool recallEntryToday=false;
-				for(int i=0;i<Commlogs.List.Length;i++){
-					if(Commlogs.List[i].CommDateTime.Date==DateTime.Today
-						&& Commlogs.List[i].CommType==CommItemType.Recall){
-						recallEntryToday=true;
+		}
+
+		private void butDelete_Click(object sender, System.EventArgs e) {
+			if(RecallCur.DatePrevious.Year<1880){//Can only be deleted if DatePrevious is blank.
+				if(IsNew){
+					DialogResult=DialogResult.Cancel;
+				}
+				else{
+					if(!MsgBox.Show(this,true,"Delete this recall?")){
+						return;
 					}
-				}
-				if(!recallEntryToday){
-					Commlogs.Cur=new Commlog();
-					Commlogs.Cur.CommDateTime=DateTime.Now;
-					Commlogs.Cur.CommType=CommItemType.Recall;
-					Commlogs.Cur.PatNum=Patients.Cur.PatNum;
-					Commlogs.Cur.Note=Lan.g(this,"Status changed to")+" ";
-					if(newStatus==0)
-						Commlogs.Cur.Note+=Lan.g(this,"None");
-					else
-						Commlogs.Cur.Note+=Defs.GetName(DefCat.RecallUnschedStatus,newStatus);
-					Commlogs.Cur.Note+=".  ";
-					FormCommItem FormCI=new FormCommItem();
-					FormCI.IsNew=true;
-					//forces user to at least consider a commlog entry
-					FormCI.ShowDialog();//typically saved in this window.
+					RecallCur.Delete();
+					DialogResult=DialogResult.OK;
 				}
 			}
-			Patient PatCur=Patients.Cur;
-			PatCur.RecallStatus=newStatus;
-			Patients.Cur=PatCur;
-			Patients.UpdateCur();
+			else{
+				MsgBox.Show(this,"This recall can not be deleted because Previous Date has a value.  You should use the Disabled checkBox instead.");
+			}
 		}
 
-		private void butPin_Click(object sender, System.EventArgs e) {
-			SaveStatus();
-			PinClicked=true;
-			CreateCurInfo();
+		private void butOK_Click(object sender, System.EventArgs e) {
+			if(  textDateDue.errorProvider1.GetError(textDateDue)!=""
+				|| textYears.errorProvider1.GetError(textYears)!=""
+				|| textMonths.errorProvider1.GetError(textMonths)!=""
+				|| textWeeks.errorProvider1.GetError(textWeeks)!=""
+				|| textDays.errorProvider1.GetError(textDays)!=""
+				){
+				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
+				return;
+			}
+			RecallCur.IsDisabled=checkIsDisabled.Checked;
+			RecallCur.DateDue=PIn.PDate(textDateDue.Text);
+			RecallCur.RecallInterval.Years=PIn.PInt(textYears.Text);
+			RecallCur.RecallInterval.Months=PIn.PInt(textMonths.Text);
+			RecallCur.RecallInterval.Weeks=PIn.PInt(textWeeks.Text);
+			RecallCur.RecallInterval.Days=PIn.PInt(textDays.Text);
+      if(comboStatus.SelectedIndex==0){
+				RecallCur.RecallStatus=0;
+			}
+			else{
+				RecallCur.RecallStatus
+					=Defs.Short[(int)DefCat.RecallUnschedStatus][comboStatus.SelectedIndex-1].DefNum;
+			}
+			RecallCur.Note=textNote.Text;
+			if(IsNew){
+				if(!RecallCur.IsAllDefault()){//only save if something meaningful
+					RecallCur.Insert();
+				}
+			}
+			else{
+				if(RecallCur.IsAllDefault()){
+					RecallCur.Delete();
+					DialogResult=DialogResult.OK;
+					return;
+				}
+				else{
+					RecallCur.Update();
+				}
+			}
+			Recalls.Synch(PatCur.PatNum,RecallCur);
 			DialogResult=DialogResult.OK;
 		}
 
-		private void butOK_Click(object sender, System.EventArgs e){
-			SaveStatus();
-			//?Patients.PatIsLoaded=false;
-			DialogResult=DialogResult.OK;
-		}
-
-		private void butCancel_Click(object sender, System.EventArgs e){
+		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
 
+		
 
-
-
+		
 
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

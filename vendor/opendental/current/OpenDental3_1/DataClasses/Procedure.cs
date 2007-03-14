@@ -41,7 +41,7 @@ namespace OpenDental{
 		public int ProvNum;
 		///<summary>Foreign key to definition.DefNum, which contains text of the Diagnosis.</summary>
 		public int Dx;
-		///<summary>Foreign key to appointment.AptNum.  Allows this procedure to be attached to a Next appointment as well as a standard appointment.</summary>
+		///<summary>Should be called PlannedAptNum.  Foreign key to appointment.AptNum.  Allows this procedure to be attached to a Planned appointment as well as a standard appointment.</summary>
 		public int NextAptNum;
 		///<summary>Not used anymore.  In version 3.0, this was moved to the claimproc table.</summary>
 		public bool IsCovInsOLD;
@@ -50,7 +50,16 @@ namespace OpenDental{
 		///<summary>Only used in Public Health. See the PlaceOfService enum. Zero(Office) until procedure set complete. Then it's set to the value of the DefaultProcedurePlaceService preference.</summary>
 		public PlaceOfService PlaceService;
 		///<summary>Set true to hide this procedure on the graphical tooth chart.  Typically set after a tooth is extracted.</summary>
-		public bool HideGraphical;//
+		public bool HideGraphical;
+		///<summary>Single char. Blank=no, or Initial, or Replacement.</summary>
+		public string Prosthesis;
+		///<summary>For a prosthesis Replacement, this is the original date.</summary>
+		public DateTime DateOriginalProsth;
+		///<summary>This note will go on e-claim. For By Report, prep dates, or initial endo date.</summary>
+		public string ClaimNote;
+		///<summary>The date that the note was locked.  If no date entered, then note is not locked.  If date entered, also prevents deletion and changing status.</summary>
+		public DateTime DateLocked;
+
 
 		///<summary>Returns a copy of the procedure.</summary>
     public Procedure Copy(){
@@ -72,6 +81,10 @@ namespace OpenDental{
 			proc.NextAptNum=NextAptNum;
 			proc.PlaceService=PlaceService;
 			proc.HideGraphical=HideGraphical;
+			proc.Prosthesis=Prosthesis;
+			proc.DateOriginalProsth=DateOriginalProsth;
+			proc.ClaimNote=ClaimNote;
+			proc.DateLocked=DateLocked;
 			return proc;
 		}
 
@@ -83,7 +96,8 @@ namespace OpenDental{
 				+"Surf,"
 				+"ToothNum,ToothRange,Priority, "
 				+"ProcStatus, ProcNote, ProvNum,"
-				+"Dx,NextAptNum,PlaceService,HideGraphical) "
+				+"Dx,NextAptNum,PlaceService,HideGraphical,Prosthesis,DateOriginalProsth,ClaimNote,"
+				+"DateLocked) "
 				+"VALUES ("
 				+"'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PInt   (AptNum)+"', "
@@ -105,7 +119,11 @@ namespace OpenDental{
 				//+"'"+POut.PBool  (IsCovIns)+"', "
 				//+"'"+POut.PDouble(CapCoPay)+"', "
 				+"'"+POut.PInt   ((int)PlaceService)+"', "
-				+"'"+POut.PBool  (HideGraphical)+"')";
+				+"'"+POut.PBool  (HideGraphical)+"', "
+				+"'"+POut.PString(Prosthesis)+"', "
+				+"'"+POut.PDate  (DateOriginalProsth)+"', "
+				+"'"+POut.PString(ClaimNote)+"', "
+				+"'"+POut.PDate  (DateLocked)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
@@ -195,6 +213,26 @@ namespace OpenDental{
 				c+="HideGraphical = '"+POut.PBool  (HideGraphical)+"'";
 				comma=true;
 			}
+			if(Prosthesis!=oldProc.Prosthesis){
+				if(comma) c+=",";
+				c+="Prosthesis = '"+POut.PString(Prosthesis)+"'";
+				comma=true;
+			}
+			if(DateOriginalProsth!=oldProc.DateOriginalProsth){
+				if(comma) c+=",";
+				c+="DateOriginalProsth = '"+POut.PDate  (DateOriginalProsth)+"'";
+				comma=true;
+			}
+			if(ClaimNote!=oldProc.ClaimNote){
+				if(comma) c+=",";
+				c+="ClaimNote = '"+POut.PString (ClaimNote)+"'";
+				comma=true;
+			}
+			if(DateLocked!=oldProc.DateLocked){
+				if(comma) c+=",";
+				c+="DateLocked = '"+POut.PDate (DateLocked)+"'";
+				comma=true;
+			}
 			if(!comma)
 				return 0;//this means no change is actually required.
 			c+=" WHERE ProcNum = '"+POut.PInt(ProcNum)+"'";
@@ -214,7 +252,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Base estimate or override is retrieved from supplied claimprocs. Does not take into consideration annual max or deductible, but it does limit total of pri+sec to not be more than total.  The claimProc array typically includes all claimProcs for the patient, but must at least include all claimprocs for this proc.</summary>
-		public double GetEst(ClaimProc[] claimProcs,PriSecTot pst){
+		public double GetEst(ClaimProc[] claimProcs,PriSecTot pst,Patient pat){
 			double priBaseEst=0;
 			double secBaseEst=0;
 			double priOverride=-1;
@@ -227,12 +265,12 @@ namespace OpenDental{
 					continue;
 				}
 				if(claimProcs[i].ProcNum==ProcNum){
-					if(Patients.Cur.PriPlanNum==claimProcs[i].PlanNum){
+					if(pat.PriPlanNum==claimProcs[i].PlanNum){
 						//if this is a Cap, then this will still work. Est comes out 0.
 						priBaseEst=claimProcs[i].BaseEst;
 						priOverride=claimProcs[i].OverrideInsEst;
 					}
-					else if(Patients.Cur.SecPlanNum==claimProcs[i].PlanNum){
+					else if(pat.SecPlanNum==claimProcs[i].PlanNum){
 						secBaseEst=claimProcs[i].BaseEst;
 						secOverride=claimProcs[i].OverrideInsEst;
 					}
@@ -298,7 +336,7 @@ namespace OpenDental{
 
 		///<summary>Used whenever a procedure changes or a plan changes.  All estimates for a given procedure must be updated. This frequently includes adding claimprocs, but can also just edit the appropriate existing claimprocs. Skips status=Adjustment,CapClaim,Preauth,Supplemental.  Also fixes date,status,and provnum if appropriate.  The claimProc array can be all claimProcs for the patient, but must at least include all claimprocs for this proc.  Only set IsInitialEntry true from Chart module; this is for cap procs.</summary>
 		public void ComputeEstimates(int patNum,int priPlanNum,int secPlanNum,ClaimProc[] claimProcs
-			,bool IsInitialEntry){
+			,bool IsInitialEntry,Patient pat,InsPlan[] PlanList){
 			bool priExists=false;
 			bool secExists=false;
 			bool doCreate=true;
@@ -342,13 +380,14 @@ namespace OpenDental{
 				}
 			}
 			//add pri estimate if missing.
+			InsPlan PlanCur;
 			if(priPlanNum>0 && !priExists && doCreate){
 				ClaimProc cp=new ClaimProc();
 				cp.ProcNum=ProcNum;
 				cp.PatNum=patNum;
 				cp.ProvNum=ProvNum;
-				InsPlans.GetCur(priPlanNum);
-				if(InsPlans.Cur.PlanType=="c")
+				PlanCur=InsPlans.GetPlan(priPlanNum,PlanList);
+				if(PlanCur.PlanType=="c")
 					if(ProcStatus==ProcStat.C){
 						cp.Status=ClaimProcStatus.CapComplete;
 					}
@@ -357,7 +396,7 @@ namespace OpenDental{
 					}
 				else
 					cp.Status=ClaimProcStatus.Estimate;
-				cp.PlanNum=InsPlans.Cur.PlanNum;
+				cp.PlanNum=PlanCur.PlanNum;
 				cp.DateCP=ProcDate;
 				cp.AllowedAmt=-1;
 				cp.PercentOverride=-1;
@@ -376,12 +415,12 @@ namespace OpenDental{
 				cp.ProcNum=ProcNum;
 				cp.PatNum=patNum;
 				cp.ProvNum=ProvNum;
-				InsPlans.GetCur(secPlanNum);
-				if(InsPlans.Cur.PlanType=="c")
+				PlanCur=InsPlans.GetPlan(secPlanNum,PlanList);
+				if(PlanCur.PlanType=="c")
 					cp.Status=ClaimProcStatus.CapEstimate;//this may be changed below
 				else
 					cp.Status=ClaimProcStatus.Estimate;
-				cp.PlanNum=InsPlans.Cur.PlanNum;
+				cp.PlanNum=PlanCur.PlanNum;
 				cp.DateCP=ProcDate;
 				cp.AllowedAmt=-1;
 				cp.PercentOverride=-1;
@@ -407,8 +446,9 @@ namespace OpenDental{
 				claimProcs[i].DateCP=ProcDate;//dates MUST match, but I can't remember why. Claims?
 				claimProcs[i].ProcDate=ProcDate;
 				//capitation estimates are always forced to follow the status of the procedure
-				InsPlans.GetCur(claimProcs[i].PlanNum);
-				if(InsPlans.Cur.PlanType=="c"
+				PlanCur=InsPlans.GetPlan(claimProcs[i].PlanNum,PlanList);
+				if(PlanCur!=null
+					&& PlanCur.PlanType=="c"
 					&& (claimProcs[i].Status==ClaimProcStatus.CapComplete
 					|| claimProcs[i].Status==ClaimProcStatus.CapEstimate))
 				{
@@ -428,10 +468,10 @@ namespace OpenDental{
 				//ComputeBaseEst automatically skips: capComplete,Preauth,capClaim,Supplemental
 				//does recalc est on: CapEstimate,Estimate,NotReceived,Received
 				if(priPlanNum>0 && priPlanNum==claimProcs[i].PlanNum){
-					claimProcs[i].ComputeBaseEst(this,PriSecTot.Pri);
+					claimProcs[i].ComputeBaseEst(this,PriSecTot.Pri,pat,PlanList);
 				}
 				if(secPlanNum>0 && secPlanNum==claimProcs[i].PlanNum){
-					claimProcs[i].ComputeBaseEst(this,PriSecTot.Sec);
+					claimProcs[i].ComputeBaseEst(this,PriSecTot.Sec,pat,PlanList);
 				}
 				if(IsInitialEntry
 					&& claimProcs[i].Status==ClaimProcStatus.CapEstimate

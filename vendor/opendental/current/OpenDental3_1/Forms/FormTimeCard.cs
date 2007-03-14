@@ -19,8 +19,8 @@ namespace OpenDental{
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.RadioButton radioRegular;
 		private System.Windows.Forms.RadioButton radioBreaks;
-		private System.Windows.Forms.Button butRefresh;
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butRefresh;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.TextBox textTotal;
 		private System.Windows.Forms.CheckBox checkRefresh;
 		private System.Windows.Forms.Timer timer1;
@@ -36,9 +36,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -65,7 +63,7 @@ namespace OpenDental{
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormTimeCard));
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.tbMain = new OpenDental.Forms.TableTimeCard();
 			this.textTotal = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
@@ -73,7 +71,7 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textDateTo = new OpenDental.ValidDate();
-			this.butRefresh = new System.Windows.Forms.Button();
+			this.butRefresh = new OpenDental.UI.Button();
 			this.radioRegular = new System.Windows.Forms.RadioButton();
 			this.radioBreaks = new System.Windows.Forms.RadioButton();
 			this.checkRefresh = new System.Windows.Forms.CheckBox();
@@ -82,8 +80,11 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.Location = new System.Drawing.Point(738, 650);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
@@ -162,7 +163,10 @@ namespace OpenDental{
 			// 
 			// butRefresh
 			// 
-			this.butRefresh.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butRefresh.Autosize = true;
+			this.butRefresh.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRefresh.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butRefresh.Location = new System.Drawing.Point(614, 9);
 			this.butRefresh.Name = "butRefresh";
 			this.butRefresh.Size = new System.Drawing.Size(87, 26);

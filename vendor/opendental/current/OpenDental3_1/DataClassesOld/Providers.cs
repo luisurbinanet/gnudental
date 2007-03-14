@@ -39,8 +39,8 @@ namespace OpenDental{
 		public bool IsHidden;
 		///<summary>True if the SSN field is actually a Tax ID Num</summary>
 		public bool UsingTIN;
-		///<summary></summary>
-		public string BlueCrossID;
+		///<summary>No longer used since each state assigns a different ID.  Use the providerident instead which allows you to assign a different BCBS ID for each Payor ID.</summary>
+		public string BlueCrossIDOld;
 		///<summary>Signature on file</summary>
 		public bool SigOnFile;//
 		///<summary></summary>
@@ -49,6 +49,8 @@ namespace OpenDental{
 		public string UserName;
 		///<summary></summary>
 		public string MedicaidID;
+		///<summary>Color that shows in appointments as outline when highlighted.</summary>
+		public Color OutlineColor;
 	}
 
 	/*=========================================================================================
@@ -91,11 +93,12 @@ namespace OpenDental{
 				ListLong[i].ProvColor   = Color.FromArgb(PIn.PInt(table.Rows[i][13].ToString()));
 				ListLong[i].IsHidden    = PIn.PBool  (table.Rows[i][14].ToString());
 				ListLong[i].UsingTIN    = PIn.PBool  (table.Rows[i][15].ToString());
-				ListLong[i].BlueCrossID = PIn.PString(table.Rows[i][16].ToString());
+				//ListLong[i].BlueCrossID = PIn.PString(table.Rows[i][16].ToString());
 				ListLong[i].SigOnFile   = PIn.PBool  (table.Rows[i][17].ToString());
 				ListLong[i].Password    = PIn.PString(table.Rows[i][18].ToString());
 				ListLong[i].UserName    = PIn.PString(table.Rows[i][19].ToString());
 				ListLong[i].MedicaidID  = PIn.PString(table.Rows[i][20].ToString());
+				ListLong[i].OutlineColor= Color.FromArgb(PIn.PInt(table.Rows[i][21].ToString()));
 				if(!ListLong[i].IsHidden) AL.Add(ListLong[i]);	
 			}
 			List=new Provider[AL.Count];
@@ -120,11 +123,12 @@ namespace OpenDental{
 				+",provcolor = '"   +POut.PInt   (Cur.ProvColor.ToArgb())+"'"
 				+",ishidden = '"    +POut.PBool  (Cur.IsHidden)+"'"
 				+",usingtin = '"    +POut.PBool  (Cur.UsingTIN)+"'"
-				+",bluecrossid = '" +POut.PString(Cur.BlueCrossID)+"'"
+				//+",bluecrossid = '" +POut.PString(Cur.BlueCrossID)+"'"
 				+",sigonfile = '"   +POut.PBool  (Cur.SigOnFile)+"'"
 				+",password = '"    +POut.PString(Cur.Password)+"'"
 				+",username = '"    +POut.PString(Cur.UserName)+"'"
 				+",medicaidid = '"  +POut.PString(Cur.MedicaidID)+"'"
+				+",OutlineColor = '"+POut.PInt   (Cur.OutlineColor.ToArgb())+"'"
 				+" WHERE provnum = '"+POut.PInt(Cur.ProvNum)+"'";
 			NonQ(false);
 		}
@@ -133,8 +137,8 @@ namespace OpenDental{
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO provider (abbr,itemorder,lname,fname,mi,title,"
 				+"feesched,specialty,ssn,statelicense,deanum,issecondary,"
-				+"provcolor,ishidden,usingtin,bluecrossid,sigonfile,password,username"
-				+",medicaidid) VALUES("
+				+"provcolor,ishidden,usingtin,sigonfile,password,username"
+				+",medicaidid,OutlineColor) VALUES("
 				+"'"+POut.PString(Cur.Abbr)+"', "
 				+"'"+POut.PInt   (Cur.ItemOrder)+"', "
 				+"'"+POut.PString(Cur.LName)+"', "
@@ -150,11 +154,12 @@ namespace OpenDental{
 				+"'"+POut.PInt   (Cur.ProvColor.ToArgb())+"', "
 				+"'"+POut.PBool  (Cur.IsHidden)+"', "
 				+"'"+POut.PBool  (Cur.UsingTIN)+"', "
-				+"'"+POut.PString(Cur.BlueCrossID)+"', "
+				//+"'"+POut.PString(Cur.BlueCrossID)+"', "
 				+"'"+POut.PBool  (Cur.SigOnFile)+"', "
 				+"'"+POut.PString(Cur.Password)+"', "			  
 				+"'"+POut.PString(Cur.UserName)+"', "
-				+"'"+POut.PString(Cur.MedicaidID)+"')";
+				+"'"+POut.PString(Cur.MedicaidID)+"', "
+				+"'"+POut.PInt   (Cur.OutlineColor.ToArgb())+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.ProvNum=InsertID;
@@ -183,6 +188,17 @@ namespace OpenDental{
 			for(int i=0;i<ListLong.Length;i++){
 				if(ListLong[i].ProvNum==provNum){
 					retCol=ListLong[i].ProvColor;
+				}
+			}
+			return retCol;
+		}
+
+		///<summary></summary>
+		public static Color GetOutlineColor(int provNum){
+			Color retCol=Color.Black;
+			for(int i=0;i<ListLong.Length;i++){
+				if(ListLong[i].ProvNum==provNum){
+					retCol=ListLong[i].OutlineColor;
 				}
 			}
 			return retCol;

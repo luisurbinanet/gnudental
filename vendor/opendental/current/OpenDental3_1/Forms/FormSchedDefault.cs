@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormSchedDefault : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
@@ -17,25 +17,13 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private OpenDental.ContrSchedGrid contrGrid;
 		private System.ComponentModel.Container components = null;
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butAdd;
 		private Point mousePos;
 
 		///<summary></summary>
 		public FormSchedDefault(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2,
-				label3,
-				label4,
-			  label5,
-				label6,
-				label7,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-       butAdd,
-			 butClose,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -52,7 +40,7 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormSchedDefault));
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.contrGrid = new OpenDental.ContrSchedGrid();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -61,13 +49,16 @@ namespace OpenDental{
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
-			this.butAdd = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(752, 653);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
@@ -80,7 +71,7 @@ namespace OpenDental{
 			this.contrGrid.BackColor = System.Drawing.Color.FromArgb(((System.Byte)(224)), ((System.Byte)(224)), ((System.Byte)(224)));
 			this.contrGrid.Location = new System.Drawing.Point(24, 38);
 			this.contrGrid.Name = "contrGrid";
-			this.contrGrid.Size = new System.Drawing.Size(752, 577);
+			this.contrGrid.Size = new System.Drawing.Size(772, 577);
 			this.contrGrid.TabIndex = 3;
 			this.contrGrid.Click += new System.EventHandler(this.contrGrid_Click);
 			this.contrGrid.DoubleClick += new System.EventHandler(this.contrGrid_DoubleClick);
@@ -152,8 +143,9 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(485, 653);

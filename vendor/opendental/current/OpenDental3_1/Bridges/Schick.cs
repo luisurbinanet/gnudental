@@ -16,12 +16,12 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Declare managed prototype for unmanaged function.</summary>
-		[System.Runtime.InteropServices.DllImport("User32.dll")]
+		[DllImport("User32.dll")]
 		public static extern bool SetForegroundWindow(int hndRef);
-		
+
 		///<summary>Launches the main Patient Document window of Schick.</summary>
-		public static void SendData(){
-			if(!Patients.PatIsLoaded){
+		public static void SendData(Patient pat){
+			if(pat==null){
 				return;
 			}
 			try{
@@ -57,16 +57,16 @@ namespace OpenDental.Bridges{
 				ProgramProperties.GetForProgram();
 				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
 				if(ProgramProperties.Cur.PropertyValue=="0"){
-					patientID=Patients.Cur.PatNum.ToString();
+					patientID=pat.PatNum.ToString();
 				}
 				else{
-					patientID=Patients.Cur.ChartNumber;
+					patientID=pat.ChartNumber;
 				}
 				//Assemble the parameters
 				object[] patInfo=new object[]
 				{
-					Patients.Cur.LName,
-					Patients.Cur.FName,
+					pat.LName,
+					pat.FName,
 					patientID
 				};
 				// Try to load this patient
@@ -84,10 +84,10 @@ namespace OpenDental.Bridges{
         Type PatientType=Type.GetTypeFromHandle(Type.GetTypeHandle(patient)); 
 				//set the first name property of patient
 				PatientType.InvokeMember("FirstName"
-					,BindingFlags.SetProperty,null,patient,new object[]{Patients.Cur.FName});
+					,BindingFlags.SetProperty,null,patient,new object[]{pat.FName});
 				//set the last name property of patient
 				PatientType.InvokeMember("LastName"
-					,BindingFlags.SetProperty,null,patient,new object[]{Patients.Cur.LName});
+					,BindingFlags.SetProperty,null,patient,new object[]{pat.LName});
 				//set the id property of patient
 				PatientType.InvokeMember("IDNumber"
 					,BindingFlags.SetProperty,null,patient,new object[]{patientID});
@@ -98,29 +98,7 @@ namespace OpenDental.Bridges{
 			catch{
 				MessageBox.Show("Error calling Schick CDR Dicom.");
 			}
-
-			/*
-		///<summary>Launches the main Patient Document window of Schick using CDRStart.ext program.</summary>
-		public static void SendData(){
-			if(!Patients.PatIsLoaded){
-				return;
-			}
-			string arguments=
-				"/LastName "+Patients.Cur.LName
-				+" /FirstName "+Patients.Cur.FName
-				+" /IDNumber ";
-			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-			if(ProgramProperties.Cur.PropertyValue=="0"){
-				arguments+=Patients.Cur.PatNum.ToString();
-			}
-			else{
-				arguments+=Patients.Cur.ChartNumber;
-			}
-			Process.Start(
-				@"C:\Documents and Settings\jordan\My Documents\FreeDental Extras\Bridge Info\Schick\CDRStart\CDRStart\Release\CDRStart.exe",arguments);				
-				//Application.StartupPath+"\\CDRStart.exe",arguments);
-		}*/
+			
 
 
 		}

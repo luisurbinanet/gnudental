@@ -49,9 +49,9 @@ namespace OpenDental{
 			FieldsArePresent=false;
 			HeadingIsPresent=false;
 			InstantClassesPar();
-			SetRowHeight(1,25,14);//22
+			SetRowHeight(1,24,14);
 			RowHeight[0]=20;
-			RowHeight[26]=60;//23
+			RowHeight[25]=60;
 			ColWidth[0]=100;
 			ColWidth[1]=150;
 			FontBold[0,0]=true;
@@ -92,16 +92,16 @@ namespace OpenDental{
 			Cell[0,19]=Lan.g("TablePatient","Wireless Ph");
 			Cell[0,20]=Lan.g("TablePatient","E-mail");
 			Cell[0,21]=Lan.g("TablePatient","ABC0");
-			Cell[0,22]=Lan.g("TablePatient","Recall Months");
-			Cell[0,23]=Lan.g("TablePatient","Chart Num");
-			Cell[0,24]=Lan.g("TablePatient","Billing Type");
-			Cell[0,25]=Lan.g("TablePatient","Referred From");
+			//Cell[0,22]=Lan.g("TablePatient","Recall Months");
+			Cell[0,22]=Lan.g("TablePatient","Chart Num");
+			Cell[0,23]=Lan.g("TablePatient","Billing Type");
+			Cell[0,24]=Lan.g("TablePatient","Referred From");
 			//TopBorder[0,2]=Color.Black;
-			Cell[0,26]=Lan.g("TablePatient","Family Address and Phone Notes");//22
-			IsOverflow[1,26]=true;
-			TopBorder[0,26]=Color.Black;
-			TopBorder[1,26]=Color.Black;
-			LeftBorder[1,26]=Color.White;
+			Cell[0,25]=Lan.g("TablePatient","Family Address and Phone Notes");//22
+			IsOverflow[1,25]=true;
+			TopBorder[0,25]=Color.Black;
+			TopBorder[1,25]=Color.Black;
+			LeftBorder[1,25]=Color.White;
 			LayoutTables();
 		}
 

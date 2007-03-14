@@ -142,10 +142,8 @@ namespace OpenDental{
 			NonQ(false);
 		}*/
 
-		///<summary></summary>
+		///<summary>Used for most security checks in program. Displays user/password dialog only if necessary.</summary>
 		public static bool CheckUserPassword(string permissionName){
-			//used for most security checks in program.
-			//displays user/password dialog only if necessary.
 			Permissions.GetCur(permissionName);
 			if(!Permissions.Cur.RequiresPassword){
 				return true;//password not required.

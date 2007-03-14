@@ -14,7 +14,7 @@ namespace OpenDental{
 		//<summary>ClaimProcs for Claims.Cur.ClaimNum. Fill using GetForClaim()</summary>
 		//public static ClaimProc[] ForClaim;
 		//<summary>ClaimProcs for Procedures.Cur.ProcNum. Fill using GetForProc()</summary>
-		///public static ClaimProc[] ForProc;
+		//public static ClaimProc[] ForProc;
 
 		///<summary></summary>
 		public static ClaimProc[] Refresh(int patNum){
@@ -66,6 +66,34 @@ namespace OpenDental{
 				if(List[i].ClaimNum==claimNum){
 					ALForClaim.Add(List[i]);  
 				}
+			}
+			ClaimProc[] ForClaim=new ClaimProc[ALForClaim.Count];
+			for(int i=0;i<ALForClaim.Count;i++){
+				ForClaim[i]=(ClaimProc)ALForClaim[i];
+			}
+			return ForClaim;
+		}
+
+		///<summary>When sending or printing a claim, this converts the supplied list into a list of ClaimProcs that need to be sent.</summary>
+		public static ClaimProc[] GetForSendClaim(ClaimProc[] List,int claimNum){
+			//MessageBox.Show(List.Length.ToString());
+			ArrayList ALForClaim=new ArrayList();
+			bool includeThis;
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ClaimNum!=claimNum){
+					continue;
+				}
+				if(List[i].ProcNum==0){
+					continue;//skip payments
+				}
+				includeThis=true;
+				for(int j=0;j<ALForClaim.Count;j++){//loop through existing claimprocs
+					if(((ClaimProc)ALForClaim[j]).ProcNum==List[i].ProcNum){
+						includeThis=false;//skip duplicate procedures
+					}
+				}
+				if(includeThis)
+					ALForClaim.Add(List[i]);
 			}
 			ClaimProc[] ForClaim=new ClaimProc[ALForClaim.Count];
 			for(int i=0;i<ALForClaim.Count;i++){

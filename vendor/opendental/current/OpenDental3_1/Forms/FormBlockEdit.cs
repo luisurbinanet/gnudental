@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -13,28 +14,20 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listDay;
 		private System.Windows.Forms.TextBox textStart;
 		private System.Windows.Forms.TextBox textStop;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
 		public bool IsNew;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button butDelete;
 		private SchedDefaults SchedDefaults=new SchedDefaults();
 
 		///<summary></summary>
 		public FormBlockEdit(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1,
-				this.label2,
-				this.label3,
-
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				butDelete,
-			});
+			Lan.F(this);
+			listDay.Items.Clear();
+			listDay.Items.AddRange(CultureInfo.CurrentCulture.DateTimeFormat.DayNames);
 		}
 
 		///<summary></summary>
@@ -57,9 +50,9 @@ namespace OpenDental{
 			this.listDay = new System.Windows.Forms.ListBox();
 			this.textStart = new System.Windows.Forms.TextBox();
 			this.textStop = new System.Windows.Forms.TextBox();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butDelete = new OpenDental.XPButton();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -91,14 +84,6 @@ namespace OpenDental{
 			// 
 			// listDay
 			// 
-			this.listDay.Items.AddRange(new object[] {
-																								 "Sunday",
-																								 "Monday",
-																								 "Tuesday",
-																								 "Wednesday",
-																								 "Thursday",
-																								 "Friday",
-																								 "Saturday"});
 			this.listDay.Location = new System.Drawing.Point(108, 68);
 			this.listDay.Name = "listDay";
 			this.listDay.Size = new System.Drawing.Size(102, 95);
@@ -120,7 +105,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(136, 178);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -130,8 +119,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(136, 212);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -141,13 +134,14 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(10, 212);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(101, 26);
+			this.butDelete.Size = new System.Drawing.Size(86, 26);
 			this.butDelete.TabIndex = 7;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);

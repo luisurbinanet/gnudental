@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
@@ -14,11 +15,11 @@ namespace OpenDental
 	/// </summary>
 	public class FormCheckDatabase : System.Windows.Forms.Form
 	{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.CheckBox checkDefaultProv;
 		private System.Windows.Forms.CheckBox checkInvalidTooth;
-		private System.Windows.Forms.Button buttonCheck;
+		private OpenDental.UI.Button buttonCheck;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -27,6 +28,8 @@ namespace OpenDental
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.CheckBox checkCodes;
 		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.CheckBox checkDates;
+		private System.Windows.Forms.CheckBox checkInsPlans;
 		//private Queries Queries2;
 		private string logData;
 
@@ -37,21 +40,11 @@ namespace OpenDental
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] { //*Ann
-				this.textBox1, //*Ann
-				this.textBox2, //*Ann
-				this.checkDefaultProv, //*Ann
-				this.checkInvalidTooth, //*Ann
-				this.checkCodes, //*Ann
-				this.checkCorrupt, //*Ann
-				this.buttonCheck //*Ann
+			Lan.C(this, new System.Windows.Forms.Control[]{
+				this.textBox1,
+				this.textBox2
 			}); //*Ann
-			Lan.C("All", new System.Windows.Forms.Control[] { //*Ann
-				butClose, //*Ann
-			}); //*Ann
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -76,21 +69,27 @@ namespace OpenDental
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.checkDefaultProv = new System.Windows.Forms.CheckBox();
 			this.checkInvalidTooth = new System.Windows.Forms.CheckBox();
-			this.buttonCheck = new System.Windows.Forms.Button();
+			this.buttonCheck = new OpenDental.UI.Button();
 			this.checkCorrupt = new System.Windows.Forms.CheckBox();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.checkCodes = new System.Windows.Forms.CheckBox();
 			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.checkDates = new System.Windows.Forms.CheckBox();
+			this.checkInsPlans = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(655, 317);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(87, 26);
@@ -113,10 +112,8 @@ namespace OpenDental
 			// 
 			// checkDefaultProv
 			// 
-			this.checkDefaultProv.Checked = true;
-			this.checkDefaultProv.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkDefaultProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDefaultProv.Location = new System.Drawing.Point(30, 85);
+			this.checkDefaultProv.Location = new System.Drawing.Point(29, 85);
 			this.checkDefaultProv.Name = "checkDefaultProv";
 			this.checkDefaultProv.Size = new System.Drawing.Size(679, 22);
 			this.checkDefaultProv.TabIndex = 2;
@@ -125,10 +122,8 @@ namespace OpenDental
 			// 
 			// checkInvalidTooth
 			// 
-			this.checkInvalidTooth.Checked = true;
-			this.checkInvalidTooth.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkInvalidTooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 115);
+			this.checkInvalidTooth.Location = new System.Drawing.Point(29, 112);
 			this.checkInvalidTooth.Name = "checkInvalidTooth";
 			this.checkInvalidTooth.Size = new System.Drawing.Size(724, 31);
 			this.checkInvalidTooth.TabIndex = 3;
@@ -138,7 +133,11 @@ namespace OpenDental
 			// 
 			// buttonCheck
 			// 
-			this.buttonCheck.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.buttonCheck.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.buttonCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonCheck.Autosize = true;
+			this.buttonCheck.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.buttonCheck.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.buttonCheck.Location = new System.Drawing.Point(655, 278);
 			this.buttonCheck.Name = "buttonCheck";
 			this.buttonCheck.Size = new System.Drawing.Size(87, 26);
@@ -151,7 +150,7 @@ namespace OpenDental
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(30, 178);
+			this.checkCorrupt.Location = new System.Drawing.Point(29, 235);
 			this.checkCorrupt.Name = "checkCorrupt";
 			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
 			this.checkCorrupt.TabIndex = 6;
@@ -159,10 +158,8 @@ namespace OpenDental
 			// 
 			// checkCodes
 			// 
-			this.checkCodes.Checked = true;
-			this.checkCodes.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCodes.Location = new System.Drawing.Point(30, 150);
+			this.checkCodes.Location = new System.Drawing.Point(29, 177);
 			this.checkCodes.Name = "checkCodes";
 			this.checkCodes.Size = new System.Drawing.Size(709, 24);
 			this.checkCodes.TabIndex = 8;
@@ -180,12 +177,33 @@ namespace OpenDental
 			this.textBox2.Text = "Currently, the following tests are run.   Uncheck any items that you don\'t want t" +
 				"ested:";
 			// 
+			// checkDates
+			// 
+			this.checkDates.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkDates.Location = new System.Drawing.Point(29, 148);
+			this.checkDates.Name = "checkDates";
+			this.checkDates.Size = new System.Drawing.Size(709, 24);
+			this.checkDates.TabIndex = 10;
+			this.checkDates.Text = "Fix any invalid dates.  This will speed up the program after converting from anot" +
+				"her dental software.";
+			// 
+			// checkInsPlans
+			// 
+			this.checkInsPlans.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkInsPlans.Location = new System.Drawing.Point(29, 206);
+			this.checkInsPlans.Name = "checkInsPlans";
+			this.checkInsPlans.Size = new System.Drawing.Size(709, 24);
+			this.checkInsPlans.TabIndex = 12;
+			this.checkInsPlans.Text = "Look for insurance plans that no longer exist.";
+			// 
 			// FormCheckDatabase
 			// 
 			this.AcceptButton = this.buttonCheck;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(763, 371);
+			this.Controls.Add(this.checkInsPlans);
+			this.Controls.Add(this.checkDates);
 			this.Controls.Add(this.textBox2);
 			this.Controls.Add(this.checkCodes);
 			this.Controls.Add(this.checkCorrupt);
@@ -222,8 +240,14 @@ namespace OpenDental
 			if(checkInvalidTooth.Checked){
 				VerifyToothNums();
 			}
+			if(checkDates.Checked){
+				VerifyDates();
+			}
 			if(checkCodes.Checked){
 				AddCodes();
+			}
+			if(checkInsPlans.Checked){
+				VerifyInsPlans();
 			}
 			if(checkCorrupt.Checked){
 				VerifyTables();
@@ -266,6 +290,7 @@ namespace OpenDental
 		}
 
 		private void VerifyToothNums(){
+			Patient Lim;
 			Queries.CurReport.Query="SELECT procnum,toothnum,patnum FROM procedurelog";
 			Queries.SubmitCur();
 			string toothNum;
@@ -280,9 +305,9 @@ namespace OpenDental
 						continue;
 					}//lower case to upper
 					else{
-						//Patients Patients2=new Patients();
-						Patients.GetLim(Convert.ToInt32(Queries.TableQ.Rows[i][2].ToString()));
-						switch(MessageBox.Show("Invalid tooth number found for "+Patients.LimName+". Convert "
+						Lim=Patients.GetLim(Convert.ToInt32(Queries.TableQ.Rows[i][2].ToString()));
+						switch(MessageBox.Show("Invalid tooth number found for "
+							+Lim.GetNameLF()+". Convert "
 							+"tooth number "+toothNum+" to tooth number 1?","",MessageBoxButtons.YesNoCancel)){
 							case DialogResult.Cancel:
                 return;
@@ -303,6 +328,39 @@ namespace OpenDental
 			Queries.CurReport.Query="UPDATE procedurelog SET toothnum = '"
 				+newToothNum+"' WHERE procnum = '"+procNum+"'";
 			Queries.SubmitNonQ();
+		}
+
+		private void VerifyDates(){
+			string[] commands=new string[]
+			{
+				"UPDATE adjustment SET AdjDate='0001-01-01' WHERE AdjDate='0000-00-00'"
+				,"UPDATE appointment SET AptDateTime='0001-01-01 00:00:00' "
+					+"WHERE AptDateTime LIKE '0000-00-00%'"
+				,"UPDATE claim SET DateService='0001-01-01' WHERE DateService='0000-00-00'"
+				,"UPDATE claim SET DateSent='0001-01-01' WHERE DateSent='0000-00-00'"
+				,"UPDATE claim SET DateReceived='0001-01-01' WHERE DateReceived='0000-00-00'"
+				,"UPDATE claim SET PriorDate='0001-01-01' WHERE PriorDate='0000-00-00'"
+				,"UPDATE claim SET AccidentDate='0001-01-01' WHERE AccidentDate='0000-00-00'"
+				,"UPDATE claim SET OrthoDate='0001-01-01' WHERE OrthoDate='0000-00-00'"
+				,"UPDATE claimpayment SET CheckDate='0001-01-01' WHERE CheckDate='0000-00-00'"
+				,"UPDATE claimproc SET DateCP='0001-01-01' WHERE DateCP='0000-00-00'"
+				,"UPDATE claimproc SET ProcDate='0001-01-01' WHERE ProcDate='0000-00-00'"
+				,"UPDATE insplan SET DateEffective='0001-01-01' WHERE DateEffective='0000-00-00'"
+				,"UPDATE insplan SET DateTerm='0001-01-01' WHERE DateTerm='0000-00-00'"
+				,"UPDATE insplan SET RenewMonth='1' WHERE RenewMonth='0'"
+				,"UPDATE patient SET Birthdate='0001-01-01' WHERE Birthdate='0000-00-00'"
+				,"UPDATE patient SET DateFirstVisit='0001-01-01' WHERE DateFirstVisit='0000-00-00'"
+				,"UPDATE procedurelog SET ProcDate='0001-01-01' WHERE ProcDate='0000-00-00'"
+				,"UPDATE procedurelog SET DateOriginalProsth='0001-01-01' "
+					+"WHERE DateOriginalProsth='0000-00-00'"
+				,"UPDATE procedurelog SET DateLocked='0001-01-01' WHERE DateLocked='0000-00-00'"
+				,"UPDATE recall SET DateDueCalc='0001-01-01' WHERE DateDueCalc='0000-00-00'"
+				,"UPDATE recall SET DateDue='0001-01-01' WHERE DateDue='0000-00-00'"
+				,"UPDATE recall SET DatePrevious='0001-01-01' WHERE DatePrevious='0000-00-00'"
+			};
+			DataConnection dcon=new DataConnection();
+			int rowsChanged=dcon.NonQ(commands);
+			MessageBox.Show(Lan.g(this,"Dates fixed. Rows changed:")+" "+rowsChanged.ToString());
 		}
 
 		private void AddCodes(){
@@ -327,6 +385,39 @@ namespace OpenDental
 			DataValid.IType=InvalidType.LocalData;
 			DataValid DataValid2=new DataValid();
 			DataValid2.SetInvalid();
+		}
+
+		private void VerifyInsPlans(){
+			string command=@"SELECT PatNum FROM patient
+				LEFT JOIN insplan on patient.PriPlanNum=insplan.PlanNum
+				WHERE patient.PriPlanNum != 0
+				AND insplan.PlanNum IS NULL";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++){
+				command="UPDATE patient set PriPlanNum=0 "
+					+"WHERE PatNum="+table.Rows[i][0].ToString();
+				dcon.NonQ(command);
+			}
+			command=@"SELECT ClaimProcNum FROM claimproc
+				LEFT JOIN insplan ON claimproc.PlanNum=insplan.PlanNum
+				WHERE insplan.PlanNum IS NULL";
+			table=dcon.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++){
+				command="DELETE FROM claimproc "
+					+"WHERE ClaimProcNum="+table.Rows[i][0].ToString();
+				dcon.NonQ(command);
+			}
+			command=@"SELECT ClaimNum FROM claim
+				LEFT JOIN insplan ON claim.PlanNum=insplan.PlanNum
+				WHERE insplan.PlanNum IS NULL";
+			table=dcon.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++){
+				command="DELETE FROM claim "
+					+"WHERE ClaimNum="+table.Rows[i][0].ToString();
+				dcon.NonQ(command);
+			}
+			MessageBox.Show("Missing plans fixed.");
 		}
 
 		private void VerifyTables(){

@@ -39,10 +39,10 @@ namespace OpenDental{
 		public static PaySplit Cur;
 
 		///<summary></summary>
-		public static void Refresh(){
+		public static void Refresh(int patNum){
 			cmd.CommandText =
 				"SELECT * from paysplit"
-				+" WHERE patnum = '"+Patients.Cur.PatNum+"' ORDER BY procdate";
+				+" WHERE patnum = '"+patNum+"' ORDER BY procdate";
 			FillTable();
 			List=new PaySplit[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){

@@ -36,7 +36,7 @@ namespace OpenDental{
 		///<summary>This is not a database column.  It is an array of all claimformItems that are attached to this ClaimForm.</summary>
 		public ClaimFormItem[] Items;
 
-		///<summary>Returns a copy of the claimform.</summary>
+		///<summary>Returns a copy of the claimform including the Items.  Only used in FormClaimForms.butCopy_Click.</summary>
     public ClaimForm Copy(){
 			ClaimForm cf=new ClaimForm();
 			cf.ClaimFormNum=ClaimFormNum;
@@ -49,6 +49,7 @@ namespace OpenDental{
 			cf.OffsetX=OffsetX;
 			cf.OffsetY=OffsetY;
 			cf.Items=(ClaimFormItem[])Items.Clone();
+			//Items.CopyTo(cf.Items,0);
 			return cf;
 		}
 
@@ -141,7 +142,7 @@ namespace OpenDental{
 
 	///<summary></summary>
 	public class ClaimForms{
-		//<summary>List of all claim forms.</summary>
+		///<summary>List of all claim forms.</summary>
 		public static ClaimForm[] ListLong;
 		///<summary>List of all claim forms except those marked as hidden.</summary>
 		public static ClaimForm[] ListShort;

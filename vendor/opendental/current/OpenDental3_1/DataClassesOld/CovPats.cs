@@ -38,14 +38,14 @@ namespace OpenDental{
 		///<summary></summary>
 		public static CovPat[] ListForPlan;
 
-		///<summary>Gets the PriList and SecList based on the combination of 4 possible plans.</summary>
-		public static void Refresh(){
+		///<summary>Gets the PriList and SecList based on the combination of 4 possible percentages.</summary>
+		public static void Refresh(Patient pat,InsPlan[] PlanList){
 			cmd.CommandText =
 				"SELECT * from covpat"
-				+" WHERE PlanNum = '"+Patients.Cur.PriPlanNum+"'"
-				+" || PlanNum = '"+Patients.Cur.SecPlanNum+"'"
-				+" || PriPatNum = '"+Patients.Cur.PatNum+"'"
-				+" || SecPatNum = '"+Patients.Cur.PatNum+"'";
+				+" WHERE PlanNum = '"+pat.PriPlanNum+"'"
+				+" || PlanNum = '"+pat.SecPlanNum+"'"
+				+" || PriPatNum = '"+pat.PatNum+"'"
+				+" || SecPatNum = '"+pat.PatNum+"'";
 			FillTable();
 			List = new CovPat[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
@@ -65,33 +65,33 @@ namespace OpenDental{
 			for(int i=0;i<List.Length;i++){//plans first
 				if(CovCats.GetOrderShort(List[i].CovCatNum)!=-1
 					&& List[i].PlanNum != 0){
-					if(List[i].PlanNum==Patients.Cur.PriPlanNum){
+					if(List[i].PlanNum==pat.PriPlanNum){
 						PriList[CovCats.GetOrderShort(List[i].CovCatNum)]=List[i].Percent;
 					}
-					if(List[i].PlanNum==Patients.Cur.SecPlanNum){
+					if(List[i].PlanNum==pat.SecPlanNum){
 						SecList[CovCats.GetOrderShort(List[i].CovCatNum)]=List[i].Percent;
 					}
 				}
 			}
 			for(int i=0;i<List.Length;i++){//then Pri & Sec (ok to overwrite plans)
 				if(CovCats.GetOrderShort(List[i].CovCatNum)!=-1){
-					if(List[i].PriPatNum==Patients.Cur.PatNum){
+					if(List[i].PriPatNum==pat.PatNum){
 						PriList[CovCats.GetOrderShort(List[i].CovCatNum)]=List[i].Percent;
 					}
-					if(List[i].SecPatNum==Patients.Cur.PatNum){
+					if(List[i].SecPatNum==pat.PatNum){
 						SecList[CovCats.GetOrderShort(List[i].CovCatNum)]=List[i].Percent;
 					}
 				}
 			}
 			//flat copay ins plans are always 100% coverage regardless of any percentages present.
-			InsPlans.GetCur(Patients.Cur.PriPlanNum);
-			if(InsPlans.Cur.PlanType=="f"){//flat copay
+			InsPlan PlanCur=InsPlans.GetPlan(pat.PriPlanNum,PlanList);
+			if(PlanCur!=null && PlanCur.PlanType=="f"){//flat copay
 				for(int i=0;i<PriList.Length;i++){
 					PriList[i]=100;//sets all 6 or so categories for this patient to 100%
 				}
 			}
-			InsPlans.GetCur(Patients.Cur.SecPlanNum);
-			if(InsPlans.Cur.PlanType=="f"){//flat copay
+			PlanCur=InsPlans.GetPlan(pat.SecPlanNum,PlanList);
+			if(PlanCur!=null && PlanCur.PlanType=="f"){//flat copay
 				for(int i=0;i<SecList.Length;i++){
 					SecList[i]=100;//sets all 6 or so categories for this patient to 100%
 				}
@@ -99,10 +99,10 @@ namespace OpenDental{
 		}//end method refresh 
 		
 		///<summary></summary>
-		public static void RefreshForPlan(){
+		public static void RefreshForPlan(InsPlan PlanCur){
 			cmd.CommandText =
 				"SELECT * from covpat"
-				+" WHERE PlanNum = '"+InsPlans.Cur.PlanNum+"'";
+				+" WHERE PlanNum = '"+PlanCur.PlanNum+"'";
 			FillTable();
 			ListForPlan = new CovPat[table.Rows.Count];
 			for(int i=0;i<ListForPlan.Length;i++){

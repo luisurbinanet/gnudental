@@ -12,8 +12,8 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormClaimFormEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.VScrollBar vScrollBar1;
 		private System.Windows.Forms.TextBox textDescription;
@@ -21,7 +21,7 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkIsHidden;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ListBox listItems;
-		private System.Windows.Forms.Button butAdd;
+		private OpenDental.UI.Button butAdd;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label6;
@@ -35,8 +35,8 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textWidth;
 		private System.Windows.Forms.TextBox textHeight;
 		private System.Windows.Forms.FontDialog fontDialog1;
-		private System.Windows.Forms.Button butFont;
-		private System.Windows.Forms.Button butPrint;
+		private OpenDental.UI.Button butFont;
+		private OpenDental.UI.Button butPrint;
 		///<summary></summary>
 		public bool IsNew;
 		//private bool shiftIsDown;
@@ -55,6 +55,7 @@ namespace OpenDental{
 		private OpenDental.ValidNum textOffsetX;
 		private OpenDental.ValidNum textOffsetY;
 		private string[] displayStrings;
+		///<summary></summary>
 		public ClaimForm ClaimFormCur;
 
 		///<summary></summary>
@@ -64,23 +65,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.labelWarning,
-				this.label1,
-				this.checkIsHidden,
-				this.labelUniqueID,
-				this.checkPrintImages,
-				this.butFont,
-				this.label6,
-				this.label7
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] 
-			{
-				butOK,
-				butCancel,
-				this.butPrint,
-				butAdd
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -106,8 +91,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormClaimFormEdit));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.labelWarning = new System.Windows.Forms.Label();
 			this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
@@ -116,7 +101,7 @@ namespace OpenDental{
 			this.checkIsHidden = new System.Windows.Forms.CheckBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.listItems = new System.Windows.Forms.ListBox();
-			this.butAdd = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
@@ -126,8 +111,8 @@ namespace OpenDental{
 			this.textWidth = new System.Windows.Forms.TextBox();
 			this.textHeight = new System.Windows.Forms.TextBox();
 			this.fontDialog1 = new System.Windows.Forms.FontDialog();
-			this.butFont = new System.Windows.Forms.Button();
-			this.butPrint = new System.Windows.Forms.Button();
+			this.butFont = new OpenDental.UI.Button();
+			this.butPrint = new OpenDental.UI.Button();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.labelUniqueID = new System.Windows.Forms.Label();
@@ -142,9 +127,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(892, 667);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -154,8 +142,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(892, 637);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -234,7 +225,7 @@ namespace OpenDental{
 			this.listItems.MultiColumn = true;
 			this.listItems.Name = "listItems";
 			this.listItems.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listItems.Size = new System.Drawing.Size(114, 316);
+			this.listItems.Size = new System.Drawing.Size(114, 329);
 			this.listItems.TabIndex = 8;
 			this.listItems.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listItems_MouseDown);
 			this.listItems.DoubleClick += new System.EventHandler(this.listItems_DoubleClick);
@@ -242,10 +233,14 @@ namespace OpenDental{
 			// 
 			// butAdd
 			// 
-			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAdd.Location = new System.Drawing.Point(908, 157);
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAdd.Location = new System.Drawing.Point(946, 157);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 20);
+			this.butAdd.Size = new System.Drawing.Size(37, 20);
 			this.butAdd.TabIndex = 9;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
@@ -338,7 +333,10 @@ namespace OpenDental{
 			// 
 			// butFont
 			// 
-			this.butFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butFont.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butFont.Autosize = true;
+			this.butFont.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butFont.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFont.Location = new System.Drawing.Point(870, 94);
 			this.butFont.Name = "butFont";
 			this.butFont.Size = new System.Drawing.Size(111, 21);
@@ -348,8 +346,11 @@ namespace OpenDental{
 			// 
 			// butPrint
 			// 
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butPrint.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Location = new System.Drawing.Point(892, 607);
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(75, 26);

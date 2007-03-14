@@ -14,10 +14,10 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormPayPlan : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butChange;
+		private OpenDental.UI.Button butChange;
 		private System.Windows.Forms.Label label2;
 		/// <summary>
 		/// Required designer variable.
@@ -36,12 +36,12 @@ namespace OpenDental{
 		private OpenDental.ValidDouble textAPR;
 		private OpenDental.ValidDouble textMonthlyPayment;
 		private OpenDental.ValidNum textTerm;
-		private System.Windows.Forms.Button butPrint;
+		private OpenDental.UI.Button butPrint;
 		private System.Windows.Forms.TextBox textGuarantor;
 		///<summary></summary>
 		public bool IsNew;
-		private System.Windows.Forms.Button butGoToGuar;
-		private System.Windows.Forms.Button butGoToPat;
+		private OpenDental.UI.Button butGoToGuar;
+		private OpenDental.UI.Button butGoToPat;
 		private System.Windows.Forms.TextBox textPatient;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label11;
@@ -63,23 +63,22 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textCurrentDue;
 		private System.Windows.Forms.TextBox textMonthsDue;
 		private System.Windows.Forms.Label label10;
-		private OpenDental.XPButton butDelete;
-		private System.Windows.Forms.Button butCopyTerms;
+		private OpenDental.UI.Button butDelete;
+		private OpenDental.UI.Button butCopyTerms;
 		private OpenDental.ODtextBox textNote;
 		private OpenDental.ValidDouble textLastPayment;
 		private System.Windows.Forms.Label label14;
+		private Patient PatCur;
 
 		///<summary></summary>
-		public FormPayPlan()
+		public FormPayPlan(Patient patCur)
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			PatCur=patCur;
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -105,11 +104,11 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormPayPlan));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.textGuarantor = new System.Windows.Forms.TextBox();
-			this.butChange = new System.Windows.Forms.Button();
+			this.butChange = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDate = new OpenDental.ValidDate();
 			this.label4 = new System.Windows.Forms.Label();
@@ -122,7 +121,7 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.textTerm = new OpenDental.ValidNum();
 			this.label8 = new System.Windows.Forms.Label();
-			this.butPrint = new System.Windows.Forms.Button();
+			this.butPrint = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.textTotalCost = new System.Windows.Forms.TextBox();
@@ -132,8 +131,8 @@ namespace OpenDental{
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.textDownPayment = new OpenDental.ValidDouble();
 			this.label11 = new System.Windows.Forms.Label();
-			this.butGoToGuar = new System.Windows.Forms.Button();
-			this.butGoToPat = new System.Windows.Forms.Button();
+			this.butGoToGuar = new OpenDental.UI.Button();
+			this.butGoToPat = new OpenDental.UI.Button();
 			this.textPatient = new System.Windows.Forms.TextBox();
 			this.label9 = new System.Windows.Forms.Label();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
@@ -145,8 +144,8 @@ namespace OpenDental{
 			this.textMonthsDue = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
-			this.butDelete = new OpenDental.XPButton();
-			this.butCopyTerms = new System.Windows.Forms.Button();
+			this.butDelete = new OpenDental.UI.Button();
+			this.butCopyTerms = new OpenDental.UI.Button();
 			this.textNote = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -155,8 +154,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(572, 516);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -166,7 +169,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(479, 516);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -194,7 +201,10 @@ namespace OpenDental{
 			// 
 			// butChange
 			// 
-			this.butChange.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butChange.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butChange.Autosize = true;
+			this.butChange.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butChange.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butChange.Location = new System.Drawing.Point(464, 41);
 			this.butChange.Name = "butChange";
 			this.butChange.Size = new System.Drawing.Size(75, 22);
@@ -312,7 +322,10 @@ namespace OpenDental{
 			// 
 			// butPrint
 			// 
-			this.butPrint.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Location = new System.Drawing.Point(36, 25);
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(80, 26);
@@ -422,7 +435,10 @@ namespace OpenDental{
 			// 
 			// butGoToGuar
 			// 
-			this.butGoToGuar.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butGoToGuar.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butGoToGuar.Autosize = true;
+			this.butGoToGuar.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butGoToGuar.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butGoToGuar.Location = new System.Drawing.Point(373, 41);
 			this.butGoToGuar.Name = "butGoToGuar";
 			this.butGoToGuar.Size = new System.Drawing.Size(75, 22);
@@ -432,7 +448,10 @@ namespace OpenDental{
 			// 
 			// butGoToPat
 			// 
-			this.butGoToPat.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butGoToPat.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butGoToPat.Autosize = true;
+			this.butGoToPat.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butGoToPat.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butGoToPat.Location = new System.Drawing.Point(373, 19);
 			this.butGoToPat.Name = "butGoToPat";
 			this.butGoToPat.Size = new System.Drawing.Size(75, 22);
@@ -524,8 +543,9 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(22, 516);
@@ -537,7 +557,10 @@ namespace OpenDental{
 			// 
 			// butCopyTerms
 			// 
-			this.butCopyTerms.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCopyTerms.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCopyTerms.Autosize = true;
+			this.butCopyTerms.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCopyTerms.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCopyTerms.Location = new System.Drawing.Point(495, 398);
 			this.butCopyTerms.Name = "butCopyTerms";
 			this.butCopyTerms.Size = new System.Drawing.Size(140, 26);
@@ -605,10 +628,8 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPayPlan_Load(object sender, System.EventArgs e) {
-			Patients.GetLim(PayPlans.Cur.PatNum);
-			textPatient.Text=Patients.LimName;
-			Patients.GetLim(PayPlans.Cur.Guarantor);
-			textGuarantor.Text=Patients.LimName;
+			textPatient.Text=Patients.GetLim(PayPlans.Cur.PatNum).GetNameLF();
+			textGuarantor.Text=Patients.GetLim(PayPlans.Cur.Guarantor).GetNameLF();
 			textDate.Text=PayPlans.Cur.PayPlanDate.ToShortDateString();
 			textAmount.Text=PayPlans.Cur.TotalAmount.ToString("n");
 			textCurrentDue.Text=PayPlans.Cur.CurrentDue.ToString("n");
@@ -619,6 +640,7 @@ namespace OpenDental{
 			textTerm.Text=PayPlans.Cur.Term.ToString();
 			textAmtPaid.Text=PayPlans.GetAmtPaid(PayPlans.Cur.PayPlanNum).ToString("n");
 			textNote.Text=PayPlans.Cur.Note;
+			textLastPayment.Text=PayPlans.Cur.LastPayment.ToString("n");
 			textTotalCost.Text=PayPlans.Cur.TotalCost.ToString("n");
 			FillCurrentDue();
 		}
@@ -646,19 +668,14 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Not allowed to change the guarantor because payments are attached."));
 				return;
 			}
-			int patNum=Patients.Cur.PatNum;
 			FormPatientSelect FormPS=new FormPatientSelect();
 			FormPS.SelectionModeOnly=true;
 			FormPS.ShowDialog();
 			if(FormPS.DialogResult!=DialogResult.OK){
 				return;
 			}
-			PayPlans.Cur.Guarantor=Patients.Cur.PatNum;
-			Patient PatCur=Patients.Cur;
-			PatCur.PatNum=patNum;//return patnum to original value.
-			Patients.Cur=PatCur;
-			Patients.GetLim(PayPlans.Cur.Guarantor);
-			textGuarantor.Text=Patients.LimName;
+			PayPlans.Cur.Guarantor=FormPS.SelectedPatNum;
+			textGuarantor.Text=Patients.GetLim(PayPlans.Cur.Guarantor).GetNameLF();
 		}
 
 		private void FillCurrentDue(){
@@ -917,6 +934,7 @@ namespace OpenDental{
 			PayPlans.Cur.MonthlyPayment=PIn.PDouble(textMonthlyPayment.Text);
 			PayPlans.Cur.Term=PIn.PInt(textTerm.Text);
 			PayPlans.Cur.Note=textNote.Text;
+			PayPlans.Cur.LastPayment=PIn.PDouble(textLastPayment.Text);
 			PayPlans.Cur.TotalCost=PIn.PDouble(textTotalCost.Text);
 		}
 

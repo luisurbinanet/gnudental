@@ -30,7 +30,7 @@ namespace OpenDental{
 		public int ProvHyg;
 		///<summary>Appointment Date and time.</summary>
 		public DateTime AptDateTime;
-		///<summary>Only used to show that this apt is derived from specified next apt. Otherwise, 0. Foreign key to appointment.AptNum.</summary>
+		///<summary>A better description would be PlannedAptNum.  Only used to show that this apt is derived from specified planned apt. Otherwise, 0. Foreign key to appointment.AptNum.</summary>
 		public int NextAptNum;
 		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
 		///<remarks>The <see cref="Def.Category">definition.Category</see> in the definition table is <see cref="DefCat.RecallUnschedStatus">DefCat.RecallUnschedStatus</see>.  Only used if this is an Unsched or Next appt.</remarks>
@@ -56,8 +56,8 @@ namespace OpenDental{
 		public static Appointment[] ListDay;
 		///<summary>A list of appointments for use on the Unscheduled list or the Next appointment tracker.</summary>
 		public static Appointment[] ListUn;
-		///<summary>A list of appointments for use on the Other appointments list for a single patient.</summary>
-		public static Appointment[] ListOthh;
+		//<summary>A list of appointments for use on the Other appointments list for a single patient.</summary>
+		//public static Appointment[] ListOthh;
 		///<summary>Current appointment.  A single row of data.</summary>
 		public static Appointment Cur;
 		///<summary>When doing update, this Appointment is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
@@ -73,22 +73,20 @@ namespace OpenDental{
 			string command=
 				"SELECT * from appointment "
 				+"WHERE AptDateTime LIKE '"+POut.PDate(thisDay)+"%' "
-				+"&& aptstatus != '"+(int)ApptStatus.UnschedList+"' "
-				+"&& aptstatus != '"+(int)ApptStatus.Next+"'";
+				+"AND aptstatus != '"+(int)ApptStatus.UnschedList+"' "
+				+"AND aptstatus != '"+(int)ApptStatus.Planned+"'";
 			ListDay=FillList(command);
 		}
 
-		///<summary>Gets ListUn for both the unscheduled list and for next appt tracker.
-		///This is in transition, since the unscheduled list will probably eventually be phased out.</summary>
-		///<param name="doGetNext">True if getting Next appointments, false if getting Unscheduled appointments.</param>
-		public static void RefreshUnsched(bool doGetNext){
+		///<summary>Gets ListUn for both the unscheduled list and for planned appt tracker.  This is in transition, since the unscheduled list will probably eventually be phased out.  Set true if getting Planned appointments, false if getting Unscheduled appointments.</summary>
+		public static void RefreshUnsched(bool doGetPlanned){
 			string command="";
-			if(doGetNext){
-				command="SELECT Tnext.*,Tregular.aptnum FROM appointment AS Tnext "
-					+"LEFT JOIN appointment AS Tregular ON Tnext.aptnum = Tregular.nextaptnum "
-					+"WHERE Tnext.aptstatus = '"+(int)ApptStatus.Next+"' "
+			if(doGetPlanned){
+				command="SELECT Tplanned.*,Tregular.aptnum FROM appointment AS Tplanned "
+					+"LEFT JOIN appointment AS Tregular ON Tplanned.aptnum = Tregular.nextaptnum "
+					+"WHERE Tplanned.aptstatus = '"+(int)ApptStatus.Planned+"' "
 					+"AND Tregular.aptnum IS NULL "
-					+"ORDER BY Tnext.UnschedStatus,Tnext.AptDateTime";
+					+"ORDER BY Tplanned.UnschedStatus,Tplanned.AptDateTime";
 			}
 			else{//unsched
 				command="SELECT * FROM appointment "
@@ -98,7 +96,7 @@ namespace OpenDental{
 			ListUn=FillList(command);
 		}
 
-		///<summary>Returns all appointments for the given patient, ordered from soonest to farthest away.  Used in statements, appt cards, OtherAppts window, etc.</summary>
+		///<summary>Returns all appointments for the given patient, ordered from earliest to latest.  Used in statements, appt cards, OtherAppts window, etc.</summary>
 		public static Appointment[] GetForPat(int patNum){
 			string command=
 				"SELECT * FROM appointment "
@@ -301,19 +299,16 @@ namespace OpenDental{
 			CurOld=Cur;
 		}
 	
-		///<summary></summary>
-		public static void DeleteCur(){
-			Procedures.SetDateFirstVisit(DateTime.MinValue,3);
+		///<summary>The patient object is needed to update the date first visit.</summary>
+		public static void DeleteCur(Patient pat){
+			Procedures.SetDateFirstVisit(DateTime.MinValue,3,pat);
 			cmd.CommandText="DELETE from appointment WHERE "
 				+"aptnum = '"+POut.PInt(Cur.AptNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
-		///<summary>Used when generating the recall list to test whether a patient already has a future appointment scheduled.</summary>
-		///<param name="patNum"></param>
-		///<returns></returns>
-		///<remarks>It was not possible to incorporate this into the main query because it would have been too complex.  A single query might be a good idea at some point.</remarks>
+		///<summary>Used when generating the recall list to test whether a patient already has a future appointment scheduled.  It was not possible to incorporate this into the main query because it would have been too complex.  A single query is planned at some point.</summary>
 		public static bool PatientHasFutureRecall(int patNum){
 			cmd.CommandText="SELECT appointment.patNum FROM appointment,procedurelog,procedurecode "
 				+"WHERE procedurelog.patnum = '"+patNum.ToString()+"' "
@@ -329,6 +324,22 @@ namespace OpenDental{
 			else{
 				return true;
 			}
+		}
+
+		///<summary>Used in Chart module to test whether a procedure is attached to an appointment with today's date. The procedure might have a different date if still TP status.  ApptList should include all appointments for this patient. Does not make a call to db.</summary>
+		public static bool ProcIsToday(Appointment[] apptList,Procedure proc){
+			for(int i=0;i<apptList.Length;i++){
+				if(apptList[i].AptDateTime.Date==DateTime.Today
+					&& apptList[i].AptNum==proc.AptNum
+					&& (apptList[i].AptStatus==ApptStatus.Scheduled
+					|| apptList[i].AptStatus==ApptStatus.ASAP
+					|| apptList[i].AptStatus==ApptStatus.Broken
+					|| apptList[i].AptStatus==ApptStatus.Complete))
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		

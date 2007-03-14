@@ -4,6 +4,7 @@ using System.Drawing.Printing;
 using System.Drawing.Text;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using OpenDental.Reporting;
@@ -14,13 +15,13 @@ namespace OpenDental{
 	/// </summary>
 	public class FormLetters : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butAdd;
 		private System.Windows.Forms.ListBox listLetters;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.CheckBox checkIncludeRet;
-		private OpenDental.XPButton butEdit;
-		private OpenDental.XPButton butDelete;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butEdit;
+		private OpenDental.UI.Button butDelete;
+		private OpenDental.UI.Button butCancel;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -29,20 +30,17 @@ namespace OpenDental{
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool bodyChanged;
-		private OpenDental.XPButton butPrint;
+		private OpenDental.UI.Button butPrint;
 		private OpenDental.ODtextBox textBody;
 		private int pagesPrinted=0;
+		private Patient PatCur;
+
 
 		///<summary></summary>
-		public FormLetters()
-		{
-			//
-			// Required for Windows Form Designer support
-			//
-			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butCancel
-			});
+		public FormLetters(Patient patCur){
+			InitializeComponent();// Required for Windows Form Designer support
+			PatCur=patCur;
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -68,24 +66,28 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormLetters));
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.listLetters = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butEdit = new OpenDental.XPButton();
-			this.butAdd = new OpenDental.XPButton();
+			this.butEdit = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.checkIncludeRet = new System.Windows.Forms.CheckBox();
-			this.butDelete = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.UI.Button();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
-			this.butPrint = new OpenDental.XPButton();
+			this.butPrint = new OpenDental.UI.Button();
 			this.textBody = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(758, 633);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(79, 26);
@@ -113,8 +115,9 @@ namespace OpenDental{
 			// butEdit
 			// 
 			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butEdit.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butEdit.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butEdit.Autosize = true;
+			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEdit.Image = ((System.Drawing.Image)(resources.GetObject("butEdit.Image")));
 			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butEdit.Location = new System.Drawing.Point(106, 414);
@@ -127,8 +130,9 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(19, 414);
@@ -153,7 +157,7 @@ namespace OpenDental{
 			this.checkIncludeRet.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkIncludeRet.Location = new System.Drawing.Point(206, 1);
 			this.checkIncludeRet.Name = "checkIncludeRet";
-			this.checkIncludeRet.Size = new System.Drawing.Size(193, 24);
+			this.checkIncludeRet.Size = new System.Drawing.Size(272, 24);
 			this.checkIncludeRet.TabIndex = 15;
 			this.checkIncludeRet.Text = "Include Return Address";
 			this.checkIncludeRet.Click += new System.EventHandler(this.checkIncludeRet_Click);
@@ -161,8 +165,9 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(19, 448);
@@ -175,8 +180,10 @@ namespace OpenDental{
 			// butPrint
 			// 
 			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPrint.Location = new System.Drawing.Point(654, 633);
@@ -265,27 +272,46 @@ namespace OpenDental{
 			}
 			str.Append("\r\n\r\n");
 			//address
-			str.Append(Patients.Cur.FName+" "+Patients.Cur.MiddleI+" "+Patients.Cur.LName+"\r\n");
-			str.Append(Patients.Cur.Address+"\r\n");
-			if(Patients.Cur.Address2!="")
-				str.Append(Patients.Cur.Address2+"\r\n");
-			str.Append(Patients.Cur.City+", "+Patients.Cur.State+"  "+Patients.Cur.Zip);
+			str.Append(PatCur.FName+" "+PatCur.MiddleI+" "+PatCur.LName+"\r\n");
+			str.Append(PatCur.Address+"\r\n");
+			if(PatCur.Address2!="")
+				str.Append(PatCur.Address2+"\r\n");
+			str.Append(PatCur.City+", "+PatCur.State+"  "+PatCur.Zip);
 			str.Append("\r\n\r\n\r\n\r\n");
 			//date
 			str.Append(DateTime.Today.ToShortDateString()+"\r\n\r\n");
 			//greeting
 			str.Append("Dear ");
-			if(Patients.Cur.Salutation!="")
-				str.Append(Patients.Cur.Salutation);
-			else if(Patients.Cur.Preferred!="")
-				str.Append(Patients.Cur.Preferred);
-			else
-				str.Append(Patients.Cur.FName);
-			str.Append(":\r\n\r\n");
+			if(CultureInfo.CurrentCulture.Name=="en-GB"){
+				if(PatCur.Salutation!="")
+					str.Append(PatCur.Salutation);
+				else{
+					if(PatCur.Gender==PatientGender.Female){
+						str.Append("Ms. "+PatCur.LName);
+					}
+					else{
+						str.Append("Mr. "+PatCur.LName);
+					}
+				}
+			}
+			else{
+				if(PatCur.Salutation!="")
+					str.Append(PatCur.Salutation);
+				else if(PatCur.Preferred!="")
+					str.Append(PatCur.Preferred);
+				else
+					str.Append(PatCur.FName);
+			}
+			str.Append(",\r\n\r\n");
 			//body text
 			str.Append(Letters.Cur.BodyText);
 			//closing
-			str.Append("\r\n\r\nSincerely,\r\n\r\n\r\n\r\n");
+			if(CultureInfo.CurrentCulture.Name=="en-GB"){
+				str.Append("\r\n\r\nYours sincerely,\r\n\r\n\r\n\r\n");
+			}
+			else{
+				str.Append("\r\n\r\nSincerely,\r\n\r\n\r\n\r\n");
+			}
 			str.Append(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
 			textBody.Text=str.ToString();
 			bodyChanged=false;
@@ -381,7 +407,7 @@ namespace OpenDental{
 			Commlogs.Cur=new Commlog();
 			Commlogs.Cur.CommDateTime=DateTime.Now;
 			Commlogs.Cur.CommType=CommItemType.Misc;
-			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
+			Commlogs.Cur.PatNum=PatCur.PatNum;
 			Commlogs.Cur.Note="Letter sent: "+Letters.Cur.Description+". ";
 			FormCommItem FormCI=new FormCommItem();
 			FormCI.IsNew=true;

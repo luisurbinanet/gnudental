@@ -7,23 +7,18 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormProcButtons : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.ListBox listButtons;
-		private OpenDental.XPButton butAdd;
-		private OpenDental.XPButton butDelete;
-		private OpenDental.XPButton butDown;
-		private OpenDental.XPButton butUp;
+		private OpenDental.UI.Button butAdd;
+		private OpenDental.UI.Button butDelete;
+		private OpenDental.UI.Button butDown;
+		private OpenDental.UI.Button butUp;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
 		public FormProcButtons(){
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butDown,
-				butUp,
-				butClose,
-				butAdd,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -40,18 +35,22 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormProcButtons));
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.listButtons = new System.Windows.Forms.ListBox();
-			this.butAdd = new OpenDental.XPButton();
-			this.butDelete = new OpenDental.XPButton();
-			this.butDown = new OpenDental.XPButton();
-			this.butUp = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
+			this.butDown = new OpenDental.UI.Button();
+			this.butUp = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(332, 396);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
@@ -71,11 +70,12 @@ namespace OpenDental{
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(42, 358);
+			this.butAdd.Location = new System.Drawing.Point(38, 358);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(82, 26);
 			this.butAdd.TabIndex = 32;
@@ -86,11 +86,12 @@ namespace OpenDental{
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(42, 396);
+			this.butDelete.Location = new System.Drawing.Point(38, 396);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(82, 26);
 			this.butDelete.TabIndex = 33;
@@ -101,8 +102,9 @@ namespace OpenDental{
 			// 
 			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.Autosize = true;
+			this.butDown.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDown.Location = new System.Drawing.Point(190, 396);
@@ -116,8 +118,9 @@ namespace OpenDental{
 			// 
 			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.Autosize = true;
+			this.butUp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butUp.Location = new System.Drawing.Point(190, 358);

@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRpPaySheet : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.MonthCalendar date2;
 		private System.Windows.Forms.MonthCalendar date1;
 		private System.Windows.Forms.Label labelTO;
@@ -21,15 +21,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormRpPaySheet(){
 			InitializeComponent();
- 			Lan.C(this, new System.Windows.Forms.Control[] {
-				date2,
-				date1,
-				labelTO,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});  
+ 			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -49,8 +41,8 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.date2 = new System.Windows.Forms.MonthCalendar();
 			this.date1 = new System.Windows.Forms.MonthCalendar();
 			this.labelTO = new System.Windows.Forms.Label();

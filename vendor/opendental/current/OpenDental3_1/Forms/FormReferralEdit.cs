@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormReferralEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
@@ -34,7 +34,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public bool IsNew;
 		///<summary></summary>
-    public bool IsPatient;
+    private bool IsPatient;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.TextBox textEmail;
 		private System.Windows.Forms.TextBox textOtherPhone;
@@ -52,41 +52,27 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label17;
 		private System.Windows.Forms.Label labelPatient;
 		private System.Windows.Forms.CheckBox checkNotPerson;
-		private System.Windows.Forms.Button butNone;
+		private OpenDental.UI.Button butNone;
 		private OpenDental.ODtextBox textNotes;
 		private System.Windows.Forms.CheckBox checkHidden;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.TextBox textPatientsNumTo;
+		private System.Windows.Forms.ComboBox comboPatientsTo;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.Label label18;
+		private System.Windows.Forms.TextBox textPatientsNumFrom;
+		private System.Windows.Forms.ComboBox comboPatientsFrom;
+		///<summary></summary>
+		public Referral RefCur;
 
 		///<summary></summary>
-		public FormReferralEdit(){
+		public FormReferralEdit(Referral refCur){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2,
-				label3,
-				label4,
-				label5,
-				label22,
-				label16,
-				label15,
-				label7,
-				label8,
-				label9,
-				label17,
-				labelPatient,
-				checkHidden,
-				groupBox1,
-				radioTIN,
-				radioSSN,
-				label10,
-				label11,
-				label12,
-				label13,
-				label14,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			RefCur=refCur;
+			if(refCur.PatNum>0){
+				IsPatient=true;
+			}
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -106,8 +92,8 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.textLName = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -147,15 +133,27 @@ namespace OpenDental{
 			this.checkHidden = new System.Windows.Forms.CheckBox();
 			this.labelPatient = new System.Windows.Forms.Label();
 			this.checkNotPerson = new System.Windows.Forms.CheckBox();
-			this.butNone = new System.Windows.Forms.Button();
+			this.butNone = new OpenDental.UI.Button();
 			this.textNotes = new OpenDental.ODtextBox();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.textPatientsNumTo = new System.Windows.Forms.TextBox();
+			this.comboPatientsTo = new System.Windows.Forms.ComboBox();
+			this.label6 = new System.Windows.Forms.Label();
+			this.label18 = new System.Windows.Forms.Label();
+			this.textPatientsNumFrom = new System.Windows.Forms.TextBox();
+			this.comboPatientsFrom = new System.Windows.Forms.ComboBox();
 			this.groupBox1.SuspendLayout();
+			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(583, 585);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(787, 583);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 17;
@@ -164,9 +162,13 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(583, 623);
+			this.butCancel.Location = new System.Drawing.Point(787, 621);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -299,10 +301,11 @@ namespace OpenDental{
 																											 "Dental Assistant",
 																											 "Dental Laboratory Technician",
 																											 "Pathology, Oral & MaxFac",
-																											 "Public Health"});
+																											 "Public Health",
+																											 "Radiology"});
 			this.listSpecialty.Location = new System.Drawing.Point(501, 87);
 			this.listSpecialty.Name = "listSpecialty";
-			this.listSpecialty.Size = new System.Drawing.Size(154, 173);
+			this.listSpecialty.Size = new System.Drawing.Size(154, 186);
 			this.listSpecialty.TabIndex = 0;
 			this.listSpecialty.TabStop = false;
 			// 
@@ -547,8 +550,11 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
-			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butNone.Location = new System.Drawing.Point(502, 270);
+			this.butNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNone.Autosize = true;
+			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butNone.Location = new System.Drawing.Point(502, 276);
 			this.butNone.Name = "butNone";
 			this.butNone.Size = new System.Drawing.Size(72, 26);
 			this.butNone.TabIndex = 72;
@@ -567,12 +573,85 @@ namespace OpenDental{
 			this.textNotes.TabIndex = 73;
 			this.textNotes.Text = "";
 			// 
+			// groupBox2
+			// 
+			this.groupBox2.Controls.Add(this.label18);
+			this.groupBox2.Controls.Add(this.textPatientsNumFrom);
+			this.groupBox2.Controls.Add(this.comboPatientsFrom);
+			this.groupBox2.Controls.Add(this.label6);
+			this.groupBox2.Controls.Add(this.textPatientsNumTo);
+			this.groupBox2.Controls.Add(this.comboPatientsTo);
+			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox2.Location = new System.Drawing.Point(481, 332);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(383, 130);
+			this.groupBox2.TabIndex = 74;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "Used By Patients";
+			// 
+			// textPatientsNumTo
+			// 
+			this.textPatientsNumTo.BackColor = System.Drawing.Color.White;
+			this.textPatientsNumTo.Location = new System.Drawing.Point(17, 42);
+			this.textPatientsNumTo.Name = "textPatientsNumTo";
+			this.textPatientsNumTo.ReadOnly = true;
+			this.textPatientsNumTo.Size = new System.Drawing.Size(35, 20);
+			this.textPatientsNumTo.TabIndex = 68;
+			this.textPatientsNumTo.Text = "";
+			// 
+			// comboPatientsTo
+			// 
+			this.comboPatientsTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboPatientsTo.Location = new System.Drawing.Point(61, 42);
+			this.comboPatientsTo.MaxDropDownItems = 30;
+			this.comboPatientsTo.Name = "comboPatientsTo";
+			this.comboPatientsTo.Size = new System.Drawing.Size(299, 21);
+			this.comboPatientsTo.TabIndex = 34;
+			// 
+			// label6
+			// 
+			this.label6.Location = new System.Drawing.Point(15, 21);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(323, 19);
+			this.label6.TabIndex = 69;
+			this.label6.Text = "Patients referred TO this referral";
+			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// label18
+			// 
+			this.label18.Location = new System.Drawing.Point(15, 70);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(323, 19);
+			this.label18.TabIndex = 72;
+			this.label18.Text = "Patients referred FROM this referral";
+			this.label18.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textPatientsNumFrom
+			// 
+			this.textPatientsNumFrom.BackColor = System.Drawing.Color.White;
+			this.textPatientsNumFrom.Location = new System.Drawing.Point(17, 91);
+			this.textPatientsNumFrom.Name = "textPatientsNumFrom";
+			this.textPatientsNumFrom.ReadOnly = true;
+			this.textPatientsNumFrom.Size = new System.Drawing.Size(35, 20);
+			this.textPatientsNumFrom.TabIndex = 71;
+			this.textPatientsNumFrom.Text = "";
+			// 
+			// comboPatientsFrom
+			// 
+			this.comboPatientsFrom.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboPatientsFrom.Location = new System.Drawing.Point(61, 91);
+			this.comboPatientsFrom.MaxDropDownItems = 30;
+			this.comboPatientsFrom.Name = "comboPatientsFrom";
+			this.comboPatientsFrom.Size = new System.Drawing.Size(299, 21);
+			this.comboPatientsFrom.TabIndex = 70;
+			// 
 			// FormReferralEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(681, 663);
+			this.ClientSize = new System.Drawing.Size(877, 663);
+			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.checkHidden);
@@ -623,35 +702,41 @@ namespace OpenDental{
 			this.Text = "Edit Referral";
 			this.Load += new System.EventHandler(this.FormReferralEdit_Load);
 			this.groupBox1.ResumeLayout(false);
+			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
 		private void FormReferralEdit_Load(object sender, System.EventArgs e) {
+			listSpecialty.Items.Clear();
+			for(int i=0;i<Enum.GetNames(typeof(DentalSpecialty)).Length;i++){
+				listSpecialty.Items.Add(Lan.g("enumDentalSpecialty"
+					,Enum.GetNames(typeof(DentalSpecialty))[i]));
+			}
 			if(IsPatient){
 				if(IsNew){
-					this.Text=Lan.g(this,"Add Referral"); 
-					Patients.GetFamily(Patients.Cur.PatNum);
-					Referrals.Cur=new Referral();
-					Referrals.Cur.Address=Patients.Cur.Address;
-					Referrals.Cur.Address2=Patients.Cur.Address2;	
-					Referrals.Cur.City=Patients.Cur.City;	
-					Referrals.Cur.EMail=Patients.Cur.Email;	
-					Referrals.Cur.FName=Patients.Cur.FName;	
-					Referrals.Cur.LName=Patients.Cur.LName;	
-					Referrals.Cur.MName=Patients.Cur.MiddleI;	
-					Referrals.Cur.PatNum=Patients.Cur.PatNum;	
-					Referrals.Cur.SSN=Patients.Cur.SSN;
-					Referrals.Cur.Telephone=TelephoneNumbers.FormatNumbersOnly(Patients.Cur.HmPhone);
-					if(Patients.Cur.WkPhone==""){
-						Referrals.Cur.Phone2=Patients.Cur.WirelessPhone;
+					Text=Lan.g(this,"Add Referral"); 
+					Family FamCur=Patients.GetFamily(RefCur.PatNum);
+					Patient PatCur=FamCur.GetPatient(RefCur.PatNum);
+					RefCur.Address=PatCur.Address;
+					RefCur.Address2=PatCur.Address2;	
+					RefCur.City=PatCur.City;	
+					RefCur.EMail=PatCur.Email;	
+					RefCur.FName=PatCur.FName;	
+					RefCur.LName=PatCur.LName;	
+					RefCur.MName=PatCur.MiddleI;	
+					//RefCur.PatNum=Patients.Cur.PatNum;//already handled
+					RefCur.SSN=PatCur.SSN;
+					RefCur.Telephone=TelephoneNumbers.FormatNumbersOnly(PatCur.HmPhone);
+					if(PatCur.WkPhone==""){
+						RefCur.Phone2=PatCur.WirelessPhone;
 					}
 					else{
-						Referrals.Cur.Phone2=Patients.Cur.WkPhone;
+						RefCur.Phone2=PatCur.WkPhone;
 					}
-					Referrals.Cur.ST=Patients.Cur.State;	
-					Referrals.Cur.Zip=Patients.Cur.Zip;
+					RefCur.ST=PatCur.State;	
+					RefCur.Zip=PatCur.Zip;
 				}
 				labelPatient.Visible=true;
 				textLName.ReadOnly=true;
@@ -678,47 +763,64 @@ namespace OpenDental{
 			else{//non patient
 				if(IsNew){
 					this.Text=Lan.g(this,"Add Referral"); 
-					Referrals.Cur=new Referral();
-					Referrals.Cur.Specialty=DentalSpecialty.General;
+					RefCur=new Referral();
+					RefCur.Specialty=DentalSpecialty.General;
 				}
-				listSpecialty.SelectedIndex=(int)Referrals.Cur.Specialty;
+				listSpecialty.SelectedIndex=(int)RefCur.Specialty;
 				textLName.Select();
 			}
-			checkNotPerson.Checked=Referrals.Cur.NotPerson;
-			checkHidden.Checked=Referrals.Cur.IsHidden;
-			textLName.Text=Referrals.Cur.LName;
-			textFName.Text=Referrals.Cur.FName;
-			textMName.Text=Referrals.Cur.MName;
-			textTitle.Text=Referrals.Cur.Title;
-			textAddress.Text=Referrals.Cur.Address;
-			textAddress2.Text=Referrals.Cur.Address2;
-			textCity.Text=Referrals.Cur.City;         
-			textST.Text=Referrals.Cur.ST;
-			textZip.Text=Referrals.Cur.Zip; 
-			string phone=Referrals.Cur.Telephone;
+			checkNotPerson.Checked=RefCur.NotPerson;
+			checkHidden.Checked=RefCur.IsHidden;
+			textLName.Text=RefCur.LName;
+			textFName.Text=RefCur.FName;
+			textMName.Text=RefCur.MName;
+			textTitle.Text=RefCur.Title;
+			textAddress.Text=RefCur.Address;
+			textAddress2.Text=RefCur.Address2;
+			textCity.Text=RefCur.City;         
+			textST.Text=RefCur.ST;
+			textZip.Text=RefCur.Zip; 
+			string phone=RefCur.Telephone;
 			if(phone!=null && phone.Length==10){
 				textPhone1.Text=phone.Substring(0,3);
 				textPhone2.Text=phone.Substring(3,3);
 				textPhone3.Text=phone.Substring(6);
 			}
-			textSSN.Text=Referrals.Cur.SSN;
-			if(Referrals.Cur.UsingTIN){ 
+			textSSN.Text=RefCur.SSN;
+			if(RefCur.UsingTIN){ 
 				radioTIN.Checked=true;
 			} 
 			else{
 				radioSSN.Checked=true;
 			}
-			textOtherPhone.Text=Referrals.Cur.Phone2;  
-			textEmail.Text=Referrals.Cur.EMail; 
-			textNotes.Text=Referrals.Cur.Note;
+			textOtherPhone.Text=RefCur.Phone2;  
+			textEmail.Text=RefCur.EMail; 
+			textNotes.Text=RefCur.Note;
+			//Patients using:
+			string[] patsTo  =RefAttaches.GetPats(RefCur.ReferralNum,false);
+			string[] patsFrom=RefAttaches.GetPats(RefCur.ReferralNum,true);
+			textPatientsNumTo.Text  =patsTo.Length.ToString();
+			textPatientsNumFrom.Text=patsFrom.Length.ToString();
+			comboPatientsTo.Items.Clear();
+			comboPatientsFrom.Items.Clear();
+			for(int i=0;i<patsTo.Length;i++){
+				comboPatientsTo.Items.Add(patsTo[i]);
+			}
+			for(int i=0;i<patsFrom.Length;i++){
+				comboPatientsFrom.Items.Add(patsFrom[i]);
+			}
+			if(patsTo.Length>0)
+				comboPatientsTo.SelectedIndex=0;
+			if(patsFrom.Length>0)
+				comboPatientsFrom.SelectedIndex=0;
 		}
 
 		private void radioSSN_Click(object sender, System.EventArgs e) {
-			Referrals.Cur.UsingTIN=false;
+			RefCur.UsingTIN=false;
 		}
 
 		private void radioTIN_Click(object sender, System.EventArgs e) {
-			Referrals.Cur.UsingTIN=true;
+			RefCur.UsingTIN=true;
 		}
 
 		private void textOtherPhone_TextChanged(object sender, System.EventArgs e) {
@@ -740,44 +842,47 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Invalid phone"));
 				return;
 			}
-			Referrals.Cur.IsHidden=checkHidden.Checked;
-			Referrals.Cur.NotPerson=checkNotPerson.Checked;
-			Referrals.Cur.LName=textLName.Text;
-			Referrals.Cur.FName=textFName.Text;
-			Referrals.Cur.MName=textMName.Text;
-			Referrals.Cur.Title=textTitle.Text;
-      Referrals.Cur.Address=textAddress.Text;
-      Referrals.Cur.Address2=textAddress2.Text;
-      Referrals.Cur.City=textCity.Text;
-			Referrals.Cur.ST=textST.Text;
-      Referrals.Cur.Zip=textZip.Text;
-			Referrals.Cur.Telephone=phone;
-      Referrals.Cur.Phone2=textOtherPhone.Text;    
-			Referrals.Cur.SSN=textSSN.Text;
-      Referrals.Cur.EMail=textEmail.Text;
-      Referrals.Cur.Note=textNotes.Text; 
-			//Referrals.Cur.UsingTIN already taken care of
+			RefCur.IsHidden=checkHidden.Checked;
+			RefCur.NotPerson=checkNotPerson.Checked;
+			RefCur.LName=textLName.Text;
+			RefCur.FName=textFName.Text;
+			RefCur.MName=textMName.Text;
+			RefCur.Title=textTitle.Text;
+      RefCur.Address=textAddress.Text;
+      RefCur.Address2=textAddress2.Text;
+      RefCur.City=textCity.Text;
+			RefCur.ST=textST.Text;
+      RefCur.Zip=textZip.Text;
+			RefCur.Telephone=phone;
+      RefCur.Phone2=textOtherPhone.Text;    
+			RefCur.SSN=textSSN.Text;
+      RefCur.EMail=textEmail.Text;
+      RefCur.Note=textNotes.Text; 
+			//RefCur.UsingTIN already taken care of
       if(!IsPatient){
-			  Referrals.Cur.Specialty=(DentalSpecialty)listSpecialty.SelectedIndex;
+			  RefCur.Specialty=(DentalSpecialty)listSpecialty.SelectedIndex;
       }
 			if(IsNew){
 				for(int i=0;i<Referrals.List.Length;i++){
-					if((Referrals.Cur.LName+Referrals.Cur.FName)
+					if((RefCur.LName+RefCur.FName)
 						==(Referrals.List[i].LName+Referrals.List[i].FName)){
 						if (MessageBox.Show(Lan.g(this,"Referral of same name exists. Add anyway?"),""
-							,MessageBoxButtons.YesNo)!=DialogResult.Yes){
+							,MessageBoxButtons.YesNo)!=DialogResult.Yes)
+						{
 							DialogResult=DialogResult.Cancel;
 							return;
 						}
 						break;
 					}
 				}
-				Referrals.InsertCur();
+				RefCur.Insert();
 			}
 			else{
-				Referrals.UpdateCur();
+				RefCur.Update();
 			}
+			//
 			Referrals.Refresh();
+			//MessageBox.Show(RefCur.ReferralNum.ToString());
 			DialogResult=DialogResult.OK;
 		}
 

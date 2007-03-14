@@ -71,10 +71,10 @@ namespace OpenDental{
 		private OpenDental.Main_Modules.TableCommLogAccount tbComm;
 		private bool MouseIsDownOnSplitter;
 		private int SplitterOriginalY;
-		private OpenDental.XPButton butLetters;
-		private OpenDental.XPButton butComm;
+		private OpenDental.UI.Button butLetters;
+		private OpenDental.UI.Button butComm;
 		private System.Windows.Forms.Panel panelCommButs;
-		private OpenDental.XPButton butEmail;
+		private OpenDental.UI.Button butEmail;
 		private int OriginalMousePos;
 		private ClaimProc[] ClaimProcList;
 		private OpenDental.ODtextBox textFinNotes;
@@ -82,6 +82,12 @@ namespace OpenDental{
 		private Procedure[] ProcList;
 		///<summary>Indices of the items within CommLogs.List of items to actually show in the commlog list on this page. Right now, does not include Statement Sent entries.</summary>
 		private ArrayList CommIndices;
+		private Family FamCur;
+		private Patient PatCur;
+		private InsPlan[] PlanList;
+		///<summary></summary>
+		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
+		public event PatientSelectedEventHandler PatientSelected=null;
 	
 		///<summary></summary>
 		public ContrAccount(){
@@ -136,10 +142,10 @@ namespace OpenDental{
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
 			this.tbComm = new OpenDental.Main_Modules.TableCommLogAccount();
 			this.panelSplitter = new System.Windows.Forms.Panel();
-			this.butLetters = new OpenDental.XPButton();
-			this.butComm = new OpenDental.XPButton();
+			this.butLetters = new OpenDental.UI.Button();
+			this.butComm = new OpenDental.UI.Button();
 			this.panelCommButs = new System.Windows.Forms.Panel();
-			this.butEmail = new OpenDental.XPButton();
+			this.butEmail = new OpenDental.UI.Button();
 			this.textFinNotes = new OpenDental.ODtextBox();
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.panelTotal.SuspendLayout();
@@ -433,8 +439,8 @@ namespace OpenDental{
 			// butLetters
 			// 
 			this.butLetters.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butLetters.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butLetters.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butLetters.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butLetters.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butLetters.Location = new System.Drawing.Point(0, 29);
 			this.butLetters.Name = "butLetters";
 			this.butLetters.Size = new System.Drawing.Size(90, 26);
@@ -445,8 +451,8 @@ namespace OpenDental{
 			// butComm
 			// 
 			this.butComm.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butComm.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butComm.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butComm.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butComm.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butComm.Image = ((System.Drawing.Image)(resources.GetObject("butComm.Image")));
 			this.butComm.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butComm.Location = new System.Drawing.Point(0, 0);
@@ -469,8 +475,8 @@ namespace OpenDental{
 			// butEmail
 			// 
 			this.butEmail.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butEmail.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butEmail.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butEmail.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEmail.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEmail.Location = new System.Drawing.Point(0, 58);
 			this.butEmail.Name = "butEmail";
 			this.butEmail.Size = new System.Drawing.Size(90, 26);
@@ -532,12 +538,24 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void InstantClasses(){
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1,
-				this.labelUrgFinNote,
-				this.panelTotal,
-				this.checkShowAll,
-			});
+			//can't use Lan.F(this);
+			Lan.C(this,new Control[]
+				{
+          checkShowAll,
+					label2,
+					label7,
+					label6,
+					label5,
+					label3,
+					label8,
+					label9,
+					label10,
+					labelUrgFinNote,
+					label1,
+					butComm,
+					butLetters,
+					butEmail
+				});
 			LayoutToolBar();
 			if(ViewingInRecall){
 				panelSplitter.Top=300;//start the splitter higher for recall window.
@@ -592,38 +610,36 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public void ModuleSelected(){
-			RefreshModuleData();
+		public void ModuleSelected(int patNum){
+			RefreshModuleData(patNum);
 			RefreshModuleScreen();
 		}
 
 		///<summary></summary>
 		public void ModuleUnselected(){
-			if(Patients.FamilyList==null)
+			if(FamCur==null)
 				return;
 			if(UrgFinNoteChanged){
-				Patient tempPat=Patients.Cur;
-				Patients.Cur=Patients.FamilyList[Patients.GuarIndex];
-				Patients.CurOld=Patients.Cur;//important
-				Patient PatCur=Patients.Cur;
-				PatCur.FamFinUrgNote=textUrgFinNote.Text;
-				Patients.Cur=PatCur;
-				Patients.UpdateCur();
-				Patients.GetFamily(tempPat.PatNum);
+				//Patient tempPat=Patients.Cur;
+				Patient patOld=FamCur.List[0].Copy();
+				//Patients.CurOld=Patients.Cur.Copy();//important
+				FamCur.List[0].FamFinUrgNote=textUrgFinNote.Text;
+				FamCur.List[0].Update(patOld);
+				//Patients.GetFamily(tempPat.PatNum);
 				UrgFinNoteChanged=false;
 			}
 			if(FinNoteChanged){
 				PatientNotes.Cur.FamFinancial=textFinNotes.Text;
-				PatientNotes.UpdateCur();
+				PatientNotes.UpdateCur(PatCur.Guarantor);
 				FinNoteChanged=false;
 			}
-			Patients.FamilyList=null;
-			InsPlans.List=null;
+			FamCur=null;
+			//InsPlans.List=null;
 			CovPats.List=null;
 			//from FillAcctLineAL(){
 			//Procedures.List=null;
 			//Procedures.HList=null;
-			Procedures.MissingTeeth=null;
+			//Procedures.MissingTeeth=null;
 			Claims.List=null;
 			Adjustments.List=null;
 			PaySplits.List=null;
@@ -632,19 +648,24 @@ namespace OpenDental{
 			ClaimProcList=null;
 		}
 
-		private void RefreshModuleData(){
-			if(Patients.PatIsLoaded){
-				Patients.GetFamily(Patients.Cur.PatNum);
-				InsPlans.Refresh();
-				CovPats.Refresh();
-				PatientNotes.Refresh();
+		private void RefreshModuleData(int patNum){
+			if(patNum==0){
+				PatCur=null;
+				FamCur=null;
+				return;
 			}
+			FamCur=Patients.GetFamily(patNum);
+			PatCur=FamCur.GetPatient(patNum);
+			PlanList=InsPlans.Refresh(FamCur);
+			CovPats.Refresh(PatCur,PlanList);
+			PatientNotes.Refresh(PatCur.PatNum,PatCur.Guarantor);
 			//other tables are refreshed in FillAcctLineAL
 		}
 
 		private void RefreshModuleScreen(){
-			if(Patients.PatIsLoaded){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
+			if(PatCur!=null){
+				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+					+PatCur.GetNameLF();
 				tbAccount.Enabled=true;
 				ToolBarMain.Buttons["Payment"].Enabled=true;
 				ToolBarMain.Buttons["Adjustment"].Enabled=true;
@@ -680,31 +701,32 @@ namespace OpenDental{
 		}
 
 		private void FillPatientButton(){
-			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click));
+			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click),PatCur,FamCur);
 		}
 
 		private void menuPatient_Click(object sender,System.EventArgs e) {
-			Patients.ButtonSelect(menuPatient,sender);
-			ModuleSelected();
+			int newPatNum=Patients.ButtonSelect(menuPatient,sender,FamCur);
+			OnPatientSelected(newPatNum);
+			ModuleSelected(newPatNum);
 		}
 
 		private void FillPats(){
-			if(!Patients.PatIsLoaded){
+			if(PatCur==null){
 				tbAcctPat.ResetRows(0);
 				tbAcctPat.LayoutTables();
 				return;
 			}
 			//double total=0;
-			tbAcctPat.ResetRows(Patients.FamilyList.Length);
-			for(int i=0;i<Patients.FamilyList.Length;i++){
-				tbAcctPat.Cell[0,i]=Patients.GetNameInFamLFI(i);
-				tbAcctPat.Cell[1,i]=Patients.FamilyList[i].EstBalance.ToString("F");
-				if(i==Patients.GuarIndex){
+			tbAcctPat.ResetRows(FamCur.List.Length);
+			for(int i=0;i<FamCur.List.Length;i++){
+				tbAcctPat.Cell[0,i]=FamCur.GetNameInFamLFI(i);
+				tbAcctPat.Cell[1,i]=FamCur.List[i].EstBalance.ToString("F");
+				if(i==0){
 					tbAcctPat.FontBold[0,i]=true;
 					tbAcctPat.FontBold[1,i]=true;
 				}
 				//total=total+Patients.FamilyList[i].EstBalance;
-				if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
+				if(FamCur.List[i].PatNum==PatCur.PatNum){
 					tbAcctPat.ColorRow(i,Color.DarkSalmon);
 					tbAcctPat.SelectedRow=i;
 				}
@@ -713,8 +735,8 @@ namespace OpenDental{
 		}
 
 		private void FillMisc(){
-			if(Patients.PatIsLoaded){
-				textUrgFinNote.Text=Patients.FamilyList[Patients.GuarIndex].FamFinUrgNote;
+			if(PatCur!=null){
+				textUrgFinNote.Text=FamCur.List[0].FamFinUrgNote;
 				textFinNotes.Text=PatientNotes.Cur.FamFinancial;	
 				textFinNotes.Select(textFinNotes.Text.Length+2,1);
 				textFinNotes.ScrollToCaret();
@@ -738,15 +760,15 @@ namespace OpenDental{
 		}
 
 		private void FillAging(){
-			if(Patients.PatIsLoaded){
-				textOver90.Text=Patients.FamilyList[Patients.GuarIndex].BalOver90.ToString("F");
-				text61_90.Text=Patients.FamilyList[Patients.GuarIndex].Bal_61_90.ToString("F");
-				text31_60.Text=Patients.FamilyList[Patients.GuarIndex].Bal_31_60.ToString("F");
-				text0_30.Text=Patients.FamilyList[Patients.GuarIndex].Bal_0_30.ToString("F");
-				double total=Patients.FamilyList[Patients.GuarIndex].BalTotal;
+			if(PatCur!=null){
+				textOver90.Text=FamCur.List[0].BalOver90.ToString("F");
+				text61_90.Text=FamCur.List[0].Bal_61_90.ToString("F");
+				text31_60.Text=FamCur.List[0].Bal_31_60.ToString("F");
+				text0_30.Text=FamCur.List[0].Bal_0_30.ToString("F");
+				double total=FamCur.List[0].BalTotal;
 				textAgeTotal.Text=total.ToString("F");
-				textAgeInsEst.Text=Patients.FamilyList[Patients.GuarIndex].InsEst.ToString("F");
-				textAgeBalance.Text=(total-Patients.FamilyList[Patients.GuarIndex].InsEst).ToString("F");
+				textAgeInsEst.Text=FamCur.List[0].InsEst.ToString("F");
+				textAgeBalance.Text=(total-FamCur.List[0].InsEst).ToString("F");
 			}
 			else{
 				textOver90.Text="";
@@ -761,14 +783,14 @@ namespace OpenDental{
 
 		/// <summary>Fills the commlog table on this form.</summary>
 		private void FillComm(){
-			if(!Patients.PatIsLoaded){
+			if(PatCur==null){
 				tbComm.ResetRows(0);
 				tbComm.LayoutTables();
 				panelCommButs.Enabled=false;
 				return;
 			}
 			panelCommButs.Enabled=true;
-			if(Patients.Cur.Email==""){
+			if(PatCur.Email==""){
 				butEmail.Enabled=false;
 			}
 			else{
@@ -795,7 +817,7 @@ namespace OpenDental{
 
 		private void FillMain(DateTime fromDate, DateTime toDate,bool includeClaims,bool subtotalsOnly){
 			//tbAccount.SelectedRowsAL=new ArrayList();
-			if(!Patients.PatIsLoaded){
+			if(PatCur==null){
 				tbAccount.ResetRows(0);
 				tbAccount.LayoutTables();
 				return;
@@ -806,30 +828,29 @@ namespace OpenDental{
 
 		private void FillMain(){
 			if(checkShowAll.Checked){
-				FillMain(DateTime.MinValue,DateTime.Today,true,false);
+				FillMain(DateTime.MinValue,DateTime.MaxValue,true,false);
 			}
 			else{
-				FillMain(DateTime.Today.AddDays(-45),DateTime.Today,true,false);
+				FillMain(DateTime.Today.AddDays(-45),DateTime.MaxValue,true,false);
 			}
 		}
 
 		private void FillAcctLineAL(DateTime fromDate, DateTime toDate,bool includeClaims,bool subtotalsOnly){
-			//Patient tempPat = new Patient();
-			//tempPat.ChartNum=thisApt.ChartNum;
-			//Patients.Cur=tempPat;
-			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
-			Claims.Refresh();
-			Adjustments.Refresh();
-			PaySplits.Refresh();
-			ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
-			Commlogs.Refresh();
-			PayPlans.Refresh();
-			//Ledgers2.Refresh(Patients.Cur.PatNum);//the only reason for the refresh is to compute patient bal.
-			//ledgers does not have to be refreshed as often if computebalances is done less.
-			Shared.ComputeBalances(ProcList,ClaimProcList);//use whenever a change would affect the total
-//fix: too much network traffic
-			Ledgers.ComputeAging(Patients.Cur.Guarantor);
-			Patients.GetFamily(Patients.Cur.PatNum);
+			ProcList=Procedures.Refresh(PatCur.PatNum);
+			Claims.Refresh(PatCur.PatNum);
+			Adjustments.Refresh(PatCur.PatNum);
+			PaySplits.Refresh(PatCur.PatNum);
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
+			Commlogs.Refresh(PatCur.PatNum);
+			PayPlans.Refresh(PatCur.PatNum,PatCur.PatNum);//where this patient is either guar or pat
+			//if the computed balance does not match the balance on record,
+			if(Shared.ComputeBalances(ProcList,ClaimProcList,PatCur)){
+				//then recompute aging for family. This is time consuming, about 1/2 second.
+				//Compute aging involves about 10 to 12 database calls.
+				Ledgers.ComputeAging(PatCur.Guarantor);
+				FamCur=Patients.GetFamily(PatCur.PatNum);
+				PatCur=FamCur.GetPatient(PatCur.PatNum);
+			}
 			arrayProc = new Procedure[ProcList.Length];
 			arrayClaim=new Claim[Claims.List.Length];
 			arrayAdj = new Adjustment[Adjustments.List.Length];
@@ -988,7 +1009,8 @@ namespace OpenDental{
 					else if(arrayClaim[tempCountClaim].ClaimType=="S"){
 						tempAcctLine.Description="Sec Claim: ";
 					}
-					tempAcctLine.Description+=InsPlans.GetCarrierName(arrayClaim[tempCountClaim].PlanNum);
+					tempAcctLine.Description
+						+=InsPlans.GetCarrierName(arrayClaim[tempCountClaim].PlanNum,PlanList);
 					if(arrayClaim[tempCountClaim].DedApplied>0){
 						tempAcctLine.Description+=". Ded applied $"+arrayClaim[tempCountClaim].DedApplied.ToString("F");
 					}
@@ -1164,13 +1186,13 @@ namespace OpenDental{
 					double subTotal=0;
 					//either or both of these conditions might be true (3 possible scenarios)
 					//1.If this is guarantor
-					if(arrayPayPlan[tempCountPayPlan].Guarantor==Patients.Cur.PatNum){
+					if(arrayPayPlan[tempCountPayPlan].Guarantor==PatCur.PatNum){
 						tempAcctLine.Patient=arrayPayPlan[tempCountPayPlan].CurrentDue.ToString("F");
 						//runBal+=arrayPayPlan[tempCountPayPlan].CurrentDue;
 						subTotal+=arrayPayPlan[tempCountPayPlan].CurrentDue;
 					}
 					//2.If this is the patient
-					if(arrayPayPlan[tempCountPayPlan].PatNum==Patients.Cur.PatNum){
+					if(arrayPayPlan[tempCountPayPlan].PatNum==PatCur.PatNum){
 						//runBal-=arrayPayPlan[tempCountPayPlan].TotalAmount;
 						subTotal-=arrayPayPlan[tempCountPayPlan].TotalAmount;
 					}
@@ -1320,30 +1342,29 @@ namespace OpenDental{
 			switch (((AcctLine)AcctLineAL[e.Row]).Type){
 				default:
 					Procedure ProcCur=arrayProc[((AcctLine)AcctLineAL[e.Row]).Index];
-					FormProcEdit FormPE=new FormProcEdit(ProcCur);
+					FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur,FamCur,PlanList);
 					FormPE.ShowDialog();
 					break;
 				case AcctType.Claim:
 					Claims.Cur=arrayClaim[((AcctLine)AcctLineAL[e.Row]).Index];
-					FormClaimEdit FormClaimEdit2=new FormClaimEdit();
+					FormClaimEdit FormClaimEdit2=new FormClaimEdit(PatCur,FamCur);
 					FormClaimEdit2.IsNew=false;
 					FormClaimEdit2.ShowDialog();
 					break;
 				case AcctType.Adj:
 					Adjustments.Cur=arrayAdj[((AcctLine)AcctLineAL[e.Row]).Index];
-					FormAdjust2 = new FormAdjust();
-					FormAdjust2.IsNew=false;
+					FormAdjust2 = new FormAdjust(PatCur);
 					FormAdjust2.ShowDialog();
 					break;
 				case AcctType.Disc:
 					Payments.SetCur(arrayPay[((AcctLine)AcctLineAL[e.Row]).Index].PayNum);
-					FormPayment2=new FormPayment();
+					FormPayment2=new FormPayment(PatCur,FamCur);
 					FormPayment2.IsNew=false;
 					FormPayment2.ShowDialog();
 					break;
 				case AcctType.Pay:
 					Payments.SetCur(arrayPay[((AcctLine)AcctLineAL[e.Row]).Index].PayNum);
-					FormPayment2=new FormPayment();
+					FormPayment2=new FormPayment(PatCur,FamCur);
 					FormPayment2.IsNew=false;
 					FormPayment2.ShowDialog();
 					break;
@@ -1355,18 +1376,19 @@ namespace OpenDental{
 					break;				
 				case AcctType.PayPlan:
 					PayPlans.Cur=arrayPayPlan[((AcctLine)AcctLineAL[e.Row]).Index];
-					FormPayPlan2=new FormPayPlan();
+					FormPayPlan2=new FormPayPlan(PatCur);
 					FormPayPlan2.IsNew=false;
 					FormPayPlan2.ShowDialog();
 					if(FormPayPlan2.GotoPatNum!=0){
-						Patient PatCur=Patients.Cur;
+						//Patient PatCur=PatCur;
+						
 						PatCur.PatNum=FormPayPlan2.GotoPatNum;//switches to other patient.
-						Patients.Cur=PatCur;
+						//Patients.Cur=PatCur;
 					}
 					break;	
 			}//end switch
 			//Shared.ComputeBalances();//use whenever a change would affect the total
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void tbAcctPat_CellClicked(object sender, CellEventArgs e){
@@ -1374,8 +1396,8 @@ namespace OpenDental{
 			tbAcctPat.ColorRow(tbAcctPat.SelectedRow,Color.White);
 			tbAcctPat.SelectedRow=e.Row;
 			tbAcctPat.ColorRow(e.Row,Color.DarkSalmon);
-			Patients.Cur=Patients.FamilyList[e.Row];
-			ModuleSelected();
+			OnPatientSelected(FamCur.List[e.Row].PatNum);
+			ModuleSelected(FamCur.List[e.Row].PatNum);
 		}		
 
 		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
@@ -1403,36 +1425,48 @@ namespace OpenDental{
 				}
 			}
 			else if(e.Button.Tag.GetType()==typeof(int)){
-				Programs.Execute((int)e.Button.Tag);
+				Programs.Execute((int)e.Button.Tag,PatCur);
 			}
 		}
 
-		private void OnPat_Click() {
-			FormPatientSelect FormPS = new FormPatientSelect();
+		private void OnPat_Click(){
+			FormPatientSelect FormPS=new FormPatientSelect();
 			FormPS.ShowDialog();
-			if (FormPS.DialogResult == DialogResult.OK){
-				ModuleSelected();
+			if(FormPS.DialogResult==DialogResult.OK){
+				OnPatientSelected(FormPS.SelectedPatNum);
+				ModuleSelected(FormPS.SelectedPatNum);
 			}
+		}
+
+		///<summary></summary>
+		private void OnPatientSelected(int patNum){
+			PatientSelectedEventArgs eArgs=new OpenDental.PatientSelectedEventArgs(patNum);
+			if(PatientSelected!=null)
+				PatientSelected(this,eArgs);
 		}
 
 		private void OnPay_Click() {
-			FormPayment FormPayment2=new FormPayment();
+			FormPayment FormPayment2=new FormPayment(PatCur,FamCur);
 			FormPayment2.IsNew=true;
 			FormPayment2.ShowDialog();
 			//Shared.ComputeBalances();
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void OnAdj_Click() {
-			FormAdjust FormAdjust2=new FormAdjust();
+			FormAdjust FormAdjust2=new FormAdjust(PatCur);
 			FormAdjust2.IsNew=true;
+			Adjustments.Cur=new Adjustment();
+			Adjustments.Cur.AdjDate=DateTime.Today;
+			Adjustments.Cur.ProvNum=PatCur.PriProv;
+			Adjustments.Cur.PatNum=PatCur.PatNum;
 			FormAdjust2.ShowDialog();
 			//Shared.ComputeBalances();
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void OnIns_Click() {
-			if(Patients.Cur.PriPlanNum==0){
+			if(PatCur.PriPlanNum==0){
 				MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
 				return;
 			}
@@ -1445,7 +1479,7 @@ namespace OpenDental{
 					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].ProcFee==0){
 						continue;//ignore zero fee procedures, but user can explicitly select them
 					}
-					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].NeedsSent(ClaimProcList,Patients.Cur.PriPlanNum)){
+					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].NeedsSent(ClaimProcList,PatCur.PriPlanNum)){
 						tbAccount.SetSelected(i,true);
 					}
 				}
@@ -1469,76 +1503,62 @@ namespace OpenDental{
 			//spk had made an alteration to disallow option to create a second claim on same procs. 
 			Claim ClaimCur=CreateClaim("P");
 			if(ClaimCur.ClaimNum==0){
-				ModuleSelected();
+				ModuleSelected(PatCur.PatNum);
 				return;
 			}
-			ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
 			ClaimCur.ClaimStatus="W";
 			ClaimCur.DateSent=DateTime.Today;
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
 			Claims.Cur=ClaimCur;
-			//still have not saved some changes to the claim at this point
-			FormClaimEdit FormCE=new FormClaimEdit();
-			//this next line is very important.  It fills the claimprocs with fees
-			//and updates the claim to the db.
-			FormCE.CalculateEstimates(ClaimProcList,ProcList);
+			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK){
-				ModuleSelected();
+				ModuleSelected(PatCur.PatNum);
 				return;//will have already been deleted
 			}
 			//Claim priClaim=Claims.Cur;//for use a few lines down to display dialog
-			if(Patients.Cur.SecPlanNum>0){
+			if(PatCur.SecPlanNum>0){
 				ClaimCur=CreateClaim("S");
 				if(ClaimCur.ClaimNum==0){
-					ModuleSelected();
+					ModuleSelected(PatCur.PatNum);
 					return;
 				}
-				ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
-				//ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
+				ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 				ClaimCur.ClaimStatus="H";
-				Claims.Cur=ClaimCur;
-				FormCE.CalculateEstimates(ClaimProcList,ProcList);//also updates claim to db.
+				Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
+				//Claims.Cur=ClaimCur;
 			}
-			//ClaimProcs.Refresh();
-			//Claims.Refresh();
-			//Claims.Cur=priClaim;
-			//FormCE.ShowDialog();
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
-		private Claim CreateClaim(string claimType){//claimType=P,S,or Other
-			//The only validation that's been done is just to make sure that only procedures are selected.
-			//All validation on the procedures selected is done here.
-			//Creates and saves claim, attaching all selected procedures.
-			//Does not reload any data.
-			//Does not enter fee amounts.
+		///<summary>The only validation that's been done is just to make sure that only procedures are selected.  All validation on the procedures selected is done here.  Creates and saves claim initially, attaching all selected procedures.  But it does not refresh any data. Does not do a final update of the new claim.  Does not enter fee amounts.  claimType=P,S,or Other</summary>
+		private Claim CreateClaim(string claimType){
+			InsPlan PlanCur=new InsPlan();
+			Relat RelatOther=Relat.Self;
 			switch(claimType){
 				case "P":
-					InsPlans.GetCur(Patients.Cur.PriPlanNum);
+					PlanCur=InsPlans.GetPlan(PatCur.PriPlanNum,PlanList);
 					break;
 				case "S":
-					InsPlans.GetCur(Patients.Cur.SecPlanNum);
+					PlanCur=InsPlans.GetPlan(PatCur.SecPlanNum,PlanList);
 					break;
 				case "Other":
-					FormInsPlanSelect FormIPS=new FormInsPlanSelect();
+					FormInsPlanSelect FormIPS=new FormInsPlanSelect(PatCur.PatNum);
 					FormIPS.ViewRelat=true;
 					FormIPS.ShowDialog();
 					if(FormIPS.DialogResult!=DialogResult.OK){
 						return new Claim();
 					}
-					//InsPlan is now set
+					PlanCur=FormIPS.SelectedPlan;
+					RelatOther=FormIPS.PatRelat;
 					break;
 			}
-			//for(int i=0;i<tbAccount.SelectedIndices.Length;i++){//loop through selected procs
-				//add any missing estimates, just in case. This can later be eliminated.
-			//	arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Index]
-			//		.ComputeEstimates(ClaimProcList);
-			//}
 			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){
 				if(arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Index]
-					.NoBillIns(ClaimProcList,InsPlans.Cur.PlanNum))
+					.NoBillIns(ClaimProcList,PlanCur.PlanNum))
 				{
 					MessageBox.Show(Lan.g(this,"Not allowed to send procedures to insurance that are marked 'Do not bill to ins'."));
 					return new Claim();
@@ -1546,7 +1566,7 @@ namespace OpenDental{
 			}
 			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){
 				if(arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Index]
-					.IsAlreadyAttachedToClaim(ClaimProcList,InsPlans.Cur.PlanNum))
+					.IsAlreadyAttachedToClaim(ClaimProcList,PlanCur.PlanNum))
 				{
 					MessageBox.Show(Lan.g(this,"Not allowed to send a procedure to the same insurance company twice."));
 					return new Claim();
@@ -1556,14 +1576,14 @@ namespace OpenDental{
 			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){//loop through selected procs
 				//and try to find an estimate that can be used
 				claimProcs[i]=arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Index]
-					.GetClaimProcEstimate(ClaimProcList,InsPlans.Cur);
+					.GetClaimProcEstimate(ClaimProcList,PlanCur);
 			}
 			for(int i=0;i<claimProcs.Length;i++){//loop through each claimProc
 				//and create any missing estimates. This handles claims to 3rd and 4th ins co's.
 				if(claimProcs[i]==null){
 					claimProcs[i]=new ClaimProc();
-					claimProcs[i].CreateEst(arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Index],
-						InsPlans.Cur);
+					claimProcs[i].CreateEst(arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]])
+						.Index],PlanCur);
 				}
 			}
 			//now, all claimProcs have a valid value
@@ -1578,44 +1598,44 @@ namespace OpenDental{
 			Claims.Cur=new Claim();
 			Claims.InsertCur();//to retreive a key for new Claim.ClaimNum
 			Claim ClaimCur=Claims.Cur;
-			ClaimCur.PatNum=Patients.Cur.PatNum;
+			ClaimCur.PatNum=PatCur.PatNum;
 			ClaimCur.DateService=claimProcs[claimProcs.Length-1].ProcDate;
-				//=arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[0]]).Index].ProcDate;
 			//datesent
 			ClaimCur.ClaimStatus="U";
 			//datereceived
 			switch(claimType){
 				case "P":
-					ClaimCur.PlanNum=Patients.Cur.PriPlanNum;
-					ClaimCur.PatRelat=Patients.Cur.PriRelationship;
+					ClaimCur.PlanNum=PatCur.PriPlanNum;
+					ClaimCur.PatRelat=PatCur.PriRelationship;
 					ClaimCur.ClaimType="P";
-					ClaimCur.PlanNum2=Patients.Cur.SecPlanNum;//might be 0 if no sec ins
-					ClaimCur.PatRelat2=Patients.Cur.SecRelationship;
+					ClaimCur.PlanNum2=PatCur.SecPlanNum;//might be 0 if no sec ins
+					ClaimCur.PatRelat2=PatCur.SecRelationship;
 					break;
 				case "S":
-					ClaimCur.PlanNum=Patients.Cur.SecPlanNum;
-					ClaimCur.PatRelat=Patients.Cur.SecRelationship;
+					ClaimCur.PlanNum=PatCur.SecPlanNum;
+					ClaimCur.PatRelat=PatCur.SecRelationship;
 					ClaimCur.ClaimType="S";
-					ClaimCur.PlanNum2=Patients.Cur.PriPlanNum;
-					ClaimCur.PatRelat2=Patients.Cur.PriRelationship;
+					ClaimCur.PlanNum2=PatCur.PriPlanNum;
+					ClaimCur.PatRelat2=PatCur.PriRelationship;
 					break;
 				case "Other":
-					FormInsPlanSelect FormIPS=new FormInsPlanSelect();
-					FormIPS.ViewRelat=true;
-					FormIPS.ShowDialog();
-					if(FormIPS.DialogResult!=DialogResult.OK){
-						Claims.Cur=ClaimCur;
-						Claims.DeleteCur();
-						return new Claim();
-					}
-					ClaimCur.PlanNum=InsPlans.Cur.PlanNum;
-					ClaimCur.PatRelat=FormIPS.PatRelat;
+					//FormInsPlanSelect FormIPS=new FormInsPlanSelect();
+					//FormIPS.ViewRelat=true;
+					//FormIPS.ShowDialog();
+					//if(FormIPS.DialogResult!=DialogResult.OK){
+					//	Claims.Cur=ClaimCur;
+					//	Claims.DeleteCur();
+					//	return new Claim();
+					//}
+					//PlanCur=FormIPS.SelectedPlan;
+					ClaimCur.PlanNum=PlanCur.PlanNum;
+					ClaimCur.PatRelat=RelatOther;
 					ClaimCur.ClaimType="Other";
 					//plannum2 is not automatically filled in.
 					break;
 			}
-			InsPlans.GetCur(ClaimCur.PlanNum);
-			if(InsPlans.Cur.PlanType=="c"){//if capitation
+			//InsPlans.GetCur(ClaimCur.PlanNum);
+			if(PlanCur.PlanType=="c"){//if capitation
 				ClaimCur.ClaimType="Cap";
 			}
 			ClaimCur.ProvTreat=arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[0]]).Index].ProvNum;
@@ -1628,7 +1648,7 @@ namespace OpenDental{
 				}
 			}
 			if(Providers.GetIsSec(ClaimCur.ProvTreat)){
-				ClaimCur.ProvTreat=Patients.Cur.PriProv;
+				ClaimCur.ProvTreat=PatCur.PriProv;
 				//OK if 0, because auto select first in list when open claim
 			}
 			//claimfee calcs in ClaimEdit
@@ -1654,7 +1674,7 @@ namespace OpenDental{
 				//ClaimProcs.Cur.FeeBilled=;//handle in call to FormClaimEdit.CalculateEstimates
 				//inspayest ''
 				//dedapplied ''
-				if(InsPlans.Cur.PlanType=="c")//if capitation
+				if(PlanCur.PlanType=="c")//if capitation
 					claimProcs[i].Status=ClaimProcStatus.CapClaim;
 				else
 					claimProcs[i].Status=ClaimProcStatus.NotReceived;
@@ -1664,7 +1684,7 @@ namespace OpenDental{
 				//ClaimProcCur.PlanNum=Claims.Cur.PlanNum;
 				//ClaimProcCur.DateCP=ProcCur.ProcDate;
 				//writeoff
-				if(InsPlans.Cur.UseAltCode 
+				if(PlanCur.UseAltCode 
 					&& ((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).AlternateCode1!="")
 				{
 					claimProcs[i].CodeSent
@@ -1682,34 +1702,44 @@ namespace OpenDental{
 		}
 
 		private void menuInsPri_Click(object sender, System.EventArgs e) {
-			if(Patients.Cur.PriPlanNum==0){
+			if(PatCur.PriPlanNum==0){
 				MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
 				return;
 			}
 			if(tbAccount.SelectedIndices.Length==0){
 				MessageBox.Show(Lan.g(this,"Please select procedures first."));
+				return;
+			}
+			bool allAreProcedures=true;
+			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){
+				if(((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Type!=AcctType.Proc){
+					allAreProcedures=false;
+				}
+			}
+			if(!allAreProcedures){
+				MessageBox.Show(Lan.g(this,"You can only select procedures."));
 				return;
 			}
 			Claim ClaimCur=CreateClaim("P");
 			if(ClaimCur.ClaimNum==0){
-				ModuleSelected();
+				ModuleSelected(PatCur.PatNum);
 				return;
 			}
-			ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
 			ClaimCur.ClaimStatus="W";
 			ClaimCur.DateSent=DateTime.Today;
 			Claims.Cur=ClaimCur;
 			//still have not saved some changes to the claim at this point
-			FormClaimEdit FormCE=new FormClaimEdit();
-			FormCE.CalculateEstimates(ClaimProcList,ProcList);//also updates claim to db.
+			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,Claims.Cur);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void menuInsSec_Click(object sender, System.EventArgs e) {
-			if(Patients.Cur.PriPlanNum==0 || Patients.Cur.SecPlanNum==0){
+			if(PatCur.PriPlanNum==0 || PatCur.SecPlanNum==0){
 				MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
 				return;
 			}
@@ -1717,22 +1747,31 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select procedures first."));
 				return;
 			}
-			Claim ClaimCur=CreateClaim("S");
-			if(ClaimCur.ClaimNum==0){
-				ModuleSelected();
+			bool allAreProcedures=true;
+			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){
+				if(((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Type!=AcctType.Proc){
+					allAreProcedures=false;
+				}
+			}
+			if(!allAreProcedures){
+				MessageBox.Show(Lan.g(this,"You can only select procedures."));
 				return;
 			}
-			ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			Claim ClaimCur=CreateClaim("S");
+			if(ClaimCur.ClaimNum==0){
+				ModuleSelected(PatCur.PatNum);
+				return;
+			}
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
 			ClaimCur.ClaimStatus="W";
 			ClaimCur.DateSent=DateTime.Today;
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
 			Claims.Cur=ClaimCur;
-			//still have not saved some changes to the claim at this point
-			FormClaimEdit FormCE=new FormClaimEdit();
-			FormCE.CalculateEstimates(ClaimProcList,ProcList);//also updates claim to db.
+			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void menuInsOther_Click(object sender, System.EventArgs e) {
@@ -1740,48 +1779,59 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select procedures first."));
 				return;
 			}
-			Claim ClaimCur=CreateClaim("Other");
-			if(ClaimCur.ClaimNum==0){
-				ModuleSelected();
+			bool allAreProcedures=true;
+			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){
+				if(((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Type!=AcctType.Proc){
+					allAreProcedures=false;
+				}
+			}
+			if(!allAreProcedures){
+				MessageBox.Show(Lan.g(this,"You can only select procedures."));
 				return;
 			}
-			ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			Claim ClaimCur=CreateClaim("Other");
+			if(ClaimCur.ClaimNum==0){
+				ModuleSelected(PatCur.PatNum);
+				return;
+			}
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
 			Claims.Cur=ClaimCur;
 			//still have not saved some changes to the claim at this point
-			FormClaimEdit FormCE=new FormClaimEdit();
-			FormCE.CalculateEstimates(ClaimProcList,ProcList);//also updates claim to db.
+			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void OnPayPlan_Click() {
 			PayPlans.Cur=new PayPlan();
-			PayPlans.Cur.PatNum=Patients.Cur.PatNum;
-			PayPlans.Cur.Guarantor=Patients.Cur.Guarantor;
+			PayPlans.Cur.PatNum=PatCur.PatNum;
+			PayPlans.Cur.Guarantor=PatCur.Guarantor;
 			PayPlans.Cur.PayPlanDate=DateTime.Today;
 			PayPlans.Cur.DateFirstPay=DateTime.Today;
-			PayPlans.Cur.TotalAmount=Patients.Cur.EstBalance;
-			FormPayPlan FormPP=new FormPayPlan();
+			PayPlans.Cur.TotalAmount=PatCur.EstBalance;
+			FormPayPlan FormPP=new FormPayPlan(PatCur);
 			FormPP.IsNew=true;
 			FormPP.ShowDialog();
 			if(FormPP.GotoPatNum!=0){
-				Patient PatCur=Patients.Cur;
-				PatCur.PatNum=FormPP.GotoPatNum;//switches to other patient.
-				Patients.Cur=PatCur;
+				ModuleSelected(FormPP.GotoPatNum);//switches to other patient.
 			}
-			ModuleSelected();
+			else{
+				ModuleSelected(PatCur.PatNum);
+			}
 		}
 
 		private void OnStatement_Click() {
-			FormStatementOptions FormSO=new FormStatementOptions();
+			FormStatementOptions FormSO=new FormStatementOptions(PatCur,FamCur);
 			if(checkShowAll.Checked){
 				FormSO.FromDate=DateTime.MinValue;
 			}
 			else{
 				FormSO.FromDate=DateTime.Today.AddDays(-45);
 			}
+			FormSO.ToDate=DateTime.MaxValue;
 			FormSO.ShowDialog();
 			if(FormSO.DialogResult!=DialogResult.OK){
 				return;
@@ -1789,7 +1839,7 @@ namespace OpenDental{
 			//FillMain(FormSO.FromDate,FormSO.ToDate,FormSO.IncludeClaims,FormSO.SubtotalsOnly);
 			PrintStatement(FormSO.PatNums,FormSO.FromDate,FormSO.ToDate,FormSO.IncludeClaims
 				,FormSO.SubtotalsOnly,FormSO.HidePayment,FormSO.NextAppt,FormSO.Note);
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void textUrgFinNote_TextChanged(object sender, System.EventArgs e) {
@@ -1802,28 +1852,25 @@ namespace OpenDental{
 
 		private void textUrgFinNote_Leave(object sender, System.EventArgs e) {
 			//need to skip this if selecting another module. Handled in ModuleUnselected due to click event
-			if(Patients.FamilyList==null)
+			if(FamCur==null)
 				return;
 			if(UrgFinNoteChanged){
-				Patient tempPat=Patients.Cur;
-				Patients.Cur=Patients.FamilyList[Patients.GuarIndex];
-				Patients.CurOld=Patients.Cur;//important
-				Patient PatCur=Patients.Cur;
-				PatCur.FamFinUrgNote=textUrgFinNote.Text;
-				Patients.Cur=PatCur;
-				Patients.UpdateCur();
-				Patients.GetFamily(tempPat.PatNum);
+				Patient PatOld=FamCur.List[0].Copy();
+				FamCur.List[0].FamFinUrgNote=textUrgFinNote.Text;
+				FamCur.List[0].Update(PatOld);
 				UrgFinNoteChanged=false;
 			}
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void textFinNotes_Leave(object sender, System.EventArgs e) {
-			if(Patients.FamilyList==null)
+			if(FamCur==null)
 				return;
 			if(FinNoteChanged){
 				PatientNotes.Cur.FamFinancial=textFinNotes.Text;
-				PatientNotes.UpdateCur();
+				PatientNotes.UpdateCur(PatCur.Guarantor);
 				FinNoteChanged=false;
+				ModuleSelected(PatCur.PatNum);
 			}
 		}
 
@@ -1855,22 +1902,22 @@ namespace OpenDental{
 		}
 
 		///<summary>Used from FormBilling to print one statement for the entire family of the current patient.PatNum which was set ahead of time.</summary>
-		public void LoadAndPrint(){
-			Patients.GetFamily(Patients.Cur.PatNum);
+		public void LoadAndPrint(int patNum){
+			FamCur=Patients.GetFamily(patNum);
+			PatCur=FamCur.GetPatient(patNum);
 			//InsPlans.Refresh();
 			//CovPats.Refresh();
 			//FillMain(DateTime.Today.AddDays(-45),DateTime.Today,true,false);
-			int[] patNums=new int[Patients.FamilyList.Length];
+			int[] patNums=new int[FamCur.List.Length];
 			for(int i=0;i<patNums.Length;i++){
-				patNums[i]=Patients.FamilyList[i].PatNum;
+				patNums[i]=FamCur.List[i].PatNum;
 			}
 			PrintStatement(patNums,DateTime.Today.AddDays(-45),DateTime.Today,true,false,false,false,"");
 		}
 
 		/// <summary></summary>
 		private void PrintStatement(int[] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly,bool hidePayment,bool nextAppt,string note){
-			Patient PatCur;
-			int curPatNum=Patients.Cur.PatNum;
+			int curPatNum=PatCur.PatNum;
 			FamTotBal=0;
 			FamInsEst=0;
 			FamTotDue=0;
@@ -1882,16 +1929,13 @@ namespace OpenDental{
 			}*/
 			AcctLine tempLine;
 			for(int i=0;i<patNums.Length;i++){
-				PatCur=new Patient();//because the patnum is all we care about
-				PatCur.PatNum=patNums[i];
-				Patients.Cur=PatCur;
-				RefreshModuleData();
+				RefreshModuleData(patNums[i]);
 				FillAcctLineAL(fromDate,toDate,includeClaims,subtotalsOnly);
-				FamTotDue+=Patients.Cur.EstBalance;
+				FamTotDue+=PatCur.EstBalance;
 				tempLine=new AcctLine();
-				tempLine.Description=Patients.GetCurNameLF();
+				tempLine.Description=PatCur.GetNameLF();
 				if(nextAppt){
-					Appointment[] allAppts=Appointments.GetForPat(Patients.Cur.PatNum);
+					Appointment[] allAppts=Appointments.GetForPat(PatCur.PatNum);
 					for(int a=0;a<allAppts.Length;a++){
 						if(allAppts[a].AptDateTime.Date<=DateTime.Today){
 							continue;//ignore old appts.
@@ -1915,7 +1959,7 @@ namespace OpenDental{
 					tempLine.Balance=SubTotal.ToString("n");
 				}
 				else{
-					tempLine.Balance=Patients.Cur.EstBalance.ToString("F");
+					tempLine.Balance=PatCur.EstBalance.ToString("F");
 				}
 				//group footer for one patient: If subtotalsOnly, then this will actually be a subtotal
 				StatementAL.Add(tempLine);
@@ -1957,26 +2001,26 @@ namespace OpenDental{
 				StatementA[10,i]=((AcctLine)StatementAL[i]).Balance;
 				StatementA[11,i]=((AcctLine)StatementAL[i]).StateType;
 			}//end for
-			FormRpStatement FormST=new FormRpStatement();
+			FormRpStatement FormST=new FormRpStatement(FamCur);
 			FormST.StatementA=(string[,])StatementA.Clone();
 			FormST.HidePayment=hidePayment;
 			FormST.Note=note;
 			//FormST.ShowDialog();
 			FormST.PrintReport(false);
-			PatCur=Patients.Cur;//but we are really just interested in the patnum
+			//This next line is a clumsy way to return to the original patient after printing.
+			//It could be better encapsulated.
 			PatCur.PatNum=curPatNum;
-			Patients.Cur=PatCur;
 			Commlogs.Cur=new Commlog();
 			Commlogs.Cur.CommDateTime=DateTime.Now;
 			Commlogs.Cur.CommType=CommItemType.StatementSent;
-			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
+			Commlogs.Cur.PatNum=PatCur.PatNum;
 			//there is no dialog here because it is just a simple entry
 			Commlogs.InsertCur();
 		}
 
 		private void butComm_Click(object sender, System.EventArgs e) {
 			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
+			Commlogs.Cur.PatNum=PatCur.PatNum;
 			Commlogs.Cur.CommDateTime=DateTime.Now;
 			if(ViewingInRecall)
 				Commlogs.Cur.CommType=CommItemType.Recall;
@@ -1985,25 +2029,25 @@ namespace OpenDental{
 			FormCommItem FormCI=new FormCommItem();
 			FormCI.IsNew=true;
 			FormCI.ShowDialog();
-			Commlogs.Refresh();
+			Commlogs.Refresh(PatCur.PatNum);
 			FillComm();
 		}
 
 		private void butLetters_Click(object sender, System.EventArgs e) {
-			FormLetters FormL=new FormLetters();
+			FormLetters FormL=new FormLetters(PatCur);
 			FormL.ShowDialog();
-			Commlogs.Refresh();
+			Commlogs.Refresh(PatCur.PatNum);
 			FillComm();
 		}
 
 		private void butEmail_Click(object sender, System.EventArgs e) {
 			EmailMessages.Cur=new EmailMessage();
-			EmailMessages.Cur.PatNum=Patients.Cur.PatNum;
-			EmailMessages.Cur.ToAddress=Patients.Cur.Email;
+			EmailMessages.Cur.PatNum=PatCur.PatNum;
+			EmailMessages.Cur.ToAddress=PatCur.Email;
 			EmailMessages.Cur.FromAddress=((Pref)Prefs.HList["EmailSenderAddress"]).ValueString;
-			FormEmailMessageEdit FormE=new FormEmailMessageEdit();
+			FormEmailMessageEdit FormE=new FormEmailMessageEdit(PatCur.PatNum);
 			FormE.ShowDialog();
-			Commlogs.Refresh();
+			Commlogs.Refresh(PatCur.PatNum);
 			FillComm();
 		}
 
@@ -2011,7 +2055,7 @@ namespace OpenDental{
 			Commlogs.Cur=Commlogs.List[(int)CommIndices[e.Row]];
 			FormCommItem FormCI=new FormCommItem();
 			FormCI.ShowDialog();
-			Commlogs.Refresh();
+			Commlogs.Refresh(PatCur.PatNum);
 			FillComm();
 		}
 

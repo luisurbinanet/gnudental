@@ -8,8 +8,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRpPHRawPop : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.MonthCalendar date2;
 		private System.Windows.Forms.MonthCalendar date1;
 		private System.Windows.Forms.Label labelTO;
@@ -21,16 +21,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormRpPHRawPop(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] 
-			{
-				labelTO,
-				date1,
-				date2																							 
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			}); 
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -46,8 +37,8 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.date2 = new System.Windows.Forms.MonthCalendar();
 			this.date1 = new System.Windows.Forms.MonthCalendar();
 			this.labelTO = new System.Windows.Forms.Label();

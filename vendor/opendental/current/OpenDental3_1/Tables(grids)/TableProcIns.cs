@@ -5,10 +5,12 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace OpenDental{
+	///<summary></summary>
 	public class TableProcIns : OpenDental.ContrTable
 	{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableProcIns(){
 			InitializeComponent();
 			MaxRows=20;

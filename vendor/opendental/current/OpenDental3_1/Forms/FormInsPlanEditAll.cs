@@ -16,8 +16,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.TextBox textCarrier;
 		private System.Windows.Forms.TextBox textAddress;
 		private System.Windows.Forms.TextBox textCity;
@@ -36,13 +36,13 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkAlternateCode;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.ListBox listFeeSched;
-		private System.Windows.Forms.Button butCopayNone;
+		private OpenDental.UI.Button butCopayNone;
 		private System.Windows.Forms.ListBox listCopay;
 		private System.Windows.Forms.TextBox textGroupNum;
 		private System.Windows.Forms.TextBox textGroupName;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label12;
-		private System.Windows.Forms.Button butChangeEmp;
+		private OpenDental.UI.Button butChangeEmp;
 		private System.Windows.Forms.TextBox textEmployer;
 		private System.Windows.Forms.Label label16;
 		private System.Windows.Forms.GroupBox groupBox2;
@@ -50,57 +50,23 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label labelCopayFee;
 		private System.Windows.Forms.Label labelCopayAdvice;
-		private System.Windows.Forms.Button butChangeCarrier;
+		private OpenDental.UI.Button butChangeCarrier;
 		private System.Windows.Forms.TextBox textState;
 		private System.Windows.Forms.ComboBox comboLinked;
 		private System.Windows.Forms.TextBox textLinkedNum;
-		private System.Windows.Forms.Button butEdit;
+		private OpenDental.UI.Button butEdit;
 		///<summary>Keeps track of the original settings of the plan before any changes are made.  That way, the update can be applied to all plans that are the same as the original.</summary>
-		private InsPlan originalPlan;
+		private InsPlan OriginalPlan;
+		///<summary>Might be set to 0 if no relevant current patient.  Maybe need to get rid of this field.</summary>
+		private int PatNum;
+		private InsPlan PlanCur;
 
 		///<summary></summary>
-		public FormInsPlanEditAll(){
+		public FormInsPlanEditAll(InsPlan originalPlan,int patNum){
+			OriginalPlan=originalPlan;
+			PatNum=patNum;
 			InitializeComponent();// Required for Windows Form Designer support
-			Lan.C(this, new System.Windows.Forms.Control[]
-			{
-				label1,
-				label2,
-				label3,
-				label4,
-				label6,
-				label7,
-				checkNoSendElect,
-				checkAlternateCode,
-				checkClaimsUseUCR,
-				label9,
-				label10,
-				label11,
-				label12,
-				label14,
-				label16,
-				label23,
-				labelCopayAdvice,
-				labelCopayFee,
-				butCopayNone
-				/*				
-				this.radioDedNo,
-				this.radioDedYes,
-				this.radioDedUnkn,
-				this.radioMissNo,
-				this.radioMissUnkn,
-				this.radioMissYes,
-				this.radioWaitNo,
-				this.radioWaitUnkn,
-				this.radioWaitYes,
-				groupBox1,
-				checkRelease,
-				checkAssign*/
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] 
-			{
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -128,8 +94,8 @@ namespace OpenDental{
 			this.textZip = new System.Windows.Forms.TextBox();
 			this.textPhone = new System.Windows.Forms.TextBox();
 			this.textElectID = new System.Windows.Forms.TextBox();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.textAddress2 = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
 			this.checkNoSendElect = new System.Windows.Forms.CheckBox();
@@ -141,20 +107,20 @@ namespace OpenDental{
 			this.checkAlternateCode = new System.Windows.Forms.CheckBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.listFeeSched = new System.Windows.Forms.ListBox();
-			this.butCopayNone = new System.Windows.Forms.Button();
+			this.butCopayNone = new OpenDental.UI.Button();
 			this.listCopay = new System.Windows.Forms.ListBox();
 			this.labelCopayFee = new System.Windows.Forms.Label();
 			this.textGroupNum = new System.Windows.Forms.TextBox();
 			this.textGroupName = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.label12 = new System.Windows.Forms.Label();
-			this.butChangeEmp = new System.Windows.Forms.Button();
+			this.butChangeEmp = new OpenDental.UI.Button();
 			this.textEmployer = new System.Windows.Forms.TextBox();
 			this.label16 = new System.Windows.Forms.Label();
 			this.labelCopayAdvice = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.butEdit = new System.Windows.Forms.Button();
-			this.butChangeCarrier = new System.Windows.Forms.Button();
+			this.butEdit = new OpenDental.UI.Button();
+			this.butChangeCarrier = new OpenDental.UI.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.comboLinked = new System.Windows.Forms.ComboBox();
 			this.textLinkedNum = new System.Windows.Forms.TextBox();
@@ -281,19 +247,27 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(853, 594);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 1;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(853, 630);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 2;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -393,7 +367,10 @@ namespace OpenDental{
 			// 
 			// butCopayNone
 			// 
-			this.butCopayNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCopayNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCopayNone.Autosize = true;
+			this.butCopayNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCopayNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCopayNone.Location = new System.Drawing.Point(135, 380);
 			this.butCopayNone.Name = "butCopayNone";
 			this.butCopayNone.TabIndex = 108;
@@ -453,7 +430,10 @@ namespace OpenDental{
 			// 
 			// butChangeEmp
 			// 
-			this.butChangeEmp.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butChangeEmp.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butChangeEmp.Autosize = true;
+			this.butChangeEmp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butChangeEmp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butChangeEmp.Location = new System.Drawing.Point(340, 15);
 			this.butChangeEmp.Name = "butChangeEmp";
 			this.butChangeEmp.Size = new System.Drawing.Size(75, 22);
@@ -537,7 +517,10 @@ namespace OpenDental{
 			// 
 			// butEdit
 			// 
-			this.butEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butEdit.Autosize = true;
+			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEdit.Location = new System.Drawing.Point(340, 95);
 			this.butEdit.Name = "butEdit";
 			this.butEdit.Size = new System.Drawing.Size(75, 22);
@@ -547,7 +530,10 @@ namespace OpenDental{
 			// 
 			// butChangeCarrier
 			// 
-			this.butChangeCarrier.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butChangeCarrier.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butChangeCarrier.Autosize = true;
+			this.butChangeCarrier.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butChangeCarrier.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butChangeCarrier.Location = new System.Drawing.Point(340, 73);
 			this.butChangeCarrier.Name = "butChangeCarrier";
 			this.butChangeCarrier.Size = new System.Drawing.Size(75, 22);
@@ -621,7 +607,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormInsPlanEditAll_Load(object sender, System.EventArgs e) {
-			originalPlan=InsPlans.Cur;
+			PlanCur=OriginalPlan.Copy();
 			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1"){
 				labelCopayFee.Visible=false;
 				listCopay.Visible=false;
@@ -631,35 +617,35 @@ namespace OpenDental{
 			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1"){
 				checkAlternateCode.Visible=false;
 			}
-			textEmployer.Text=Employers.GetName(InsPlans.Cur.EmployerNum);
-			textGroupName.Text=InsPlans.Cur.GroupName;
-			textGroupNum.Text=InsPlans.Cur.GroupNum;
+			textEmployer.Text=Employers.GetName(PlanCur.EmployerNum);
+			textGroupName.Text=PlanCur.GroupName;
+			textGroupNum.Text=PlanCur.GroupNum;
 			listPlanType.Items.Add(Lan.g(this,"Category Percentage"));
-			if(InsPlans.Cur.PlanType=="")
+			if(PlanCur.PlanType=="")
 				listPlanType.SelectedIndex=0;
 			listPlanType.Items.Add(Lan.g(this,"Flat Co-pay"));
-			if(InsPlans.Cur.PlanType=="f")
+			if(PlanCur.PlanType=="f")
 				listPlanType.SelectedIndex=1;
 			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString!="1"){
 				listPlanType.Items.Add(Lan.g(this,"Capitation"));
-				if(InsPlans.Cur.PlanType=="c")
+				if(PlanCur.PlanType=="c")
 					listPlanType.SelectedIndex=2;
 			}
-			checkAlternateCode.Checked=InsPlans.Cur.UseAltCode;
-			checkClaimsUseUCR.Checked=InsPlans.Cur.ClaimsUseUCR;
+			checkAlternateCode.Checked=PlanCur.UseAltCode;
+			checkClaimsUseUCR.Checked=PlanCur.ClaimsUseUCR;
 			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++){
 				listFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
-				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==InsPlans.Cur.FeeSched)
+				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==PlanCur.FeeSched)
 					listFeeSched.SelectedIndex=i;
 			}
 			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++){
 				listCopay.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
-				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==InsPlans.Cur.CopayFeeSched)
+				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==PlanCur.CopayFeeSched)
 					listCopay.SelectedIndex=i;
 			}
 			for(int i=0;i<ClaimForms.ListShort.Length;i++){
 				listClaimForm.Items.Add(ClaimForms.ListShort[i].Description);
-				if(ClaimForms.ListShort[i].ClaimFormNum==InsPlans.Cur.ClaimFormNum){
+				if(ClaimForms.ListShort[i].ClaimFormNum==PlanCur.ClaimFormNum){
 					listClaimForm.SelectedIndex=i;
 				}
 			}
@@ -674,7 +660,7 @@ namespace OpenDental{
 		}
 
 		private void FillCarrier(){
-			Carriers.GetCur(InsPlans.Cur.CarrierNum);
+			Carriers.GetCur(PlanCur.CarrierNum);
 			textCarrier.Text=Carriers.Cur.CarrierName;
 			textPhone.Text=Carriers.Cur.Phone;
 			textAddress.Text=Carriers.Cur.Address;
@@ -694,12 +680,12 @@ namespace OpenDental{
 		private void butChangeEmp_Click(object sender, System.EventArgs e) {
 			FormEmployers FormE=new FormEmployers();
 			FormE.IsSelectMode=true;
-			Employers.Cur=Employers.GetEmployer(InsPlans.Cur.EmployerNum);
+			Employers.Cur=Employers.GetEmployer(PlanCur.EmployerNum);
 			FormE.ShowDialog();
 			if(FormE.DialogResult!=DialogResult.OK){
 				return;
 			}
-			InsPlans.Cur.EmployerNum=Employers.Cur.EmployerNum;
+			PlanCur.EmployerNum=Employers.Cur.EmployerNum;
 			textEmployer.Text=Employers.Cur.EmpName;
 		}
 
@@ -710,7 +696,7 @@ namespace OpenDental{
 			if(FormC.DialogResult!=DialogResult.OK){
 				return;
 			}
-			InsPlans.Cur.CarrierNum=Carriers.Cur.CarrierNum;
+			PlanCur.CarrierNum=Carriers.Cur.CarrierNum;
 			FillCarrier();
 		}
 
@@ -730,7 +716,7 @@ namespace OpenDental{
 		}
 
 		private void LayoutSynch(){
-			string[] samePlans=InsPlans.SamePlans();
+			string[] samePlans=PlanCur.SamePlans();
 			textLinkedNum.Text=samePlans.Length.ToString();
 			comboLinked.Items.Clear();
 			for(int i=0;i<samePlans.Length;i++){
@@ -742,34 +728,34 @@ namespace OpenDental{
 		
 		private void butOK_Click(object sender, System.EventArgs e) {
 			//Employer already handled
-			InsPlans.Cur.GroupName=textGroupName.Text;
-			InsPlans.Cur.GroupNum=textGroupNum.Text;
+			PlanCur.GroupName=textGroupName.Text;
+			PlanCur.GroupNum=textGroupNum.Text;
 			//Carrier already handled
 			switch(listPlanType.SelectedIndex){
 				case 0:
-					InsPlans.Cur.PlanType="";
+					PlanCur.PlanType="";
 					break;
 				case 1:
-					InsPlans.Cur.PlanType="f";
+					PlanCur.PlanType="f";
 					break;
 				case 2:
-					InsPlans.Cur.PlanType="c";
+					PlanCur.PlanType="c";
 					break;
 			}
-			InsPlans.Cur.UseAltCode=checkAlternateCode.Checked;
-			InsPlans.Cur.ClaimsUseUCR=checkClaimsUseUCR.Checked;
+			PlanCur.UseAltCode=checkAlternateCode.Checked;
+			PlanCur.ClaimsUseUCR=checkClaimsUseUCR.Checked;
 			if(listFeeSched.SelectedIndex==-1)
-				InsPlans.Cur.FeeSched=0;
+				PlanCur.FeeSched=0;
 			else
-				InsPlans.Cur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
+				PlanCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
 			if(listCopay.SelectedIndex==-1)
-				InsPlans.Cur.CopayFeeSched=0;
+				PlanCur.CopayFeeSched=0;
 			else
-				InsPlans.Cur.CopayFeeSched
+				PlanCur.CopayFeeSched
 					=Defs.Short[(int)DefCat.FeeSchedNames][listCopay.SelectedIndex].DefNum;
 			if(listClaimForm.SelectedIndex!=-1)
-				InsPlans.Cur.ClaimFormNum=ClaimForms.ListShort[listClaimForm.SelectedIndex].ClaimFormNum;
-			InsPlans.UpdateForLike(originalPlan);
+				PlanCur.ClaimFormNum=ClaimForms.ListShort[listClaimForm.SelectedIndex].ClaimFormNum;
+			PlanCur.UpdateForLike(OriginalPlan);
 			DialogResult=DialogResult.OK;
 		}
 

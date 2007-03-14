@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRpInsCo : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label labelPatName;
 		private System.Windows.Forms.TextBox textBoxCarrier;
 		private System.ComponentModel.Container components = null;
@@ -18,13 +18,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormRpInsCo(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				labelPatName,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			}); 
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -40,16 +34,19 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.labelPatName = new System.Windows.Forms.Label();
 			this.textBoxCarrier = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(490, 173);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -58,7 +55,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(490, 138);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -68,13 +68,13 @@ namespace OpenDental{
 			// 
 			// labelPatName
 			// 
-			this.labelPatName.Location = new System.Drawing.Point(24, 32);
+			this.labelPatName.Location = new System.Drawing.Point(24, 7);
 			this.labelPatName.Name = "labelPatName";
-			this.labelPatName.Size = new System.Drawing.Size(256, 24);
+			this.labelPatName.Size = new System.Drawing.Size(256, 70);
 			this.labelPatName.TabIndex = 37;
 			this.labelPatName.Text = "Enter the first few letters of the Insurance Carrier name, or leave blank to view" +
 				" all carriers:";
-			this.labelPatName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.labelPatName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textBoxCarrier
 			// 

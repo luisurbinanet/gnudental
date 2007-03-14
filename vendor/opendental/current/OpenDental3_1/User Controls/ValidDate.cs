@@ -103,6 +103,7 @@ namespace OpenDental{
 				}*/
 		}
 
+		///<summary></summary>
 		protected override void OnKeyPress(KeyPressEventArgs e) {
 			base.OnKeyPress(e);
 			if(e.KeyChar!='+' && e.KeyChar!='-'){
@@ -129,6 +130,7 @@ namespace OpenDental{
 			e.Handled=true;
 		}
 
+		///<summary></summary>
 		protected override void OnKeyDown(KeyEventArgs e) {
 			base.OnKeyDown (e);
 			if(e.KeyCode!=Keys.Up && e.KeyCode!=Keys.Down){

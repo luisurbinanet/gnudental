@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRpFinanceCharge : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private OpenDental.ValidDate textDate;
 		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
@@ -17,13 +17,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormRpFinanceCharge(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			}); 
+			Lan.F(this);
 		}
 
 
@@ -40,8 +34,8 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.textDate = new OpenDental.ValidDate();
 			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();

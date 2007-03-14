@@ -67,6 +67,7 @@ namespace OpenDental.Reporting
 			return -1;
 		}
 
+		///<summary></summary>
 		public bool Contains(string name){
 			foreach(Section section in List){
 				if(section.Name==name)

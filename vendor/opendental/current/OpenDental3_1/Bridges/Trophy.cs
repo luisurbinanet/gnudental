@@ -16,20 +16,20 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Launches the program using a combination of command line characters and the patient.Cur data.</summary>
-		public static void SendData(){
+		public static void SendData(Patient pat){
 			ProgramProperties.GetForProgram();
-			if(Patients.PatIsLoaded){
+			if(pat!=null){
 				ProgramProperties.GetCur("Storage Path");
 				string comline="-P"+ProgramProperties.Cur.PropertyValue+@"\";
 				//Patient id can be any string format
 				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
 				if(ProgramProperties.Cur.PropertyValue=="0"){
-					comline+=Patients.Cur.PatNum.ToString();
+					comline+=pat.PatNum.ToString();
 				}
 				else{
-					comline+=Patients.Cur.ChartNumber;
+					comline+=pat.ChartNumber;
 				}
-				comline+=" -N"+Patients.Cur.LName+", "+Patients.Cur.FName;
+				comline+=" -N"+pat.LName+", "+pat.FName;
 				comline=comline.Replace("\"","");//gets rid of any quotes
 				comline=comline.Replace("'","");//gets rid of any single quotes
 				try{

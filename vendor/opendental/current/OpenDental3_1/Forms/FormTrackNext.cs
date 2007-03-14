@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace OpenDental{
 	/// <summary>The Next appoinment tracking tool.</summary>
 	public class FormTrackNext : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private OpenDental.TableUnsched tbApts;
 		/// <summary>
 		/// Required designer variable.
@@ -20,9 +20,7 @@ namespace OpenDental{
 		public FormTrackNext(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbApts.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbApts_CellDoubleClicked);
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -48,14 +46,17 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormTrackNext));
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.tbApts = new OpenDental.TableUnsched();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(872, 642);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
@@ -87,7 +88,7 @@ namespace OpenDental{
 			this.Name = "FormTrackNext";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Track Next Appointments";
+			this.Text = "Track Planned Appointments";
 			this.Load += new System.EventHandler(this.FormTrackNext_Load);
 			this.ResumeLayout(false);
 
@@ -125,7 +126,8 @@ namespace OpenDental{
 			int currentScroll=tbApts.ScrollValue;
 			Appointments.Cur=Appointments.ListUn[e.Row];
 			Appointments.CurOld=Appointments.Cur;
-			Patients.GetFamily(Appointments.Cur.PatNum);
+			Family famCur=Patients.GetFamily(Appointments.Cur.PatNum);
+			Patient patCur=famCur.GetPatient(Appointments.Cur.PatNum);
 			FormApptEdit FormAE=new FormApptEdit();
 			FormAE.PinIsVisible=true;
 			FormAE.ShowDialog();
@@ -133,7 +135,7 @@ namespace OpenDental{
 				return;
 			if(FormAE.PinClicked){
 				PinClicked=true;
-				CreateCurInfo();
+				CreateCurInfo(patCur);
 				Appointments.ListUn=null;
 				DialogResult=DialogResult.OK;
 			}
@@ -145,7 +147,7 @@ namespace OpenDental{
 		}	
 
 		/// <summary>This is not the best way to handle this for the long term.  There must be a better way to get some of the extra display info.</summary>
-		private void CreateCurInfo(){
+		private void CreateCurInfo(Patient patCur){
 			ContrAppt.CurInfo=new InfoApt();
 			ContrAppt.CurInfo.MyApt=Appointments.Cur;
 			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
@@ -153,7 +155,7 @@ namespace OpenDental{
 			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
 			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
 			ContrAppt.CurInfo.Production=procDesc.Production;
-			ContrAppt.CurInfo.MyPatient=Patients.Cur;
+			ContrAppt.CurInfo.MyPatient=patCur.Copy();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {

@@ -168,6 +168,9 @@ namespace OpenDental.UI{
 			if(button==null){//if there is no current hover button
 				return;//don't set a hotButton
 			}
+			//if(!button.Enabled){
+			//	return;//disabled buttons don't respond
+			//}
 			hotButton=button;
 			if(button.Style==ODToolBarButtonStyle.DropDownButton
 				&& HitTestDrop(button,e.X,e.Y))
@@ -198,7 +201,10 @@ namespace OpenDental.UI{
 				Invalidate(hotButton.Bounds);//invalidate the old button
 				//CLICK: 
 				if(hotButton==button){//if mouse was released over the same button as it was depressed
-					if(button.Style==ODToolBarButtonStyle.DropDownButton//if current button is dropdown
+					if(!button.Enabled){
+						//disabled buttons don't respond at all
+					}
+					else if(button.Style==ODToolBarButtonStyle.DropDownButton//if current button is dropdown
 						&& HitTestDrop(button,e.X,e.Y)//and we are in the dropdown area on the right
 						&& button.DropDownMenu!=null)//and there is a dropdown menu to display
 					{

@@ -17,8 +17,8 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textValue;
 		private System.Windows.Forms.Button butColor;
 		private System.Windows.Forms.ColorDialog colorDialog1;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		///<summary></summary>
 		public bool IsNew;
@@ -38,16 +38,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormDefEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.labelColor,
-				this.labelName,
-				this.labelValue,
-        this.butColor,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -74,16 +65,16 @@ namespace OpenDental{
 			this.butColor = new System.Windows.Forms.Button();
 			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
 			this.labelColor = new System.Windows.Forms.Label();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.checkHidden = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// labelName
 			// 
-			this.labelName.Location = new System.Drawing.Point(84, 24);
+			this.labelName.Location = new System.Drawing.Point(47, 24);
 			this.labelName.Name = "labelName";
-			this.labelName.Size = new System.Drawing.Size(68, 16);
+			this.labelName.Size = new System.Drawing.Size(150, 16);
 			this.labelName.TabIndex = 0;
 			this.labelName.Text = "Name";
 			this.labelName.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -131,28 +122,36 @@ namespace OpenDental{
 			// 
 			// labelColor
 			// 
-			this.labelColor.Location = new System.Drawing.Point(384, 22);
+			this.labelColor.Location = new System.Drawing.Point(389, 21);
 			this.labelColor.Name = "labelColor";
-			this.labelColor.Size = new System.Drawing.Size(38, 16);
+			this.labelColor.Size = new System.Drawing.Size(74, 16);
 			this.labelColor.TabIndex = 5;
 			this.labelColor.Text = "Color";
-			this.labelColor.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelColor.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(298, 131);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 4;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(392, 131);
+			this.butCancel.Location = new System.Drawing.Point(393, 131);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 5;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -162,7 +161,7 @@ namespace OpenDental{
 			this.checkHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkHidden.Location = new System.Drawing.Point(432, 38);
 			this.checkHidden.Name = "checkHidden";
-			this.checkHidden.Size = new System.Drawing.Size(70, 24);
+			this.checkHidden.Size = new System.Drawing.Size(99, 24);
 			this.checkHidden.TabIndex = 3;
 			this.checkHidden.Text = "Hidden";
 			// 

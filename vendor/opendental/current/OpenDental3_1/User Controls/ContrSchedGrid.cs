@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -14,7 +15,7 @@ namespace OpenDental{
 		public static int RowH;
 		///<summary></summary>
 		public static int ColW;
-		///<summary></summary>
+		///<summary>The width of the time columns</summary>
 		public static int NumW;
 		///<summary></summary>
 		public SchedDefault[] ArrayBlocks;
@@ -24,7 +25,7 @@ namespace OpenDental{
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			RowH=4;
 			ColW=100;
-			NumW=26;
+			NumW=36;
 			ArrayBlocks=new SchedDefault[0];
 		}
 
@@ -79,18 +80,22 @@ namespace OpenDental{
 			for(int x=0;x<8;x++){
 				e.Graphics.DrawLine(bPen,NumW+x*ColW,0,NumW+x*ColW,RowH*6*24);
 			}
-			e.Graphics.DrawString(Lan.g(this,"12am"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,-2);
-			e.Graphics.DrawString(Lan.g(this,"12am"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,-2);
-			for(int y=1;y<12;y++){
-				e.Graphics.DrawString(Lan.g(this,y.ToString()+"am"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,y*RowH*6-3);
-				e.Graphics.DrawString(Lan.g(this,y.ToString()+"am"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,y*RowH*6-3);
+			//e.Graphics.DrawString(Lan.g(this,"12am"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,-2);
+			//e.Graphics.DrawString(Lan.g(this,"12am"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,-2);
+			CultureInfo ci=(CultureInfo)CultureInfo.CurrentCulture.Clone();
+			string hFormat=Lan.GetShortTimeFormat(ci);
+			for(int y=0;y<24;y++){
+				e.Graphics.DrawString((new DateTime(2000,1,1,y,0,0)).ToString(hFormat,ci)
+					,new Font("Small Font",7f),new SolidBrush(Color.Black),0,y*RowH*6-3);
+				e.Graphics.DrawString((new DateTime(2000,1,1,y,0,0)).ToString(hFormat,ci)
+					,new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,y*RowH*6-3);
 			}
-			e.Graphics.DrawString(Lan.g(this,"12pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,12*RowH*6-3);
-			e.Graphics.DrawString(Lan.g(this,"12pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,12*RowH*6-3);
-			for(int y=1;y<12;y++){
-				e.Graphics.DrawString(Lan.g(this,y.ToString()+"pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,(12+y)*RowH*6-3);
-				e.Graphics.DrawString(Lan.g(this,y.ToString()+"pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,(12+y)*RowH*6-3);
-			}
+			//e.Graphics.DrawString(Lan.g(this,"12pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,12*RowH*6-3);
+			//e.Graphics.DrawString(Lan.g(this,"12pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,12*RowH*6-3);
+			//for(int y=1;y<12;y++){
+			//	e.Graphics.DrawString(Lan.g(this,y.ToString()+"pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,(12+y)*RowH*6-3);
+			//	e.Graphics.DrawString(Lan.g(this,y.ToString()+"pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,(12+y)*RowH*6-3);
+			//}
 			Width=NumW*2+ColW*7;
 			Height=RowH*24*6+1;
 		}

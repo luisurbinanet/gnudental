@@ -9,23 +9,16 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormPrinterSetup : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listPrinters;
-		private System.Windows.Forms.Button butDefault;
+		private OpenDental.UI.Button butDefault;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
 		public FormPrinterSetup(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				butDefault,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -42,10 +35,10 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.listPrinters = new System.Windows.Forms.ListBox();
-			this.butDefault = new System.Windows.Forms.Button();
+			this.butDefault = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// listPrinters
@@ -57,10 +50,13 @@ namespace OpenDental{
 			// 
 			// butDefault
 			// 
-			this.butDefault.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butDefault.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDefault.Autosize = true;
+			this.butDefault.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDefault.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDefault.Location = new System.Drawing.Point(24, 58);
 			this.butDefault.Name = "butDefault";
-			this.butDefault.Size = new System.Drawing.Size(88, 23);
+			this.butDefault.Size = new System.Drawing.Size(88, 25);
 			this.butDefault.TabIndex = 1;
 			this.butDefault.Text = "&Use Default";
 			this.butDefault.Click += new System.EventHandler(this.butDefault_Click);
@@ -75,7 +71,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(406, 280);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -85,8 +85,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(406, 314);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);

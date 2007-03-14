@@ -12,11 +12,11 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormProcedures : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butClose;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butOK;
 		///<summary></summary>
 		public FormProcMode Mode;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.Panel panel1;//"select" or "view"
 		///<summary></summary>
 		public string SelectedADA;	
@@ -24,22 +24,14 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listFeeSched;
 		private System.Windows.Forms.Label labelFeeSched;
 		private int tableLength;
-		private System.Windows.Forms.Button butNew;
+		private OpenDental.UI.Button butNew;
 		private OpenDental.TableCodeList[] tb;
 		private System.Windows.Forms.DataGrid dataGrid1;
 
 		///<summary></summary>
 		public FormProcedures(){
 			InitializeComponent();// Required for Windows Form Designer support
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				butNew,
-				labelFeeSched
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				butClose,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -55,21 +47,24 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butClose = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.listFeeSched = new System.Windows.Forms.ListBox();
 			this.labelFeeSched = new System.Windows.Forms.Label();
-			this.butNew = new System.Windows.Forms.Button();
+			this.butNew = new OpenDental.UI.Button();
 			this.dataGrid1 = new System.Windows.Forms.DataGrid();
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
-			this.butClose.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.Location = new System.Drawing.Point(848, 608);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(92, 26);
@@ -80,8 +75,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(866, 648);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -92,8 +90,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.Location = new System.Drawing.Point(866, 688);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -116,21 +117,27 @@ namespace OpenDental{
 			this.listFeeSched.Anchor = System.Windows.Forms.AnchorStyles.None;
 			this.listFeeSched.Location = new System.Drawing.Point(838, 52);
 			this.listFeeSched.Name = "listFeeSched";
-			this.listFeeSched.Size = new System.Drawing.Size(96, 303);
+			this.listFeeSched.Size = new System.Drawing.Size(104, 303);
 			this.listFeeSched.TabIndex = 11;
 			this.listFeeSched.SelectedIndexChanged += new System.EventHandler(this.listFeeSched_SelectedIndexChanged);
 			// 
 			// labelFeeSched
 			// 
 			this.labelFeeSched.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.labelFeeSched.Location = new System.Drawing.Point(840, 30);
+			this.labelFeeSched.Location = new System.Drawing.Point(838, 35);
 			this.labelFeeSched.Name = "labelFeeSched";
+			this.labelFeeSched.Size = new System.Drawing.Size(107, 16);
 			this.labelFeeSched.TabIndex = 12;
-			this.labelFeeSched.Text = "View Fee Sched:";
+			this.labelFeeSched.Text = "View Fee Sched";
+			this.labelFeeSched.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butNew
 			// 
-			this.butNew.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butNew.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butNew.Autosize = true;
+			this.butNew.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNew.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butNew.Location = new System.Drawing.Point(866, 568);
 			this.butNew.Name = "butNew";
 			this.butNew.Size = new System.Drawing.Size(75, 26);

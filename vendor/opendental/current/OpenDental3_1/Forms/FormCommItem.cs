@@ -16,16 +16,16 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		///<summary></summary>
 		public bool IsNew;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butDelete;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox textDateTime;
 		private System.Windows.Forms.ListBox listMode;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.ListBox listSentOrReceived;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Button butEmail;
+		private OpenDental.UI.Button butEmail;
 		private OpenDental.ODtextBox textNote;
 		private System.Windows.Forms.ListBox listType;
 		//private ArrayList NegIndex=new ArrayList();
@@ -35,20 +35,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormCommItem(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1,
-				this.label2, //*Ann
-				this.label3, //*Ann
-				this.label4, //*Ann
-				this.label6,
-				this.butEmail, //*Ann
-				this //*Ann
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				butDelete
-			}); 
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -66,9 +53,9 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.label1 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.listType = new System.Windows.Forms.ListBox();
 			this.textDateTime = new System.Windows.Forms.TextBox();
@@ -76,7 +63,7 @@ namespace OpenDental{
 			this.label3 = new System.Windows.Forms.Label();
 			this.listSentOrReceived = new System.Windows.Forms.ListBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.butEmail = new System.Windows.Forms.Button();
+			this.butEmail = new OpenDental.UI.Button();
 			this.textNote = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
@@ -100,28 +87,42 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(541, 356);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 6;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(541, 389);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 7;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butDelete
 			// 
-			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Location = new System.Drawing.Point(32, 388);
 			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(75, 25);
 			this.butDelete.TabIndex = 17;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -184,10 +185,13 @@ namespace OpenDental{
 			// 
 			// butEmail
 			// 
-			this.butEmail.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butEmail.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butEmail.Autosize = true;
+			this.butEmail.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEmail.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEmail.Location = new System.Drawing.Point(108, 296);
 			this.butEmail.Name = "butEmail";
-			this.butEmail.Size = new System.Drawing.Size(88, 23);
+			this.butEmail.Size = new System.Drawing.Size(88, 25);
 			this.butEmail.TabIndex = 26;
 			this.butEmail.Text = "View E-mail";
 			this.butEmail.Click += new System.EventHandler(this.butEmail_Click);
@@ -247,18 +251,19 @@ namespace OpenDental{
 			//remember, this list is 1-based
 			//there will ALWAYS be a commtype set before this dialog is opened
 			for(int i=0;i<Enum.GetNames(typeof(CommItemType)).Length;i++){
-				listType.Items.Add(Enum.GetNames(typeof(CommItemType))[i]);
+				listType.Items.Add(Lan.g("enumCommItemType",Enum.GetNames(typeof(CommItemType))[i]));
 			}
 			listType.SelectedIndex=(int)Commlogs.Cur.CommType-1;
 			for(int i=0;i<Enum.GetNames(typeof(CommItemMode)).Length;i++){
-				listMode.Items.Add(Enum.GetNames(typeof(CommItemMode))[i]);
+				listMode.Items.Add(Lan.g("enumCommItemMode",Enum.GetNames(typeof(CommItemMode))[i]));
 			}
 			listMode.SelectedIndex=(int)Commlogs.Cur.Mode;
 			for(int i=0;i<Enum.GetNames(typeof(CommSentOrReceived)).Length;i++){
-				listSentOrReceived.Items.Add(Enum.GetNames(typeof(CommSentOrReceived))[i]);
+				listSentOrReceived.Items.Add
+					(Lan.g("enumCommSentOrReceived",Enum.GetNames(typeof(CommSentOrReceived))[i]));
 			}
 			try{
-			listSentOrReceived.SelectedIndex=(int)Commlogs.Cur.SentOrReceived;
+				listSentOrReceived.SelectedIndex=(int)Commlogs.Cur.SentOrReceived;
 			}
 			catch{
 				MessageBox.Show(((int)Commlogs.Cur.SentOrReceived).ToString());
@@ -274,7 +279,7 @@ namespace OpenDental{
 		private void butEmail_Click(object sender, System.EventArgs e) {
 			EmailMessages.Refresh(Commlogs.Cur.EmailMessageNum);
 			//a date is entered, so they will not be able to click Send to save any changes
-			FormEmailMessageEdit FormE=new FormEmailMessageEdit();
+			FormEmailMessageEdit FormE=new FormEmailMessageEdit(Commlogs.Cur.PatNum);
 			FormE.ShowDialog();
 		}
 

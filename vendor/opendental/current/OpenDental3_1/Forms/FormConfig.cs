@@ -1,10 +1,13 @@
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Sockets;
 using System.ServiceProcess;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
@@ -19,8 +22,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox textPassword;
 		private System.Windows.Forms.TextBox textUser;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		///<summary></summary>
     public static string ComputerName;
 		///<summary></summary>
@@ -39,14 +42,14 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Button butStart;
+		private OpenDental.UI.Button butStart;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label5;
 		private System.ComponentModel.Container components = null;
 		private bool mysqlIsInstalled;
 		private System.Windows.Forms.Label labelStatus;
 		private System.Windows.Forms.TextBox textNotInstalled;
-		private System.Windows.Forms.Button butInstall;
+		private OpenDental.UI.Button butInstall;
 		private System.Windows.Forms.ComboBox comboComputerName;
 		private System.Windows.Forms.ComboBox comboDatabase;
 		private bool mysqlIsStarted;
@@ -55,16 +58,9 @@ namespace OpenDental{
 		public FormConfig(){
 			InitializeComponent();
 			//textPort.MaxVal=System.Int32.MaxValue;
-			Lan.C(this, new System.Windows.Forms.Control[]
-			{
-				this.label1,
-				this.label2,
-				this.label3,
-				this.label4
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
+			Lan.F(this);
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				textNotInstalled
 			});
 		}
 
@@ -91,19 +87,19 @@ namespace OpenDental{
 			this.textUser = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.comboDatabase = new System.Windows.Forms.ComboBox();
 			this.comboComputerName = new System.Windows.Forms.ComboBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.label5 = new System.Windows.Forms.Label();
-			this.butStart = new System.Windows.Forms.Button();
+			this.butStart = new OpenDental.UI.Button();
 			this.labelStatus = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.textNotInstalled = new System.Windows.Forms.TextBox();
-			this.butInstall = new System.Windows.Forms.Button();
+			this.butInstall = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -166,19 +162,29 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(602, 506);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 5;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(602, 542);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 6;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -250,9 +256,13 @@ namespace OpenDental{
 			// 
 			// butStart
 			// 
-			this.butStart.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butStart.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butStart.Autosize = true;
+			this.butStart.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butStart.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butStart.Location = new System.Drawing.Point(172, 108);
 			this.butStart.Name = "butStart";
+			this.butStart.Size = new System.Drawing.Size(75, 25);
 			this.butStart.TabIndex = 20;
 			this.butStart.Text = "Stop";
 			this.butStart.Click += new System.EventHandler(this.butStart_Click);
@@ -301,7 +311,10 @@ namespace OpenDental{
 			// 
 			// butInstall
 			// 
-			this.butInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butInstall.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butInstall.Autosize = true;
+			this.butInstall.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butInstall.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butInstall.Location = new System.Drawing.Point(12, 48);
 			this.butInstall.Name = "butInstall";
 			this.butInstall.Size = new System.Drawing.Size(102, 26);
@@ -312,7 +325,7 @@ namespace OpenDental{
 			// FormConfig
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(704, 594);
+			this.ClientSize = new System.Drawing.Size(708, 582);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butCancel);
@@ -322,7 +335,7 @@ namespace OpenDental{
 			this.Name = "FormConfig";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "MySQL Client Configuration";
+			this.Text = "Choose Database";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormConfig_Closing);
 			this.Load += new System.EventHandler(this.FormConfig_Load);
 			this.groupBox1.ResumeLayout(false);
@@ -406,16 +419,16 @@ namespace OpenDental{
 			ComputerName=comboComputerName.Text;
 			User=textUser.Text;
 			Password=textPassword.Text;
-			DataClass.SetConnection("mysql");
-			if(!Prefs.DBExists()){
+			DataConnection dcon=new DataConnection("mysql");//use the one table that we know exists
+			if(!dcon.IsValid()){
 				return new string[0];
 			}
-			Conversions.SelectText="SHOW DATABASES";
-			if(!Conversions.SubmitSelect())
-				return new string[0];
-			string[] dbNames=new string[Conversions.TableQ.Rows.Count];
-			for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-				dbNames[i]=Conversions.TableQ.Rows[i][0].ToString();
+			string command="SHOW DATABASES";
+			//if this next step fails, table will simply have 0 rows
+			DataTable table=dcon.GetTable(command);
+			string[] dbNames=new string[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				dbNames[i]=table.Rows[i][0].ToString();
 			}
 			return dbNames;
 		}
@@ -626,6 +639,37 @@ namespace OpenDental{
 			}
 		}
 
+		/*private void butTestPort_Click(object sender, System.EventArgs e) {
+			
+
+			Thread2=new Thread(new ThreadStart(Listen));
+			IPAddress ipAddress=Dns.Resolve(comboComputerName.Text).AddressList[0];
+			IPEndPoint endpoint=new IPEndPoint(ipAddress,3306);
+			Socket socket
+				=new Socket(endpoint.AddressFamily,SocketType.Stream,ProtocolType.Tcp);
+			try{
+				socket.SetSocketOption(SocketOptionLevel.Socket,SocketOptionName.ReceiveTimeout,10);
+				socket.SetSocketOption(SocketOptionLevel.Socket,SocketOptionName.SendTimeout,10);
+				MessageBox.Show("preparing to connect");
+				socket.Connect(endpoint);
+				if(!socket.Connected){
+					MessageBox.Show("not connected");
+					return;
+				}
+
+				MessageBox.Show("Connected");
+				socket.Close();
+				MessageBox.Show("Port is open");
+			}
+			catch(Exception ex){
+				MessageBox.Show("Exception : " + ex.ToString());
+			}
+			catch{
+				MessageBox.Show("caught");
+			}
+			MessageBox.Show("end");
+		}*/
+
 		private void ResetToOriginal(){
 			ComputerName=originalComputerName;
 			Database=originalDatabase;
@@ -708,6 +752,8 @@ namespace OpenDental{
 				ResetToOriginal();
 			}
 		}
+
+		
 
 		
 

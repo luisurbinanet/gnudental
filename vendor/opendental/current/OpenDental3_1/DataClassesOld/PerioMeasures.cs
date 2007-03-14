@@ -42,12 +42,12 @@ namespace OpenDental{
 		public static PerioMeasure Cur;
 
 		///<summary>Gets all measurements for the current patient, then organizes them by exam and sequence.</summary>
-		public static void Refresh(){
+		public static void Refresh(int patNum){
 			cmd.CommandText =
 				"SELECT periomeasure.*,perioexam.ExamDate"
 				+" FROM periomeasure,perioexam"
 				+" WHERE periomeasure.PerioExamNum = perioexam.PerioExamNum"
-				+" && perioexam.PatNum = '"+Patients.Cur.PatNum.ToString()+"'"
+				+" && perioexam.PatNum = '"+patNum.ToString()+"'"
 				+" ORDER BY perioexam.ExamDate";
 			FillTable();
 			List=new PerioMeasure[PerioExams.List.Length,Enum.GetNames(typeof(PerioSequenceType)).Length,33];

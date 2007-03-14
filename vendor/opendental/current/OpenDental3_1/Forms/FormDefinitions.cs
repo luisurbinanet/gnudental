@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormDefinitions : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.TextBox textGuide;
 		private System.Windows.Forms.GroupBox groupEdit;
@@ -15,10 +15,10 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listCategory;
 		private System.Windows.Forms.Label label13;
 		private System.ComponentModel.Container components = null;
-		private OpenDental.XPButton butAdd;
-		private OpenDental.XPButton butUp;
-		private OpenDental.XPButton butDown;
-		private System.Windows.Forms.Button butHide;
+		private OpenDental.UI.Button butAdd;
+		private OpenDental.UI.Button butUp;
+		private OpenDental.UI.Button butDown;
+		private OpenDental.UI.Button butHide;
 		private int SelectedCat;
 
 		///<summary></summary>
@@ -27,18 +27,7 @@ namespace OpenDental{
 			tbDefs.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbDefs_CellDoubleClicked);
 			tbDefs.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbDefs_CellClicked);
 			SelectedCat=-1;
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label13,
-				this.label14,
-				this.groupEdit,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butUp,
-				butDown,
-				butAdd,
-				butHide,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -59,14 +48,14 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormDefinitions));
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.label14 = new System.Windows.Forms.Label();
 			this.textGuide = new System.Windows.Forms.TextBox();
 			this.groupEdit = new System.Windows.Forms.GroupBox();
-			this.butHide = new System.Windows.Forms.Button();
-			this.butDown = new OpenDental.XPButton();
-			this.butUp = new OpenDental.XPButton();
-			this.butAdd = new OpenDental.XPButton();
+			this.butHide = new OpenDental.UI.Button();
+			this.butDown = new OpenDental.UI.Button();
+			this.butUp = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.tbDefs = new OpenDental.TableDefs();
 			this.listCategory = new System.Windows.Forms.ListBox();
 			this.label13 = new System.Windows.Forms.Label();
@@ -75,8 +64,12 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(545, 564);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
@@ -86,7 +79,7 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(58, 474);
+			this.label14.Location = new System.Drawing.Point(57, 474);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(100, 18);
 			this.label14.TabIndex = 22;
@@ -118,7 +111,10 @@ namespace OpenDental{
 			// 
 			// butHide
 			// 
-			this.butHide.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butHide.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butHide.Autosize = true;
+			this.butHide.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butHide.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butHide.Location = new System.Drawing.Point(140, 19);
 			this.butHide.Name = "butHide";
 			this.butHide.Size = new System.Drawing.Size(75, 26);
@@ -129,8 +125,9 @@ namespace OpenDental{
 			// butDown
 			// 
 			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.Autosize = true;
+			this.butDown.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDown.Location = new System.Drawing.Point(348, 19);
@@ -143,8 +140,9 @@ namespace OpenDental{
 			// butUp
 			// 
 			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
-			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.Autosize = true;
+			this.butUp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butUp.Location = new System.Drawing.Point(242, 19);
@@ -157,8 +155,9 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(34, 19);
@@ -251,6 +250,9 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
+			for(int i=0;i<listCategory.Items.Count;i++){
+				listCategory.Items[i]=Lan.g(this,(string)listCategory.Items[i]);
+			}
 		}
 
 		private void FillDefs(){
@@ -300,161 +302,139 @@ namespace OpenDental{
 			FormDefEdit.CanEditName=true;//false;
 			tbDefs.Fields[1]="";
 			FormDefEdit.ValueText="";
-			switch(listCategory.SelectedItem.ToString()){
-				case "Account Colors":
+			switch(listCategory.SelectedIndex){
+				case 0://"Account Colors":
 					SelectedCat=0;
 					FormDefEdit.CanEditName=false;
 					FormDefEdit.EnableColor=true;
-					FormDefEdit.HelpText="Changes the color of text for different types of entries in Account Module";
+					FormDefEdit.HelpText=Lan.g(this,"Changes the color of text for different types of entries in Account Module");
 					break;
-				case "Adj Types":
+				case 1://"Adj Types":
 					SelectedCat=1;
-					FormDefEdit.ValueText="+ or -";
+					FormDefEdit.ValueText=Lan.g(this,"+ or -");
 					FormDefEdit.EnableValue=true;
-					FormDefEdit.HelpText="Plus increases the patient balance.  Minus decreases it.  Not allowed "
-						+"to change value after creating new type since changes affect all patient accounts.";
+					FormDefEdit.HelpText=Lan.g(this,"Plus increases the patient balance.  Minus decreases it.  Not allowed to change value after creating new type since changes affect all patient accounts.");
 					break;
-				case "Appt Confirmed":
+				case 2://"Appointment Colors":
+					SelectedCat=17;
+					FormDefEdit.EnableColor=true;
+					FormDefEdit.CanEditName=false;
+					FormDefEdit.HelpText=Lan.g(this,"Changes colors of background in Appointments Module, and colors for completed appointments.");
+					break;
+				case 3://"Appt Confirmed":
 					SelectedCat=2;
 					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="Abbrev";
+					FormDefEdit.ValueText=Lan.g(this,"Abbrev");
 					FormDefEdit.EnableColor=true;
 					//tbDefs.Fields[2]="Color";
-					FormDefEdit.HelpText="Color shows in bar on left of each appointment.  Changes affect all appointments.";
+					FormDefEdit.HelpText=Lan.g(this,"Color shows in bar on left of each appointment.  Changes affect all appointments.");
 					break;
-				case "Appt Procs Quick Add":
+				case 4://"Appt Phone Notes":
+					SelectedCat=19;
+					FormDefEdit.HelpText=Lan.g(this,"This section is no longer used. Right click on text boxes instead. See Quick Add Notes.");
+					break;
+				case 5://"Appt Procs Quick Add":
 					SelectedCat=3;
 					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="ADA Code(s)";
-					FormDefEdit.HelpText="These are the procedures that you can quickly add to the treatment"
-						+" plan from within the appointment editing window.  They must not require a tooth number."
-						+" Multiple procedure may be separated by commas with no spaces. "
-						+"  These definitions may be freely edited without affecting any patient records.";
+					FormDefEdit.ValueText=Lan.g(this,"ADA Code(s)");
+					FormDefEdit.HelpText=Lan.g(this,"These are the procedures that you can quickly add to the treatment plan from within the appointment editing window.  They must not require a tooth number. Multiple procedures may be separated by commas with no spaces. These definitions may be freely edited without affecting any patient records.");
 					break;
-				case "Billing Types":
+				case 6://"Billing Types":
 					SelectedCat=4;
-					FormDefEdit.HelpText="It is recommended to use as few billing types as possible.  "
-						+"They can be useful when running reports to separate delinquent accounts, but "
-						+"can cause 'forgotten accounts' if used without good office procedures. "
-						+"Changes affect all patients.";
+					FormDefEdit.HelpText=Lan.g(this,"It is recommended to use as few billing types as possible.  They can be useful when running reports to separate delinquent accounts, but can cause 'forgotten accounts' if used without good office procedures. Changes affect all patients.");
 					break;
-				case "Claim Formats":
+				case 7://"Chart Graphic Colors":
+					SelectedCat=22;
+					FormDefEdit.EnableColor=true;
+					FormDefEdit.CanEditName=false;
+					FormDefEdit.HelpText=Lan.g(this,"These colors will be used on the graphical tooth chart to draw restorations.");
+					break;
+				case 8://"Claim Formats":
 					SelectedCat=5;
 					FormDefEdit.EnableValue=false;
 					FormDefEdit.ValueText="";
 					FormDefEdit.HelpText=Lan.g(this,"This category is obsolete.");
 					break;
-				case "Dunning Messages":
+				case 9://"Contact Categories":
+					SelectedCat=(int)DefCat.ContactCategories;
+					FormDefEdit.HelpText=Lan.g(this,"You can add as many categories as you want.  Changes affect all current contact records.");
+					break;
+				case 10://"Diagnosis":
+					SelectedCat=16;
+					FormDefEdit.EnableValue=true;
+					FormDefEdit.ValueText=Lan.g(this,"1 or 2 letter abbreviation");
+					FormDefEdit.HelpText=Lan.g(this,"The diagnosis list is shown when entering a procedure.  Ones that are less used should go lower on the list.  The abbreviation is shown in the progress notes.  BE VERY CAREFUL.  Changes affect all patients.");
+					break;
+				case 11://"Discount Types":
+					SelectedCat=15;
+					FormDefEdit.EnableValue=true;
+					FormDefEdit.ValueText=Lan.g(this,"Percentage Discount");
+					FormDefEdit.HelpText=Lan.g(this,"This category is no longer used.");
+					break;
+				case 12://"Dunning Messages":
 					SelectedCat=6;
 					FormDefEdit.CanEditName=false;
 					FormDefEdit.EnableValue=false;//true;
-					FormDefEdit.ValueText="Message";
-					FormDefEdit.HelpText="This category is not currently being used.";
+					FormDefEdit.ValueText=Lan.g(this,"Message");
+					FormDefEdit.HelpText=Lan.g(this,"This category is not currently being used.");
 						//"Messages will automatically show up on statements with "
 						//+"the specified aging.  Family is considered to have insurance if any family "
 						//+"member has insurance.";
 					break;
-				case "Fee Sched Names":
+				case 13://"Fee Sched Names":
 					SelectedCat=7;
-					FormDefEdit.HelpText="Fee Schedule names.  Caution: any changes to the names affect all patients. "
-						+"Changing the order does not cause any problems.";
+					FormDefEdit.HelpText=Lan.g(this,"Fee Schedule names.  Caution: any changes to the names affect all patients. Changing the order does not cause any problems.");
 					break;
-				case "Medical Notes":
-					SelectedCat=8;
-					FormDefEdit.HelpText="This section is no longer used. Right click on text boxes instead. See Quick Add Notes.";
-					break;
-				case "Operatories":
-					SelectedCat=9;
-					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="Abbreviation";
-					FormDefEdit.HelpText="Ops will be displayed in the appointment book in the "
-						+"order shown above.  Max length of abbreviations is 5 characters.";
-					break;
-				case "Payment Types":
-					SelectedCat=10;
-					FormDefEdit.HelpText="Types of payments that patients might make. "
-						+"Any changes will affect all patients.";
-					break;
-				case "Proc Code Categories":
-					SelectedCat=11;
-					FormDefEdit.HelpText="These are the categories for organizing procedure codes. "
-						+"They do not have to follow ADA categories.  There is no relationship to "
-						+"insurance categories which are setup in the Ins Categories section.  "
-						+"Does not affect any patient records.";
-					break;
-				case "Prog Notes Colors":
-					SelectedCat=12;
-					FormDefEdit.EnableColor=true;
-					FormDefEdit.CanEditName=false;
-					FormDefEdit.HelpText="Changes color of text for different types of entries"
-						+" in the Chart Module Progress Notes.";
-					break;
-				case "Recall/Unsch Status":
-					SelectedCat=13;
-					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="Abbreviation";
-					FormDefEdit.HelpText="Recall/Unsched Status.  Abbreviation must be 7"
-						+" characters or less.  Changes affect all patients.";
-					break;
-				case "Service Notes":
-					SelectedCat=14;
-					FormDefEdit.HelpText="This section is no longer used. Right click on text boxes instead. See Quick Add Notes.";
-					break;
-				case "Discount Types":
-					SelectedCat=15;
-					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="Percentage Discount";
-					FormDefEdit.HelpText="Discount types will show from the payment screen.  The percentage value should be without a decimal. For example, '10' would be a 10% discount. Value may be left blank.  Changes affect all patients.";
-					break;
-				case "Diagnosis":
-					SelectedCat=16;
-					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="1 or 2 letter abbreviation";
-					FormDefEdit.HelpText="The diagnosis list is shown when entering a procedure.  Ones that "
-						+"are less used should go lower on the list.  The abbreviation is shown in the progress"
-						+" notes.  BE VERY CAREFUL.  Changes affect all patients.";
-					break;
-				case "Appointment Colors":
-					SelectedCat=17;
-					FormDefEdit.EnableColor=true;
-					FormDefEdit.CanEditName=false;
-					FormDefEdit.HelpText="Changes colors of background in Appointments Module, and colors for completed"
-						+" appointments.";
-					break;
-				case "Image Categories":
+				case 14://"Image Categories":
 					SelectedCat=18;
 					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="Visible in Chart module";
-					FormDefEdit.HelpText="These are the categories that will be available in the image and chart modules.  If you hide a category, images in that category will be hidden, so only hide a category if you are certain it has never been used.  If you want the category to show in the Chart module, enter an x in the second column.  Affects all patient records.";
+					FormDefEdit.ValueText=Lan.g(this,"Visible in Chart module");
+					FormDefEdit.HelpText=Lan.g(this,"These are the categories that will be available in the image and chart modules.  If you hide a category, images in that category will be hidden, so only hide a category if you are certain it has never been used.  If you want the category to show in the Chart module, enter an x in the second column.  Affects all patient records.");
 					break;
-				case "Appt Phone Notes":
-					SelectedCat=19;
-					FormDefEdit.HelpText="This section is no longer used. Right click on text boxes instead. See Quick Add Notes.";
+				case 15://"Medical Notes":
+					SelectedCat=8;
+					FormDefEdit.HelpText=Lan.g(this,"This section is no longer used. Right click on text boxes instead. See Quick Add Notes.");
 					break;
-				case "Treat' Plan Priorities":
-					SelectedCat=20;
-					FormDefEdit.EnableColor=true;
-					FormDefEdit.HelpText="Priorities available for selection in the Treatment Plan"
-						+" module.  They can be simple numbers or descriptive abbreviations"
-						+" 7 letters or less.  Changes affect all procedures where the definition is used.";
-					break;
-				case "Misc Colors":
+				case 16://"Misc Colors":
 					SelectedCat=21;
 					FormDefEdit.EnableColor=true;
 					FormDefEdit.CanEditName=false;
 					FormDefEdit.HelpText="";
 					break;
-				case "Chart Graphic Colors":
-					SelectedCat=22;
+				case 17://"Operatories":
+					SelectedCat=9;
+					FormDefEdit.EnableValue=true;
+					FormDefEdit.ValueText=Lan.g(this,"Abbreviation");
+					FormDefEdit.HelpText=Lan.g(this,"Ops will be displayed in the appointment book in the order shown above.  Max length of abbreviations is 5 characters.");
+					break;
+				case 18://"Payment Types":
+					SelectedCat=10;
+					FormDefEdit.HelpText=Lan.g(this,"Types of payments that patients might make. Any changes will affect all patients.");
+					break;
+				case 19://"Proc Code Categories":
+					SelectedCat=11;
+					FormDefEdit.HelpText=Lan.g(this,"These are the categories for organizing procedure codes. They do not have to follow ADA categories.  There is no relationship to insurance categories which are setup in the Ins Categories section.  Does not affect any patient records.");
+					break;
+				case 20://"Prog Notes Colors":
+					SelectedCat=12;
 					FormDefEdit.EnableColor=true;
 					FormDefEdit.CanEditName=false;
-					FormDefEdit.HelpText="These colors will be used on the graphical tooth chart "
-						+"to draw restorations.";
+					FormDefEdit.HelpText=Lan.g(this,"Changes color of text for different types of entries in the Chart Module Progress Notes.");
 					break;
-				case "Contact Categories":
-					SelectedCat=(int)DefCat.ContactCategories;
-					FormDefEdit.HelpText="You can add as many categories as you want.  Changes affect all current "
-						+"contact records.";
+				case 21://"Recall/Unsch Status":
+					SelectedCat=13;
+					FormDefEdit.EnableValue=true;
+					FormDefEdit.ValueText=Lan.g(this,"Abbreviation");
+					FormDefEdit.HelpText=Lan.g(this,"Recall/Unsched Status.  Abbreviation must be 7 characters or less.  Changes affect all patients.");
+					break;
+				case 22://"Service Notes":
+					SelectedCat=14;
+					FormDefEdit.HelpText=Lan.g(this,"This section is no longer used. Right click on text boxes instead. See Quick Add Notes.");
+					break;
+				case 23://"Treat' Plan Priorities":
+					SelectedCat=20;
+					FormDefEdit.EnableColor=true;
+					FormDefEdit.HelpText=Lan.g(this,"Priorities available for selection in the Treatment Plan module.  They can be simple numbers or descriptive abbreviations 7 letters or less.  Changes affect all procedures where the definition is used.");
 					break;
 			}
 			FillDefs();

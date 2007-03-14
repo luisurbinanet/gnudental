@@ -31,7 +31,7 @@ namespace OpenDental{
 				return true;
 			}
 			else{
-				MessageBox.Show(Lan.g("Pref","Conversion unsuccessful"));
+				MessageBox.Show("Conversion unsuccessful");
 				ExitApplicationNow2.ExitNow();
 				return false;
 			}

@@ -41,7 +41,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Panel panelSide;
 		private System.Windows.Forms.ListBox listViewPr;
-		private System.Windows.Forms.Button butSelectAll;
+		private OpenDental.UI.Button butSelectAll;
 		//private bool[] selectedPrs;//had to use this because of deficiency in available Listbox events.
 		///<summary>If set to true, procedures will show that have a priority which is hidden in Defs. This keeps procedures from disappearing permanantly because by viewing "all" it will include even hidden.</summary>
 		private bool showHidden;
@@ -101,6 +101,12 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.CheckBox checkShowIns;
 		private ClaimProc[] ClaimProcList;
+		private Family FamCur;
+		private Patient PatCur;
+		private InsPlan[] PlanList;
+		///<summary></summary>
+		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
+		public event PatientSelectedEventHandler PatientSelected=null;
 
 		///<summary></summary>
 		public ContrTreat(){
@@ -143,11 +149,11 @@ namespace OpenDental{
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.panelSide = new System.Windows.Forms.Panel();
+			this.butSelectAll = new OpenDental.UI.Button();
+			this.listViewPr = new System.Windows.Forms.ListBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.checkShowIns = new System.Windows.Forms.CheckBox();
 			this.checkShowCompleted = new System.Windows.Forms.CheckBox();
-			this.butSelectAll = new System.Windows.Forms.Button();
-			this.listViewPr = new System.Windows.Forms.ListBox();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label11 = new System.Windows.Forms.Label();
 			this.label12 = new System.Windows.Forms.Label();
@@ -342,6 +348,28 @@ namespace OpenDental{
 			this.panelSide.Size = new System.Drawing.Size(215, 341);
 			this.panelSide.TabIndex = 29;
 			// 
+			// butSelectAll
+			// 
+			this.butSelectAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSelectAll.Autosize = true;
+			this.butSelectAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSelectAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butSelectAll.Location = new System.Drawing.Point(114, 248);
+			this.butSelectAll.Name = "butSelectAll";
+			this.butSelectAll.Size = new System.Drawing.Size(68, 23);
+			this.butSelectAll.TabIndex = 17;
+			this.butSelectAll.Text = "All";
+			this.butSelectAll.Click += new System.EventHandler(this.butSelectAll_Click);
+			// 
+			// listViewPr
+			// 
+			this.listViewPr.Location = new System.Drawing.Point(114, 33);
+			this.listViewPr.Name = "listViewPr";
+			this.listViewPr.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.listViewPr.Size = new System.Drawing.Size(68, 212);
+			this.listViewPr.TabIndex = 16;
+			this.listViewPr.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listViewPr_MouseUp);
+			// 
 			// groupBox1
 			// 
 			this.groupBox1.Controls.Add(this.checkShowIns);
@@ -371,25 +399,6 @@ namespace OpenDental{
 			this.checkShowCompleted.Size = new System.Drawing.Size(178, 17);
 			this.checkShowCompleted.TabIndex = 18;
 			this.checkShowCompleted.Text = "Completed Treatment";
-			// 
-			// butSelectAll
-			// 
-			this.butSelectAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butSelectAll.Location = new System.Drawing.Point(114, 248);
-			this.butSelectAll.Name = "butSelectAll";
-			this.butSelectAll.Size = new System.Drawing.Size(68, 20);
-			this.butSelectAll.TabIndex = 17;
-			this.butSelectAll.Text = "All";
-			this.butSelectAll.Click += new System.EventHandler(this.butSelectAll_Click);
-			// 
-			// listViewPr
-			// 
-			this.listViewPr.Location = new System.Drawing.Point(114, 33);
-			this.listViewPr.Name = "listViewPr";
-			this.listViewPr.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listViewPr.Size = new System.Drawing.Size(68, 212);
-			this.listViewPr.TabIndex = 16;
-			this.listViewPr.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listViewPr_MouseUp);
 			// 
 			// label10
 			// 
@@ -438,7 +447,7 @@ namespace OpenDental{
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(708, 516);
+			this.label15.Location = new System.Drawing.Point(707, 516);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(81, 14);
 			this.label15.TabIndex = 36;
@@ -633,7 +642,7 @@ namespace OpenDental{
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
 			this.textNote.ReadOnly = true;
-			this.textNote.Size = new System.Drawing.Size(351, 86);
+			this.textNote.Size = new System.Drawing.Size(346, 114);
 			this.textNote.TabIndex = 54;
 			this.textNote.Text = "";
 			// 
@@ -727,29 +736,33 @@ namespace OpenDental{
 			checkShowCompleted.Checked=Prefs.GetBool("TreatPlanShowCompleted");
 			checkShowIns.Checked=Prefs.GetBool("TreatPlanShowIns");
 			showHidden=true;//shows hidden priorities
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butSelectAll,
-				this.label1,
-				this.label10,
-				this.label11,
-				this.label12,
-				this.label13,
-				this.label14,
-				this.label15,
-				this.label16,
-				this.label17,
-				this.label18,
-				this.label19,
-				this.label2,
-				this.label3,
-				this.label4,
-				this.label5,
-				this.label6,
-				this.label7,
-				this.label8,
-				this.label9,
-				this.panelSide,
-			});
+			//can't use Lan.F(this);
+			Lan.C(this,new Control[]
+				{
+				label19,
+				label4,
+				label1,
+				label2,
+				butSelectAll,
+				groupBox1,
+				checkShowCompleted,
+				checkShowIns,
+				label3,
+				label10,
+				label16,
+				label11,
+				label12,
+				label18,
+				label13,
+				label15,
+				label14,
+				label17,
+				label6,
+				label9,
+				label8,
+				label7,
+				label5
+				});
 		}
 
 		///<summary>Called every time local data is changed from any workstation.  Refreshes priority lists and lays out the toolbar.</summary>
@@ -790,16 +803,17 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public void ModuleSelected(){
+		public void ModuleSelected(int patNum){
 			//MessageBox.Show("module selected");
-			RefreshModuleData();
+			RefreshModuleData(patNum);
 			RefreshModuleScreen();
 		}
 
 		///<summary></summary>
 		public void ModuleUnselected(){
-			Patients.FamilyList=null;
-			InsPlans.List=null;
+			FamCur=null;
+			PatCur=null;
+			PlanList=null;
 			CovPats.List=null;
 			Claims.List=null;
 			Claims.HList=null;
@@ -807,23 +821,25 @@ namespace OpenDental{
 			//from FillMain:
 			ProcList=null;
 			//Procedures.HList=null;
-			Procedures.MissingTeeth=null;
+			//Procedures.MissingTeeth=null;
 		}
 
-		private void RefreshModuleData(){
-			if(Patients.PatIsLoaded){
-				Patients.GetFamily(Patients.Cur.PatNum);
-				InsPlans.Refresh();
-				CovPats.Refresh();
-				Claims.Refresh();
+		private void RefreshModuleData(int patNum){
+			if(patNum!=0){
+				FamCur=Patients.GetFamily(patNum);
+				PatCur=FamCur.GetPatient(patNum);
+				PlanList=InsPlans.Refresh(FamCur);
+				CovPats.Refresh(PatCur,PlanList);
+				Claims.Refresh(PatCur.PatNum);
         Fees.Refresh();
-        ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+        ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			}
 		}
 
 		private void RefreshModuleScreen(){
-			if(Patients.PatIsLoaded){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
+			if(PatCur!=null){
+				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+					+PatCur.GetNameLF();
 				tbMain.Enabled=true;
 				panelSide.Enabled=true;
 				ToolBarMain.Buttons["PreAuth"].Enabled=true;
@@ -850,12 +866,13 @@ namespace OpenDental{
 		}
 
 		private void FillPatientButton(){
-			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click));
+			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click),PatCur,FamCur);
 		}
 
 		private void menuPatient_Click(object sender,System.EventArgs e) {
-			Patients.ButtonSelect(menuPatient,sender);
-			ModuleSelected();
+			int newPatNum=Patients.ButtonSelect(menuPatient,sender,FamCur);
+			OnPatientSelected(newPatNum);
+			ModuleSelected(newPatNum);
 		}
 
 		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
@@ -877,21 +894,29 @@ namespace OpenDental{
 				}
 			}
 			else if(e.Button.Tag.GetType()==typeof(int)){
-				Programs.Execute((int)e.Button.Tag);
+				Programs.Execute((int)e.Button.Tag,PatCur);
 			}
 		}
 
 		private void OnPat_Click() {
-			FormPatientSelect formSelectPatient2 = new FormPatientSelect();
-			formSelectPatient2.ShowDialog();
-			if (formSelectPatient2.DialogResult == DialogResult.OK){
-				ModuleSelected();
+			FormPatientSelect formPS=new FormPatientSelect();
+			formPS.ShowDialog();
+			if(formPS.DialogResult==DialogResult.OK){
+				OnPatientSelected(formPS.SelectedPatNum);
+				ModuleSelected(formPS.SelectedPatNum);
 			}
+		}
+
+		///<summary></summary>
+		private void OnPatientSelected(int patNum){
+			PatientSelectedEventArgs eArgs=new OpenDental.PatientSelectedEventArgs(patNum);
+			if(PatientSelected!=null)
+				PatientSelected(this,eArgs);
 		}
 
 		private void FillMain(){
 			//tbMain.SelectedRows=new int[0];
-			if(!Patients.PatIsLoaded){
+			if(PatCur==null){
 				tbMain.ResetRows(0);
 				tbMain.LayoutTables();
 				return;
@@ -907,7 +932,7 @@ namespace OpenDental{
 			//Procedures.List is never used again after initial passthrough
 			//Notes will be handled like any
 			//other line, just no numbers(eventually)
-			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
+			ProcList=Procedures.Refresh(PatCur.PatNum);
 			arrayLProc=new ArrayList();
 			bool doAdd;
 			int iPriority;
@@ -987,8 +1012,8 @@ namespace OpenDental{
 				tempTPLine.Description=ProcedureCodes.GetProcCode(((Procedure)arrayLProc[i]).ADACode).Descript;
 				tempTPLine.ADACode=((Procedure)arrayLProc[i]).ADACode;
 				double fee=((Procedure)arrayLProc[i]).ProcFee;
-				double priIns=((Procedure)arrayLProc[i]).GetEst(ClaimProcList,PriSecTot.Pri);
-				double secIns=((Procedure)arrayLProc[i]).GetEst(ClaimProcList,PriSecTot.Sec);
+				double priIns=((Procedure)arrayLProc[i]).GetEst(ClaimProcList,PriSecTot.Pri,PatCur);
+				double secIns=((Procedure)arrayLProc[i]).GetEst(ClaimProcList,PriSecTot.Sec,PatCur);
 				double pat=fee-priIns-secIns
 					-((Procedure)arrayLProc[i]).GetWriteOff(ClaimProcList);
 				if(pat<0)
@@ -1043,28 +1068,29 @@ namespace OpenDental{
 			textSecUsed.Text="";
 			textSecPend.Text="";
 			textSecRem.Text="";
-			if(!Patients.PatIsLoaded){
+			if(PatCur==null){
 				return;
 			}
 			double max=0;
 			double remain=0;
 			double pend=0;
 			double used=0;
-			if(Patients.Cur.PriPlanNum!=0){
-				InsPlans.GetCur(Patients.Cur.PriPlanNum);
+			InsPlan PlanCur;//=new InsPlan();
+			if(PatCur.PriPlanNum!=0){
+				PlanCur=InsPlans.GetPlan(PatCur.PriPlanNum,PlanList);
 				//pending:
-				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,Patients.Cur.PriPlanNum);
+				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatCur.PriPlanNum,PlanList);
 				textPriPend.Text=pend.ToString("F");
 				//max, used, and remaining:
-				if(InsPlans.Cur.AnnualMax==-1){//annual max is blank
+				if(PlanCur.AnnualMax==-1){//annual max is blank
 					//used cannot display because there is no way to calculate it until all the math is reworked.
 					textPriMax.Text="";
 					textPriRem.Text="";
 					textPriUsed.Text="";
 				}
 				else{
-					max=InsPlans.Cur.AnnualMax;
-					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,Patients.Cur.PriPlanNum,-1);
+					max=PlanCur.AnnualMax;
+					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatCur.PriPlanNum,-1,PlanList);
 					used=max-remain-pend;//math done in reverse to take advantage of GetInsRem
 					//fix later to: remain=max-used-pend
 					textPriMax.Text=max.ToString("F");
@@ -1072,36 +1098,37 @@ namespace OpenDental{
 					textPriUsed.Text=used.ToString("F");
 				}
 				//deductible:
-				if(InsPlans.Cur.Deductible!=-1)
-					textPriDed.Text=InsPlans.Cur.Deductible.ToString("F");
-				textPriDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,Patients.Cur.PriPlanNum,-1).ToString("F");
+				if(PlanCur.Deductible!=-1)
+					textPriDed.Text=PlanCur.Deductible.ToString("F");
+				textPriDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,PatCur.PriPlanNum
+					,-1,PlanList).ToString("F");
 			}
-			if(Patients.Cur.SecPlanNum!=0){
-				InsPlans.GetCur(Patients.Cur.SecPlanNum);
-				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,Patients.Cur.SecPlanNum);
+			if(PatCur.SecPlanNum!=0){
+				PlanCur=InsPlans.GetPlan(PatCur.SecPlanNum,PlanList);
+				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatCur.SecPlanNum,PlanList);
 				textSecPend.Text=pend.ToString("F");
-				if(InsPlans.Cur.AnnualMax==-1){//annual max is blank
+				if(PlanCur.AnnualMax==-1){//annual max is blank
 					textSecMax.Text="";
 					textSecRem.Text="";
 					textSecUsed.Text="";
 				}
 				else{
-					max=InsPlans.Cur.AnnualMax;
-					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,Patients.Cur.SecPlanNum,-1);
+					max=PlanCur.AnnualMax;
+					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatCur.SecPlanNum,-1,PlanList);
 					used=max-remain-pend;
 					textSecMax.Text=max.ToString("F");
 					textSecRem.Text=remain.ToString("F");
 					textSecUsed.Text=used.ToString("F");
 				}
-				if(InsPlans.Cur.Deductible!=-1)
-					textSecDed.Text=InsPlans.Cur.Deductible.ToString("F");
+				if(PlanCur.Deductible!=-1)
+					textSecDed.Text=PlanCur.Deductible.ToString("F");
 				textSecDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,
-					Patients.Cur.SecPlanNum,-1).ToString("F");
+					PatCur.SecPlanNum,-1,PlanList).ToString("F");
 			}
 		}
 
     private void FillPreAuth(){
-      if(!Patients.PatIsLoaded){
+      if(PatCur==null){
 				listPreAuth.Items.Clear();
 				return;
 			}
@@ -1114,14 +1141,14 @@ namespace OpenDental{
       listPreAuth.Items.Clear();
 			//selectedPreAuth=-1;
       for(int i=0;i<ALPreAuth.Count;i++){
-				InsPlans.GetCur(((Claim)ALPreAuth[i]).PlanNum);
+				InsPlan PlanCur=InsPlans.GetPlan(((Claim)ALPreAuth[i]).PlanNum,PlanList);
         string itemText;
 				if(((Claim)ALPreAuth[i]).DateSent.Year<1880)
-					itemText=Carriers.GetName(InsPlans.Cur.CarrierNum)
+					itemText=Carriers.GetName(PlanCur.CarrierNum)
 						+"("+((Claim)ALPreAuth[i]).ClaimStatus.ToString()+")";
 				else
 					itemText=((Claim)ALPreAuth[i]).DateSent.ToShortDateString()+" "
-						+Carriers.GetName(InsPlans.Cur.CarrierNum)
+						+Carriers.GetName(PlanCur.CarrierNum)
 						+"("+((Claim)ALPreAuth[i]).ClaimStatus.ToString()+")"; 
         listPreAuth.Items.Add(itemText);
       } 
@@ -1133,12 +1160,9 @@ namespace OpenDental{
 
 		private void tbMain_CellDoubleClicked(object sender, CellEventArgs e){
 			Procedure ProcCur=(Procedure)arrayLProc[((TPLine)TPLines2[e.Row]).Index];
-			FormProcEdit FormPE=new FormProcEdit(ProcCur);
+			FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur,FamCur,PlanList);
 			FormPE.ShowDialog();
-			//if(FormPE.DialogResult!=DialogResult.OK) return;
-			//Procedures.Update();//moved into dialog
-			ModuleSelected();
-			//MessageBox.Show(e.Col.ToString()+","+e.Row.ToString()+" Double Clicked");
+			ModuleSelected(PatCur.PatNum);
 		}
 
 
@@ -1155,9 +1179,9 @@ namespace OpenDental{
 					ProcCur.Priority=0;
 				else
 					ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][clickedRow-1].DefNum;
-				ProcCur.Update(ProcOld);
+				ProcCur.Update(ProcOld);//no recall synch required
 			}
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void listViewPr_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
@@ -1165,7 +1189,7 @@ namespace OpenDental{
 				//all items were unselected
 				showHidden=false;
 			}
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void butSelectAll_Click(object sender, System.EventArgs e){
@@ -1177,7 +1201,7 @@ namespace OpenDental{
 				//selectedPrs[i-1]=true;
 			}
 			showHidden=true;
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		///<summary></summary>
@@ -1230,10 +1254,10 @@ namespace OpenDental{
 			if(!headingPrinted){
 				string heading=Lan.g(this,"PROPOSED TREATMENT PLAN");
 				string practice=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
-				string name=Patients.Cur.FName+" "+Patients.Cur.MiddleI+" "+Patients.Cur.LName;
+				string name=PatCur.FName+" "+PatCur.MiddleI+" "+PatCur.LName;
 				string date=DateTime.Today.ToShortDateString();
-				if(Patients.Cur.Preferred!="")
-					name="'"+Patients.Cur.Preferred+"' "+name;
+				if(PatCur.Preferred!="")
+					name="'"+PatCur.Preferred+"' "+name;
 				e.Graphics.DrawString(heading,headingFont,Brushes.Black
 					,400-e.Graphics.MeasureString(heading,headingFont).Width/2,yPos);
 				yPos+=(int)e.Graphics.MeasureString(heading,headingFont).Height;
@@ -1254,6 +1278,7 @@ namespace OpenDental{
 				if(Prefs.GetBool("TreatPlanShowGraphics")){
 					//prints the graphical tooth chart and legend
 					ContrTeeth cTeeth=new ContrTeeth();
+					cTeeth.PatCur=PatCur;
 					cTeeth.SetWidth(589);//this is not very precise
 					//MessageBox.Show(cTeeth.Width.ToString());
 					cTeeth.CreateBackShadow();
@@ -1538,23 +1563,24 @@ namespace OpenDental{
 		}
 
 		private void OnUpdate_Click() {
-		  if(MessageBox.Show(Lan.g(this,"Update all fees and insurance estimates on this treatment plan to the current fees for this patient?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+		  if(!MsgBox.Show(this,true,"Update all fees and insurance estimates on this treatment plan to the current fees for this patient?")){
         return;   
       }
-			if(Patients.Cur.PriPlanNum>0)//has primary ins
-				InsPlans.GetCur(Patients.Cur.PriPlanNum);//in preparation for the capcopay changes
+			//if(PatCur.PriPlanNum>0){//has primary ins
+			//	InsPlans.GetCur(PatCur.PriPlanNum);//in preparation for the capcopay changes
+			//}
 			Procedure procCur;
 			Procedure procOld;
       for(int i=0;i<arrayLProc.Count;i++){
 				procCur=(Procedure)arrayLProc[i];
 				procOld=procCur.Copy();
 				//first the fees
-				procCur.ProcFee=Fees.GetAmount(procCur.ADACode,ContrChart.GetFeeSched());
-				procCur.ComputeEstimates(Patients.Cur.PatNum,Patients.Cur.PriPlanNum
-					,Patients.Cur.SecPlanNum,ClaimProcList,false);
-				procCur.Update(procOld);
+				procCur.ProcFee=Fees.GetAmount(procCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
+				procCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
+					,PatCur.SecPlanNum,ClaimProcList,false,PatCur,PlanList);
+				procCur.Update(procOld);//no recall synch required 
       }
-      ModuleSelected();
+      ModuleSelected(PatCur.PatNum);
 		}
 
 		private void OnPreAuth_Click() {
@@ -1562,18 +1588,17 @@ namespace OpenDental{
         MessageBox.Show(Lan.g(this,"Please select procedures first."));
         return;
       }
-      FormInsPlanSelect FormIPS=new FormInsPlanSelect(); 
+      FormInsPlanSelect FormIPS=new FormInsPlanSelect(PatCur.PatNum); 
 			FormIPS.ViewRelat=true;
       FormIPS.ShowDialog();
       if(FormIPS.DialogResult!=DialogResult.OK){
         return;
       }
 			Claims.Cur=new Claim();
-			Claims.Cur.PatNum=Patients.Cur.PatNum;
-			//Claims.Cur.DateService=procDate;//there is no date of service for preauth
+			Claims.Cur.PatNum=PatCur.PatNum;
 			Claims.Cur.ClaimStatus="W";
 			Claims.Cur.DateSent=DateTime.Today;
-			Claims.Cur.PlanNum=InsPlans.Cur.PlanNum;
+			Claims.Cur.PlanNum=FormIPS.SelectedPlan.PlanNum;
 			Claims.Cur.ProvTreat=((Procedure)arrayLProc[tbMain.SelectedIndices[0]]).ProvNum;
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
 				if(!Providers.GetIsSec(((Procedure)arrayLProc[tbMain.SelectedIndices[i]]).ProvNum)){
@@ -1581,7 +1606,7 @@ namespace OpenDental{
 				}
 			}
 			if(Providers.GetIsSec(Claims.Cur.ProvTreat)){
-				Claims.Cur.ProvTreat=Patients.Cur.PriProv;
+				Claims.Cur.ProvTreat=PatCur.PriProv;
 				//OK if 0, because auto select first in list when open claim
 			}
 			//Claims.Cur.DedApplied=0;//calcs in ClaimEdit.
@@ -1595,20 +1620,20 @@ namespace OpenDental{
 			Claims.InsertCur();
 			//this loop adds the claimprocs but does not add any fees
 			Procedure ProcCur;
-			Procedure ProcOld;
+			//Procedure ProcOld;
 			ClaimProc ClaimProcCur;
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
 				ProcCur=((Procedure)arrayLProc[tbMain.SelectedIndices[i]]);
-				ProcOld=ProcCur.Copy();
+				//ProcOld=ProcCur.Copy();
         ClaimProcCur=new ClaimProc();
 				ClaimProcCur.ProcNum=ProcCur.ProcNum;
         ClaimProcCur.ClaimNum=Claims.Cur.ClaimNum;
-        ClaimProcCur.PatNum=Patients.Cur.PatNum;
+        ClaimProcCur.PatNum=PatCur.PatNum;
         ClaimProcCur.ProvNum=ProcCur.ProvNum;
 				ClaimProcCur.Status=ClaimProcStatus.Preauth;
 				ClaimProcCur.FeeBilled=ProcCur.ProcFee;
-				ClaimProcCur.PlanNum=InsPlans.Cur.PlanNum;
-				if(InsPlans.Cur.UseAltCode)
+				ClaimProcCur.PlanNum=FormIPS.SelectedPlan.PlanNum;
+				if(FormIPS.SelectedPlan.UseAltCode)
 					ClaimProcCur.CodeSent=((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).AlternateCode1;
 				else{
 					ClaimProcCur.CodeSent=ProcCur.ADACode;
@@ -1617,16 +1642,17 @@ namespace OpenDental{
 					}
 				}
         ClaimProcCur.Insert();
-				ProcCur.Update(ProcOld);
+				//ProcCur.Update(ProcOld);
 			}
-			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
-			ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			ProcList=Procedures.Refresh(PatCur.PatNum);
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum);
-			FormClaimEdit FormCE=new FormClaimEdit();
-			FormCE.CalculateEstimates(ClaimProcList,ProcList);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,Claims.Cur);
+			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
+			//FormCE.CalculateEstimates(
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
-			ModuleSelected();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void listPreAuth_DoubleClick(object sender, System.EventArgs e) {
@@ -1634,13 +1660,13 @@ namespace OpenDental{
 				return;
 			}
       Claims.Cur=(Claim)ALPreAuth[listPreAuth.SelectedIndex];
- 			FormClaimEdit FormClaimEdit2=new FormClaimEdit();
+ 			FormClaimEdit FormClaimEdit2=new FormClaimEdit(PatCur,FamCur);
       //FormClaimEdit2.IsPreAuth=true;
 			FormClaimEdit2.ShowDialog();
 			if(FormClaimEdit2.DialogResult!=DialogResult.OK){
 				return;
 			}
-			ModuleSelected();     
+			ModuleSelected(PatCur.PatNum);     
 		}
 
 

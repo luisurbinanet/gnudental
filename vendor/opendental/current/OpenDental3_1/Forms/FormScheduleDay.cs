@@ -7,32 +7,22 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormScheduleDay : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butDefault;
+		private OpenDental.UI.Button butDefault;
 		private System.Windows.Forms.ListBox listTimeBlocks;
-		private System.Windows.Forms.Button butAddTime;
-		private System.Windows.Forms.Button butCloseOffice;
-		private System.Windows.Forms.Button butHoliday;
+		private OpenDental.UI.Button butAddTime;
+		private OpenDental.UI.Button butCloseOffice;
+		private OpenDental.UI.Button butHoliday;
 		private System.Windows.Forms.Label label1;
     private ArrayList ALdefaults;
 		private System.Windows.Forms.Label labelDefault;
-		private System.Windows.Forms.Button butClose;  
+		private OpenDental.UI.Button butClose;  
 
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
 		public FormScheduleDay(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				labelDefault,
-				butAddTime,
-				butCloseOffice,
-				butHoliday,
-				butDefault,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -53,11 +43,11 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.listTimeBlocks = new System.Windows.Forms.ListBox();
-			this.butClose = new System.Windows.Forms.Button();
-			this.butDefault = new System.Windows.Forms.Button();
-			this.butAddTime = new System.Windows.Forms.Button();
-			this.butCloseOffice = new System.Windows.Forms.Button();
-			this.butHoliday = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
+			this.butDefault = new OpenDental.UI.Button();
+			this.butAddTime = new OpenDental.UI.Button();
+			this.butCloseOffice = new OpenDental.UI.Button();
+			this.butHoliday = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.labelDefault = new System.Windows.Forms.Label();
 			this.SuspendLayout();
@@ -72,9 +62,13 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(260, 214);
+			this.butClose.Location = new System.Drawing.Point(265, 214);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 2;
@@ -83,7 +77,11 @@ namespace OpenDental{
 			// 
 			// butDefault
 			// 
-			this.butDefault.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butDefault.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDefault.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDefault.Autosize = true;
+			this.butDefault.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDefault.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDefault.Location = new System.Drawing.Point(248, 48);
 			this.butDefault.Name = "butDefault";
 			this.butDefault.Size = new System.Drawing.Size(92, 26);
@@ -93,17 +91,25 @@ namespace OpenDental{
 			// 
 			// butAddTime
 			// 
-			this.butAddTime.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAddTime.Location = new System.Drawing.Point(248, 80);
+			this.butAddTime.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAddTime.Autosize = true;
+			this.butAddTime.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAddTime.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAddTime.Location = new System.Drawing.Point(244, 80);
 			this.butAddTime.Name = "butAddTime";
-			this.butAddTime.Size = new System.Drawing.Size(92, 26);
+			this.butAddTime.Size = new System.Drawing.Size(96, 26);
 			this.butAddTime.TabIndex = 4;
 			this.butAddTime.Text = "&Add Time Block";
 			this.butAddTime.Click += new System.EventHandler(this.butAddTime_Click);
 			// 
 			// butCloseOffice
 			// 
-			this.butCloseOffice.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCloseOffice.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCloseOffice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCloseOffice.Autosize = true;
+			this.butCloseOffice.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCloseOffice.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCloseOffice.Location = new System.Drawing.Point(248, 112);
 			this.butCloseOffice.Name = "butCloseOffice";
 			this.butCloseOffice.Size = new System.Drawing.Size(92, 26);
@@ -113,7 +119,11 @@ namespace OpenDental{
 			// 
 			// butHoliday
 			// 
-			this.butHoliday.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butHoliday.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butHoliday.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butHoliday.Autosize = true;
+			this.butHoliday.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butHoliday.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butHoliday.Location = new System.Drawing.Point(248, 144);
 			this.butHoliday.Name = "butHoliday";
 			this.butHoliday.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -281,6 +291,9 @@ namespace OpenDental{
 		}
 
 		private void listTimeBlocks_DoubleClick(object sender, System.EventArgs e) {
+			if(listTimeBlocks.SelectedIndex==-1){
+				return;
+			}
       ConvertFromDefault();
       Schedules.Cur=Schedules.ListDay[listTimeBlocks.SelectedIndex];
 			FormScheduleDayEdit FormSDE2=new FormScheduleDayEdit();
@@ -294,3 +307,10 @@ namespace OpenDental{
 
 	}
 }
+
+
+
+
+
+
+

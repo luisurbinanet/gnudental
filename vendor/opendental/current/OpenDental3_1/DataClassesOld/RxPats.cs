@@ -36,10 +36,10 @@ namespace OpenDental{
 		public static RxPat Cur;
 
 		///<summary></summary>
-		public static void Refresh(){
+		public static void Refresh(int patNum){
 			cmd.CommandText =
 				"SELECT * from rxpat"
-				+" WHERE patnum = '"+POut.PInt(Patients.Cur.PatNum)+"'"
+				+" WHERE patnum = '"+POut.PInt(patNum)+"'"
 				+" ORDER BY rxdate";
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();

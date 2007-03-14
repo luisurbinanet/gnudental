@@ -143,12 +143,17 @@ namespace OpenDental{
 			}
 			if(Width<4)
 				return;
+			if(Height<4){
+				return;
+			}
 			Shadow=new Bitmap(Width,Height);
 			Graphics g=Graphics.FromImage(Shadow);
 			Pen penB=new Pen(Color.Black);
 			Pen penW=new Pen(Color.White);
 			Pen penGr=new Pen(Color.SlateGray);
 			Pen penDG=new Pen(Color.DarkSlateGray);
+			Pen penO=new Pen(Providers.GetOutlineColor(Info.MyApt.ProvNum));
+				//new Pen(Color.Red);
 			Color timeColor;
 			if(Info.MyApt.AptStatus==ApptStatus.Complete){
 				g.FillRectangle(new SolidBrush(Defs.GetColor(DefCat.AppointmentColors,141)),7,0,Width-7,Height);
@@ -161,6 +166,27 @@ namespace OpenDental{
 			}
 			g.FillRectangle(new SolidBrush(timeColor),0,0,7,Height);
 			g.DrawLine(penB,7,0,7,Height);
+			//Highlighting boarder
+			if(PinBoardIsSelected && ThisIsPinBoard
+				|| (Info.MyApt.AptNum==SelectedAptNum && !ThisIsPinBoard))
+			{
+				//Left
+				g.DrawLine(penO,8,ContrApptSheet.Lh,8,Height-2);
+				g.DrawLine(penO,9,ContrApptSheet.Lh,9,Height-3);
+				//g.DrawLine(penO,10,ContrApptSheet.Lh,10,Height-3);
+				g.DrawLine(penO,14,1,14,ContrApptSheet.Lh);
+				//Right
+				g.DrawLine(penO,Width-2,1,Width-2,Height-2);
+				g.DrawLine(penO,Width-3,2,Width-3,Height-3);
+				//g.DrawLine(penGr,Width-4,2,Width-4,Height-2);
+				//Top
+				g.DrawLine(penO,8,ContrApptSheet.Lh,14,ContrApptSheet.Lh);
+				g.DrawLine(penO,14,1,Width-2,1);
+				g.DrawLine(penO,14,2,Width-3,2);
+				//bottom
+				g.DrawLine(penO,9,Height-2,Width-2,Height-2);
+				g.DrawLine(penO,10,Height-3,Width-3,Height-3);
+			}
 			//Font fontSF=new Font("Arial",8);
 			g.TextRenderingHint=TextRenderingHint.SingleBitPerPixelGridFit;//to make printing clearer
 			for(int i=0;i<patternShowing.Length;i++){//Info.MyApt.Pattern.Length;i++){
@@ -176,30 +202,12 @@ namespace OpenDental{
 				row+=OnDrawElement(g,elementI,row);
 				elementI++;
 			}
-			//Credit and ins
+			//Main outline
 			g.DrawRectangle(new Pen(Color.Black),0,0,Width-1,Height-1);
+			//Credit and ins
 			g.FillRectangle(new SolidBrush(Color.White),1,1,12,ContrApptSheet.Lh-2);
 			g.DrawRectangle(new Pen(Color.Black),0,0,13,ContrApptSheet.Lh-1);//started out as 11
-			g.DrawString(Patients.GetCreditIns(Info.MyPatient),baseFont,new SolidBrush(Color.Black),0,-1);
-			if(PinBoardIsSelected && ThisIsPinBoard
-				|| (Info.MyApt.AptNum==SelectedAptNum && !ThisIsPinBoard)){
-					//Left
-					g.DrawLine(penW,8,ContrApptSheet.Lh,8,Height-2);
-					g.DrawLine(penW,9,ContrApptSheet.Lh,9,Height-3);
-					g.DrawLine(penW,10,ContrApptSheet.Lh,10,Height-3);
-					g.DrawLine(penW,14,1,14,ContrApptSheet.Lh);
-					//Right
-					g.DrawLine(penDG,Width-2,1,Width-2,Height-2);
-					g.DrawLine(penDG,Width-3,2,Width-3,Height-3);
-					//g.DrawLine(penGr,Width-4,2,Width-4,Height-2);
-					//Top
-					g.DrawLine(penW,8,ContrApptSheet.Lh,14,ContrApptSheet.Lh);
-					g.DrawLine(penW,14,1,Width-2,1);
-					g.DrawLine(penW,14,2,Width-3,2);
-					//bottom
-					g.DrawLine(penDG,9,Height-2,Width-2,Height-2);
-					g.DrawLine(penDG,10,Height-3,Width-3,Height-3);
-			}
+			g.DrawString(Info.MyPatient.GetCreditIns(),baseFont,new SolidBrush(Color.Black),0,-1);
 			//assistant box
 			if(Info.MyApt.Assistant!=0){
 				g.FillRectangle(new SolidBrush(Color.White)
@@ -244,7 +252,7 @@ namespace OpenDental{
 					g.DrawString(Info.MyPatient.AddrNote,baseFont,brush,rect,format);
 					return linesFilled;
 				case "ChartNumAndName":
-					g.DrawString(Info.MyPatient.ChartNumber+" "+Patients.GetNameLF(Info.MyPatient)
+					g.DrawString(Info.MyPatient.ChartNumber+" "+Info.MyPatient.GetNameLF()
 						,baseFont,brush,xPos,yPos);
 					return 1;
 				case "ChartNumber":
@@ -290,15 +298,15 @@ namespace OpenDental{
 					return linesFilled;
 				case "PatientName":
 					if(Info.MyApt.IsNewPatient)
-						g.DrawString("NP-"+Patients.GetNameLF(Info.MyPatient),baseFont,brush,xPos,yPos);
+						g.DrawString("NP-"+Info.MyPatient.GetNameLF(),baseFont,brush,xPos,yPos);
 					else
-						g.DrawString(Patients.GetNameLF(Info.MyPatient),baseFont,brush,xPos,yPos);
+						g.DrawString(Info.MyPatient.GetNameLF(),baseFont,brush,xPos,yPos);
 					return 1;
 				case "PatNum":
 					g.DrawString(Info.MyPatient.PatNum.ToString(),baseFont,brush,xPos,yPos);
 					return 1;
 				case "PatNumAndName":
-					g.DrawString(Info.MyPatient.PatNum.ToString()+" "+Patients.GetNameLF(Info.MyPatient)
+					g.DrawString(Info.MyPatient.PatNum.ToString()+" "+Info.MyPatient.GetNameLF()
 						,baseFont,brush,xPos,yPos);
 					return 1;
 				case "Procs":

@@ -7,10 +7,10 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormPermissionsManage : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private OpenDental.TablePermissions tbPerm;
-		private System.Windows.Forms.Button butAll;
-		private System.Windows.Forms.Button butNone;
+		private OpenDental.UI.Button butAll;
+		private OpenDental.UI.Button butNone;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
@@ -18,11 +18,7 @@ namespace OpenDental{
 			InitializeComponent();
 			tbPerm.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbPerm_CellDoubleClicked);
 			tbPerm.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbPerm_CellClicked);
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butAll,
-				butNone
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -39,9 +35,9 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.tbPerm = new OpenDental.TablePermissions();
-			this.butClose = new System.Windows.Forms.Button();
-			this.butAll = new System.Windows.Forms.Button();
-			this.butNone = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
+			this.butAll = new OpenDental.UI.Button();
+			this.butNone = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// tbPerm
@@ -57,8 +53,12 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(570, 416);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
@@ -68,7 +68,10 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
-			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.Autosize = true;
+			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAll.Location = new System.Drawing.Point(22, 416);
 			this.butAll.Name = "butAll";
 			this.butAll.Size = new System.Drawing.Size(75, 26);
@@ -78,7 +81,10 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
-			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNone.Autosize = true;
+			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butNone.Location = new System.Drawing.Point(114, 416);
 			this.butNone.Name = "butNone";
 			this.butNone.Size = new System.Drawing.Size(75, 26);

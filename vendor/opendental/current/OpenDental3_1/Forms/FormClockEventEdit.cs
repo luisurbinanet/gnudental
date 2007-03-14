@@ -9,8 +9,8 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormClockEventEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.TextBox textTimeEntered;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -33,19 +33,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this, //*Ann
-				this.label1, //*Ann
-				this.label2, //*Ann
-				this.label3, //*Ann
-				this.label4, //*Ann
-				this.radioClockIn, //*Ann
-				this.radioClockOut //*Ann
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -71,8 +59,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormClockEventEdit));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.textTimeEntered = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -236,7 +224,7 @@ namespace OpenDental{
 			}
 			listStatus.Items.Clear();
 			for(int i=0;i<Enum.GetNames(typeof(TimeClockStatus)).Length;i++){
-				listStatus.Items.Add(Enum.GetNames(typeof(TimeClockStatus))[i]);
+				listStatus.Items.Add(Lan.g("enumTimeClockStatus",Enum.GetNames(typeof(TimeClockStatus))[i]));
 			}
 			listStatus.SelectedIndex=(int)ClockEvents.Cur.ClockStatus;//all clockevents have a status
 			textNote.Text=ClockEvents.Cur.Note;

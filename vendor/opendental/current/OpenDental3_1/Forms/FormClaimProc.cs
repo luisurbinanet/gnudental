@@ -11,9 +11,9 @@ namespace OpenDental
 	/// </summary>
 	public class FormClaimProc : System.Windows.Forms.Form
 	{
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label9;
 		private OpenDental.ValidDouble textInsPayAmt;
 		private System.Windows.Forms.TextBox textRemarks;
@@ -34,7 +34,7 @@ namespace OpenDental
 		private System.Windows.Forms.TextBox textPercentage;
 		private OpenDental.ValidDouble textCopayAmt;
 		private OpenDental.ValidDouble textOverrideInsEst;
-		private System.Windows.Forms.Button butRecalc;
+		private OpenDental.UI.Button butRecalc;
 		private OpenDental.ValidNumber textPercentOverride;
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.Label label28;
@@ -116,20 +116,55 @@ namespace OpenDental
 		private OpenDental.ValidDate textProcDate;
 		private System.Windows.Forms.Label labelProcDate;
 		private double ProcFee;
+		private Family FamCur;
+		private InsPlan[] PlanList;
 
 		///<summary>procCur can be null if not editing from within an actual procedure.</summary>
-		public FormClaimProc(ClaimProc claimProcCur,Procedure procCur){
+		public FormClaimProc(ClaimProc claimProcCur,Procedure procCur,Family famCur,InsPlan[] planList){
 			ClaimProcCur=claimProcCur;
 			ClaimProcOld=ClaimProcCur.Copy();
 			proc=procCur;
+			FamCur=famCur;
+			PlanList=planList;
 			InitializeComponent();// Required for Windows Form Designer support
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this,
-				this.label1,
-				this.label3,
-				this.label4,
-				this.label9,
-				this.label12
+			//can't use Lan.F because of complexity of label use
+			Lan.C(this, new System.Windows.Forms.Control[]
+				{
+					this,
+					this.label1,
+					this.label9,
+					this.label30,
+					this.labelProcDate,
+					this.label28,
+					this.label29,
+					this.groupClaim,
+					this.radioEstimate,
+					this.radioClaim,
+					this.labelCodeSent,
+					this.labelFeeBilled,
+					this.labelRemarks,
+					this.labelNotInClaim,
+					this.checkNoBillIns,
+					this.label14,
+					this.labelPatPortion,
+					this.labelFee,
+					this.label3,
+					this.checkDedBeforePerc,
+					this.labelDedBeforePerc,
+					this.labelCopayAmt,
+					this.labelCopayOverride,
+					this.label4,
+					this.label13,
+					this.label5,
+					this.label12,
+					this.groupClaimInfo,
+					this.labelDedApplied,
+					this.labelPaidOtherIns,
+					this.labelOverAnnualMax,
+					this.labelInsPayEst,
+					this.labelInsPayAmt,
+					this.labelWriteOff,
+					this.butRecalc
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
@@ -161,9 +196,9 @@ namespace OpenDental
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormClaimProc));
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butDelete = new OpenDental.XPButton();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.textDedBeforePerc = new OpenDental.ValidDouble();
 			this.labelDedBeforePerc = new System.Windows.Forms.Label();
 			this.labelInsPayAmt = new System.Windows.Forms.Label();
@@ -190,7 +225,7 @@ namespace OpenDental
 			this.checkNoBillIns = new System.Windows.Forms.CheckBox();
 			this.label13 = new System.Windows.Forms.Label();
 			this.textPercentOverride = new OpenDental.ValidNumber();
-			this.butRecalc = new System.Windows.Forms.Button();
+			this.butRecalc = new OpenDental.UI.Button();
 			this.label14 = new System.Windows.Forms.Label();
 			this.labelInsFee = new System.Windows.Forms.Label();
 			this.labelPatWriteOff = new System.Windows.Forms.Label();
@@ -257,8 +292,11 @@ namespace OpenDental
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(673, 603);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(680, 550);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 0;
@@ -267,9 +305,12 @@ namespace OpenDental
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(773, 602);
+			this.butCancel.Location = new System.Drawing.Point(780, 550);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 1;
@@ -279,8 +320,9 @@ namespace OpenDental
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(16, 546);
@@ -537,7 +579,10 @@ namespace OpenDental
 			// 
 			// butRecalc
 			// 
-			this.butRecalc.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butRecalc.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butRecalc.Autosize = true;
+			this.butRecalc.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRecalc.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butRecalc.Location = new System.Drawing.Point(134, 151);
 			this.butRecalc.Name = "butRecalc";
 			this.butRecalc.Size = new System.Drawing.Size(96, 26);
@@ -1184,10 +1229,10 @@ namespace OpenDental
 		#endregion
 
 		private void FormClaimProcEdit_Load(object sender, System.EventArgs e) {
-			if(ClaimProcCur.PlanNum>0){
-				InsPlans.GetCur(ClaimProcCur.PlanNum);
-			}
-			textInsPlan.Text=InsPlans.GetDescript(ClaimProcCur.PlanNum);
+			//if(ClaimProcCur.PlanNum>0){
+			//	InsPlans.GetCur(ClaimProcCur.PlanNum,PlanList);
+			//}
+			textInsPlan.Text=InsPlans.GetDescript(ClaimProcCur.PlanNum,FamCur,PlanList);
 			checkNoBillIns.Checked=ClaimProcCur.NoBillIns;
 			textDateCP.ReadOnly=true;//DateCP is never editable because it doesn't even matter
 				//unless it's tied to a payment.

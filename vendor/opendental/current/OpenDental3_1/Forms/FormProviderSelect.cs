@@ -8,22 +8,17 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormProviderSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listProviders;
-		private System.Windows.Forms.Button butClose;
-		private OpenDental.XPButton butDown;
-		private OpenDental.XPButton butUp;
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butDown;
+		private OpenDental.UI.Button butUp;
+		private OpenDental.UI.Button butAdd;
 		private System.ComponentModel.Container components = null;
 		
 		///<summary></summary>
 		public FormProviderSelect(){
 			InitializeComponent();
 			Providers.Selected=-1;
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butAdd,
-				butDown,
-				butUp
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -41,10 +36,10 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormProviderSelect));
 			this.listProviders = new System.Windows.Forms.ListBox();
-			this.butClose = new System.Windows.Forms.Button();
-			this.butDown = new OpenDental.XPButton();
-			this.butUp = new OpenDental.XPButton();
-			this.butAdd = new OpenDental.XPButton();
+			this.butClose = new OpenDental.UI.Button();
+			this.butDown = new OpenDental.UI.Button();
+			this.butUp = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// listProviders
@@ -75,8 +70,8 @@ namespace OpenDental{
 			// 
 			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDown.Location = new System.Drawing.Point(105, 375);
@@ -90,8 +85,8 @@ namespace OpenDental{
 			// 
 			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
 			this.butUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butUp.Location = new System.Drawing.Point(16, 375);
@@ -105,8 +100,8 @@ namespace OpenDental{
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(16, 340);

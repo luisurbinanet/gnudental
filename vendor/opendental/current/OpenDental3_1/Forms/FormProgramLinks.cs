@@ -9,20 +9,14 @@ namespace OpenDental{
 	public class FormProgramLinks : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listProgram;
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butClose;
-		private OpenDental.XPButton butAdd;// Required designer variable.
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butAdd;// Required designer variable.
 		private Programs Programs=new Programs();
 
 		///<summary></summary>
 		public FormProgramLinks(){
 			InitializeComponent();// Required for Windows Form Designer support
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butAdd
-			});
+			Lan.F(this);			
 		}
 
 		///<summary></summary>
@@ -40,8 +34,8 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormProgramLinks));
 			this.listProgram = new System.Windows.Forms.ListBox();
-			this.butClose = new System.Windows.Forms.Button();
-			this.butAdd = new OpenDental.XPButton();
+			this.butClose = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// listProgram
@@ -68,8 +62,8 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(18, 357);

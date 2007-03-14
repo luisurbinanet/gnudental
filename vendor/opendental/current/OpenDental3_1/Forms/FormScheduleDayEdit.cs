@@ -8,8 +8,8 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormScheduleDayEdit : System.Windows.Forms.Form	{
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.TextBox textStop;
 		private System.Windows.Forms.TextBox textStart;
 		private System.Windows.Forms.Label label2;
@@ -18,24 +18,14 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listStatus;
 		private System.Windows.Forms.TextBox textNote;
 		private System.Windows.Forms.Label label4;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button butDelete;
 		///<summary></summary>
     public bool IsNew;
 
 		///<summary></summary>
 		public FormScheduleDayEdit(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2,
-				label3,
-				label4
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				butDelete,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -56,8 +46,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormScheduleDayEdit));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.textStop = new System.Windows.Forms.TextBox();
 			this.textStart = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
@@ -66,14 +56,18 @@ namespace OpenDental{
 			this.listStatus = new System.Windows.Forms.ListBox();
 			this.textNote = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.butDelete = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(212, 216);
+			this.butCancel.Location = new System.Drawing.Point(220, 216);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 14;
@@ -82,8 +76,12 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(212, 182);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(220, 182);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 12;
@@ -108,27 +106,27 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(14, 40);
+			this.label2.Location = new System.Drawing.Point(6, 40);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(56, 16);
+			this.label2.Size = new System.Drawing.Size(66, 16);
 			this.label2.TabIndex = 9;
 			this.label2.Text = "Stop Time";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(12, 14);
+			this.label1.Location = new System.Drawing.Point(4, 14);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(58, 16);
+			this.label1.Size = new System.Drawing.Size(68, 16);
 			this.label1.TabIndex = 7;
 			this.label1.Text = "Start Time";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(18, 106);
+			this.label3.Location = new System.Drawing.Point(8, 106);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(52, 16);
+			this.label3.Size = new System.Drawing.Size(64, 16);
 			this.label3.TabIndex = 10;
 			this.label3.Text = "Status";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -151,9 +149,9 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(16, 70);
+			this.label4.Location = new System.Drawing.Point(10, 70);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(50, 16);
+			this.label4.Size = new System.Drawing.Size(64, 16);
 			this.label4.TabIndex = 16;
 			this.label4.Text = "Note";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -161,8 +159,9 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(26, 216);

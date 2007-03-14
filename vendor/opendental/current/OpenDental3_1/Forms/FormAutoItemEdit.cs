@@ -10,26 +10,18 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textADA;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ListBox listConditions;
-		private System.Windows.Forms.Button butChange;
+		private OpenDental.UI.Button butChange;
 		///<summary></summary>
     public bool IsNew;
 
 		///<summary></summary>
 		public FormAutoItemEdit(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-			  this.label1,
-				this.label2,
-				butChange,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			}); 
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -48,9 +40,9 @@ namespace OpenDental{
 			this.textADA = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.listConditions = new System.Windows.Forms.ListBox();
-			this.butChange = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butChange = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
@@ -81,29 +73,42 @@ namespace OpenDental{
 			// 
 			// butChange
 			// 
-			this.butChange.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butChange.Location = new System.Drawing.Point(214, 52);
+			this.butChange.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butChange.Autosize = true;
+			this.butChange.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butChange.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butChange.Location = new System.Drawing.Point(214, 50);
 			this.butChange.Name = "butChange";
-			this.butChange.Size = new System.Drawing.Size(94, 24);
+			this.butChange.Size = new System.Drawing.Size(76, 25);
 			this.butChange.TabIndex = 24;
 			this.butChange.Text = "C&hange";
 			this.butChange.Click += new System.EventHandler(this.butChange_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(530, 442);
+			this.butCancel.Location = new System.Drawing.Point(540, 442);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 23;
 			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(530, 408);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(540, 408);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 22;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -122,7 +127,7 @@ namespace OpenDental{
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(634, 490);
+			this.ClientSize = new System.Drawing.Size(644, 490);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butChange);
 			this.Controls.Add(this.butCancel);
@@ -135,7 +140,7 @@ namespace OpenDental{
 			this.Name = "FormAutoItemEdit";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "FormAutoItemEdit";
+			this.Text = "Edit AutoItem";
 			this.Load += new System.EventHandler(this.FormAutoItemEdit_Load);
 			this.ResumeLayout(false);
 
@@ -163,7 +168,7 @@ namespace OpenDental{
       }  
 			for(int i=0;i<AutoCodeConds.List.Length;i++){
         if(AutoCodeConds.List[i].AutoCodeItemNum==AutoCodeItems.Cur.AutoCodeItemNum){
-          listConditions.SetSelected((int)AutoCodeConds.List[i].Condition,true);
+          listConditions.SetSelected((int)AutoCodeConds.List[i].Cond,true);
         }   
       }
     } 
@@ -186,7 +191,7 @@ namespace OpenDental{
       for(int i=0;i<listConditions.SelectedIndices.Count;i++){
         AutoCodeConds.Cur=new AutoCodeCond();
         AutoCodeConds.Cur.AutoCodeItemNum=AutoCodeItems.Cur.AutoCodeItemNum;
-        AutoCodeConds.Cur.Condition=(AutoCondition)listConditions.SelectedIndices[i];
+        AutoCodeConds.Cur.Cond=(AutoCondition)listConditions.SelectedIndices[i];
         AutoCodeConds.InsertCur(); 
       }
       DialogResult=DialogResult.OK;

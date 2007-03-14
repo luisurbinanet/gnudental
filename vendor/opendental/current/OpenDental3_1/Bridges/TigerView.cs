@@ -24,41 +24,41 @@ namespace OpenDental.Bridges{
 
 
 		///<summary>Sends data for Patient.Cur to the Tiger1.ini file and launches the program.</summary>
-		public static void SendData(){
+		public static void SendData(Patient pat){
 			ProgramProperties.GetForProgram();
 			ProgramProperties.GetCur("Tiger1.ini path");
 			iniFile=ProgramProperties.Cur.PropertyValue;
-			if(Patients.PatIsLoaded){
+			if(pat!=null){
 				if(!File.Exists(iniFile)){
 					MessageBox.Show("Could not find "+iniFile);
 					return;
 				}
-				WriteValue("LastName",Patients.Cur.LName);
-				WriteValue("FirstName",Patients.Cur.FName);
+				WriteValue("LastName",pat.LName);
+				WriteValue("FirstName",pat.FName);
 				//Patient Id can be any string format.
 				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
 				if(ProgramProperties.Cur.PropertyValue=="0"){
-					WriteValue("PatientID",Patients.Cur.PatNum.ToString());
+					WriteValue("PatientID",pat.PatNum.ToString());
 				}
 				else{
-					WriteValue("PatientID",Patients.Cur.ChartNumber);
+					WriteValue("PatientID",pat.ChartNumber);
 				}
-				WriteValue("PatientSSN",Patients.Cur.SSN);
-				//WriteValue("SubscriberSSN",Patients.Cur);
-				if(Patients.Cur.Gender==PatientGender.Female)
+				WriteValue("PatientSSN",pat.SSN);
+				//WriteValue("SubscriberSSN",pat);
+				if(pat.Gender==PatientGender.Female)
 					WriteValue("Gender","Female");
 				else
 					WriteValue("Gender","Male");
-				WriteValue("DOB",Patients.Cur.Birthdate.ToString("MM/dd/yy"));
-				//WriteValue("ClaimID",Patients.Cur);??huh
-				WriteValue("AddrStreetNo",Patients.Cur.Address);
-				//WriteValue("AddrStreetName",Patients.Cur);??
-				//WriteValue("AddrSuiteNo",Patients.Cur);??
-				WriteValue("AddrCity",Patients.Cur.City);
-				WriteValue("AddrState",Patients.Cur.State);
-				WriteValue("AddrZip",Patients.Cur.Zip);
-				WriteValue("PhHome",Patients.Cur.HmPhone);
-				WriteValue("PhWork",Patients.Cur.WkPhone);
+				WriteValue("DOB",pat.Birthdate.ToString("MM/dd/yy"));
+				//WriteValue("ClaimID",pat);??huh
+				WriteValue("AddrStreetNo",pat.Address);
+				//WriteValue("AddrStreetName",pat);??
+				//WriteValue("AddrSuiteNo",pat);??
+				WriteValue("AddrCity",pat.City);
+				WriteValue("AddrState",pat.State);
+				WriteValue("AddrZip",pat.Zip);
+				WriteValue("PhHome",pat.HmPhone);
+				WriteValue("PhWork",pat.WkPhone);
 				try{
 					Process.Start(Programs.Cur.Path,Programs.Cur.CommandLine);
 				}

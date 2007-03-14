@@ -15,8 +15,8 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
 		public bool IsNew;
-		private System.Windows.Forms.Button but1;
-		private System.Windows.Forms.Button but5;
+		private OpenDental.UI.Button but1;
+		private OpenDental.UI.Button but5;
 		private System.Windows.Forms.ComboBox comboGradeLevel;
 		private System.Windows.Forms.Label label35;
 		private System.Windows.Forms.Label label15;
@@ -26,7 +26,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textComments;
 		private System.Windows.Forms.ListBox listUrgency;
 		private System.Windows.Forms.CheckBox checkNeedsSealants;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.RadioButton radioM;
 		private System.Windows.Forms.RadioButton radioF;
 		private System.Windows.Forms.RadioButton radioUnknown;
@@ -50,9 +50,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -78,8 +76,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormScreenEdit));
-			this.but1 = new System.Windows.Forms.Button();
-			this.but5 = new System.Windows.Forms.Button();
+			this.but1 = new OpenDental.UI.Button();
+			this.but5 = new OpenDental.UI.Button();
 			this.comboGradeLevel = new System.Windows.Forms.ComboBox();
 			this.label35 = new System.Windows.Forms.Label();
 			this.label15 = new System.Windows.Forms.Label();
@@ -90,7 +88,7 @@ namespace OpenDental{
 			this.listUrgency = new System.Windows.Forms.ListBox();
 			this.checkHasCaries = new System.Windows.Forms.CheckBox();
 			this.checkNeedsSealants = new System.Windows.Forms.CheckBox();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.updownAgeArrows = new System.Windows.Forms.DomainUpDown();
 			this.radioM = new System.Windows.Forms.RadioButton();
 			this.radioF = new System.Windows.Forms.RadioButton();
@@ -109,7 +107,10 @@ namespace OpenDental{
 			// 
 			// but1
 			// 
-			this.but1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.but1.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.but1.Autosize = true;
+			this.but1.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but1.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but1.Location = new System.Drawing.Point(14, 274);
 			this.but1.Name = "but1";
 			this.but1.Size = new System.Drawing.Size(48, 21);
@@ -119,7 +120,10 @@ namespace OpenDental{
 			// 
 			// but5
 			// 
-			this.but5.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.but5.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.but5.Autosize = true;
+			this.but5.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but5.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but5.Location = new System.Drawing.Point(62, 274);
 			this.but5.Name = "but5";
 			this.but5.Size = new System.Drawing.Size(48, 21);
@@ -139,39 +143,39 @@ namespace OpenDental{
 			// 
 			// label35
 			// 
-			this.label35.Location = new System.Drawing.Point(123, 125);
+			this.label35.Location = new System.Drawing.Point(123, 128);
 			this.label35.Name = "label35";
-			this.label35.Size = new System.Drawing.Size(74, 17);
+			this.label35.Size = new System.Drawing.Size(89, 14);
 			this.label35.TabIndex = 16;
 			this.label35.Text = "Urgency";
 			this.label35.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(9, 21);
+			this.label15.Location = new System.Drawing.Point(1, 21);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(75, 17);
 			this.label15.TabIndex = 13;
 			this.label15.Text = "Grade Level";
-			this.label15.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label10
 			// 
 			this.label10.Location = new System.Drawing.Point(5, 64);
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(86, 17);
+			this.label10.Size = new System.Drawing.Size(113, 17);
 			this.label10.TabIndex = 10;
 			this.label10.Text = "Race/Ethnicity";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(51, 42);
+			this.label4.Location = new System.Drawing.Point(11, 42);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(34, 14);
+			this.label4.Size = new System.Drawing.Size(65, 14);
 			this.label4.TabIndex = 108;
 			this.label4.Text = "Age";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label8
 			// 
@@ -206,7 +210,7 @@ namespace OpenDental{
 			this.checkHasCaries.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkHasCaries.Location = new System.Drawing.Point(6, 204);
 			this.checkHasCaries.Name = "checkHasCaries";
-			this.checkHasCaries.Size = new System.Drawing.Size(92, 16);
+			this.checkHasCaries.Size = new System.Drawing.Size(98, 16);
 			this.checkHasCaries.TabIndex = 14;
 			this.checkHasCaries.Text = "Has Caries";
 			this.checkHasCaries.ThreeState = true;
@@ -218,7 +222,7 @@ namespace OpenDental{
 			this.checkNeedsSealants.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkNeedsSealants.Location = new System.Drawing.Point(113, 220);
 			this.checkNeedsSealants.Name = "checkNeedsSealants";
-			this.checkNeedsSealants.Size = new System.Drawing.Size(99, 16);
+			this.checkNeedsSealants.Size = new System.Drawing.Size(102, 16);
 			this.checkNeedsSealants.TabIndex = 18;
 			this.checkNeedsSealants.Text = "Needs Sealants";
 			this.checkNeedsSealants.ThreeState = true;
@@ -226,7 +230,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(182, 274);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(48, 21);
@@ -278,7 +286,7 @@ namespace OpenDental{
 			this.checkExistingSealants.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkExistingSealants.Location = new System.Drawing.Point(113, 204);
 			this.checkExistingSealants.Name = "checkExistingSealants";
-			this.checkExistingSealants.Size = new System.Drawing.Size(103, 16);
+			this.checkExistingSealants.Size = new System.Drawing.Size(109, 16);
 			this.checkExistingSealants.TabIndex = 17;
 			this.checkExistingSealants.Text = "Existing Sealants";
 			this.checkExistingSealants.ThreeState = true;
@@ -324,7 +332,7 @@ namespace OpenDental{
 			// 
 			this.label5.Location = new System.Drawing.Point(144, 59);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(74, 17);
+			this.label5.Size = new System.Drawing.Size(80, 17);
 			this.label5.TabIndex = 139;
 			this.label5.Text = "(Birthdate)";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -367,12 +375,12 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(46, 2);
+			this.label1.Location = new System.Drawing.Point(37, 2);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(39, 14);
 			this.label1.TabIndex = 143;
 			this.label1.Text = "Row";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// FormScreenEdit
 			// 

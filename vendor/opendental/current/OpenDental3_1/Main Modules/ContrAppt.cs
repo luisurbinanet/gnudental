@@ -17,8 +17,6 @@ using System.Drawing.Printing;
 using System.Globalization;
 using System.Windows.Forms;
 using OpenDental.UI;
-using ByteFX.Data.MySqlClient;
-
 
 namespace OpenDental{
 
@@ -39,8 +37,8 @@ namespace OpenDental{
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private bool boolAptMoved=false;
 		//private FormUnsched FormUnsched2;
-		private System.Windows.Forms.Button butToday;
-		private System.Windows.Forms.Button butTodayWk;
+		private OpenDental.UI.Button butToday;
+		private OpenDental.UI.Button butTodayWk;
 		private System.Windows.Forms.Panel panelPinBoard;
 		//private FormRecall FormRecall2;
 		private System.Windows.Forms.Label label1;
@@ -74,16 +72,16 @@ namespace OpenDental{
 		public static InfoApt CurInfo;
 		private System.Windows.Forms.Panel panelNotes;
 		private System.Windows.Forms.TextBox textApptModNote;
-		private System.Windows.Forms.Button butAptModNoteEdit;
+		private OpenDental.UI.Button butAptModNoteEdit;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		///<summary></summary>
 		public static Size PinboardSize=new Size(106,92);
-		private OpenDental.XPButton butBack;
-		private OpenDental.XPButton butClearPin;
-		private OpenDental.XPButton butBackWk;
-		private OpenDental.XPButton butFwdWk;
-		private OpenDental.XPButton butFwd;
+		private OpenDental.UI.Button butBack;
+		private OpenDental.UI.Button butClearPin;
+		private OpenDental.UI.Button butBackWk;
+		private OpenDental.UI.Button butFwdWk;
+		private OpenDental.UI.Button butFwd;
 		private System.Windows.Forms.Panel panelAptInfo;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label labelPhoneType;
@@ -98,8 +96,14 @@ namespace OpenDental{
 		private System.Windows.Forms.ContextMenu menuPatient;	
 		///<summary></summary>
 	  public FormRpPrintPreview pView = new FormRpPrintPreview();
-		private OpenDental.XPButton butOther;
+		private OpenDental.UI.Button butOther;
 		private bool cardPrintFamily;
+		private Patient PatCur;
+		private Family FamCur;
+		private InsPlan[] PlanList;
+		///<summary></summary>
+		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
+		public event PatientSelectedEventHandler PatientSelected=null;
 
 		///<summary></summary>
 		public ContrAppt(){
@@ -129,13 +133,13 @@ namespace OpenDental{
 			this.Calendar2 = new System.Windows.Forms.MonthCalendar();
 			this.labelDate = new System.Windows.Forms.Label();
 			this.labelDate2 = new System.Windows.Forms.Label();
-			this.butToday = new System.Windows.Forms.Button();
-			this.butTodayWk = new System.Windows.Forms.Button();
+			this.butToday = new OpenDental.UI.Button();
+			this.butTodayWk = new OpenDental.UI.Button();
 			this.panelArrows = new System.Windows.Forms.Panel();
-			this.butBack = new OpenDental.XPButton();
-			this.butFwd = new OpenDental.XPButton();
-			this.butBackWk = new OpenDental.XPButton();
-			this.butFwdWk = new OpenDental.XPButton();
+			this.butBack = new OpenDental.UI.Button();
+			this.butFwd = new OpenDental.UI.Button();
+			this.butBackWk = new OpenDental.UI.Button();
+			this.butFwdWk = new OpenDental.UI.Button();
 			this.textApptModNote = new System.Windows.Forms.TextBox();
 			this.textMedicalNote = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
@@ -153,7 +157,7 @@ namespace OpenDental{
 			this.butUnsched = new System.Windows.Forms.Button();
 			this.butDelete = new System.Windows.Forms.Button();
 			this.butBreak = new System.Windows.Forms.Button();
-			this.butOther = new OpenDental.XPButton();
+			this.butOther = new OpenDental.UI.Button();
 			this.panelCalendar = new System.Windows.Forms.Panel();
 			this.textProduction = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
@@ -161,14 +165,14 @@ namespace OpenDental{
 			this.comboView = new System.Windows.Forms.ComboBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.butClearPin = new OpenDental.XPButton();
+			this.butClearPin = new OpenDental.UI.Button();
 			this.panelOps = new System.Windows.Forms.Panel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.panelNarrow = new System.Windows.Forms.Panel();
 			this.panelNotes = new System.Windows.Forms.Panel();
 			this.textPhone = new System.Windows.Forms.TextBox();
 			this.labelPhoneType = new System.Windows.Forms.Label();
-			this.butAptModNoteEdit = new System.Windows.Forms.Button();
+			this.butAptModNoteEdit = new OpenDental.UI.Button();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
@@ -246,7 +250,10 @@ namespace OpenDental{
 			// 
 			// butToday
 			// 
-			this.butToday.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butToday.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butToday.Autosize = false;
+			this.butToday.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butToday.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butToday.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.butToday.Location = new System.Drawing.Point(17, 0);
 			this.butToday.Name = "butToday";
@@ -257,7 +264,10 @@ namespace OpenDental{
 			// 
 			// butTodayWk
 			// 
-			this.butTodayWk.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butTodayWk.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butTodayWk.Autosize = false;
+			this.butTodayWk.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTodayWk.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butTodayWk.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.butTodayWk.Location = new System.Drawing.Point(17, 24);
 			this.butTodayWk.Name = "butTodayWk";
@@ -282,8 +292,9 @@ namespace OpenDental{
 			// butBack
 			// 
 			this.butBack.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butBack.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butBack.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butBack.Autosize = true;
+			this.butBack.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBack.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
 			this.butBack.Location = new System.Drawing.Point(-1, 0);
 			this.butBack.Name = "butBack";
@@ -294,8 +305,9 @@ namespace OpenDental{
 			// butFwd
 			// 
 			this.butFwd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butFwd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butFwd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butFwd.Autosize = true;
+			this.butFwd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butFwd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
 			this.butFwd.Location = new System.Drawing.Point(81, 0);
 			this.butFwd.Name = "butFwd";
@@ -306,8 +318,9 @@ namespace OpenDental{
 			// butBackWk
 			// 
 			this.butBackWk.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butBackWk.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butBackWk.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butBackWk.Autosize = true;
+			this.butBackWk.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBackWk.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBackWk.Image = ((System.Drawing.Image)(resources.GetObject("butBackWk.Image")));
 			this.butBackWk.Location = new System.Drawing.Point(-1, 24);
 			this.butBackWk.Name = "butBackWk";
@@ -318,8 +331,9 @@ namespace OpenDental{
 			// butFwdWk
 			// 
 			this.butFwdWk.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butFwdWk.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butFwdWk.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butFwdWk.Autosize = true;
+			this.butFwdWk.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butFwdWk.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFwdWk.Image = ((System.Drawing.Image)(resources.GetObject("butFwdWk.Image")));
 			this.butFwdWk.Location = new System.Drawing.Point(81, 24);
 			this.butFwdWk.Name = "butFwdWk";
@@ -514,8 +528,9 @@ namespace OpenDental{
 			// butOther
 			// 
 			this.butOther.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butOther.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butOther.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butOther.Autosize = true;
+			this.butOther.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOther.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOther.Image = ((System.Drawing.Image)(resources.GetObject("butOther.Image")));
 			this.butOther.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butOther.Location = new System.Drawing.Point(680, 478);
@@ -603,8 +618,10 @@ namespace OpenDental{
 			// butClearPin
 			// 
 			this.butClearPin.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butClearPin.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butClearPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butClearPin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClearPin.Autosize = true;
+			this.butClearPin.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClearPin.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClearPin.Image = ((System.Drawing.Image)(resources.GetObject("butClearPin.Image")));
 			this.butClearPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butClearPin.Location = new System.Drawing.Point(27, 228);
@@ -672,10 +689,13 @@ namespace OpenDental{
 			// 
 			// butAptModNoteEdit
 			// 
-			this.butAptModNoteEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAptModNoteEdit.Location = new System.Drawing.Point(150, 132);
+			this.butAptModNoteEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAptModNoteEdit.Autosize = true;
+			this.butAptModNoteEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAptModNoteEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAptModNoteEdit.Location = new System.Drawing.Point(150, 129);
 			this.butAptModNoteEdit.Name = "butAptModNoteEdit";
-			this.butAptModNoteEdit.Size = new System.Drawing.Size(52, 17);
+			this.butAptModNoteEdit.Size = new System.Drawing.Size(52, 20);
 			this.butAptModNoteEdit.TabIndex = 51;
 			this.butAptModNoteEdit.Text = "Edit";
 			this.butAptModNoteEdit.Click += new System.EventHandler(this.butAptModNoteEdit_Click);
@@ -740,7 +760,7 @@ namespace OpenDental{
     }
 
 		///<summary></summary>
-		public void ModuleSelected(){
+		public void ModuleSelected(int patNum){
 			//the scrollbar logic cannot be moved to someplace where it will be activated while working in apptbook
 			//MessageBox.Show("about to refresh");
 			RefreshVisops();//forces reset after changing databases
@@ -791,14 +811,15 @@ namespace OpenDental{
 				//if(Defs.Defns[(int)DefCat.ApptConfirmed][i].DefNum==Appointments.Cur.Confirmed)
 				//	listConfirmed.SelectedIndex=i;
 			}
-			RefreshModuleData();
+			RefreshModuleData(patNum);
 			RefreshModuleScreen();
 		}
 
 		///<summary></summary>
 		public void ModuleUnselected(){
-			Patients.FamilyList=null;
-			InsPlans.List=null;
+			FamCur=null;
+			PatCur=null;
+			PlanList=null;
 			CovPats.List=null;
 			//from RefreshDay:
 			Appointments.ListDay=null;
@@ -813,12 +834,18 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Gets the data for the current patient, just like in the other modules.  Gets patients.GetFamily, InsPlans, and CovPats.  Does not refresh any appointment data.  This function is not always called.  Sometimes, Patients.GetFamily is run directly. In that case, RefreshModuleScreen is usually called.</summary>
-		private void RefreshModuleData(){
-			if(Patients.PatIsLoaded){
-				Patients.GetFamily(Patients.Cur.PatNum);
-				InsPlans.Refresh();
-				CovPats.Refresh();
+		///<summary>Gets the data for the current patient, just like in the other modules.  Gets patients.GetFamily, InsPlans, and CovPats.  Does not refresh any appointment data.  This function is not always called.  Sometimes, Patients.GetFamily is run directly. In that case, RefreshModuleScreen is usually called.  Also does FillPatientButton.</summary>
+		private void RefreshModuleData(int patNum){
+			if(patNum==0){
+				PatCur=null;
+				FamCur=null;
+				return;
+			}
+			else{
+				FamCur=Patients.GetFamily(patNum);
+				PatCur=FamCur.GetPatient(patNum);
+				PlanList=InsPlans.Refresh(FamCur);
+				CovPats.Refresh(PatCur,PlanList);
 			}
 			FillPatientButton();
 		}
@@ -826,8 +853,9 @@ namespace OpenDental{
 		///<summary>Refreshes the main window title and then calls RefreshDay which gets the appointment data from the database.</summary>
 		public void RefreshModuleScreen(){
 			//MessageBox.Show("Refreshed");
-			if(Patients.PatIsLoaded){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
+			if(PatCur!=null){
+				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+					+PatCur.GetNameLF();
 			}
 			else{
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
@@ -837,13 +865,14 @@ namespace OpenDental{
 
 		///<summary>Should be called anytime a new patient is loaded.  This is not done quite the same as in the other modules.</summary>
 		private void FillPatientButton(){
-			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click));
+			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click),PatCur,FamCur);
 		}
 
 		///<summary>Activated anytime a Patient menu item is clicked.</summary>
 		private void menuPatient_Click(object sender,System.EventArgs e) {
-			Patients.ButtonSelect(menuPatient,sender);
-			ModuleSelected();
+			int newPatNum=Patients.ButtonSelect(menuPatient,sender,FamCur);
+			OnPatientSelected(newPatNum);
+			ModuleSelected(newPatNum);
 		}
 
 		///<summary>Triggered every time a control(including appt) is added or removed.</summary>
@@ -908,34 +937,25 @@ namespace OpenDental{
 			menuApt.MenuItems.Add(Lan.g(this,"Delete"),new EventHandler(menuApt_Click));
 			menuApt.MenuItems.Add(Lan.g(this,"Other Appointments"),new EventHandler(menuApt_Click));
 			menuApt.MenuItems.Add("-");
-			menuApt.MenuItems.Add("Print Card",new EventHandler(menuApt_Click));
-			menuApt.MenuItems.Add("Print Card for Entire Family", new EventHandler(menuApt_Click));
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butToday,
-				this.butTodayWk,
-				this.butClearPin,
-				this.butAptModNoteEdit,
-				this.butBreak,
-				this.butComplete,
-				this.butDelete,
-				this.butOther,
-				this.label4,
-				this.labelDate,
-				this.labelDate2,	
-				this.labelPhoneType,
+			menuApt.MenuItems.Add(Lan.g(this,"Print Card"),new EventHandler(menuApt_Click));
+			menuApt.MenuItems.Add(Lan.g(this,"Print Card for Entire Family")
+				,new EventHandler(menuApt_Click));
+			Lan.C(this,new Control[]
+				{
+				butToday,
+				butTodayWk,
+				butClearPin,
+				label2,
+				label3,
+				label7,
+				butOther,
+				label4,
+				labelPhoneType,
 				label6,
 				label5,
 				label1,
-				this.panelAptInfo,
-				this.panelArrows,
-				this.panelCalendar,
-				this.panelNarrow,
-				this.panelNotes,
-				this.panelOps,
-				this.panelPinBoard,
-				this.panelSheet,
-			});
-			butAptModNoteEdit.Text=Lan.g("All","Edit");
+				butAptModNoteEdit
+				});
 			LayoutToolBar();
 			//Appointment action buttons
 			toolTip1.SetToolTip(butUnsched, Lan.g(this,"Send to Unscheduled List"));
@@ -953,10 +973,10 @@ namespace OpenDental{
 			button.Style=ODToolBarButtonStyle.DropDownButton;
 			button.DropDownMenu=menuPatient;
 			ToolBarMain.Buttons.Add(button);
-			ToolBarMain.Buttons.Add(new ODToolBarButton("",1,"Unscheduled List","Unsched"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Recall List","Recall"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton("",4,"Track Next Appointments","Track"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton("",3,"Print Schedule","Print"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",1,Lan.g(this,"Unscheduled List"),"Unsched"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,Lan.g(this,"Recall List"),"Recall"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",4,Lan.g(this,"Track Planned Appointments"),"Track"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",3,Lan.g(this,"Print Schedule"),"Print"));
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.ApptModule);
 			for(int i=0;i<toolButItems.Count;i++){
 				ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
@@ -979,7 +999,12 @@ namespace OpenDental{
 			ApptViews.SetCur(comboView.SelectedIndex-1);//also works for none (0-1);
 			ApptViewItems.GetForCurView();
 			ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
-			ModuleSelected();
+			if(PatCur==null){
+				ModuleSelected(0);
+			}
+			else{
+				ModuleSelected(PatCur.PatNum);
+			}
 		}
 
 		/// <summary>
@@ -1033,8 +1058,9 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Uses FamCur and PatCur to fill appropriate data on screen. Makes no calls to db.</summary>
 		private void FillPanelPatient(){
-			if(Patients.PatIsLoaded){
+			if(PatCur!=null){
 				butOther.Enabled=true;//this button is handled entirely separately from the others
 			}
 			else{
@@ -1063,21 +1089,21 @@ namespace OpenDental{
 				else panelAptInfo.Enabled=false;//apt selected but not present
 			}
 			if(panelNotes.Enabled){
-				textFinancialNote.Text=Patients.FamilyList[Patients.GuarIndex].FamFinUrgNote;
-				textAddressNote.Text=Patients.FamilyList[Patients.GuarIndex].AddrNote;
-				textMedicalNote.Text=Patients.Cur.MedUrgNote;
-				textApptModNote.Text=Patients.Cur.ApptModNote;
-				if(Patients.Cur.HmPhone!=""){
+				textFinancialNote.Text=FamCur.List[0].FamFinUrgNote;
+				textAddressNote.Text=FamCur.List[0].AddrNote;
+				textMedicalNote.Text=PatCur.MedUrgNote;
+				textApptModNote.Text=PatCur.ApptModNote;
+				if(PatCur.HmPhone!=""){
 					labelPhoneType.Text=Lan.g(this,"Home Phone:");
-					textPhone.Text=Patients.Cur.HmPhone;
+					textPhone.Text=PatCur.HmPhone;
 				}
-				else if(Patients.Cur.WirelessPhone!=""){
+				else if(PatCur.WirelessPhone!=""){
 					labelPhoneType.Text=Lan.g(this,"Wireless Phone:");
-					textPhone.Text=Patients.Cur.WirelessPhone;
+					textPhone.Text=PatCur.WirelessPhone;
 				}
-				else if(Patients.Cur.WkPhone!=""){
+				else if(PatCur.WkPhone!=""){
 					labelPhoneType.Text=Lan.g(this,"Work Phone:");
-					textPhone.Text=Patients.Cur.WkPhone;
+					textPhone.Text=PatCur.WkPhone;
 				}
 				else{
 					labelPhoneType.Text=Lan.g(this,"(no phone listed)");
@@ -1100,6 +1126,13 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Sends the PatientSelected event on up to the main form. Does nothing else.</summary>
+		private void OnPatientSelected(int patNum){
+			PatientSelectedEventArgs eArgs=new OpenDental.PatientSelectedEventArgs(patNum);
+			if(PatientSelected!=null)
+				PatientSelected(this,eArgs);
+		}
+
 		///<summary>Sets appointment data invalid on all other computers, causing them to refresh.
 		///Does NOT refresh the data for this computer which must be done separately.</summary>
 		private void SetInvalid(){
@@ -1114,7 +1147,7 @@ namespace OpenDental{
 			if(myDate.Year<1880){
 				return;
 			}
-			if(!Patients.PatIsLoaded){
+			if(PatCur==null){
 				//there cannot be a selected appointment if no patient is loaded.
 				ContrApptSingle.SelectedAptNum=-1;//fixes a minor bug.
 			}
@@ -1128,7 +1161,9 @@ namespace OpenDental{
 			}
 			if(ContrApptSingle3!=null){//I think this is not needed.
 				for(int i=0;i<ContrApptSingle3.Length;i++){
-					ContrApptSingle3[i].Dispose();
+					if(ContrApptSingle3[i]!=null){
+						ContrApptSingle3[i].Dispose();
+					}
 					ContrApptSingle3[i]=null;
 				}
 				ContrApptSingle3=null;
@@ -1147,7 +1182,7 @@ namespace OpenDental{
 				patNums[i]=Appointments.ListDay[i].PatNum;
 			}
 			Procedures.GetProcsMultApts(aptNums);
-			Patients.GetMultPats(patNums);
+			Patient[] multPats=Patients.GetMultPats(patNums);
 			for(int i=0;i<Appointments.ListDay.Length;i++){
 				ContrApptSingle3[i]=new ContrApptSingle();
 				ContrApptSingle3[i].Visible=false;
@@ -1155,7 +1190,7 @@ namespace OpenDental{
 				ContrApptSingle3[i].Info.MyApt=Appointments.ListDay[i];
 				if(ContrApptSingle.SelectedAptNum==Appointments.ListDay[i].AptNum){//if this is the selected apt
 					//if the selected patient was changed from another module, then deselect the apt.
-					if(Patients.Cur.PatNum!=Appointments.ListDay[i].PatNum){
+					if(PatCur.PatNum!=Appointments.ListDay[i].PatNum){
 						ContrApptSingle.SelectedAptNum=-1;
 					}
 				}
@@ -1163,7 +1198,8 @@ namespace OpenDental{
 				ContrApptSingle3[i].Info.Procs=Procedures.ProcsOneApt;
 				ContrApptSingle3[i].Info.Production
 					=Procedures.GetProductionOneApt(Appointments.ListDay[i].AptNum);
-				ContrApptSingle3[i].Info.MyPatient=Patients.GetOnePat(Appointments.ListDay[i].PatNum);
+				ContrApptSingle3[i].Info.MyPatient
+					=Patients.GetOnePat(multPats,Appointments.ListDay[i].PatNum);
 				//copy time pattern to provBar[]:
 				if(ApptViewItems.GetIndexProv(Appointments.ListDay[i].ProvNum)!=-1
 				//if(Providers.GetIndex(ContrApptSingle3[i].Info.MyApt.ProvNum)!=-1
@@ -1229,7 +1265,9 @@ namespace OpenDental{
 			for(int i=0;i<Appointments.ListDay.Length;i++){
 				//MessageBox.Show("i:"+i.ToString()+",height:"+ContrApptSingle3[i].Height.ToString());
 				ContrApptSingle3[i].CreateShadow();
-				if(ContrApptSingle3[i].Location.X>=0 && ContrApptSingle3[i].Width>3){
+				if(ContrApptSingle3[i].Location.X>=0 && ContrApptSingle3[i].Width>3
+					&& ContrApptSingle3[i].Shadow!=null)
+				{
 					grfx.DrawImage(ContrApptSingle3[i].Shadow
 						,ContrApptSingle3[i].Location.X,ContrApptSingle3[i].Location.Y);
 				}
@@ -1354,7 +1392,8 @@ namespace OpenDental{
 			ContrApptSingle.SelectedAptNum=-1;//PinApptSingle.Info.MyApt.AptNum;
 			Patients.GetFamily(PinApptSingle.Info.MyApt.PatNum);
 			FillPatientButton();
-			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
+			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+				+PatCur.GetNameLF();
 			FillPanelPatient();
 			PinApptSingle.CreateShadow();
 			PinApptSingle.Refresh();
@@ -1419,7 +1458,7 @@ namespace OpenDental{
 			Appointments.CurOld=Appointments.Cur;
 			if(Appointments.Cur.IsNewPatient
 				&& Appointments.DateSelected!=Appointments.Cur.AptDateTime){
-				Procedures.SetDateFirstVisit(Appointments.DateSelected,4);
+				Procedures.SetDateFirstVisit(Appointments.DateSelected,4,PatCur);
 			}
 			int tHr=ContrApptSheet2.ConvertToHour
 				(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
@@ -1467,16 +1506,16 @@ namespace OpenDental{
 			if(Appointments.Cur.AptStatus==ApptStatus.UnschedList){
 				Appointments.Cur.AptStatus=ApptStatus.Scheduled;
 			}
-			if(Appointments.Cur.AptStatus==ApptStatus.Next){//if Next appt is on pinboard
+			if(Appointments.Cur.AptStatus==ApptStatus.Planned){//if Planned appt is on pinboard
 				Appointments.Cur.NextAptNum=Appointments.Cur.AptNum;
 				Appointments.Cur.AptStatus=ApptStatus.Scheduled;
 				Appointments.InsertCur();//now, aptnum is different.
-				Procedure[] ProcList=Procedures.Refresh(Patients.Cur.PatNum);
+				Procedure[] ProcList=Procedures.Refresh(PatCur.PatNum);
 				bool procAlreadyAttached=false;
 				Procedure ProcCur;
 				Procedure ProcOld;
 				for(int i=0;i<ProcList.Length;i++){
-					if(ProcList[i].NextAptNum==Patients.Cur.NextAptNum){//if on the next apt
+					if(ProcList[i].NextAptNum==PatCur.NextAptNum){//if on the planned apt
 						if(ProcList[i].AptNum>0){//already attached to another appt
 							procAlreadyAttached=true;
 						}
@@ -1484,7 +1523,7 @@ namespace OpenDental{
 							ProcCur=ProcList[i];
 							ProcOld=ProcCur.Copy();
 							ProcCur.AptNum=Appointments.Cur.AptNum;
-							ProcCur.Update(ProcOld);
+							ProcCur.Update(ProcOld);//recall synch not required.
 						}
 					}
 				}
@@ -1646,9 +1685,15 @@ namespace OpenDental{
 				}
 				//again, in case missed in loop above:
 				ContrApptSingle.SelectedAptNum=ContrApptSingle.ClickedAptNum;
-				Patients.GetFamily(Appointments.ListDay[thisIndex].PatNum);
+				//RefreshModuleData(//this would take too long
+				//best way to do this would be to spawn a separate thread to do db stuff.
+				//beware that PlanList and CovPats have NOT been refreshed
+				FamCur=Patients.GetFamily(Appointments.ListDay[thisIndex].PatNum);
+				PatCur=FamCur.GetPatient(Appointments.ListDay[thisIndex].PatNum);
 				FillPatientButton();
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
+				OnPatientSelected(PatCur.PatNum);
+				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+					+PatCur.GetNameLF();
 				ContrApptSingle3[thisIndex].CreateShadow();
 				grfx.DrawImage(ContrApptSingle3[thisIndex].Shadow,ContrApptSingle3[thisIndex].Location.X
 					,ContrApptSingle3[thisIndex].Location.Y);
@@ -1726,6 +1771,8 @@ namespace OpenDental{
 			if(!boolAptMoved){//it was a click with no drag
 				mouseIsDown=false;
 				TempApptSingle.Dispose();
+				PlanList=InsPlans.Refresh(FamCur);
+				CovPats.Refresh(PatCur,PlanList);
 				//PinApptSingle.Refresh();
 				return;
 			}
@@ -1736,8 +1783,9 @@ namespace OpenDental{
 				if(prevSel!=-1){
 					CreateAptShadows();
 					ContrApptSheet2.DrawShadow();
-					//CreateHundredShadows();
 				}
+				PlanList=InsPlans.Refresh(FamCur);
+				CovPats.Refresh(PatCur,PlanList);
 				FillPanelPatient();
 				TempApptSingle.Dispose();
 				return;
@@ -1755,6 +1803,8 @@ namespace OpenDental{
 					mouseIsDown=false;
 					boolAptMoved=false;
 					TempApptSingle.Dispose();
+					PlanList=InsPlans.Refresh(FamCur);
+					CovPats.Refresh(PatCur,PlanList);
 					return;
 				}
 			}
@@ -1793,6 +1843,8 @@ namespace OpenDental{
 					mouseIsDown=false;
 					boolAptMoved=false;
 					TempApptSingle.Dispose();
+					PlanList=InsPlans.Refresh(FamCur);
+					CovPats.Refresh(PatCur,PlanList);
 					return;
 				}
 			}//end if DoesOverlap
@@ -1805,6 +1857,8 @@ namespace OpenDental{
 			mouseIsDown = false;
 			boolAptMoved=false;
 			TempApptSingle.Dispose();
+			PlanList=InsPlans.Refresh(FamCur);
+			CovPats.Refresh(PatCur,PlanList);
 		}
 
 		///<summary>Double click on appt sheet or on a single appointment.</summary>
@@ -1834,32 +1888,38 @@ namespace OpenDental{
 				}
 			}
 			else{//not on apt
-				bool patLoaded=Patients.PatIsLoaded;//because we will need to know this further down
+				//bool patWasLoaded=(PatCur!=null);//because we will need to know this further down
+				//int oldPatNum=0;
 				FormPatientSelect FormPS=new FormPatientSelect();
-				if(!patLoaded){
-					FormPS.ShowDialog();
-					if(FormPS.DialogResult!=DialogResult.OK){
-						return;
-					}
-					RefreshModuleData();
+				if(PatCur!=null){//patWasLoaded){
+					//oldPatNum=PatCur.PatNum;
+					FormPS.InitialPatNum=PatCur.PatNum;
 				}
-				if(!patLoaded && FormPS.NewPatientAdded){
-					//this never happens. Trying to get it back into the program.
+				FormPS.ShowDialog();
+				if(FormPS.DialogResult!=DialogResult.OK){
+					return;
+				}
+				if(PatCur==null || FormPS.SelectedPatNum!=PatCur.PatNum){//if the patient was changed
+					OnPatientSelected(FormPS.SelectedPatNum);
+					RefreshModuleData(FormPS.SelectedPatNum);//then pull up all the new info.
+				}
+				if(FormPS.NewPatientAdded){
 					Appointments.Cur=new Appointment();
-					Appointments.Cur.PatNum=Patients.Cur.PatNum;
+					Appointments.Cur.PatNum=PatCur.PatNum;
 					Appointments.Cur.IsNewPatient=true;
 					Appointments.Cur.Pattern="/X/";
-					if(Patients.Cur.PriProv==0){
-						Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
+					if(PatCur.PriProv==0){
+						Appointments.Cur.ProvNum=Prefs.GetInt("PracticeDefaultProv");
 					}
 					else{			
-						Appointments.Cur.ProvNum=Patients.Cur.PriProv;
+						Appointments.Cur.ProvNum=PatCur.PriProv;
 					}
-					Appointments.Cur.ProvHyg=Patients.Cur.SecProv;
+					Appointments.Cur.ProvHyg=PatCur.SecProv;
 					Appointments.Cur.AptStatus=ApptStatus.Scheduled;
 					DateTime d=Appointments.DateSelected;
 					//minutes always rounded down.
-					int minutes=(int)(ContrAppt.SheetClickedonMin/ContrApptSheet.MinPerIncr)*60;
+					int minutes=(int)(ContrAppt.SheetClickedonMin/ContrApptSheet.MinPerIncr)
+						*ContrApptSheet.MinPerIncr;
 					Appointments.Cur.AptDateTime=new DateTime(d.Year,d.Month,d.Day
 						,ContrAppt.SheetClickedonHour,minutes,0);
 					Appointments.Cur.Op=ContrAppt.SheetClickedonOp;
@@ -1882,9 +1942,9 @@ namespace OpenDental{
 		///<summary>Displays the Other Appointments for the current patient, then refreshes screen as needed.</summary>
 		/// <param name="initialClick">Specifies whether the user doubleclicked on a blank time to get to this dialog.</param>
 		private void DisplayOtherDlg(bool initialClick){
-			if(!Patients.PatIsLoaded)
+			if(PatCur==null)
 				return;
-			FormApptsOther FormAO=new FormApptsOther();
+			FormApptsOther FormAO=new FormApptsOther(PatCur,FamCur);
 			FormAO.InitialClick=initialClick;
 			FormAO.ShowDialog();
 			if(FormAO.OResult==OtherResult.Cancel){
@@ -1936,17 +1996,18 @@ namespace OpenDental{
 				}
 			}
 			else if(e.Button.Tag.GetType()==typeof(int)){
-				Programs.Execute((int)e.Button.Tag);
+				Programs.Execute((int)e.Button.Tag,PatCur);
 			}
 		}
 
 		private void OnPat_Click() {
-			FormPatientSelect formSelectPatient2 = new FormPatientSelect();
-			formSelectPatient2.ShowDialog();
-			if(formSelectPatient2.DialogResult != DialogResult.OK){
+			FormPatientSelect formPS = new FormPatientSelect();
+			formPS.ShowDialog();
+			if(formPS.DialogResult!=DialogResult.OK){
 				return;
 			}
-			RefreshModuleData();//refreshes to current pt
+			OnPatientSelected(formPS.SelectedPatNum);
+			RefreshModuleData(formPS.SelectedPatNum);
 			DisplayOtherDlg(false);
 		}
 
@@ -1961,12 +2022,16 @@ namespace OpenDental{
 		}
 
 		private void OnRecall_Click() {
-			FormRecall FormRecall2=new FormRecall();
-			FormRecall2.ShowDialog();
-			if(FormRecall2.PinClicked){
+			FormRecallList FormRL=new FormRecallList();
+			FormRL.ShowDialog();
+			if(FormRL.PinClicked){
 				//AssembleInfo();
 				CurToPinBoard();
-				RefreshModuleScreen();
+				//RefreshModuleScreen();
+			}
+			if(FormRL.SelectedPatNum!=0){
+				OnPatientSelected(FormRL.SelectedPatNum);
+				ModuleSelected(FormRL.SelectedPatNum);
 			}
 		}
 
@@ -1980,7 +2045,12 @@ namespace OpenDental{
 				//RefreshModuleScreen();
 			}
 			Cursor=Cursors.Default;
-			ModuleSelected();
+			if(PatCur==null){
+				ModuleSelected(0);
+			}
+			else{
+				ModuleSelected(PatCur.PatNum);
+			}
 		}
 
 		private void OnPrint_Click() {
@@ -2004,7 +2074,7 @@ namespace OpenDental{
 			}
 			//uses default printer if selected printer not valid
 			tempPD.Dispose();
-			try  {
+			//try  {
 				if(justPreview){
 					pView.printPreviewControl2.Document=pd2;
   				pView.ShowDialog();
@@ -2019,14 +2089,14 @@ namespace OpenDental{
 					if(printDialog2.ShowDialog()==DialogResult.OK){
 						//MessageBox.Show(Lan.g(this,printDialog2.PrinterSettings.Copies.ToString()));
 						//for(int i=0;i<printDialog2.PrinterSettings.Copies;i++){
-						pd2.Print();
+							pd2.Print();
 						//}
 					}
 				}
-			}
-			catch{
-				MessageBox.Show(Lan.g(this,"Printer not available"));
-			}
+			//}
+			//catch{
+			//	MessageBox.Show(Lan.g(this,"Printer not available"));
+			//}
 	}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
@@ -2137,15 +2207,15 @@ namespace OpenDental{
 				  vertRes+=1;
 			}
       imageTemp.SetResolution(horRes,vertRes);  //sets resolution to fit image on screen
-			//HEADER POSITION AND PRINTING		 
-			string[] headers = new string[Defs.Short[(int)DefCat.Operatories].Length];
+			//HEADER POSITION AND PRINTING
+			string[] headers = new string[ContrApptSheet.ColCount];
 			Font headerFont=new Font("Arial",8);
       yPos+=30;   //y Position  
 			//need to size to horizontal resolution if bigger than 100
       xPos+=(int)(ContrApptSheet.TimeWidth+(ContrApptSheet.ProvWidth*ContrApptSheet.ProvCount)*(100/imageTemp.HorizontalResolution));  // x position
 			int xCenter=0;
-			for (int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
-				headers[i]=Defs.Short[(int)DefCat.Operatories][i].ItemName;	
+			for(int i=0;i<ContrApptSheet.ColCount;i++){
+				headers[i]=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].ItemName;	
 				xCenter=(int)((ContrApptSheet.ColWidth/2)-(e.Graphics.MeasureString(headers[i],headerFont).Width/2));
 			  e.Graphics.DrawString(headers[i],headerFont,Brushes.Black,(int)((xPos+xCenter)*(100/imageTemp.HorizontalResolution)),yPos);
         xPos+=ContrApptSheet.ColWidth;
@@ -2164,26 +2234,26 @@ namespace OpenDental{
 			PinApptSingle.Visible=false;
 			Appointments.Cur=PinApptSingle.Info.MyApt;
 			//get the patient associate with the pinboard appt so we can test for next apt.
-			Patient PatCur=Patients.Cur;//but we don't really care
-			PatCur.PatNum=Appointments.Cur.PatNum;
-			Patients.Cur=PatCur;
-			RefreshModuleData();
+			//Patient PatCur=Patients.Cur;//but we don't really care
+			//PatCur.PatNum=Appointments.Cur.PatNum;
+			//Patients.Cur=PatCur;
+			RefreshModuleData(Appointments.Cur.PatNum);
 			ContrApptSingle.SelectedAptNum=-1;
 			ContrApptSingle.PinBoardIsSelected=false;
 			if(Appointments.Cur.AptStatus==ApptStatus.UnschedList){//on unscheduled list
 				//do nothing to database
 			}
 			else if(Appointments.Cur.AptDateTime.Year<1880){//not already scheduled
-				if(Appointments.Cur.AptNum==Patients.Cur.NextAptNum){//if next apt
+				if(Appointments.Cur.AptNum==PatCur.NextAptNum){//if next apt
 					//do nothing except remove it from pinboard
 				}
 				else{//for normal appt:
 					//this gets rid of new appointments that never made it off the pinboard
 					Procedures.UnattachProcsInAppt(Appointments.Cur.AptNum);
-					Appointments.DeleteCur();
+					Appointments.DeleteCur(PatCur);
 				}
 			}
-			Patients.PatIsLoaded=false;
+			PatCur=null;
 			RefreshModuleScreen();
 		}
 
@@ -2269,20 +2339,25 @@ namespace OpenDental{
 
 		private void OnBreak_Click(){
 			int thisIndex=GetIndex(ContrApptSingle.SelectedAptNum);
+			//Appointments.CurOld
 			Appointments.Cur.AptStatus=ApptStatus.Broken;
 			Appointments.UpdateCur();
 			RefreshModuleScreen();
 			SetInvalid();
-			FormAdjust FormAdjust2=new FormAdjust();
-			FormAdjust2.IsNew=true;
-			FormAdjust2.ShowDialog();
+			FormAdjust FormA=new FormAdjust(PatCur);
+			FormA.IsNew=true;
+			Adjustments.Cur=new Adjustment();
+			Adjustments.Cur.AdjDate=DateTime.Today;
+			Adjustments.Cur.ProvNum=Appointments.Cur.ProvNum;
+			Adjustments.Cur.PatNum=PatCur.PatNum;
+			FormA.ShowDialog();
 		}
 
 		private void OnComplete_Click(){
 			int thisIndex=GetIndex(ContrApptSingle.SelectedAptNum);
 			Appointments.Cur.AptStatus=ApptStatus.Complete;
 			//Procedures.SetDateFirstVisit(Appointments.Cur.AptDateTime.Date);//done when making appt instead
-			Procedures.SetCompleteInAppt();//loops through each proc
+			Procedures.SetCompleteInAppt(Appointments.Cur,PatCur,PlanList);//loops through each proc
 			Appointments.UpdateCur();
 			RefreshModuleScreen();
 			SetInvalid();
@@ -2296,10 +2371,10 @@ namespace OpenDental{
 				return;
 			}
 			Procedures.UnattachProcsInAppt(Appointments.Cur.AptNum);
-			Appointments.DeleteCur();
+			Appointments.DeleteCur(PatCur);
 			ContrApptSingle.SelectedAptNum=-1;
 			ContrApptSingle.PinBoardIsSelected=false;
-			Patients.PatIsLoaded=false;
+			PatCur=null;
 			RefreshModuleScreen();
 			SetInvalid();
 		}		
@@ -2325,9 +2400,9 @@ namespace OpenDental{
 		}
 
 		private void butAptModNoteEdit_Click(object sender, System.EventArgs e) {
-			FormNoteApptMod FormNAM=new FormNoteApptMod();
+			FormNoteApptMod FormNAM=new FormNoteApptMod(PatCur);
 			FormNAM.ShowDialog();
-			textApptModNote.Text=Patients.Cur.ApptModNote;
+			textApptModNote.Text=PatCur.ApptModNote;
 		}
 
 		private void button1_Click_1(object sender, System.EventArgs e) {
@@ -2390,15 +2465,15 @@ namespace OpenDental{
 			string name;
 			str="Appointment Reminders:"+"\r\n\r\n";
 			Appointment[] aptsOnePat;
-			for(int i=0;i<Patients.FamilyList.Length;i++){
-				if(!cardPrintFamily && Patients.FamilyList[i].PatNum!=Patients.Cur.PatNum){
+			for(int i=0;i<FamCur.List.Length;i++){
+				if(!cardPrintFamily && FamCur.List[i].PatNum!=PatCur.PatNum){
 					continue;
 				}
-				name=Patients.FamilyList[i].FName;
+				name=FamCur.List[i].FName;
 				if(name.Length>15){//trim name so it won't be too long
 					name=name.Substring(0,15);
 				}
-				aptsOnePat=Appointments.GetForPat(Patients.FamilyList[i].PatNum);
+				aptsOnePat=Appointments.GetForPat(FamCur.List[i].PatNum);
 				for(int a=0;a<aptsOnePat.Length;a++){
 					if(aptsOnePat[a].AptDateTime.Date<=DateTime.Today){
 						continue;//ignore old appts
@@ -2410,10 +2485,10 @@ namespace OpenDental{
 			//Patient's Address-----------------------------------------------------------------------
 			Patient pat;
 			if(cardPrintFamily){
-				pat=Patients.FamilyList[Patients.GuarIndex];
+				pat=FamCur.List[0].Copy();
 			}
 			else{
-				pat=Patients.Cur;
+				pat=PatCur.Copy();
 			}
 			str=pat.FName+" "+pat.LName+"\r\n"
 				+pat.Address+"\r\n";
@@ -2427,7 +2502,7 @@ namespace OpenDental{
 			Commlogs.Cur.CommDateTime=DateTime.Now;
 			Commlogs.Cur.CommType=CommItemType.Misc;
 			Commlogs.Cur.Note="Appointment card sent";
-			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
+			Commlogs.Cur.PatNum=PatCur.PatNum;
 			//there is no dialog here because it is just a simple entry
 			Commlogs.InsertCur();
 			ev.HasMorePages = false;

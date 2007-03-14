@@ -9,9 +9,9 @@ namespace OpenDental{
 	///<summary>Corresponds to the languageforeign table in the database.</summary>
 	///<remarks>Will usually only contain translations for a single foreign language, although more are allowed.  The primary key is a combination of the ClassType and the English phrase.</remarks>
 	public struct LanguageForeign{
-		///<summary>A string representing the class where the translation is used. Max length 25 char.</summary>
+		///<summary>A string representing the class where the translation is used.</summary>
 		public string ClassType;
-		///<summary>The English version of the phrase. Max length 225 characters. Case sensitive.</summary>
+		///<summary>The English version of the phrase.  Case sensitive.</summary>
 		public string English;
 		///<summary>The culture. Currently simply the 2-letter language identifier, but will be extended to include multiple cultures using a single language.</summary>
 		public string Culture;
@@ -32,10 +32,8 @@ namespace OpenDental{
 		///<summary></summary>
 		public static LanguageForeign[] List;
 
-		///<summary></summary>
+		///<summary>called once when the program first starts up.  Then only if user downloads new translations or adds their own.</summary>
 		public static void Refresh(){
-			//called once when the program first starts up.  Then only if user downloads new translations
-			//or adds their own.
 			HList=new Hashtable();
 			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
 				return;
@@ -57,7 +55,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Tries to insert unless </summary>
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO languageforeign(ClassType,English,Culture"
 				+",Translation,Comments) "
@@ -73,17 +71,20 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE languageforeign SET " 
-				+ "Translation	= '"+POut.PString(Cur.Translation)+"'"
-				+ ",Comments    = '"+POut.PString(Cur.Comments)+"'" 
-				+" WHERE ClassType='"+Cur.ClassType+"' && "
-				+"English='"+Cur.English+"' && Culture='"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
+				+"Translation	= '"+POut.PString(Cur.Translation)+"'"
+				+",Comments = '"+POut.PString(Cur.Comments)+"'" 
+				+" WHERE ClassType= BINARY '"+Cur.ClassType+"'" 
+				+" AND English= BINARY '"+Cur.English+"'"
+				+" AND Culture= '"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
 			NonQ();
 		}
 
 		///<summary></summary>
 		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from languageforeign WHERE ClassType='"+Cur.ClassType+"' && "
-				+"English='"+Cur.English+"' && Culture='"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
+			cmd.CommandText = "DELETE from languageforeign "
+				+"WHERE ClassType=BINARY '"+Cur.ClassType+"' "
+				+"AND English=BINARY '"+Cur.English+"' "
+				+"AND Culture='"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
 			NonQ();
 		}
 

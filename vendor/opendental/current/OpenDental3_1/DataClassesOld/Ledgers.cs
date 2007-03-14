@@ -87,18 +87,18 @@ namespace OpenDental{
 			DateValuePair[] pairs;
 			string wherePats="";
 			ArrayList ALpatNums=new ArrayList();//used for payplans
-			cmd.CommandText="SELECT patnum FROM patient WHERE guarantor = '"+POut.PInt(guarantor)+"'";
+			cmd.CommandText="SELECT PatNum FROM patient WHERE guarantor = '"+POut.PInt(guarantor)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
 			for(int i=0;i<table.Rows.Count;i++){
 				ALpatNums.Add(PIn.PInt(table.Rows[i][0].ToString()));
-				if(i>0) wherePats+=" ||";
+				if(i>0) wherePats+=" OR";
 				wherePats+=" patnum = '"+table.Rows[i][0].ToString()+"'";
 			}
 			//REGULAR PROCEDURES:
 			cmd.CommandText="SELECT procdate,procfee,capcopay FROM procedurelog"
 				+" WHERE procstatus = '2'"//complete
-				+" && ("+wherePats+")";
+				+" AND ("+wherePats+")";
 			FillTable();
 			pairs=new DateValuePair[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -114,7 +114,7 @@ namespace OpenDental{
 			//POSITIVE ADJUSTMENTS:
 			cmd.CommandText="SELECT adjdate,adjamt FROM adjustment"
 				+" WHERE adjamt > 0"
-				+" && ("+wherePats+")";
+				+" AND ("+wherePats+")";
 			FillTable();
 			pairs=new DateValuePair[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -127,7 +127,7 @@ namespace OpenDental{
 			//NEGATIVE ADJUSTMENTS:
 			cmd.CommandText="SELECT adjdate,adjamt FROM adjustment"
 				+" WHERE adjamt < 0"
-				+" && ("+wherePats+")"
+				+" AND ("+wherePats+")"
 				+" ORDER BY adjdate";
 			FillTable();
 			pairs=new DateValuePair[table.Rows.Count];
@@ -140,13 +140,13 @@ namespace OpenDental{
 			//Always use DateCP rather than ProcDate to calculate the date of a claim payment
 			cmd.CommandText="SELECT datecp,inspayamt,writeoff FROM claimproc"
 				+" WHERE (status = '1' "//received
-				+"|| status = '4'"//or supplemental
-				+"|| status = '7'"//or CapComplete
-				+"|| status = '5'"//or CapClaim
+				+"OR status = '4'"//or supplemental
+				+"OR status = '7'"//or CapComplete
+				+"OR status = '5'"//or CapClaim
 				+")"
 				//pending insurance is handled further down
 				//ins adjustments do not affect patient balance, but only insurance benefits
-				+" && ("+wherePats+")"
+				+" AND ("+wherePats+")"
 				+" ORDER BY datecp";
 			FillTable();
 			pairs=new DateValuePair[table.Rows.Count];
@@ -172,13 +172,13 @@ namespace OpenDental{
 			//all payment plan amounts are considered current, regardless of date
 			string whereGuars="";
 			for(int i=0;i<ALpatNums.Count;i++){
-				if(i>0) whereGuars+=" ||";
+				if(i>0) whereGuars+=" OR";
 				whereGuars+=" guarantor = '"+((int)ALpatNums[i]).ToString()+"'";
 			}
 			cmd.CommandText="SELECT currentdue,totalamount,patnum,guarantor FROM payplan"
 				+" WHERE"
 				+wherePats
-				+" ||"
+				+" OR"
 				+whereGuars;
 			FillTable();
 			pairs=new DateValuePair[1];//always just one single combined entry
@@ -205,7 +205,7 @@ namespace OpenDental{
 			//CLAIM ESTIMATES
 			cmd.CommandText="SELECT inspayest FROM claimproc"
 				+" WHERE status = '0'"//not received
-				+" && ("+wherePats+")";
+				+" AND ("+wherePats+")";
 			FillTable();
 			for(int i=0;i<table.Rows.Count;i++){
 				InsEst+=PIn.PDouble(table.Rows[i][0].ToString());
@@ -232,9 +232,9 @@ namespace OpenDental{
 			//must complete by updating patient table. Done from wherever this was called.
 		}
 
+		///<summary>Called 4 times from the above function.  Not needed for charges, but only for payments, which are much more complex to place in the correct aging slot.  Hopefully, the complexity will be reduced when we have line item accounting, and every payment will have a proc date as well as a payment date.  Payment date will be used for all reports that show payments.  ProcDate will be used for aging.  This is already mostly in place for claimproc.ProcDate and claimproc.DateCP.</summary>
 		private static void ComputePayments(DateValuePair[] pairs){
-			//called 4 times from the above function.  Not needed for charges, but only for payments,
-			//which are much more complex to place in the correct aging slot.
+			//
 			for(int i=0;i<pairs.Length;i++){
 				switch(GetAgingType(pairs[i].Date)){
 					case 3://over 90

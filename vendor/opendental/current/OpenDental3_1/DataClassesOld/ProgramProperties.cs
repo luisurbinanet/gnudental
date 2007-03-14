@@ -22,7 +22,7 @@ namespace OpenDental{
 	/*=========================================================================================
 	=================================== class ProgramProperties ==========================================*/
 
-	///<summary>to be completed in the next version.</summary>
+	///<summary></summary>
 	public class ProgramProperties:DataClass{
 		///<summary></summary>
 		public static ProgramProperty Cur;

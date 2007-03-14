@@ -44,7 +44,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public void InstantClasses(){
 			MaxRows=4;
-			MaxCols=5;
+			MaxCols=6;
 			ShowScroll=true;
 			FieldsArePresent=true;
 			HeadingIsPresent=true;
@@ -58,11 +58,13 @@ namespace OpenDental{
 			Fields[2]=Lan.g("TableFamily","Gender");
 			Fields[3]=Lan.g("TableFamily","Status");
 			Fields[4]=Lan.g("TableFamily","Age");
+			Fields[5]=Lan.g("TableFamily","Recall Due");
 			ColWidth[0]=140;
 			ColWidth[1]=70;
 			ColWidth[2]=60;
 			ColWidth[3]=70;
 			ColWidth[4]=50;
+			ColWidth[5]=80;
 			LayoutTables();
 		}
 

@@ -70,7 +70,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Inserts a new document into db, creates a filename based on Cur.DocNum, and then updates the db with this filename.  Also attaches the document to the current patient.</summary>
-		public static void InsertCur(){
+		public static void InsertCur(Patient pat){
 			cmd.CommandText = 
 				"INSERT INTO document (Description,DateCreated,DocCategory,"
 				+"WithPat,FileName,ImgType,IsFlipped,DegreesRotated) VALUES ("
@@ -91,7 +91,7 @@ namespace OpenDental{
 			if(Cur.FileName==Path.GetExtension(Cur.FileName)){
 				string extension=Cur.FileName;
 				Cur.FileName="";
-				string s=Patients.Cur.LName+Patients.Cur.FName;
+				string s=pat.LName+pat.FName;
 				for(int i=0;i<s.Length;i++){
 					if(Char.IsLetter(s,i)){
 						Cur.FileName+=s.Substring(i,1);
@@ -106,7 +106,7 @@ namespace OpenDental{
 			}
 			DocAttaches.Cur=new DocAttach();
 			DocAttaches.Cur.DocNum=Cur.DocNum;
-			DocAttaches.Cur.PatNum=Patients.Cur.PatNum;
+			DocAttaches.Cur.PatNum=pat.PatNum;
 			DocAttaches.InsertCur();
 		}
 

@@ -9,7 +9,7 @@ namespace OpenDental{
 	public class FormSchedPractice : System.Windows.Forms.Form{
 		private OpenDental.ContrCalendar Calendar2;
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
     Color ClosedColor;//will be Def "Closed Practice" Color
     Color HolidayColor;//will be Def "Holiday" Color
     Color OpenColor; //will be Def "Open" Color
@@ -18,10 +18,7 @@ namespace OpenDental{
 		public FormSchedPractice(){
 			InitializeComponent();
       Calendar2.ChangeMonth +=new OpenDental.ContrCalendar.EventHandler(Calendar2_ChangeMonth);  
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				this
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -39,7 +36,7 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.Calendar2 = new OpenDental.ContrCalendar();
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// Calendar2

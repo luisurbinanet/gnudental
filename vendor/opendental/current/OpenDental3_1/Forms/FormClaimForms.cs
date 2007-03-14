@@ -13,15 +13,15 @@ namespace OpenDental{
 	/// </summary>
 	public class FormClaimForms : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listClaimForms;
-		private System.Windows.Forms.Button butAdd;
-		private System.Windows.Forms.Button butClose;
-		private System.Windows.Forms.Button butCopy;
-		private System.Windows.Forms.Button butDelete;
+		private OpenDental.UI.Button butAdd;
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butCopy;
+		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ListBox listEClaim;
-		private System.Windows.Forms.Button butExport;
-		private System.Windows.Forms.Button butImport;
+		private OpenDental.UI.Button butExport;
+		private OpenDental.UI.Button butImport;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.OpenFileDialog openDlg;
 		private System.Windows.Forms.SaveFileDialog saveDlg;
@@ -37,24 +37,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[]
-			{
-				this,
-				label1,
-				label2,
-				groupBox1,
-				butExport,
-				butImport,
-				butCopy //*Ann
-			});
-			Lan.C("All", new System.Windows.Forms.Control[]
-			{
-				//butOK,
-				//butCancel,
-				butAdd,
-				butClose, //*Ann
-				butDelete //*Ann
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -80,16 +63,16 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormClaimForms));
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.listClaimForms = new System.Windows.Forms.ListBox();
-			this.butAdd = new System.Windows.Forms.Button();
-			this.butCopy = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.UI.Button();
+			this.butCopy = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.listEClaim = new System.Windows.Forms.ListBox();
-			this.butExport = new System.Windows.Forms.Button();
-			this.butImport = new System.Windows.Forms.Button();
+			this.butExport = new OpenDental.UI.Button();
+			this.butImport = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.openDlg = new System.Windows.Forms.OpenFileDialog();
 			this.saveDlg = new System.Windows.Forms.SaveFileDialog();
@@ -100,7 +83,7 @@ namespace OpenDental{
 			// 
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(460, 362);
+			this.butClose.Location = new System.Drawing.Point(320, 395);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 0;
 			this.butClose.Text = "&Close";
@@ -153,19 +136,21 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(330, 14);
+			this.label2.Location = new System.Drawing.Point(353, 25);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(254, 16);
 			this.label2.TabIndex = 8;
 			this.label2.Text = "Select Claim Form for Generic E-Claims";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label2.Visible = false;
 			// 
 			// listEClaim
 			// 
-			this.listEClaim.Location = new System.Drawing.Point(331, 33);
+			this.listEClaim.Location = new System.Drawing.Point(354, 44);
 			this.listEClaim.Name = "listEClaim";
 			this.listEClaim.Size = new System.Drawing.Size(203, 251);
 			this.listEClaim.TabIndex = 7;
+			this.listEClaim.Visible = false;
 			// 
 			// butExport
 			// 
@@ -204,7 +189,7 @@ namespace OpenDental{
 			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(581, 451);
+			this.ClientSize = new System.Drawing.Size(425, 451);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.listEClaim);

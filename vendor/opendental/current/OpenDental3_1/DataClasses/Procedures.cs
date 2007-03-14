@@ -1,40 +1,17 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace OpenDental{
 
 	///<summary></summary>
 	public class Procedures{
-		//<summary>The current procedure. Always taken from the List.</summary>
-		//private static Procedure cur;
-		//<summary>When doing update, this Patient is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
-		//public static Procedure CurOld;
-		//<summary>all procedures for current patient</summary>
-		//public static Procedure[] List;
-		//<summary>Hashtable of all procedures for current patient. Key=ProcNum.</summary>
-		//public static Hashtable HList;
-		///<summary>Strings. Valid "1"-"32", and "A"-"Z". Moved to a function instead.</summary>
-		public static ArrayList MissingTeeth;
 		private static ProcDesc[] procsMultApts;
 		///<summary>Descriptions of procedures for one appointment or one next appointment. Fill by using GetProcsMultApts, then GetProcsOneApt to pull data from that list.</summary>
 		public static string[] ProcsOneApt;
-		//<summary>Descriptions of procedures for one appointment or one next appointment. Fill using GetProcsForSingle to get data directly from the database.</summary>
-		//public static ProcDesc ProcsForSingle;//string[] ProcsForSingle;//
-		//private static ProcCodes ProcCodes;
-
-		//<summary>Current procedure</summary>
-		/*public static Procedure Cur{
-			get{
-				return cur;
-			}
-			set{
-				cur=value;
-				//curOld=value;
-			}
-		}*/
-
+		
 		///<summary></summary>
 		public static Procedure[] Refresh(int patNum){
 			string command=
@@ -43,10 +20,10 @@ namespace OpenDental{
 				+"ORDER BY ProcDate";
  			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
-			MissingTeeth=new ArrayList();
+			//MissingTeeth=new ArrayList();
 			//HList=new Hashtable();
 			Procedure[] List=new Procedure[table.Rows.Count];
-			for (int i=0;i<List.Length;i++){
+			for(int i=0;i<List.Length;i++){
 				List[i]=new Procedure();
 				List[i].ProcNum					= PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].PatNum					= PIn.PInt   (table.Rows[i][1].ToString());
@@ -70,20 +47,15 @@ namespace OpenDental{
 				//List[i].CapCoPay  			= PIn.PDouble(table.Rows[i][19].ToString());
 				List[i].PlaceService		= (PlaceOfService)PIn.PInt(table.Rows[i][20].ToString());
 				List[i].HideGraphical		= PIn.PBool  (table.Rows[i][21].ToString());
-				//HList.Add(List[i].ProcNum,List[i]);    
-				if(ProcedureCodes.GetProcCode(List[i].ADACode).RemoveTooth && (
-					List[i].ProcStatus==ProcStat.C
-					|| List[i].ProcStatus==ProcStat.EC
-					|| List[i].ProcStatus==ProcStat.EO))
-				{
-					MissingTeeth.Add(List[i].ToothNum);
-				}  
+				List[i].Prosthesis		  = PIn.PString(table.Rows[i][22].ToString());
+				List[i].DateOriginalProsth= PIn.PDate(table.Rows[i][23].ToString());
+				List[i].ClaimNote		    = PIn.PString(table.Rows[i][24].ToString());
+				List[i].DateLocked	    = PIn.PDate  (table.Rows[i][25].ToString());
 			}
 			return List;
 		}
 
-		/*This will be used later to get rid of the global variable for missing teeth
-		///<summary>Gets a list of missing teeth as strings. Valid "1"-"32", and "A"-"Z".</summary>
+		///<summary>Gets a list of missing teeth as strings. Includes "1"-"32", and "A"-"Z".</summary>
 		public static ArrayList GetMissingTeeth(Procedure[] procs){
 			ArrayList missing=new ArrayList();
 			for(int i=0;i<procs.Length;i++){
@@ -96,7 +68,7 @@ namespace OpenDental{
 				}  
 			}
 			return missing;
-		}*/
+		}
 
 		//public static void RefreshByDate(){
 		//	RefreshAndFill();
@@ -291,7 +263,7 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void UnattachProcsInNextAppt(int myAptNum){
+		public static void UnattachProcsInPlannedAppt(int myAptNum){
 			string command="UPDATE procedurelog SET "
 				+"NextAptNum = '0' "
 				+"WHERE NextAptNum = '"+myAptNum+"'";
@@ -299,16 +271,16 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary>Loops through each proc.  Assumes you have set Appointments.Cur</summary>
-		public static void SetCompleteInAppt(){
-			Procedure[] ProcList=Procedures.Refresh(Patients.Cur.PatNum);
-			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
-			CovPats.Refresh();
+		///<summary>Loops through each proc. Does not add notes to a procedure that already has notes.</summary>
+		public static void SetCompleteInAppt(Appointment apt,Patient pat,InsPlan[] PlanList){
+			Procedure[] ProcList=Procedures.Refresh(pat.PatNum);
+			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(pat.PatNum);
+			CovPats.Refresh(pat,PlanList);
 			bool doResetRecallStatus=false;
 			ProcedureCode procCode;
 			Procedure oldProc;
 			for(int i=0;i<ProcList.Length;i++){
-				if(ProcList[i].AptNum!=Appointments.Cur.AptNum){
+				if(ProcList[i].AptNum!=apt.AptNum){
 					continue;
 				}
 				oldProc=ProcList[i].Copy();
@@ -321,33 +293,33 @@ namespace OpenDental{
 					doResetRecallStatus=true;
 				}
 				ProcList[i].ProcStatus=ProcStat.C;
-				ProcList[i].ProcDate=Appointments.Cur.AptDateTime.Date;
+				ProcList[i].ProcDate=apt.AptDateTime.Date;
 				ProcList[i].PlaceService=(PlaceOfService)Prefs.GetInt("DefaultProcedurePlaceService");
-				ProcList[i].ProcNote+=procCode.DefaultNote;
-				if(Appointments.Cur.ProvHyg!=0){//if the appointment has a hygiene provider
+				//if a note already exists, then don't add more. This was by special request.
+				if(ProcList[i].ProcNote==""){
+					ProcList[i].ProcNote=procCode.DefaultNote;
+				}
+				if(apt.ProvHyg!=0){//if the appointment has a hygiene provider
 					if(procCode.IsHygiene){//hyg proc
-						ProcList[i].ProvNum=Appointments.Cur.ProvHyg;
+						ProcList[i].ProvNum=apt.ProvHyg;
 					}
 					else{//regular proc
-						ProcList[i].ProvNum=Appointments.Cur.ProvNum;
+						ProcList[i].ProvNum=apt.ProvNum;
 					}
 				}
 				else{//same provider for every procedure
-					ProcList[i].ProvNum=Appointments.Cur.ProvNum;
+					ProcList[i].ProvNum=apt.ProvNum;
 				}
 				ProcList[i].Update(oldProc);
-				ProcList[i].ComputeEstimates(Patients.Cur.PatNum,Patients.Cur.PriPlanNum
-					,Patients.Cur.SecPlanNum,ClaimProcList,false);
+				ProcList[i].ComputeEstimates(pat.PatNum,pat.PriPlanNum
+					,pat.SecPlanNum,ClaimProcList,false,pat,PlanList);
 			}
 			if(doResetRecallStatus){
-				Patient PatCur=Patients.Cur;
-				PatCur.RecallStatus=0;
-				Patients.Cur=PatCur;
-				Patients.UpdateCur();
+				Recalls.Reset(pat.PatNum);//this also synchs recall
 			}
 		}
 
-		///<summary></summary>
+		///<summary>Does not make any calls to db.</summary>
 		public static double ComputeBal(Procedure[] List){//must make sure Refresh is done first
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -369,14 +341,14 @@ namespace OpenDental{
 		///3. When an appointment is deleted. If no C procs, clear visit date.
 		///4. Changing an appt date of type IsNewPatient. If no C procs, change visit date.
 		///Old: when setting a procedure complete in the Chart module or the ProcEdit window.  Also when saving an appointment that is marked IsNewPat.</summary>
-		public static void SetDateFirstVisit(DateTime visitDate, int situation){
+		public static void SetDateFirstVisit(DateTime visitDate, int situation,Patient pat){
 			if(situation==1){
-				if(Patients.Cur.DateFirstVisit.Year>1880){
+				if(pat.DateFirstVisit.Year>1880){
 					return;//a date has already been set.
 				}
 			}	
 			string command="SELECT Count(*) from procedurelog WHERE "
-				+"PatNum = '"+POut.PInt(Patients.Cur.PatNum)+"' "
+				+"PatNum = '"+POut.PInt(pat.PatNum)+"' "
 				+"&& ProcStatus = '2'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -390,12 +362,12 @@ namespace OpenDental{
 			if(situation==3){
 				command="UPDATE patient SET DateFirstVisit =''"
 					+" WHERE PatNum ='"
-					+POut.PInt(Patients.Cur.PatNum)+"'";
+					+POut.PInt(pat.PatNum)+"'";
 			}
 			else{
 				command="UPDATE patient SET DateFirstVisit ='"
 					+POut.PDate(visitDate)+"' WHERE PatNum ='"
-					+POut.PInt(Patients.Cur.PatNum)+"'";
+					+POut.PInt(pat.PatNum)+"'";
 			}
 			//MessageBox.Show(cmd.CommandText);
 			dcon.NonQ(command);
@@ -426,11 +398,11 @@ namespace OpenDental{
 
 		///<summary>After changing important coverage plan info, this is called to recompute estimates for all procedures for this patient.</summary>
 		public static void ComputeEstimatesForAll(int patNum,int priPlanNum,int secPlanNum
-			,ClaimProc[] claimProcs,Procedure[] procs)
+			,ClaimProc[] claimProcs,Procedure[] procs,Patient pat,InsPlan[] PlanList)
 		{
 			for(int i=0;i<procs.Length;i++){
 				procs[i].ComputeEstimates(patNum,priPlanNum
-					,secPlanNum,claimProcs,false);
+					,secPlanNum,claimProcs,false,pat,PlanList);
 			}
 		}
 
@@ -470,6 +442,7 @@ namespace OpenDental{
 			return false;*/
 		}
 
+		
 
 
 	}

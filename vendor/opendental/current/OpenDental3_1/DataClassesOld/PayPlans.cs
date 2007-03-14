@@ -33,6 +33,8 @@ namespace OpenDental{
 		public string Note;
 		///<summary>Calculated in the payment plan edit window, then stored here. Current due will never go over the total cost amount.</summary>
 		public double TotalCost;
+		///<summary>The amount of the last payment in the series. Usually 0 or at least less than the usual monthly payment.</summary>
+		public double LastPayment;
 	}
 
 	/*=========================================================================================
@@ -45,19 +47,19 @@ namespace OpenDental{
 		///<summary></summary>
 		public static PayPlan Cur;
 
-		///<summary>Refresh List for only the specified guarantor.</summary>
-		public static void Refresh(int guarNum){
-			if(guarNum==0){
+		///<summary>Refresh List for the specified guarantor and patient.</summary>
+		public static void Refresh(int guarantor,int patNum){
+			//if(guarantor==0){
 				cmd.CommandText =
 					"SELECT * from payplan"
-					+" WHERE patnum = '"+Patients.Cur.PatNum+"'"
-					+" || guarantor = '"+Patients.Cur.PatNum+"' ORDER BY payplandate";
-			}
-			else{
-				cmd.CommandText =
-					"SELECT * from payplan"
-					+" WHERE guarantor = '"+guarNum+"' ORDER BY payplandate";
-			}
+					+" WHERE patnum = "+patNum.ToString()
+					+" OR guarantor = "+guarantor.ToString()+" ORDER BY payplandate";
+			//}
+			//else{
+			//	cmd.CommandText =
+			//		"SELECT * from payplan"
+			//		+" WHERE guarantor = '"+guarantor+"' ORDER BY payplandate";
+			//}
 			FillTable();
 			List=new PayPlan[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -74,13 +76,14 @@ namespace OpenDental{
 				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
 				List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
 				List[i].TotalCost     = PIn.PDouble(table.Rows[i][12].ToString());
+				List[i].LastPayment   = PIn.PDouble(table.Rows[i][13].ToString());
 			}//end for
 		}
 
-		///<summary>Refresh for the cur patient, both for patnum and guarantor.</summary>
-		public static void Refresh(){
-			Refresh(0);
-		}
+		//<summary>Refresh for the cur patient, both for patnum and guarantor.</summary>
+		//public static void Refreshh(int patNum){
+		//	Refresh(patNum,patNum);
+		//}
 
 		///<summary></summary>
 		public static void UpdateCur(){
@@ -97,6 +100,7 @@ namespace OpenDental{
 				+ ",downpayment = '"   +POut.PDouble(Cur.DownPayment)+"'"
 				+ ",note = '"          +POut.PString(Cur.Note)+"'"
 				+ ",totalcost = '"     +POut.PDouble(Cur.TotalCost)+"'"
+				+ ",LastPayment = '"   +POut.PDouble(Cur.LastPayment)+"'"
 				+" WHERE payplanNum = '" +POut.PInt   (Cur.PayPlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
@@ -105,7 +109,8 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO payplan (patnum,guarantor,payplandate,totalamount,"
-				+"apr,monthlypayment,term,currentdue,datefirstpay,downpayment,note,TotalCost) VALUES("
+				+"apr,monthlypayment,term,currentdue,datefirstpay,downpayment,note,TotalCost,"
+				+"LastPayment) VALUES("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   (Cur.Guarantor)+"', "
 				+"'"+POut.PDate  (Cur.PayPlanDate)+"', "
@@ -117,7 +122,8 @@ namespace OpenDental{
 				+"'"+POut.PDate  (Cur.DateFirstPay)+"', "
 				+"'"+POut.PDouble(Cur.DownPayment)+"', "
 				+"'"+POut.PString(Cur.Note)+"', "
-				+"'"+POut.PDouble(Cur.TotalCost)+"')";
+				+"'"+POut.PDouble(Cur.TotalCost)+"', "
+				+"'"+POut.PDouble(Cur.LastPayment)+"')";
 			NonQ(false);
 		}
 
@@ -148,6 +154,7 @@ namespace OpenDental{
 				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
 				//List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
 				List[i].TotalCost     = PIn.PDouble(table.Rows[i][12].ToString());
+				List[i].LastPayment   = PIn.PDouble(table.Rows[i][13].ToString());
 			}//end for
 			for(int i=0;i<List.Length;i++){
 				//Cur=List[i];
@@ -199,23 +206,23 @@ namespace OpenDental{
 		}
 
 		///<summary>Must make sure Refresh is done first.  Returns the sum of all payment plan entries for guarantor and/or patient.</summary>
-		public static double ComputeBal(){
+		public static double ComputeBal(int patNum){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
 				//one or both of these conditions may be met:
-				if(List[i].Guarantor==Patients.Cur.PatNum){
+				if(List[i].Guarantor==patNum){
 					retVal+=List[i].CurrentDue;
 				}
-				if(List[i].PatNum==Patients.Cur.PatNum){
+				if(List[i].PatNum==patNum){
 					retVal-=List[i].TotalAmount;
 				}
 			}
 			return retVal;
 		}
 
-		///<summary>Refreshes the list for the specified guarantor, and then determines if there are any valid plans with that patient as the guarantor.  If so, then it sets Cur, else returns false.</summary>
+		///<summary>Refreshes the list for the specified guarantor, and then determines if there are any valid plans with that patient as the guarantor.  If more than one valid payment plan, displays list to select from.  If any valid plans, then it sets Cur, else returns false.</summary>
 		public static bool GetValidPlan(int guarNum){
-			Refresh(guarNum);
+			Refresh(guarNum,0);
 			if(List.Length==0){
 				return false;
 			}

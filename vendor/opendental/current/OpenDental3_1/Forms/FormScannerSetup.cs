@@ -16,8 +16,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label12;
@@ -59,20 +59,20 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormScannerSetup(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2,
-				label3,
-				label4,
-				label5,
-				label6,
-				label7,
-				label8,
-				label9,
-				label10,
-				label11,
-				label12,
-				label13,
+			//too many labels to use Lan.F()
+			Lan.C(this, new System.Windows.Forms.Control[]
+			{
+				this,
+				this.groupBox1,
+				this.groupBox2,
+				this.groupBox3,
+				this.label12,
+				this.label10,
+				this.label13,
+				this.label17,
+				this.label25,
+				this.label29,
+				this.label37
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
@@ -97,8 +97,8 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.trackQ = new System.Windows.Forms.TrackBar();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -154,7 +154,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(718, 430);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -164,8 +167,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(718, 468);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -315,6 +321,7 @@ namespace OpenDental{
 			this.textBox1.Text = "Delta threshhold for automatic crop.  Recommend 0.035.  Smaller setting will incr" +
 				"ease sensitivity and tend to crop documents to larger size.  Useful range is abo" +
 				"ut 0.01 to 0.05.";
+			this.textBox1.Visible = false;
 			// 
 			// textCropDelta
 			// 
@@ -322,6 +329,7 @@ namespace OpenDental{
 			this.textCropDelta.Name = "textCropDelta";
 			this.textCropDelta.TabIndex = 1;
 			this.textCropDelta.Text = "";
+			this.textCropDelta.Visible = false;
 			// 
 			// groupBox1
 			// 
@@ -491,9 +499,9 @@ namespace OpenDental{
 			// 
 			this.label25.Location = new System.Drawing.Point(13, 292);
 			this.label25.Name = "label25";
-			this.label25.Size = new System.Drawing.Size(176, 34);
+			this.label25.Size = new System.Drawing.Size(212, 42);
 			this.label25.TabIndex = 15;
-			this.label25.Text = "Suggested setting for scanning radiographs is Greyscale, 600 dpi.";
+			this.label25.Text = "Suggested setting for scanning panos is Greyscale, 300 dpi.  For BWs, 400dpi.";
 			// 
 			// groupBox3
 			// 

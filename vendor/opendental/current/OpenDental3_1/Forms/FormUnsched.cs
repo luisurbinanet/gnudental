@@ -9,7 +9,7 @@ namespace OpenDental{
 	public class FormUnsched : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableUnsched tbApts;
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		///<summary></summary>
 		public bool PinClicked=false;		
 		///<summary></summary>
@@ -19,9 +19,7 @@ namespace OpenDental{
 		public FormUnsched(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbApts.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbApts_CellDoubleClicked);
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -42,7 +40,7 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.tbApts = new OpenDental.TableUnsched();
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// tbApts
@@ -118,7 +116,8 @@ namespace OpenDental{
 			int currentScroll=tbApts.ScrollValue;
 			Appointments.Cur=Appointments.ListUn[e.Row];
 			Appointments.CurOld=Appointments.Cur;
-			Patients.GetFamily(Appointments.Cur.PatNum);
+			Family famCur=Patients.GetFamily(Appointments.Cur.PatNum);
+			Patient patCur=famCur.GetPatient(Appointments.Cur.PatNum);
 			FormApptEdit FormAE=new FormApptEdit();
 			FormAE.PinIsVisible=true;
 			FormAE.ShowDialog();
@@ -126,7 +125,7 @@ namespace OpenDental{
 				return;
 			if(FormAE.PinClicked){
 				PinClicked=true;
-				CreateCurInfo();
+				CreateCurInfo(patCur);
 				Appointments.ListUn=null;
 				DialogResult=DialogResult.OK;
 			}
@@ -159,7 +158,7 @@ namespace OpenDental{
 			 FillAppointments();*/
 		}	
 
-		private void CreateCurInfo(){
+		private void CreateCurInfo(Patient patCur){
 			ContrAppt.CurInfo=new InfoApt();
 			ContrAppt.CurInfo.MyApt=Appointments.Cur;
 			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
@@ -167,7 +166,7 @@ namespace OpenDental{
 			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
 			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
 			ContrAppt.CurInfo.Production=procDesc.Production;
-			ContrAppt.CurInfo.MyPatient=Patients.Cur;
+			ContrAppt.CurInfo.MyPatient=patCur.Copy();
 		}
 
 		/*delete

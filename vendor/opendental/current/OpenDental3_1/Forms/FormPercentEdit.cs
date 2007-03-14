@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormPercentEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.TextBox text2;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label1;
@@ -18,13 +18,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormPercentEdit(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-					butOK,
-					butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -40,15 +34,18 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.text2 = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(194, 58);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -58,8 +55,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(194, 94);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -78,7 +78,7 @@ namespace OpenDental{
 			// 
 			this.label1.Location = new System.Drawing.Point(10, 10);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(230, 32);
+			this.label1.Size = new System.Drawing.Size(265, 32);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "Please enter a number from 0 to 100, or leave blank.  No letters or symbols allow" +
 				"ed";

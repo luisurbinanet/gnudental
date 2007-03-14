@@ -27,9 +27,9 @@ namespace OpenDental{
 		public static MedicationPat[] List;//for current pat
 
 		///<summary></summary>
-		public static void Refresh(){
+		public static void Refresh(int patNum){
 			cmd.CommandText =
-				"SELECT * from medicationpat WHERE patnum = '"+Patients.Cur.PatNum+"'";
+				"SELECT * from medicationpat WHERE patnum = '"+patNum+"'";
 			FillTable();
 			List=new MedicationPat[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){

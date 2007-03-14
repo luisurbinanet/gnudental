@@ -17,10 +17,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
 		private Patients Patients;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butAddPt;
-		/// <summary>was "OnlyChangingFam". Use when you want to specify a patient without changing the current patient.</summary>
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butAddPt;
+		/// <summary>Use when you want to specify a patient without changing the current patient.  If true, then the Add Patient button will not be visible.</summary>
 		public bool SelectionModeOnly;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label3;
@@ -49,10 +49,15 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listBillingTypes;
 		private System.Windows.Forms.CheckBox checkUseSearch;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Button butSearch;
+		private OpenDental.UI.Button butSearch;
 		private System.Windows.Forms.DataGrid grid2;
 		///<summary>When closing the form, this indicates whether a new patient was added from within this form.</summary>
 		public bool NewPatientAdded;
+		///<summary>Only used when double clicking blank area in Appts. Sets this value to the currently selected pt.  That patient will come up on the screen already selected and user just has to click OK. Or they can select a different pt or add a new pt.  If 0, then no initial patient is selected.</summary>
+		public int InitialPatNum;
+		private DataTable PtDataTable;
+		///<summary>When closing the form, this will hold the value of the newly selected PatNum.</summary>
+		public int SelectedPatNum;
 
 		///<summary></summary>
 		public FormPatientSelect(){
@@ -60,28 +65,7 @@ namespace OpenDental{
 			//tb2.CellClicked += new OpenDental.ContrTable.CellEventHandler(tb2_CellClicked);
 			//tb2.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tb2_CellDoubleClicked);
 			Patients=new Patients();
-			Lan.C(this, new System.Windows.Forms.Control[] 
-			{
-				label1,
-				//label2,
-				label3,
-				label4,
-				label5,
-				label7,
-				label8,
-				label9,
-				label10,
-				label11,
-				label12,
-				this.butAddPt,
-				this.groupAddPt,
-				this.groupBox2,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
-
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -104,9 +88,9 @@ namespace OpenDental{
 			this.textLName = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupAddPt = new System.Windows.Forms.GroupBox();
-			this.butAddPt = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butAddPt = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.textChartNumber = new System.Windows.Forms.TextBox();
 			this.listBillingTypes = new System.Windows.Forms.ListBox();
@@ -132,7 +116,7 @@ namespace OpenDental{
 			this.labelMore = new System.Windows.Forms.Label();
 			this.checkUseSearch = new System.Windows.Forms.CheckBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.butSearch = new System.Windows.Forms.Button();
+			this.butSearch = new OpenDental.UI.Button();
 			this.grid2 = new System.Windows.Forms.DataGrid();
 			this.groupAddPt.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -142,7 +126,7 @@ namespace OpenDental{
 			// 
 			// textLName
 			// 
-			this.textLName.Location = new System.Drawing.Point(111, 43);
+			this.textLName.Location = new System.Drawing.Point(112, 43);
 			this.textLName.Name = "textLName";
 			this.textLName.Size = new System.Drawing.Size(90, 20);
 			this.textLName.TabIndex = 0;
@@ -151,9 +135,9 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(17, 46);
+			this.label1.Location = new System.Drawing.Point(8, 46);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(95, 12);
+			this.label1.Size = new System.Drawing.Size(103, 12);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "Last Name";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -172,7 +156,10 @@ namespace OpenDental{
 			// 
 			// butAddPt
 			// 
-			this.butAddPt.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAddPt.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddPt.Autosize = true;
+			this.butAddPt.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAddPt.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAddPt.Location = new System.Drawing.Point(68, 26);
 			this.butAddPt.Name = "butAddPt";
 			this.butAddPt.TabIndex = 0;
@@ -181,7 +168,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(840, 585);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(76, 26);
@@ -191,8 +181,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(840, 621);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(76, 26);
@@ -235,7 +228,7 @@ namespace OpenDental{
 			// 
 			// textChartNumber
 			// 
-			this.textChartNumber.Location = new System.Drawing.Point(111, 203);
+			this.textChartNumber.Location = new System.Drawing.Point(112, 203);
 			this.textChartNumber.Name = "textChartNumber";
 			this.textChartNumber.Size = new System.Drawing.Size(90, 20);
 			this.textChartNumber.TabIndex = 8;
@@ -253,7 +246,7 @@ namespace OpenDental{
 			// 
 			// textSSN
 			// 
-			this.textSSN.Location = new System.Drawing.Point(111, 163);
+			this.textSSN.Location = new System.Drawing.Point(112, 163);
 			this.textSSN.Name = "textSSN";
 			this.textSSN.Size = new System.Drawing.Size(90, 20);
 			this.textSSN.TabIndex = 6;
@@ -262,9 +255,9 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(18, 167);
+			this.label12.Location = new System.Drawing.Point(11, 167);
 			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(94, 12);
+			this.label12.Size = new System.Drawing.Size(101, 12);
 			this.label12.TabIndex = 24;
 			this.label12.Text = "SSN";
 			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -280,16 +273,16 @@ namespace OpenDental{
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(19, 207);
+			this.label10.Location = new System.Drawing.Point(14, 207);
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(94, 12);
+			this.label10.Size = new System.Drawing.Size(99, 12);
 			this.label10.TabIndex = 20;
 			this.label10.Text = "Chart Number";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textPatNum
 			// 
-			this.textPatNum.Location = new System.Drawing.Point(111, 183);
+			this.textPatNum.Location = new System.Drawing.Point(112, 183);
 			this.textPatNum.Name = "textPatNum";
 			this.textPatNum.Size = new System.Drawing.Size(90, 20);
 			this.textPatNum.TabIndex = 7;
@@ -298,16 +291,16 @@ namespace OpenDental{
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(20, 187);
+			this.label9.Location = new System.Drawing.Point(12, 187);
 			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(94, 12);
+			this.label9.Size = new System.Drawing.Size(101, 12);
 			this.label9.TabIndex = 18;
 			this.label9.Text = "Patient Number";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textState
 			// 
-			this.textState.Location = new System.Drawing.Point(111, 143);
+			this.textState.Location = new System.Drawing.Point(112, 143);
 			this.textState.Name = "textState";
 			this.textState.Size = new System.Drawing.Size(90, 20);
 			this.textState.TabIndex = 5;
@@ -316,16 +309,16 @@ namespace OpenDental{
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(17, 147);
+			this.label8.Location = new System.Drawing.Point(11, 147);
 			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(94, 12);
+			this.label8.Size = new System.Drawing.Size(100, 12);
 			this.label8.TabIndex = 16;
 			this.label8.Text = "State";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textCity
 			// 
-			this.textCity.Location = new System.Drawing.Point(111, 123);
+			this.textCity.Location = new System.Drawing.Point(112, 123);
 			this.textCity.Name = "textCity";
 			this.textCity.Size = new System.Drawing.Size(90, 20);
 			this.textCity.TabIndex = 4;
@@ -334,9 +327,9 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(15, 125);
+			this.label7.Location = new System.Drawing.Point(11, 125);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(94, 14);
+			this.label7.Size = new System.Drawing.Size(98, 14);
 			this.label7.TabIndex = 14;
 			this.label7.Text = "City";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -372,7 +365,7 @@ namespace OpenDental{
 			// 
 			// textAddress
 			// 
-			this.textAddress.Location = new System.Drawing.Point(111, 103);
+			this.textAddress.Location = new System.Drawing.Point(112, 103);
 			this.textAddress.Name = "textAddress";
 			this.textAddress.Size = new System.Drawing.Size(90, 20);
 			this.textAddress.TabIndex = 3;
@@ -381,16 +374,16 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(17, 106);
+			this.label5.Location = new System.Drawing.Point(11, 106);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(94, 12);
+			this.label5.Size = new System.Drawing.Size(100, 12);
 			this.label5.TabIndex = 9;
 			this.label5.Text = "Address";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textHmPhone
 			// 
-			this.textHmPhone.Location = new System.Drawing.Point(111, 83);
+			this.textHmPhone.Location = new System.Drawing.Point(112, 83);
 			this.textHmPhone.Name = "textHmPhone";
 			this.textHmPhone.Size = new System.Drawing.Size(90, 20);
 			this.textHmPhone.TabIndex = 2;
@@ -399,16 +392,16 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(18, 86);
+			this.label4.Location = new System.Drawing.Point(7, 86);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(95, 12);
+			this.label4.Size = new System.Drawing.Size(106, 12);
 			this.label4.TabIndex = 7;
 			this.label4.Text = "Home Phone";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textFName
 			// 
-			this.textFName.Location = new System.Drawing.Point(111, 63);
+			this.textFName.Location = new System.Drawing.Point(112, 63);
 			this.textFName.Name = "textFName";
 			this.textFName.Size = new System.Drawing.Size(90, 20);
 			this.textFName.TabIndex = 1;
@@ -417,9 +410,9 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(16, 67);
+			this.label3.Location = new System.Drawing.Point(11, 67);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(95, 12);
+			this.label3.Size = new System.Drawing.Size(100, 12);
 			this.label3.TabIndex = 5;
 			this.label3.Text = "First Name";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -428,7 +421,7 @@ namespace OpenDental{
 			// 
 			this.labelMore.Location = new System.Drawing.Point(723, 646);
 			this.labelMore.Name = "labelMore";
-			this.labelMore.Size = new System.Drawing.Size(68, 16);
+			this.labelMore.Size = new System.Drawing.Size(89, 16);
 			this.labelMore.TabIndex = 5;
 			this.labelMore.Text = "(more)";
 			this.labelMore.Visible = false;
@@ -459,7 +452,10 @@ namespace OpenDental{
 			// 
 			// butSearch
 			// 
-			this.butSearch.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butSearch.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSearch.Autosize = true;
+			this.butSearch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSearch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butSearch.Location = new System.Drawing.Point(68, 27);
 			this.butSearch.Name = "butSearch";
 			this.butSearch.TabIndex = 7;
@@ -522,17 +518,29 @@ namespace OpenDental{
 			}
 			FillSearchOption();
 			SetGridStyles();
-			if(!checkUseSearch.Checked)
-				//tb2.ResetRows(0);
-				//tb2.LayoutTables();
-			//}
-			//else{
+			if(InitialPatNum!=0){
+				Patient iPatient=Patients.GetLim(InitialPatNum);
+				textLName.Text=iPatient.LName;
 				FillList();
-			//}
+				if(grid2.CurrentRowIndex>-1){
+					grid2.UnSelect(grid2.CurrentRowIndex);
+				}
+				for(int i=0;i<PtDataTable.Rows.Count;i++){
+					if(PIn.PInt(PtDataTable.Rows[i][0].ToString())==InitialPatNum){
+						grid2.CurrentRowIndex=i;
+						grid2.Select(i);
+						break;
+					}
+				}
+				return;
+			}
+			if(!checkUseSearch.Checked){
+				FillList();
+			}
 		}
 
 		private void FillSearchOption(){
-			checkUseSearch.Checked=((Pref)Prefs.HList["PatientSelectUsesSearchButton"]).ValueString=="1";
+			checkUseSearch.Checked=Prefs.GetBool("PatientSelectUsesSearchButton");
 			if(checkUseSearch.Checked)
 				butSearch.Enabled=true;
 			else
@@ -637,11 +645,6 @@ namespace OpenDental{
 		}
 
 		private void textLName_TextChanged(object sender, System.EventArgs e){
-			//if(textLastName.TextLength==1 && !String.Equals(previousLetter,textLastName.Text)){
-			//	previousLetter=textLastName.Text;
-				//FillList();
-			//}
-			//ScrollList();	
 			OnDataEntered();
 		}
 
@@ -719,63 +722,22 @@ namespace OpenDental{
 				selectedBillingTypes[i]
 					=Defs.Short[(int)DefCat.BillingTypes][listBillingTypes.SelectedIndices[i]].DefNum;
 			}
-			if(Patients.GetPtDataTable(!checkUseSearch.Checked,textLName.Text,textFName.Text
+			PtDataTable=Patients.GetPtDataTable(!checkUseSearch.Checked,textLName.Text,textFName.Text
 				,textHmPhone.Text,textAddress.Text,checkHideInactive.Checked,textCity.Text,textState.Text
-				,textSSN.Text,textPatNum.Text,textChartNumber.Text,selectedBillingTypes,checkGuarantors.Checked))
-			{//if limit and there are more rows
+				,textSSN.Text,textPatNum.Text,textChartNumber.Text,selectedBillingTypes
+				,checkGuarantors.Checked);
+			if(!checkUseSearch.Checked && PtDataTable.Rows.Count==36){
+				//if limit and there are more rows
 				labelMore.Visible=true;
 			}
 			else{
 				labelMore.Visible=false;
 			}
-			/*
-			tb2.ResetRows(Patients.PtList.Length);
-			tb2.SetGridColor(Color.Gray);
-			for(int i=0;i<Patients.PtList.Length;i++){
-				tb2.Cell[0,i]=Patients.PtList[i].LName;
-				tb2.Cell[1,i]=Patients.PtList[i].FName;
-				tb2.Cell[2,i]=Patients.PtList[i].MiddleI;
-				tb2.Cell[3,i]=Patients.PtList[i].Preferred;
-				tb2.Cell[4,i]=Patients.PtList[i].Age;
-				tb2.Cell[5,i]=Patients.PtList[i].SSN;
-				tb2.Cell[6,i]=Patients.PtList[i].HmPhone;
-				tb2.Cell[7,i]=Patients.PtList[i].Address;
-				tb2.Cell[8,i]=Lan.g("enumPatientStatus",Patients.PtList[i].PatStatus.ToString());
-				tb2.Cell[9,i]=Defs.GetName(DefCat.BillingTypes,Patients.PtList[i].BillingType);
-			}
-			//MessageBox.Show(tb2.Cell.GetLength(2).ToString());
-			tb2.SelectedRow=-1;
-			tb2.LayoutTables();*/
-			grid2.SetDataBinding(Patients.PtDataTable,"");
-			if(Patients.PtDataTable.Rows.Count>grid2.CurrentCell.RowNumber){
+			grid2.SetDataBinding(PtDataTable,"");
+			if(PtDataTable.Rows.Count>grid2.CurrentCell.RowNumber){
 				grid2.Select(grid2.CurrentCell.RowNumber);
 			}
-			//MessageBox.Show(Patients.PtList[Patients.PtList.Length-1].LName);
 		}
-
-		//private void ScrollList(){
-			//if(Patients.PtList.Length==0) return;
-			//int newRow=0;
-			//for(int i=Patients.PtList.Length-1;i>=0;i--){
-			//	if(Patients.PtList[i].LName.Length>=textLastName.Text.Length){
-			//		if(String.Compare(Patients.PtList[i].LName.Substring(0,textLastName.Text.Length)
-			//			,textLastName.Text,true)>=0){
-			//			newRow=i;
-			//		}
-			//check with shorter names
-			//	}
-			//}
-			//SetRow(newRow);
-			//going to need a lot of patients in DB to test scrolling
-			//if(Patients.PtList
-		//}
-
-		//private void SetRow(int row){
-			//if(tb2.SelectedRow!=-1)
-			//	tb2.ColorRow(tb2.SelectedRow,Color.White);
-			//tb2.SelectedRow=row;
-			//tb2.ColorRow(row,Color.LightGray);
-		//}
 
 		private void grid2_CurrentCellChanged(object sender, System.EventArgs e) {
 			grid2.Select(grid2.CurrentCell.RowNumber);
@@ -787,37 +749,15 @@ namespace OpenDental{
 		}
 
 		private void FormSelectPatient_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
-			//if(tb2.SelectedRow==-1) return;
-			//if (e.KeyCode==Keys.Up && tb2.SelectedRow!=0){
-			//	SetRow(tb2.SelectedRow-1);
-			//}
-			//if (e.KeyCode==Keys.Down && tb2.SelectedRow!=Patients.PtList.Length-1){
-			//	SetRow(tb2.SelectedRow+1);
-			//}
+		
 		}
-
-		/*
-		private void textBoxes_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if(tb2.SelectedRow==-1) return;
-			if (e.KeyCode==Keys.Up && tb2.SelectedRow!=0){
-				SetRow(tb2.SelectedRow-1);
-			}
-			if (e.KeyCode==Keys.Down && tb2.SelectedRow!=Patients.PtList.Length-1){
-				SetRow(tb2.SelectedRow+1);
-			}
-		}
-
-		private void textBoxes_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if (e.KeyCode==Keys.Up)
-				textLastName.SelectionStart=20;
-		}*/
 
 		///<summary>Remember, this button is not even visible if SelectionModeOnly.</summary>
 		private void butAddPt_Click(object sender, System.EventArgs e){
 			#if(TRIALONLY)
-				MessageBox.Show("Trial version.  Maximum 30 patients");
+				MsgBox.Show(this,"Trial version.  Maximum 30 patients");
 				if(Patients.GetNumberPatients()>30){
-					MessageBox.Show("Maximum reached");
+					MsgBox.Show(this,"Maximum reached");
 					return;
 				}
 			#endif
@@ -825,7 +765,6 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Not allowed to add a new patient until you have done a search to see if that patient already exists. Hint: just type a few letters into the Last Name box above.")); 
 				return;
 			}
-			int oldPatNum=Patients.Cur.PatNum;
 			Patient PatCur=new Patient();
 			if(textLName.Text.Length>1){//eg Sp
 				PatCur.LName=textLName.Text.Substring(0,1).ToUpper()+textLName.Text.Substring(1);
@@ -834,32 +773,23 @@ namespace OpenDental{
 				PatCur.FName=textFName.Text.Substring(0,1).ToUpper()+textFName.Text.Substring(1);
 			}
 			PatCur.PatStatus=PatientStatus.Patient;
-			PatCur.RecallInterval=6;
-			Patients.Cur=PatCur;
-			Patients.InsertCur();
-			Patients.CurOld=Patients.Cur;
-			FormPatientEdit FormPE=new FormPatientEdit();
+			PatCur.Insert();
+			Patient PatOld=PatCur.Copy();
+			PatCur.Guarantor=PatCur.PatNum;
+			PatCur.Update(PatOld);
+			Family FamCur=Patients.GetFamily(PatCur.PatNum);
+			FormPatientEdit FormPE=new FormPatientEdit(PatCur,FamCur);
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
 			if(FormPE.DialogResult==DialogResult.OK){
-				Patients.PatIsLoaded=true;
 				NewPatientAdded=true;
+				SelectedPatNum=PatCur.PatNum;
 				DialogResult=DialogResult.OK;
-				Patients.CurOld=Patients.Cur;
-				//just in case a GetFamily is not done when exiting this window. May be able to do a line by line search to verify what happens when this window closes, but almost positive it will never be needed since this is never used if SelectionModeOnly.
-			}
-			else{//they cancelled out of entering the new patient.
-				Patients.GetFamily(oldPatNum);//current patient completely restored.
 			}
 		}
 
 		private void PatSelected(){
-			Patients.PatIsLoaded=true;
-			//All this dialog does is set the patnum and it is up to the calling form to do an immediate refresh, or possibly just change the patnum back to what it was.  So the other patient fields must remain intact.
-			Patient PatCur=Patients.Cur;
-			PatCur.PatNum=PIn.PInt(Patients.PtDataTable.Rows[grid2.CurrentRowIndex][0].ToString());
-			Patients.Cur=PatCur;
-				//=Patients.PtList[tb2.SelectedRow].PatNum;
+			SelectedPatNum=PIn.PInt(PtDataTable.Rows[grid2.CurrentRowIndex][0].ToString());
 			DialogResult=DialogResult.OK;
 		}
 
@@ -870,8 +800,6 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-			//there is no need to remember the original patNum because you can't change it without
-			//causing the dialog to close
 			DialogResult=DialogResult.Cancel;
 		}
 

@@ -7,24 +7,17 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormEmployee : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.CheckBox checkHidden;
 		private System.Windows.Forms.ListBox listEmployees;
 		private System.ComponentModel.Container components = null;
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butAdd;
 		private ArrayList ALemployees;
 
 		///<summary></summary>
 		public FormEmployee(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.checkHidden,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butAdd,
-			});
-
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -41,16 +34,20 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormEmployee));
-			this.butOK = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.checkHidden = new System.Windows.Forms.CheckBox();
 			this.listEmployees = new System.Windows.Forms.ListBox();
-			this.butAdd = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(278, 400);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -61,9 +58,10 @@ namespace OpenDental{
 			// checkHidden
 			// 
 			this.checkHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkHidden.Location = new System.Drawing.Point(250, 28);
+			this.checkHidden.Location = new System.Drawing.Point(236, 28);
 			this.checkHidden.Name = "checkHidden";
 			this.checkHidden.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.checkHidden.Size = new System.Drawing.Size(118, 24);
 			this.checkHidden.TabIndex = 17;
 			this.checkHidden.Text = "Show Hidden";
 			this.checkHidden.Click += new System.EventHandler(this.checkHidden_Click);
@@ -79,8 +77,9 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(16, 354);

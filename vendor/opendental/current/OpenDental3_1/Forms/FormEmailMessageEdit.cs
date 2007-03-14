@@ -14,7 +14,7 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormEmailMessageEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label2;
@@ -23,32 +23,27 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textSubject;
 		private System.Windows.Forms.TextBox textToAddress;
 		private System.Windows.Forms.TextBox textFromAddress;
-		private System.Windows.Forms.Button butSend;
+		private OpenDental.UI.Button butSend;
 		private System.Windows.Forms.TextBox textMsgDateTime;
-		private OpenDental.XPButton butDelete;
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butDelete;
+		private OpenDental.UI.Button butAdd;
 		private System.Windows.Forms.Label label4;
 		private OpenDental.ODtextBox textBodyText;
 		private System.Windows.Forms.ListBox listTemplates;
-		private OpenDental.XPButton butInsert;
+		private OpenDental.UI.Button butInsert;
 		private System.Windows.Forms.Label labelSent;
 		//<summary></summary>
 		//public bool IsNew;
 		private bool templatesChanged;
 		private System.Windows.Forms.Panel panelTemplates;
 		private bool messageChanged;
+		private int PatNum;
 
 		///<summary></summary>
-		public FormEmailMessageEdit()
-		{
-			//
-			// Required for Windows Form Designer support
-			//
-			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butSend,
-				butCancel,
-			});
+		public FormEmailMessageEdit(int patNum){
+			InitializeComponent();// Required for Windows Form Designer support
+			PatNum=patNum;
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -74,8 +69,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormEmailMessageEdit));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butSend = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butSend = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textSubject = new System.Windows.Forms.TextBox();
 			this.textToAddress = new System.Windows.Forms.TextBox();
@@ -84,33 +79,41 @@ namespace OpenDental{
 			this.label3 = new System.Windows.Forms.Label();
 			this.textMsgDateTime = new System.Windows.Forms.TextBox();
 			this.labelSent = new System.Windows.Forms.Label();
-			this.butDelete = new OpenDental.XPButton();
-			this.butAdd = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.label4 = new System.Windows.Forms.Label();
 			this.listTemplates = new System.Windows.Forms.ListBox();
 			this.textBodyText = new OpenDental.ODtextBox();
-			this.butInsert = new OpenDental.XPButton();
+			this.butInsert = new OpenDental.UI.Button();
 			this.panelTemplates = new System.Windows.Forms.Panel();
 			this.panelTemplates.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(832, 629);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 26);
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 3;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butSend
 			// 
-			this.butSend.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butSend.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butSend.Autosize = true;
+			this.butSend.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSend.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butSend.Location = new System.Drawing.Point(744, 629);
 			this.butSend.Name = "butSend";
-			this.butSend.Size = new System.Drawing.Size(75, 26);
+			this.butSend.Size = new System.Drawing.Size(75, 25);
 			this.butSend.TabIndex = 2;
 			this.butSend.Text = "&Send";
 			this.butSend.Click += new System.EventHandler(this.butSend_Click);
@@ -188,13 +191,14 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(7, 339);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(79, 26);
+			this.butDelete.Size = new System.Drawing.Size(75, 26);
 			this.butDelete.TabIndex = 21;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -202,13 +206,14 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(7, 305);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(79, 26);
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 19;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
@@ -246,13 +251,15 @@ namespace OpenDental{
 			// butInsert
 			// 
 			this.butInsert.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butInsert.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butInsert.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butInsert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butInsert.Autosize = true;
+			this.butInsert.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butInsert.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butInsert.Image = ((System.Drawing.Image)(resources.GetObject("butInsert.Image")));
 			this.butInsert.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butInsert.Location = new System.Drawing.Point(95, 305);
+			this.butInsert.Location = new System.Drawing.Point(102, 305);
 			this.butInsert.Name = "butInsert";
-			this.butInsert.Size = new System.Drawing.Size(79, 26);
+			this.butInsert.Size = new System.Drawing.Size(74, 26);
 			this.butInsert.TabIndex = 23;
 			this.butInsert.Text = "Insert";
 			this.butInsert.Click += new System.EventHandler(this.butInsert_Click);
@@ -441,10 +448,10 @@ namespace OpenDental{
 			EmailMessages.Cur.ToAddress=textToAddress.Text;
 			EmailMessages.Cur.Subject=textSubject.Text;
 			EmailMessages.Cur.BodyText=textBodyText.Text;
-			EmailMessages.Cur.PatNum=Patients.Cur.PatNum;
+			EmailMessages.Cur.PatNum=PatNum;
 			EmailMessages.InsertCur();
 			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
+			Commlogs.Cur.PatNum=PatNum;
 			Commlogs.Cur.CommDateTime=DateTime.Now;
 			Commlogs.Cur.CommType=CommItemType.Misc;
 			Commlogs.Cur.EmailMessageNum=EmailMessages.Cur.EmailMessageNum;

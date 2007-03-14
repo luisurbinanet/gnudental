@@ -8,25 +8,20 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormRxSelect : System.Windows.Forms.Form{
 		private OpenDental.TableRxSetup tbMain;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butBlank;
+		private OpenDental.UI.Button butBlank;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		private Patient PatCur;
 
 		///<summary></summary>
-		public FormRxSelect(){
+		public FormRxSelect(Patient patCur){
 			InitializeComponent();// Required for Windows Form Designer support
+			PatCur=patCur;
 			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
 			tbMain.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellDoubleClicked);
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				butBlank,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -47,10 +42,10 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.tbMain = new OpenDental.TableRxSetup();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butBlank = new System.Windows.Forms.Button();
+			this.butBlank = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// tbMain
@@ -66,8 +61,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(848, 636);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -77,7 +76,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(756, 636);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -96,7 +99,10 @@ namespace OpenDental{
 			// 
 			// butBlank
 			// 
-			this.butBlank.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butBlank.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBlank.Autosize = true;
+			this.butBlank.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBlank.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBlank.Location = new System.Drawing.Point(472, 5);
 			this.butBlank.Name = "butBlank";
 			this.butBlank.Size = new System.Drawing.Size(75, 26);
@@ -160,13 +166,13 @@ namespace OpenDental{
 		private void RxSelected(){
 			RxPats.Cur=new RxPat();
 			RxPats.Cur.RxDate=DateTime.Today;
-			RxPats.Cur.PatNum=Patients.Cur.PatNum;
+			RxPats.Cur.PatNum=PatCur.PatNum;
 			RxPats.Cur.Drug=RxDefs.Cur.Drug;
 			RxPats.Cur.Sig=RxDefs.Cur.Sig;
 			RxPats.Cur.Disp=RxDefs.Cur.Disp;
 			RxPats.Cur.Refills=RxDefs.Cur.Refills;
 			//RxPats.Cur.Notes=RxDefs.Cur.Notes;//we don't want these kinds of notes cluttering things
-			FormRxEdit FormE=new FormRxEdit();
+			FormRxEdit FormE=new FormRxEdit(PatCur);
 			FormE.IsNew=true;
 			FormE.ShowDialog();
 			if(FormE.DialogResult!=DialogResult.OK){

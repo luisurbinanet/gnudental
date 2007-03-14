@@ -13,10 +13,7 @@ namespace OpenDental
 	/// </summary>
 	public class ContrTeeth : System.Windows.Forms.UserControl
 	{
-		/// <summary> 
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private System.ComponentModel.IContainer components;
 		///<summary></summary>
 		public float BigToothWidthP=200;
 		///<summary></summary>
@@ -46,14 +43,16 @@ namespace OpenDental
 		private int xPosPrev;
 		private int yPosPrev;
 		private Point[] poly;
+		private System.Windows.Forms.PictureBox pictureBox1;
 		private bool ControlIsDown;
+		///<summary></summary>
+		public Patient PatCur;
 	
 		///<summary></summary>
 		public ContrTeeth()
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
-
 			// TODO: Add any initialization after the InitializeComponent call
 			SelectedTeeth=new string[0];
 			//SelectedTeeth[0]="4";
@@ -81,10 +80,24 @@ namespace OpenDental
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(ContrTeeth));
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.SuspendLayout();
+			// 
+			// pictureBox1
+			// 
+			this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+			this.pictureBox1.Location = new System.Drawing.Point(149, 41);
+			this.pictureBox1.Name = "pictureBox1";
+			this.pictureBox1.Size = new System.Drawing.Size(408, 259);
+			this.pictureBox1.TabIndex = 0;
+			this.pictureBox1.TabStop = false;
+			this.pictureBox1.Visible = false;
 			// 
 			// ContrTeeth
 			// 
 			this.BackColor = System.Drawing.Color.White;
+			this.Controls.Add(this.pictureBox1);
 			this.Name = "ContrTeeth";
 			this.Size = new System.Drawing.Size(533, 323);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.ContrTeeth_Paint);
@@ -92,6 +105,7 @@ namespace OpenDental
 			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ContrTeeth_KeyUp);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ContrTeeth_KeyDown);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ContrTeeth_MouseDown);
+			this.ResumeLayout(false);
 
 		}
 		#endregion
@@ -123,27 +137,23 @@ namespace OpenDental
 		//	ClearProcs();
 		//}
 
-		///<summary>Only to be called once upon startup.</summary>
-		public void CreateBackShadow(){//
+		///<summary>Only to be called once upon startup or if the size of the background changes.</summary>
+		public void CreateBackShadow(){
+			CreateBackShadow(false);
+		}
+
+		///<summary>Only to be called once upon startup or if the size of the background changes.</summary>
+		public void CreateBackShadow(bool includeShading){//
 			BackShadow=new Bitmap(Width,Height);
 			Graphics grfx=Graphics.FromImage(BackShadow);
-			grfx.SmoothingMode=SmoothingMode.HighQuality;
+			grfx.	SmoothingMode=SmoothingMode.HighQuality;
 			grfx.FillRectangle(Brushes.White,0,0,Width,Height);
-			//grfx.DrawLine(Pens.LightGray,0,THeight+3,Width,THeight+3);
-			//grfx.DrawLine(Pens.LightGray,0,THeight+3+19+1+19,Width,THeight+3+19+1+19);
-			//for(int i=1;i<17;i++){
-			//	DrawSelected(i,false);
-				//grfx.DrawLine(Pens.LightGray,(int)(i*zoom*ToothWidth),0,(int)(i*zoom*ToothWidth),Height/2-19);
-				//grfx.DrawLine(Pens.LightGray,(int)(i*zoom*ToothWidth)
-				//	,Height/2+19,(int)(i*zoom*ToothWidth),Height);
-			//}
+			if(includeShading){
+				grfx.DrawImage(pictureBox1.Image,1,1);
+			}
 			grfx.DrawLine(Pens.Black,0,Height/2,Width,Height/2);
 			grfx.DrawRectangle(Pens.Black,0,0,Width-1,Height-1);
 			drawColor=Color.DarkSlateGray;
-			//bool isMirror;
-			//GraphicElements GraphicElements2=new GraphicElements();
-			//GraphicShapes GraphicShapes2=new GraphicShapes();
-			//GraphicPoints GraphicPoints2=new GraphicPoints();
 			for(int c=1;c<=32;c++){
 				for(int a=0;a<GraphicTypes.List.Length;a++){
 					if(GraphicTypes.List[a].GTypeNum==8){
@@ -154,9 +164,10 @@ namespace OpenDental
 						break;
 					}
 				}
+				if(includeShading){
+					continue;//don't draw polygons.
+				}
 				for(int b=0;b<GraphicElements.Sublist.Length;b++){
-					//if(listViewTypes.SelectedIndices.Contains(a) 
-					//|| listViewElements.SelectedIndices.Contains(b)){
 					GraphicShapes.GetSublist(GraphicElements.Sublist[b].GElementNum);
 					for(int i=0;i<GraphicShapes.Sublist.Length;i++){
 						GraphicPoints.GetSublist(GraphicShapes.Sublist[i].GShapeNum);
@@ -190,10 +201,10 @@ namespace OpenDental
 						if(GraphicPoints.Sublist.Length<2)
 							continue;
 						if(GraphicShapes.Sublist[i].ShapeType=="F"){
-							grfx.FillPolygon(new SolidBrush(Color.Ivory),poly);
+								grfx.FillPolygon(new SolidBrush(Color.Ivory),poly);
 						}
 						if(GraphicShapes.Sublist[i].ShapeType=="G"){
-							grfx.FillPolygon(new SolidBrush(Color.Ivory),poly);
+								grfx.FillPolygon(new SolidBrush(Color.Ivory),poly);
 							grfx.DrawPolygon(new Pen(drawColor),poly);
 						}
 					}
@@ -490,7 +501,7 @@ namespace OpenDental
 			}
 			Array.Sort(procOrder,procList);
 			//pri teeth
-			string[] priTeeth=Patients.Cur.PrimaryTeeth.Split(',');
+			string[] priTeeth=PatCur.PrimaryTeeth.Split(',');
 			for(int i=0;i<priTeeth.Length;i++){
 				SetPrimary(priTeeth[i]);
 			}
@@ -847,7 +858,7 @@ namespace OpenDental
 								grfx.FillPolygon(new HatchBrush(HatchStyle.LightUpwardDiagonal,color,Color.Ivory),poly);
 								break;
 							case "light":
-								grfx.FillPolygon(new HatchBrush(HatchStyle.Percent50,color,Color.Ivory),poly);
+								grfx.FillPolygon(new HatchBrush(HatchStyle.Percent60,color,Color.Ivory),poly);
 								break;
 							case "outline":
 								grfx.FillPolygon(new SolidBrush(Color.White),poly);

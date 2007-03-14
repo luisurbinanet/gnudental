@@ -7,28 +7,22 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormBilling : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		private OpenDental.ContrAccount contrAccount1;
-		private System.Windows.Forms.Button butAll;
-		private System.Windows.Forms.Button butNone;
+		private OpenDental.UI.Button butAll;
+		private OpenDental.UI.Button butNone;
 		private OpenDental.TableBilling tbBill;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butPrint;
+		private OpenDental.UI.Button butPrint;
 		private System.ComponentModel.Container components = null;
+		///<summary>Set this list externally before openning the billing window.</summary>
+		public PatAging[] AgingList;
 
 		///<summary></summary>
 		public FormBilling(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1,
-				butAll,
-				butNone
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butPrint,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -44,11 +38,11 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butPrint = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butPrint = new OpenDental.UI.Button();
 			this.contrAccount1 = new OpenDental.ContrAccount();
-			this.butNone = new System.Windows.Forms.Button();
-			this.butAll = new System.Windows.Forms.Button();
+			this.butNone = new OpenDental.UI.Button();
+			this.butAll = new OpenDental.UI.Button();
 			this.tbBill = new OpenDental.TableBilling();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
@@ -56,19 +50,29 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(576, 662);
+			this.butCancel.Location = new System.Drawing.Point(586, 658);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 1;
 			this.butCancel.Text = "&Cancel";
 			// 
 			// butPrint
 			// 
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butPrint.Autosize = true;
 			this.butPrint.BackColor = System.Drawing.SystemColors.Control;
-			this.butPrint.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butPrint.Location = new System.Drawing.Point(576, 628);
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPrint.Location = new System.Drawing.Point(586, 624);
 			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(75, 25);
 			this.butPrint.TabIndex = 0;
 			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
@@ -83,18 +87,26 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
-			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNone.Autosize = true;
+			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butNone.Location = new System.Drawing.Point(142, 662);
 			this.butNone.Name = "butNone";
+			this.butNone.Size = new System.Drawing.Size(75, 25);
 			this.butNone.TabIndex = 23;
 			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// butAll
 			// 
-			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.Autosize = true;
+			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAll.Location = new System.Drawing.Point(42, 662);
 			this.butAll.Name = "butAll";
+			this.butAll.Size = new System.Drawing.Size(75, 25);
 			this.butAll.TabIndex = 22;
 			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
@@ -114,7 +126,7 @@ namespace OpenDental{
 			// 
 			this.label2.Location = new System.Drawing.Point(42, 28);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(360, 16);
+			this.label2.Size = new System.Drawing.Size(506, 16);
 			this.label2.TabIndex = 25;
 			this.label2.Text = "(hint: hold down the control key when making selections)";
 			// 
@@ -161,14 +173,14 @@ namespace OpenDental{
 		}
 
 		private void FillTable(){
-			tbBill.ResetRows(Patients.AgingList.Length);
+			tbBill.ResetRows(AgingList.Length);
 			tbBill.SetGridColor(Color.Gray);
 			tbBill.SetBackGColor(Color.White);  
-			for(int i=0;i<Patients.AgingList.Length;i++){
-				tbBill.Cell[0,i]=Patients.AgingList[i].PatName;
-				tbBill.Cell[1,i]=Patients.AgingList[i].BalTotal.ToString("F");
-				tbBill.Cell[2,i]=Patients.AgingList[i].InsEst.ToString("F");
-				tbBill.Cell[3,i]=Patients.AgingList[i].AmountDue.ToString("F");
+			for(int i=0;i<AgingList.Length;i++){
+				tbBill.Cell[0,i]=AgingList[i].PatName;
+				tbBill.Cell[1,i]=AgingList[i].BalTotal.ToString("F");
+				tbBill.Cell[2,i]=AgingList[i].InsEst.ToString("F");
+				tbBill.Cell[3,i]=AgingList[i].AmountDue.ToString("F");
 			}
 			tbBill.LayoutTables();
 		}
@@ -187,14 +199,14 @@ namespace OpenDental{
 				return;
 			}
 			for(int i=0;i<tbBill.SelectedIndices.Length;i++){
-				Patient PatCur=new Patient();
-				PatCur.PatNum=Patients.AgingList[tbBill.SelectedIndices[i]].PatNum;
-				Patients.Cur=PatCur;
-				Patients.PatIsLoaded=true;
-				contrAccount1.LoadAndPrint();
+				//Patient PatCur=new Patient();
+				//PatCur.PatNum=;
+				//Patients.Cur=PatCur;
+				//Patients.PatIsLoaded=true;
+				contrAccount1.LoadAndPrint(AgingList[tbBill.SelectedIndices[i]].PatNum);
 			}
 			MessageBox.Show(Lan.g(this,"Printing Statements Complete"));
-			Patients.PatIsLoaded=false;
+			//Patients.Cur=null;
 			DialogResult=DialogResult.OK;
 		}
 

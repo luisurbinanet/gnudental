@@ -28,10 +28,10 @@ namespace OpenDental{
 		public static PerioExam Cur;
 
 		///<summary>Most recent date last.  All exams loaded, even if not displayed. Also refreshes all related Measurement data.</summary>
-		public static void Refresh(){
+		public static void Refresh(int patNum){
 			cmd.CommandText =
 				"SELECT * from perioexam"
-				+" WHERE PatNum = '"+Patients.Cur.PatNum.ToString()+"'"
+				+" WHERE PatNum = '"+patNum.ToString()+"'"
 				+" ORDER BY perioexam.ExamDate";
 			FillTable();
 			List=new PerioExam[table.Rows.Count];
@@ -41,7 +41,7 @@ namespace OpenDental{
 				List[i].ExamDate    = PIn.PDate  (table.Rows[i][2].ToString());
 				List[i].ProvNum     = PIn.PInt   (table.Rows[i][3].ToString());
 			}
-			PerioMeasures.Refresh();
+			PerioMeasures.Refresh(patNum);
 		}
 
 		///<summary></summary>

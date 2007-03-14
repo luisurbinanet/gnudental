@@ -13,34 +13,32 @@ namespace OpenDental
 	/// </summary>
 	public class FormRpAppointments : System.Windows.Forms.Form
 	{
-		private System.Windows.Forms.Button butAll;
+		private OpenDental.UI.Button butAll;
 		private System.Windows.Forms.ListBox listProv;
 		private System.Windows.Forms.Label label1;
 		private OpenDental.ValidDate textDateTo;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private OpenDental.ValidDate textDateFrom;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Button butTomorrow;
-		private System.Windows.Forms.Button butToday;
+		private OpenDental.UI.Button butTomorrow;
+		private OpenDental.UI.Button butToday;
 
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormRpAppointments()
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -65,18 +63,18 @@ namespace OpenDental
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butAll = new System.Windows.Forms.Button();
+			this.butAll = new OpenDental.UI.Button();
 			this.listProv = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.textDateTo = new OpenDental.ValidDate();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDateFrom = new OpenDental.ValidDate();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.butTomorrow = new System.Windows.Forms.Button();
-			this.butToday = new System.Windows.Forms.Button();
+			this.butTomorrow = new OpenDental.UI.Button();
+			this.butToday = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -300,7 +298,7 @@ namespace OpenDental
 				WHERE appointment.AptDateTime between '" + POut.PDate(dateFrom) + "' AND '"
 				+POut.PDate(dateTo.AddDays(1)) + "' AND " +
 				"AptStatus != '" + (int)ApptStatus.UnschedList + "' AND " +
-				"AptStatus != '" + (int)ApptStatus.Next + "' AND " +
+				"AptStatus != '" + (int)ApptStatus.Planned + "' AND " +
 				whereProv + " " +
 				"ORDER BY appointment.AptDateTime, 2";
 			// add columns to report

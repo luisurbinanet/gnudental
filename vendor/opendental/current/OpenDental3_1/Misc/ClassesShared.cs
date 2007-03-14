@@ -55,6 +55,7 @@ namespace OpenDental{
 			return DateTime.Now.Year-date.Year-1;
 		}
 
+		///<summary></summary>
 		public static string AgeToString(int age){
 			if(age==0)
 				return "";
@@ -62,18 +63,18 @@ namespace OpenDental{
 				return age.ToString();
 		}
 
-		///<summary>Computes balance for Patients.Cur.</summary>
-		public static void ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList){
+		///<summary>Computes balance for a single patient. Returns true if a refresh is needed.</summary>
+		public static bool ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList,Patient PatCur){
 			//must have refreshed all 5 first
-			double curBal=Patients.Cur.EstBalance;
-			Patient PatCur=Patients.Cur;
-			PatCur.EstBalance=Procedures.ComputeBal(procList)+ClaimProcs.ComputeBal(claimProcList)
-				+Adjustments.ComputeBal()-PaySplits.ComputeBal()+PayPlans.ComputeBal();
-			if(curBal!=PatCur.EstBalance){
-				Patients.Cur=PatCur;
-				Patients.UpdateCur();
-				Patients.GetFamily(Patients.Cur.PatNum);
+			double calcBal=Procedures.ComputeBal(procList)+ClaimProcs.ComputeBal(claimProcList)
+				+Adjustments.ComputeBal()-PaySplits.ComputeBal()+PayPlans.ComputeBal(PatCur.PatNum);
+			if(calcBal!=PatCur.EstBalance){
+				Patient PatOld=PatCur.Copy();
+				PatCur.EstBalance=calcBal;
+				PatCur.Update(PatOld);
+				return true;
 			}
+			return false;
 		}
 
 	}//end class shared
@@ -155,6 +156,7 @@ namespace OpenDental{
 			//}
 		}
 
+		///<summary></summary>
 		public static void SendMessage(MessageButtons msg){
 			//ALmessagesButtons.Add(msg);
 			//OnItemAdded();

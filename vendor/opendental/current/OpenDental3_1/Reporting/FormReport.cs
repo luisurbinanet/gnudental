@@ -18,20 +18,20 @@ namespace OpenDental.Reporting
 	public class FormReport : System.Windows.Forms.Form{
 		private System.Windows.Forms.Panel panel1;
 		private System.ComponentModel.IContainer components;
-		private System.Windows.Forms.Button butClose;
-		private System.Windows.Forms.Button butPrint;
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butPrint;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		///<summary>The report to display.</summary>
 		public Report MyReport;
-		private System.Windows.Forms.Button butSetup;
+		private OpenDental.UI.Button butSetup;
 		private System.Windows.Forms.PageSetupDialog setupDialog2;
 		///<summary>The y position printed through so far in the current section.</summary>
 		//private int printedThroughYPos; For now, assume all sections must remain together.
-		private System.Windows.Forms.Button button1;
+		private OpenDental.UI.Button button1;
 		private System.Windows.Forms.Label labelTotPages;
-		private OpenDental.XPButton butBack;
-		private OpenDental.XPButton butFwd;
+		private OpenDental.UI.Button butBack;
+		private OpenDental.UI.Button butFwd;
 		///<summary>The name of the last section printed. It really only keeps track of whether the details section and the reportfooter have finished printing. This variable will be refined when groups are implemented.</summary>
 		private string lastSectionPrinted;
 		private int rowsPrinted;
@@ -69,14 +69,14 @@ namespace OpenDental.Reporting
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormReport));
-			this.butClose = new System.Windows.Forms.Button();
-			this.butPrint = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
+			this.butPrint = new OpenDental.UI.Button();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.button1 = new System.Windows.Forms.Button();
+			this.button1 = new OpenDental.UI.Button();
 			this.labelTotPages = new System.Windows.Forms.Label();
-			this.butBack = new OpenDental.XPButton();
-			this.butFwd = new OpenDental.XPButton();
-			this.butSetup = new System.Windows.Forms.Button();
+			this.butBack = new OpenDental.UI.Button();
+			this.butFwd = new OpenDental.UI.Button();
+			this.butSetup = new OpenDental.UI.Button();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.setupDialog2 = new System.Windows.Forms.PageSetupDialog();
@@ -139,8 +139,8 @@ namespace OpenDental.Reporting
 			// butBack
 			// 
 			this.butBack.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butBack.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butBack.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butBack.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBack.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
 			this.butBack.Location = new System.Drawing.Point(115, 1);
 			this.butBack.Name = "butBack";
@@ -150,8 +150,8 @@ namespace OpenDental.Reporting
 			// butFwd
 			// 
 			this.butFwd.AdjustImageLocation = new System.Drawing.Point(1, 0);
-			this.butFwd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butFwd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butFwd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butFwd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
 			this.butFwd.Location = new System.Drawing.Point(193, 1);
 			this.butFwd.Name = "butFwd";

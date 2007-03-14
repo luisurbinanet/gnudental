@@ -54,7 +54,9 @@ namespace OpenDental{
 				tempProgram.CommandLine=PIn.PString(table.Rows[i][5].ToString());
 				tempProgram.Note       =PIn.PString(table.Rows[i][6].ToString());
 				List[i]=tempProgram;
-				HList.Add(tempProgram.ProgName,tempProgram);
+				if(!HList.ContainsKey(tempProgram.ProgName)){
+					HList.Add(tempProgram.ProgName,tempProgram);
+				}
 			}
 			//MessageBox.Show(HList.Count.ToString());
 		}
@@ -114,7 +116,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Typically used when user clicks a button to a Program link.  This method attempts to identify and execute the program based on the given programNum.</summary>
-		public static void Execute(int programNum){
+		public static void Execute(int programNum,Patient pat){
 			Cur.ProgramNum=0;
 			for(int i=0;i<List.Length;i++){
 				if(List[i].ProgramNum==programNum){
@@ -126,27 +128,31 @@ namespace OpenDental{
 				return;
 			}
 			if(Cur.ProgName=="TigerView"){
-				TigerView.SendData();
+				TigerView.SendData(pat);
 				return;
 			}
 			else if(Cur.ProgName=="Apteryx"){
-				Apteryx.SendData();
+				Apteryx.SendData(pat);
 				return;
 			}
 			else if(Cur.ProgName=="Schick"){
-				Schick.SendData();
+				Schick.SendData(pat);
 				return;
 			}
 			else if(Cur.ProgName=="Dexis"){
-				Dexis.SendData();
+				Dexis.SendData(pat);
 				return;
 			}
 			else if(Cur.ProgName=="VixWin"){
-				VixWin.SendData();
+				VixWin.SendData(pat);
 				return;
 			}
 			else if(Cur.ProgName=="Trophy"){
-				Trophy.SendData();
+				Trophy.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="Sirona"){
+				Sirona.SendData(pat);
 				return;
 			}
 			//all remaining programs:

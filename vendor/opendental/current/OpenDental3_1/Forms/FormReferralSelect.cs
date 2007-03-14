@@ -7,32 +7,25 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormReferralSelect : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private OpenDental.TableRefSelect tbRefSelect;
 		private System.Windows.Forms.CheckBox checkHidden;
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
-		public bool ViewOnly;
-		private OpenDental.XPButton butEdit;
-		private OpenDental.XPButton butDelete;
-		private OpenDental.XPButton butAdd;//disables double click to choose referral. Hides some buttons.
+		public bool IsSelectionMode;
+		private OpenDental.UI.Button butEdit;
+		private OpenDental.UI.Button butDelete;
+		private OpenDental.UI.Button butAdd;//disables double click to choose referral. Hides some buttons.
     private ArrayList AList;
+		///<summary>This will contain the referral that was selected.</summary>
+		public Referral SelectedReferral;
 
 		///<summary></summary>
 		public FormReferralSelect(){
 			InitializeComponent();
 			tbRefSelect.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbRefSelect_CellDoubleClicked);
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				checkHidden,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				butAdd,
-				butDelete,
-				butEdit,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -53,22 +46,25 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormReferralSelect));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.tbRefSelect = new OpenDental.TableRefSelect();
 			this.checkHidden = new System.Windows.Forms.CheckBox();
-			this.butEdit = new OpenDental.XPButton();
-			this.butDelete = new OpenDental.XPButton();
-			this.butAdd = new OpenDental.XPButton();
+			this.butEdit = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-			this.butCancel.Location = new System.Drawing.Point(858, 646);
+			this.butCancel.Location = new System.Drawing.Point(872, 646);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(82, 26);
 			this.butCancel.TabIndex = 6;
@@ -77,9 +73,12 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(858, 614);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(872, 614);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(82, 26);
 			this.butOK.TabIndex = 5;
@@ -110,11 +109,13 @@ namespace OpenDental{
 			// butEdit
 			// 
 			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butEdit.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butEdit.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butEdit.Autosize = true;
+			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEdit.Image = ((System.Drawing.Image)(resources.GetObject("butEdit.Image")));
 			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEdit.Location = new System.Drawing.Point(858, 496);
+			this.butEdit.Location = new System.Drawing.Point(872, 496);
 			this.butEdit.Name = "butEdit";
 			this.butEdit.Size = new System.Drawing.Size(80, 26);
 			this.butEdit.TabIndex = 14;
@@ -124,11 +125,13 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(858, 464);
+			this.butDelete.Location = new System.Drawing.Point(872, 464);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(80, 26);
 			this.butDelete.TabIndex = 13;
@@ -138,11 +141,13 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(858, 430);
+			this.butAdd.Location = new System.Drawing.Point(872, 430);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(80, 26);
 			this.butAdd.TabIndex = 12;
@@ -152,7 +157,6 @@ namespace OpenDental{
 			// FormReferralSelect
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(962, 696);
 			this.Controls.Add(this.butEdit);
 			this.Controls.Add(this.butDelete);
@@ -175,9 +179,6 @@ namespace OpenDental{
 		#endregion
 
 		private void FormReferralSelect_Load(object sender, System.EventArgs e) {
-      if(ViewOnly){
-        butEdit.Visible=false;
-      }
 			FillTable();
 		}		
 
@@ -225,76 +226,63 @@ namespace OpenDental{
     }
 
     private void tbRefSelect_CellDoubleClicked(object sender, CellEventArgs e){
-			Referrals.Cur=(Referral)AList[tbRefSelect.SelectedRow]; 
-      if(ViewOnly){
-        FormReferralEdit FormRE2=new FormReferralEdit();
-				if(Referrals.Cur.PatNum > 0){
-					FormRE2.IsPatient=true;
-				}
-        FormRE2.ShowDialog();
-        FillTable();         
-      }
-      else{
+			if(IsSelectionMode){
+				SelectedReferral=(Referral)AList[tbRefSelect.SelectedRow];
 				DialogResult=DialogResult.OK;
-      }
+			}
+			//otherwise, don't do anything
     }
 
-		private void butOK_Click(object sender, System.EventArgs e) {
-      if(ViewOnly){
-        DialogResult=DialogResult.OK;
-      }
-      else{  
-        if(tbRefSelect.SelectedRow==-1){
-          return;
-        } 
-		    Referrals.Cur=(Referral)AList[tbRefSelect.SelectedRow]; 
-        DialogResult=DialogResult.OK;
-      }
-		}
-
 		private void butAdd_Click(object sender, System.EventArgs e) {
-		  int tempPatNum=Patients.Cur.PatNum;
-      FormReferralEdit FormRE2=new FormReferralEdit();
-			FormRE2.IsNew=true; 
-			if (MessageBox.Show(Lan.g(this,"Is the referral source an existing patient?"),"",MessageBoxButtons.YesNo)==DialogResult.Yes){
+      Referral refCur=new Referral();
+			bool referralIsNew=true;
+			if(MessageBox.Show(Lan.g(this,"Is the referral source an existing patient?"),""
+				,MessageBoxButtons.YesNo)==DialogResult.Yes)
+			{
 				FormPatientSelect FormPS=new FormPatientSelect();
 				FormPS.SelectionModeOnly=true;        
 				FormPS.ShowDialog();
 				if(FormPS.DialogResult!=DialogResult.OK){
-					Patient PatCur=Patients.Cur;
-					PatCur.PatNum=tempPatNum;//return patnum to original
-					Patients.Cur=PatCur;
 					return;  
 				}
-				FormRE2.IsPatient=true;
+				refCur.PatNum=FormPS.SelectedPatNum;
 				for(int i=0;i<Referrals.List.Length;i++){
-					if(Referrals.List[i].PatNum==Patients.Cur.PatNum){
-						//MessageBox.Show("Patient is already Referral, Please select from List");
-						Referrals.Cur=Referrals.List[i];
-						FormRE2.IsNew=false;
+					if(Referrals.List[i].PatNum==FormPS.SelectedPatNum){//referral already existed
+						refCur=Referrals.List[i];
+						referralIsNew=false;
 						break;
 					}
 				}
 			}
+			FormReferralEdit FormRE2=new FormReferralEdit(refCur);//the ReferralNum must be added here
+			FormRE2.IsNew=referralIsNew; 
       FormRE2.ShowDialog();
-      tbRefSelect.SelectedRow=-1;
-      FillTable();
-			Patients.GetFamily(tempPatNum);
+			if(FormRE2.DialogResult==DialogResult.Cancel){
+				return;
+			}
+			if(IsSelectionMode){
+				SelectedReferral=FormRE2.RefCur;
+				DialogResult=DialogResult.OK;
+			}
+			else{
+				tbRefSelect.SelectedRow=-1;
+				FillTable();
+			}
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
       if(tbRefSelect.SelectedRow==-1){ 
         return; 
       }  
- 		  Referrals.Cur=(Referral)AList[tbRefSelect.SelectedRow];
-			if(RefAttaches.IsReferralAttached(Referrals.Cur.ReferralNum)){
-				MessageBox.Show("Cannot delete Referral because it is attached to patients");
+ 		  Referral RefCur=(Referral)AList[tbRefSelect.SelectedRow];
+			if(RefAttaches.IsReferralAttached(RefCur.ReferralNum)){
+				MessageBox.Show(Lan.g(this,"Cannot delete Referral because it is attached to patients"));
 				return;
 			}
-      if (MessageBox.Show(Lan.g(this,"Delete Referral?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+      if(!MsgBox.Show(this,true,"Delete Referral?")){
         return;   
       }
-      Referrals.DeleteCur();
+      RefCur.Delete();
       tbRefSelect.SelectedRow=-1;
       FillTable();
     }
@@ -303,12 +291,8 @@ namespace OpenDental{
       if(tbRefSelect.SelectedRow==-1){
         return;  
       }
-		  Referrals.Cur=(Referral)AList[tbRefSelect.SelectedRow];
-  		FormReferralEdit FormRE2=new FormReferralEdit();
-			if(Referrals.Cur.PatNum > 0){
-				FormRE2.IsPatient=true;
-			}
-      FormRE2.ShowDialog();
+  		FormReferralEdit FormRE=new FormReferralEdit((Referral)AList[tbRefSelect.SelectedRow]);
+      FormRE.ShowDialog();
       FillTable();
 		}
 
@@ -317,8 +301,19 @@ namespace OpenDental{
 		  FillTable();
 		}
 
+		private void butOK_Click(object sender, System.EventArgs e){
+			if(IsSelectionMode){
+				if(tbRefSelect.SelectedRow==-1){
+					MsgBox.Show(this,"Please select a referral first");
+          return;
+        }
+				SelectedReferral=(Referral)AList[tbRefSelect.SelectedRow];  
+			}
+			DialogResult=DialogResult.OK;
+		}
+
 		private void butCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
 
 	}

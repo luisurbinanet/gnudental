@@ -331,46 +331,12 @@ namespace OpenDental{
 			Font bfont=new Font(FontFamily.GenericSansSerif,8,FontStyle.Bold);//was Arial
 			g.TextRenderingHint=TextRenderingHint.SingleBitPerPixelGridFit;//to make printing clearer
 			DateTime hour;
-			string hFormat="";
 			CultureInfo ci=(CultureInfo)CultureInfo.CurrentCulture.Clone();
-			ci.DateTimeFormat.AMDesignator=ci.DateTimeFormat.AMDesignator.ToLower();
-			ci.DateTimeFormat.PMDesignator=ci.DateTimeFormat.PMDesignator.ToLower();
-			string shortPattern=ci.DateTimeFormat.ShortTimePattern;
-			if(shortPattern.IndexOf("hh")!=-1){//if hour is 01-12
-				hFormat+="hh";
-			}
-			else if(shortPattern.IndexOf("h")!=-1){//or if hour is 1-12
-				hFormat+="h";
-			}
-			else if(shortPattern.IndexOf("HH")!=-1){//or if hour is 00-23
-				hFormat+="HH";
-			}
-			else{//hour is 0-23
-				hFormat+="H";
-			}
-			//hFormat+=
-			if(shortPattern.IndexOf("t")!=-1){//if there is an am/pm designator
-				hFormat+="tt";
-			}
-			else{//if no am/pm designator, then use :00
-				hFormat+=":00";//time separator will actually change according to region
-			}
+			string hFormat=Lan.GetShortTimeFormat(ci);
 			string sTime;
 			for(int i=0;i<24;i++){
 				hour=new DateTime(2000,1,1,i,0,0);//hour is the only important part of this time.
 				sTime=hour.ToString(hFormat,ci);
-				/*if(i==0){
-					sTime="12am";
-				}
-				else if(i<12){
-					sTime=i.ToString()+"am";
-				}
-				else if(i==12){
-					sTime="12pm";
-				}
-				else{
-					sTime=(i-12).ToString()+"pm";
-				}*/
 				SizeF sizef=g.MeasureString(sTime,bfont);
 				g.DrawString(sTime,bfont,new SolidBrush(Color.Black),TimeWidth-sizef.Width-2,i*Lh*RowsPerHr+1);
 				g.DrawString(sTime,bfont,new SolidBrush(Color.Black)

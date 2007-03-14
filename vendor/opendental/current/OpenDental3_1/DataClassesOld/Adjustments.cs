@@ -34,13 +34,13 @@ namespace OpenDental{
 		//<summary></summary>
 		//public static Adjustment[] PaymentList;
 
-		///<summary></summary>
-		public static void Refresh(){
+		///<summary>Gets adjustments for a single patient.</summary>
+		public static void Refresh(int patNum){
 			cmd.CommandText =
 				"SELECT adjnum,adjdate,adjamt,patnum, "
 				+"adjtype,provnum,adjnote"
 				+" from adjustment"
-				+" WHERE patnum = '"+Patients.Cur.PatNum+"' ORDER BY adjdate";
+				+" WHERE patnum = '"+patNum.ToString()+"' ORDER BY adjdate";
 			FillTable();
 			List=new Adjustment[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){

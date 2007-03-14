@@ -8,24 +8,17 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormComputers : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ListBox listComputer;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label2;// Required designer variable.
 		private Programs Programs=new Programs();
 
 		///<summary></summary>
 		public FormComputers(){
 			InitializeComponent();// Required for Windows Form Designer support
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butDelete
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -43,9 +36,9 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormComputers));
 			this.listComputer = new System.Windows.Forms.ListBox();
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butDelete = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
@@ -81,8 +74,8 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(18, 395);

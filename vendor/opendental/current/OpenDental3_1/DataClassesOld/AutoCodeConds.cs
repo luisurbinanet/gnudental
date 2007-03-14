@@ -12,7 +12,7 @@ namespace OpenDental{
 		///<summary>Foreign key to AutoCodeItem.AutoCodeItemNum.</summary>
 		public int AutoCodeItemNum;
 		///<summary>See the AutoCondition enumeration.</summary>
-		public AutoCondition Condition;
+		public AutoCondition Cond;
 	}
 
 	/*=========================================================================================
@@ -31,24 +31,24 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
-				"SELECT * from autocodecond ORDER BY condition";
+				"SELECT * from autocodecond ORDER BY cond";
 			FillTable();
 			//HList=new Hashtable();
 			List=new AutoCodeCond[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i].AutoCodeCondNum= PIn.PInt        (table.Rows[i][0].ToString());
 				List[i].AutoCodeItemNum= PIn.PInt        (table.Rows[i][1].ToString());
-				List[i].Condition=(AutoCondition)PIn.PInt(table.Rows[i][2].ToString());	
+				List[i].Cond=(AutoCondition)PIn.PInt(table.Rows[i][2].ToString());	
 				//HList.Add(List[i].AutoCodeItemNum,List[i]);
 			}
 		}
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO autocodecond (autocodeitemnum,condition) "
+			cmd.CommandText = "INSERT INTO autocodecond (AutoCodeItemNum,Cond) "
 				+"VALUES ("
 				+"'"+POut.PInt(Cur.AutoCodeItemNum)+"', "
-				+"'"+POut.PInt((int)Cur.Condition)+"')";
+				+"'"+POut.PInt((int)Cur.Cond)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.AutoCodeCondNum=InsertID;
@@ -58,7 +58,7 @@ namespace OpenDental{
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE autocodecond SET "
 				+"autocodeitemnum='"+POut.PInt(Cur.AutoCodeItemNum)+"'"
-				+",condition ='"     +POut.PInt((int)Cur.Condition)+"'"
+				+",cond ='"     +POut.PInt((int)Cur.Cond)+"'"
 				+" WHERE autocodecondnum = '"+POut.PInt(Cur.AutoCodeCondNum)+"'";
 			NonQ(false);
 		}

@@ -2,7 +2,7 @@
 Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
-using ByteFX.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Data;
@@ -10,9 +10,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>This is the parent of all data classes.</summary>
-	///<remarks>Every database table has a corresponding struct of the same or similar name.  For instance, the claim table has the <see cref="Claim">Claim</see> struct which can store each of the individual values for a single claim row.  Each table also has a class with the same or similar name with an 's' on the end, for instance, the <see cref="Claims">Claims</see> class.  These classes all inherit from this DataClass, which means they all have access to the members of this class.  So there are roughly 60 of theses classes, one for every table plus a few extra.  Every query to the database goes through the corresponding class using the data connection members of this parent class.  Usually, <see cref="DataClass.FillTable">FillTable</see> will fill <see cref="DataClass.table">table</see> with data from the database.  Then a class like claims will copy the data into an array of type claim.  The name of the array is usually List for each of the different classes, for instance <see cref="Claims.List">Claims.List</see>.
-	///</remarks>
+	///<summary>Every database table has a corresponding struct or class(new way) of the same or similar name.  For instance, the patient table has the <see cref="Patient">Patient</see> class which can store each of the individual values for a single claim row.  Each table also has a class with the same or similar name with an 's' on the end, for instance, the <see cref="Patients">Patients</see> class.  There are roughly 60 of theses classes, one for every table plus a few extra.  Every query to the database goes through the corresponding class.  Usually, data from the database is loaded into an array of structs or classes.</summary>
 	public class DataClass{//
 		///<summary>This data adapter is used for all queries to the database.</summary>
 		protected static MySqlDataAdapter da;
@@ -43,6 +41,7 @@ namespace OpenDental{
 			table=new DataTable(null);
 		}
 
+		/*
 		///<summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first, and in FormConfig to get db names.</summary>
 		public static void SetConnection(string db){
 		  con= new MySqlConnection(
@@ -54,7 +53,7 @@ namespace OpenDental{
 			cmd = new MySqlCommand();
 			cmd.Connection = con;
 			table=new DataTable(null);
-		}
+		}*/
 
 		///<summary>Fills table with data from the database.</summary>
 		protected static void FillTable(){
@@ -62,11 +61,11 @@ namespace OpenDental{
 				da=new MySqlDataAdapter(cmd);
 				da.Fill(table=new DataTable(null));
 			}
+			//catch(MySqlException e){
+			//	MessageBox.Show("MySQL Error: "+e.Message);
+			//}
 			catch(MySqlException e){
-				MessageBox.Show("MySQL Error: "+e.Message);
-			}
-			catch{
-				MessageBox.Show("Error: "+cmd.CommandText);
+				MessageBox.Show("Error: "+e.Message+", "+cmd.CommandText);
 			}
 			finally{
 				con.Close();
@@ -81,11 +80,11 @@ namespace OpenDental{
 				ds=new DataSet();
 				da.Fill(ds);
 			}
+			//catch(MySqlException e){
+			//	MessageBox.Show("Error: "+e.Message);
+			//}
 			catch(MySqlException e){
-				MessageBox.Show("Error: "+e.Message);
-			}
-			catch{
-				MessageBox.Show("Error: "+cmd.CommandText);
+				MessageBox.Show("Error: "+e.Message+", "+cmd.CommandText);
 			}
 			finally{
 				con.Close();

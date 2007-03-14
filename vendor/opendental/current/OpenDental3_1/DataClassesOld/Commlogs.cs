@@ -38,10 +38,10 @@ namespace OpenDental{
 		//public static Hashtable HList;
 
 		///<summary>Gets all items for the current patient ordered by date.</summary>
-		public static void Refresh(){
+		public static void Refresh(int patNum){
 			cmd.CommandText =
 				"SELECT * FROM commlog"
-				+" WHERE PatNum = '"+Patients.Cur.PatNum+"'"
+				+" WHERE PatNum = '"+patNum+"'"
 				+" ORDER BY CommDateTime";
 			FillTable();
 			List=new Commlog[table.Rows.Count];

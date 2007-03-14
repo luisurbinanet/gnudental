@@ -35,15 +35,12 @@ namespace OpenDental{
 		public int ClaimPaymentNum;
 		///<summary>Foreign key to insplan.PlanNum</summary>
 		public int PlanNum;
-		///<summary>Date of this ClaimProc.  This is that date that affects aging and the patient balance.See ProcDate for details on computing insurance benefits.</summary>
+		///<summary>This is the date that is used for payment reports and tracks when the payment was actually made.  Always exactly matches the date of the ClaimPayment it's attached to.  See the note under Ledgers.ComputePayments.  This will eventually not be used for aging. The ProcDate will instead be used. See ProcDate.</summary>
 		public DateTime DateCP;
 		///<summary>Amount not covered by ins which is written off</summary>
 		public double WriteOff;
-		///<summary>The procedure code that was sent to insurance. This is not necessarily the usual procedure code.  It will already have been trimmed to 5 char if it started with "D", or it could be the alternate code.  Not allowed to be blank if it is procedure.</remarks>
+		///<summary>The procedure code that was sent to insurance. This is not necessarily the usual procedure code.  It will already have been trimmed to 5 char if it started with "D", or it could be the alternate code.  Not allowed to be blank if it is procedure.</summary>
 		public string CodeSent;
-
-
-//new with version 3.0:
 		///<summary>-1 if blank which indicates allowed is same as fee. This is the amount that the percentage is based on. Usually the same as the fee, unless this ins plan has lower UCR. Could also be different for ins substitutions, like posterior composites.</summary>
 		public double AllowedAmt;
 		///<summary>-1 if blank.  Otherwise a number between 0 and 100.  The percentage that insurance pays on this procedure, as determined from insurance categories. Not user editable.</summary>
@@ -66,7 +63,7 @@ namespace OpenDental{
 		public double BaseEst;
 		///<summary>-1 if blank.  See description of CopayAmt.  This lets the user set a copay that will never be overwritten by automatic calculations.</summary>
 		public double CopayOverride;
-		///<summary>Date of the procedure.  Never affects patient account, but only annual insurance benefits remaining. Important in Adjustments to benefits.  For total claim payments, MUST be the date of the procedures to correctly figure benefits.</summary>
+		///<summary>Date of the procedure.  Currently only used for tracking annual insurance benefits remaining. Important in Adjustments to benefits.  For total claim payments, MUST be the date of the procedures to correctly figure benefits.  Will eventually transition to use this field to actually calculate aging.  See the note under Ledgers.ComputePayments.</summary>
 		public DateTime ProcDate;
 
 		///<summary>Returns a copy of this ClaimProc.</summary>
@@ -187,7 +184,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Replaces Procedures.GetEstForCur as the way to actually calculate the Base estimate for a procedure.  However, this is no longer done on the fly.  Use Procedure.GetEst to later retrieve the estimate. This function duplicates/replaces all of the upper estimating logic that is within FormClaimProc.  BaseEst=((fee or allowedAmt)-Copay) x (percentage or percentOverride). The result is now stored in a claimProc.  The claimProcs do get updated frequently depending on certain actions the user takes.  The calling class must have already created the claimProc, and this function simply updates the BaseEst field of that claimproc. pst.Tot not used.  For Estimate and CapEstimate, all the estimate fields will be recalculated except the three overrides.</summary>
-		public void ComputeBaseEst(Procedure proc,PriSecTot pst){//,bool resetValues){
+		public void ComputeBaseEst(Procedure proc,PriSecTot pst,Patient pat,InsPlan[] PlanList){//,bool resetValues){
 			if(Status==ClaimProcStatus.CapClaim
 				|| Status==ClaimProcStatus.CapComplete
 				|| Status==ClaimProcStatus.Preauth
@@ -197,7 +194,8 @@ namespace OpenDental{
 			}
 			bool resetAll=false;
 			if(Status==ClaimProcStatus.Estimate
-				|| Status==ClaimProcStatus.CapEstimate){
+				|| Status==ClaimProcStatus.CapEstimate)
+			{
 				resetAll=true;
 			}
 			//NoBillIns is only calculated when creating the claimproc, even if resetAll is true.
@@ -233,10 +231,10 @@ namespace OpenDental{
 			//copayOverride never recalculated
 			if(resetAll){
 				if(pst==PriSecTot.Pri){
-					CopayAmt=InsPlans.GetCopay(proc.ADACode,Patients.Cur.PriPlanNum);//also gets InsPlan
+					CopayAmt=InsPlans.GetCopay(proc.ADACode,pat.PriPlanNum,PlanList);//also gets InsPlan
 				}
 				else if(pst==PriSecTot.Sec){
-					CopayAmt=InsPlans.GetCopay(proc.ADACode,Patients.Cur.SecPlanNum);
+					CopayAmt=InsPlans.GetCopay(proc.ADACode,pat.SecPlanNum,PlanList);
 				}
 				else{//pst.Other
 					CopayAmt=-1;

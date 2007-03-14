@@ -1,1 +1,0 @@
-List of changes to the database for this version:

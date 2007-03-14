@@ -7,19 +7,17 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormMessageText : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Timer timer2;
 		///<summary></summary>
 		public System.Windows.Forms.TextBox Text2;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.IContainer components;
 
 		///<summary></summary>
 		public FormMessageText(){
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -43,9 +41,9 @@ namespace OpenDental{
 		{
 			this.components = new System.ComponentModel.Container();
 			this.Text2 = new System.Windows.Forms.TextBox();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.timer2 = new System.Windows.Forms.Timer(this.components);
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// Text2
@@ -60,7 +58,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(319, 197);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -76,6 +78,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.Location = new System.Drawing.Point(319, 234);
 			this.butCancel.Name = "butCancel";

@@ -18,10 +18,10 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox ListReferredToSelect;
 		private System.Windows.Forms.ListBox ListConditions;
 		private System.Windows.Forms.ComboBox DropListFilter;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butAddFilter;
-		private System.Windows.Forms.Button butDeleteFilter;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butAddFilter;
+		private OpenDental.UI.Button butDeleteFilter;
 		private System.Windows.Forms.TextBox TextSQL;
 		private System.Windows.Forms.TextBox TextBox;
 		private OpenDental.ValidNumber TextValidAge;
@@ -90,21 +90,7 @@ namespace OpenDental{
 			IsDropDown=false;
 			TextValidAge.MinVal=0;
 			TextValidAge.MaxVal=125;
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butAddFilter,
-				this.butDeleteFilter,
-				this.tabData,
-				this.tabFilters,
-				this.labelHelp,
-				this.labelPatient,
-				this.labelReferredFrom,
-				this.labelReferredTo,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
-		
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -122,8 +108,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormRpPatients));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.tabPatients = new System.Windows.Forms.TabControl();
 			this.tabData = new System.Windows.Forms.TabPage();
 			this.textBox1 = new System.Windows.Forms.TextBox();
@@ -138,9 +124,9 @@ namespace OpenDental{
 			this.ComboBox = new System.Windows.Forms.ListBox();
 			this.TextDate = new OpenDental.ValidDate();
 			this.TextValidAge = new OpenDental.ValidNumber();
-			this.butDeleteFilter = new System.Windows.Forms.Button();
+			this.butDeleteFilter = new OpenDental.UI.Button();
 			this.ListPrerequisites = new System.Windows.Forms.ListBox();
-			this.butAddFilter = new System.Windows.Forms.Button();
+			this.butAddFilter = new OpenDental.UI.Button();
 			this.ListConditions = new System.Windows.Forms.ListBox();
 			this.TextBox = new System.Windows.Forms.TextBox();
 			this.DropListFilter = new System.Windows.Forms.ComboBox();
@@ -152,8 +138,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(876, 664);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -163,8 +152,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Enabled = false;
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(876, 630);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -318,13 +310,17 @@ namespace OpenDental{
 			// 
 			// butDeleteFilter
 			// 
+			this.butDeleteFilter.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDeleteFilter.Autosize = true;
+			this.butDeleteFilter.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDeleteFilter.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDeleteFilter.Enabled = false;
 			this.butDeleteFilter.Image = ((System.Drawing.Image)(resources.GetObject("butDeleteFilter.Image")));
 			this.butDeleteFilter.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDeleteFilter.Location = new System.Drawing.Point(10, 420);
 			this.butDeleteFilter.Name = "butDeleteFilter";
 			this.butDeleteFilter.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.butDeleteFilter.Size = new System.Drawing.Size(102, 24);
+			this.butDeleteFilter.Size = new System.Drawing.Size(108, 26);
 			this.butDeleteFilter.TabIndex = 8;
 			this.butDeleteFilter.Text = "      Delete Row";
 			this.butDeleteFilter.Click += new System.EventHandler(this.butDeleteFilter_Click);
@@ -340,6 +336,10 @@ namespace OpenDental{
 			// 
 			// butAddFilter
 			// 
+			this.butAddFilter.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddFilter.Autosize = true;
+			this.butAddFilter.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAddFilter.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAddFilter.Enabled = false;
 			this.butAddFilter.Location = new System.Drawing.Point(664, 40);
 			this.butAddFilter.Name = "butAddFilter";
@@ -468,7 +468,7 @@ namespace OpenDental{
       ALpatSelect.Add(Lan.g(this,"PriRelationship"));// ?
 			ALpatSelect.Add(Lan.g(this,"SecPlanNum"));//Secondary Carrier? 
       ALpatSelect.Add(Lan.g(this,"SecRelationship"));// ?
-			ALpatSelect.Add(Lan.g(this,"RecallInterval")); 
+			//ALpatSelect.Add(Lan.g(this,"RecallInterval")); 
       ALpatSelect.Add(Lan.g(this,"RecallStatus"));  
       ALpatSelect.Add(Lan.g(this,"SchoolName")); 
       ALpatSelect.Add(Lan.g(this,"StudentStatus"));
@@ -553,8 +553,8 @@ namespace OpenDental{
       ALpatFilter.Add(Lan.g(this,"Primary Carrier")); 
       ALpatFilter.Add(Lan.g(this,"PriProv")); 
       ALpatFilter.Add(Lan.g(this,"PriRelationship")); 
-      ALpatFilter.Add(Lan.g(this,"RecallInterval")); 
-      ALpatFilter.Add(Lan.g(this,"RecallStatus"));
+      //ALpatFilter.Add(Lan.g(this,"RecallInterval")); 
+      //ALpatFilter.Add(Lan.g(this,"RecallStatus"));
 			ALpatFilter.Add(Lan.g(this,"Referred From Dentist"));//new, need to add functionality
 			ALpatFilter.Add(Lan.g(this,"Referred From Patient"));//new, need to add functionality 
       ALpatFilter.Add(Lan.g(this,"Salutation")); 
@@ -893,7 +893,7 @@ namespace OpenDental{
    		  case "NextAptNum":
 				case "PatNum":
    		  case "Preferred":
-   		  case "RecallInterval":
+   		  //case "RecallInterval":
 				case "Salutation":
    		  case "SchoolName":
    		  case "State":
@@ -993,7 +993,7 @@ namespace OpenDental{
             ComboBox.Items.Add(sItem);
 					}
 					break;
-   		  case "RecallStatus":
+   		  /*case "RecallStatus":
           SetListBoxConditions();
 					ComboBox.Items.Clear();
           for(int i=0;i<Defs.Long[(int)DefCat.RecallUnschedStatus	].Length;i++){
@@ -1002,7 +1002,7 @@ namespace OpenDental{
 							sItem+="(hidden)";
             ComboBox.Items.Add(sItem);
 					}
-					break;
+					break;*/
         case "PriProv":		
         case "SecProv":
           SetListBoxConditions();

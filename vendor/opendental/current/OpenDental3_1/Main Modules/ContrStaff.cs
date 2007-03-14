@@ -9,17 +9,17 @@ namespace OpenDental{
 
 	///<summary></summary>
 	public class ContrStaff : System.Windows.Forms.UserControl{
-		private System.Windows.Forms.Button butTimeCard;
+		private OpenDental.UI.Button butTimeCard;
 		private System.Windows.Forms.ListBox listStatus;
 		private OpenDental.TableEmpClock tbEmp;
 		private System.Windows.Forms.Label textTime;
 		private System.Windows.Forms.Timer timer1;
-		private System.Windows.Forms.Button butClockIn;
-		private System.Windows.Forms.Button butClockOut;
+		private OpenDental.UI.Button butClockIn;
+		private OpenDental.UI.Button butClockOut;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.GroupBox groupBox2;
-		private System.Windows.Forms.Button butClear;
-		private System.Windows.Forms.Button butSend;
+		private OpenDental.UI.Button butClear;
+		private OpenDental.UI.Button butSend;
 		private System.Windows.Forms.TextBox textMessage;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -47,17 +47,17 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.components = new System.ComponentModel.Container();
-			this.butClockIn = new System.Windows.Forms.Button();
+			this.butClockIn = new OpenDental.UI.Button();
 			this.listStatus = new System.Windows.Forms.ListBox();
-			this.butClockOut = new System.Windows.Forms.Button();
+			this.butClockOut = new OpenDental.UI.Button();
 			this.tbEmp = new OpenDental.TableEmpClock();
-			this.butTimeCard = new System.Windows.Forms.Button();
+			this.butTimeCard = new OpenDental.UI.Button();
 			this.textTime = new System.Windows.Forms.Label();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.butClear = new System.Windows.Forms.Button();
-			this.butSend = new System.Windows.Forms.Button();
+			this.butClear = new OpenDental.UI.Button();
+			this.butSend = new OpenDental.UI.Button();
 			this.textMessage = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
@@ -225,11 +225,19 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void InstantClasses(){
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butClear,
-				this.butSend,
-				this.label1,
-			});
+			//can't use Lan.F
+			Lan.C(this,new Control[]
+				{
+				groupBox2,
+				label1,
+				butSend,
+				butClear,
+				groupBox1,
+				butTimeCard,
+				label2,
+				butClockIn,
+				butClockOut
+				});
 		}
 
 		///<summary></summary>
@@ -285,7 +293,7 @@ namespace OpenDental{
 			tbEmp.LayoutTables();
 			listStatus.Items.Clear();
 			for(int i=0;i<Enum.GetNames(typeof(TimeClockStatus)).Length;i++){
-				listStatus.Items.Add(Enum.GetNames(typeof(TimeClockStatus))[i]);
+				listStatus.Items.Add(Lan.g("enumTimeClockStatus",Enum.GetNames(typeof(TimeClockStatus))[i]));
 			}
 			butClockIn.Enabled=false;
 			butClockOut.Enabled=false;
@@ -295,9 +303,7 @@ namespace OpenDental{
 
 		private void tbEmp_CellClicked(object sender, OpenDental.CellEventArgs e) {
 			Employees.Cur=Employees.ListShort[e.Row];
-			//MessageBox.Show("1");
 			ClockEvents.Refresh();
-			//MessageBox.Show("2");
 			if(ClockEvents.IsClockedIn()){
 				butClockIn.Enabled=false;
 				butClockOut.Enabled=true;
@@ -308,9 +314,7 @@ namespace OpenDental{
 				butClockIn.Enabled=true;
 				butClockOut.Enabled=false;
 				butTimeCard.Enabled=true;
-				//MessageBox.Show("3");
 				listStatus.SelectedIndex=(int)ClockEvents.GetLastStatus();
-				//MessageBox.Show("4");
 				listStatus.Enabled=false;
 			}
 		}
@@ -327,7 +331,7 @@ namespace OpenDental{
 			ClockEvents.Cur.ClockIn=true;
 			ClockEvents.Cur.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
 			ClockEvents.InsertCur();
-			Employees.Cur.ClockStatus="Working";
+			Employees.Cur.ClockStatus=Lan.g(this,"Working");;
 			Employees.UpdateCur();
 			ModuleSelected();
 		}
@@ -344,7 +348,8 @@ namespace OpenDental{
 			ClockEvents.Cur.ClockIn=false;
 			ClockEvents.Cur.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
 			ClockEvents.InsertCur();
-			Employees.Cur.ClockStatus=ClockEvents.Cur.ClockStatus.ToString();
+			Employees.Cur.ClockStatus
+				=Lan.g("enumTimeClockStatus",ClockEvents.Cur.ClockStatus.ToString());
 			Employees.UpdateCur();
 			ModuleSelected();
 		}

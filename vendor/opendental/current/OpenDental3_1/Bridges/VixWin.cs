@@ -16,11 +16,11 @@ namespace OpenDental.Bridges{
 
 
 		///<summary>Sends data for Patient.Cur to the QuikLink directory. No further action is required.</summary>
-		public static void SendData(){
+		public static void SendData(Patient pat){
 			ProgramProperties.GetForProgram();
 			ProgramProperties.GetCur("QuikLink directory.");
 			string quikLinkDir=ProgramProperties.Cur.PropertyValue;
-			if(!Patients.PatIsLoaded){
+			if(pat==null){
 				return;
 			}
 			if(!Directory.Exists(quikLinkDir)){
@@ -31,10 +31,10 @@ namespace OpenDental.Bridges{
 				string patID;
 				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
 				if(ProgramProperties.Cur.PropertyValue=="0"){
-					patID=Patients.Cur.PatNum.ToString().PadLeft(6,'0');
+					patID=pat.PatNum.ToString().PadLeft(6,'0');
 				}
 				else{
-					patID=Patients.Cur.ChartNumber.PadLeft(6,'0');
+					patID=pat.ChartNumber.PadLeft(6,'0');
 				}
 				if(patID.Length>6){
 					MessageBox.Show("Patient ID is longer than six digits, so link failed.");
@@ -43,8 +43,8 @@ namespace OpenDental.Bridges{
 				string fileName=quikLinkDir+patID+".DDE";
 				//MessageBox.Show(fileName);
 				using(StreamWriter sw=new StreamWriter(fileName,false)){
-					sw.WriteLine("\""+Patients.Cur.FName+"\","
-						+"\""+Patients.Cur.LName+"\","
+					sw.WriteLine("\""+pat.FName+"\","
+						+"\""+pat.LName+"\","
 						+"\""+patID+"\"");
 				}
 			}

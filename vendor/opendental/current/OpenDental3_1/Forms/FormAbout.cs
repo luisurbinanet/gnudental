@@ -9,25 +9,24 @@ namespace OpenDental{
 	///<summary></summary>
 	public class FormAbout : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label labelVersion;
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button butReset;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.Label label5;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
 		public FormAbout(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.labelVersion,
-				butReset,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-			}); 
+			Lan.F(this,new Control[]
+				{
+				labelVersion,
+				textBox1	
+				});
 		}
 
 		///<summary></summary>
@@ -44,13 +43,14 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.labelVersion = new System.Windows.Forms.Label();
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.butReset = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.label5 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// labelVersion
@@ -63,9 +63,12 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(305, 383);
+			this.butClose.Location = new System.Drawing.Point(305, 404);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 2;
 			this.butClose.Text = "&Close";
@@ -119,26 +122,36 @@ namespace OpenDental{
 			// 
 			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
 			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(21, 167);
+			this.textBox1.Location = new System.Drawing.Point(21, 199);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(628, 194);
+			this.textBox1.Size = new System.Drawing.Size(628, 181);
 			this.textBox1.TabIndex = 8;
-			this.textBox1.Text = "We also wish to thank:\r\nDavid Adams\r\nDan Crawford\r\nLarry Dagley\r\nAnn Hellemans-De" +
-				" Hondt\r\nSamir Kothari\r\nJeff Smerdon";
+			this.textBox1.Text = "David Adams\r\nDan Crawford\r\nLarry Dagley\r\nAnn Hellemans-De Hondt\r\nSamir Kothari\r\nJ" +
+				"eff Smerdon";
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(20, 170);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(206, 23);
+			this.label5.TabIndex = 9;
+			this.label5.Text = "We also wish to thank:";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// FormAbout
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(709, 462);
+			this.Controls.Add(this.label5);
 			this.Controls.Add(this.textBox1);
+			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.butReset);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.labelVersion);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;

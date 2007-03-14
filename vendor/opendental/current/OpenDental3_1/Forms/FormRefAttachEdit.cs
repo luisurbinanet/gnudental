@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRefAttachEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label3;
 		///<summary></summary>
     public bool IsNew;
@@ -20,35 +20,21 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private OpenDental.ValidNumber textOrder;
 		private System.Windows.Forms.Label labelOrder;
-		private System.Windows.Forms.Button butEdit;
+		private OpenDental.UI.Button butEdit;
 		private OpenDental.ValidDate textRefDate;
 		private System.Windows.Forms.CheckBox checkPatient;
 		private System.Windows.Forms.TextBox textNotes;
 		private System.Windows.Forms.Label label17;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label5;
-
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
+		public RefAttach RefAttachCur;
 
 		///<summary></summary>
 		public FormRefAttachEdit(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2,
-				label3,
-				label4,
-				label5,
-				panel1,
-				radioFrom,
-				radioTo,
-				labelOrder,
-				butEdit
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -64,8 +50,8 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.textName = new System.Windows.Forms.TextBox();
@@ -75,7 +61,7 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.labelOrder = new System.Windows.Forms.Label();
 			this.textOrder = new OpenDental.ValidNumber();
-			this.butEdit = new System.Windows.Forms.Button();
+			this.butEdit = new OpenDental.UI.Button();
 			this.textRefDate = new OpenDental.ValidDate();
 			this.checkPatient = new System.Windows.Forms.CheckBox();
 			this.textNotes = new System.Windows.Forms.TextBox();
@@ -87,8 +73,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(504, 218);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -98,7 +88,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(504, 178);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -148,7 +142,7 @@ namespace OpenDental{
 			this.radioTo.Location = new System.Drawing.Point(86, 5);
 			this.radioTo.Name = "radioTo";
 			this.radioTo.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.radioTo.Size = new System.Drawing.Size(62, 14);
+			this.radioTo.Size = new System.Drawing.Size(78, 14);
 			this.radioTo.TabIndex = 3;
 			this.radioTo.Text = "To";
 			this.radioTo.Click += new System.EventHandler(this.radioTo_Click);
@@ -159,7 +153,7 @@ namespace OpenDental{
 			this.radioFrom.Location = new System.Drawing.Point(2, 4);
 			this.radioFrom.Name = "radioFrom";
 			this.radioFrom.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.radioFrom.Size = new System.Drawing.Size(54, 16);
+			this.radioFrom.Size = new System.Drawing.Size(74, 16);
 			this.radioFrom.TabIndex = 2;
 			this.radioFrom.Text = "From";
 			this.radioFrom.Click += new System.EventHandler(this.radioFrom_Click);
@@ -192,7 +186,10 @@ namespace OpenDental{
 			// 
 			// butEdit
 			// 
-			this.butEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butEdit.Autosize = true;
+			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEdit.Location = new System.Drawing.Point(374, 16);
 			this.butEdit.Name = "butEdit";
 			this.butEdit.Size = new System.Drawing.Size(114, 26);
@@ -255,26 +252,24 @@ namespace OpenDental{
 			// 
 			// FormRefAttachEdit
 			// 
-			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(600, 264);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textNotes);
-			this.Controls.Add(this.label17);
-			this.Controls.Add(this.checkPatient);
 			this.Controls.Add(this.textRefDate);
 			this.Controls.Add(this.butEdit);
-			this.Controls.Add(this.labelOrder);
 			this.Controls.Add(this.textOrder);
 			this.Controls.Add(this.textName);
+			this.Controls.Add(this.butCancel);
+			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.label17);
+			this.Controls.Add(this.checkPatient);
+			this.Controls.Add(this.labelOrder);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.butCancel);
-			this.Controls.Add(this.butOK);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormRefAttachEdit";
@@ -292,60 +287,48 @@ namespace OpenDental{
 		private void FormRefAttachEdit_Load(object sender, System.EventArgs e) {
       if(IsNew){
         this.Text=Lan.g(this,"Add Referral Attachment");
-        RefAttaches.Cur.IsFrom=true;
-				RefAttaches.Cur.RefDate=DateTime.Today;
-				int order=0;
-        for(int i=0;i<RefAttaches.List.Length;i++){
-          if(RefAttaches.List[i].ItemOrder > order){
-            order=RefAttaches.List[i].ItemOrder;
-          }
-        }
-        RefAttaches.Cur.ItemOrder=order+1;
-				//Referrals.Cur is set when user double clicks on referral in 
-				RefAttaches.Cur.ReferralNum=Referrals.Cur.ReferralNum;
       }
       else{
-        this.Text=Lan.g(this,"Edit Referral Attachment");	
-				
+        this.Text=Lan.g(this,"Edit Referral Attachment");
       }
 			FillData();
 		}
 
 		private void FillData(){
-			Referrals.GetCur(RefAttaches.Cur.ReferralNum);
-			textName.Text=Referrals.Cur.LName+", "+Referrals.Cur.FName+" "+Referrals.Cur.MName;
-			checkPatient.Checked=Referrals.Cur.PatNum>0;
-			textNotes.Text=Referrals.Cur.Note;
-			if(RefAttaches.Cur.IsFrom){
+			Referral referral=Referrals.GetReferral(RefAttachCur.ReferralNum);
+			textName.Text=referral.LName+", "+referral.FName+" "+referral.MName;
+			checkPatient.Checked=referral.PatNum>0;
+			textNotes.Text=referral.Note;
+			if(RefAttachCur.IsFrom){
         radioFrom.Checked=true; 
       }
       else{
         radioTo.Checked=true;
       }
-			if(RefAttaches.Cur.RefDate.CompareTo(new DateTime(1880,1,1))<0){
+			if(RefAttachCur.RefDate.CompareTo(new DateTime(1880,1,1))<0){
 				textRefDate.Text="";
 			}
 			else{
-				textRefDate.Text=RefAttaches.Cur.RefDate.ToShortDateString();
+				textRefDate.Text=RefAttachCur.RefDate.ToShortDateString();
 			}
-			textOrder.Text=RefAttaches.Cur.ItemOrder.ToString();
+			textOrder.Text=RefAttachCur.ItemOrder.ToString();
 		}
 
 		private void radioFrom_Click(object sender, System.EventArgs e) {
-		  RefAttaches.Cur.IsFrom=true;
+		  RefAttachCur.IsFrom=true;
 		}
 
 		private void radioTo_Click(object sender, System.EventArgs e) {
-		  RefAttaches.Cur.IsFrom=false;
+		  RefAttachCur.IsFrom=false;
 		}
 
 		private void butEdit_Click(object sender, System.EventArgs e) {
-			Referrals.GetCur(RefAttaches.Cur.ReferralNum);
-			FormReferralEdit FormRE2=new FormReferralEdit();
-			if(Referrals.Cur.PatNum > 0){
-				FormRE2.IsPatient=true;
-			}
-			FormRE2.ShowDialog();
+			Referral referral=Referrals.GetReferral(RefAttachCur.ReferralNum);
+			//if(referral.PatNum > 0){//moved to inside the class
+			//	FormRE.IsPatient=true;
+			//}
+			FormReferralEdit FormRE=new FormReferralEdit(referral);
+			FormRE.ShowDialog();
 			Referrals.Refresh();
 			FillData();
 		}
@@ -358,19 +341,19 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
         return;
       }
-			RefAttaches.Cur.RefDate=PIn.PDate(textRefDate.Text); 
-      RefAttaches.Cur.ItemOrder=PIn.PInt(textOrder.Text);
+			RefAttachCur.RefDate=PIn.PDate(textRefDate.Text); 
+      RefAttachCur.ItemOrder=PIn.PInt(textOrder.Text);
 			if(IsNew){
-				RefAttaches.InsertCur();
+				RefAttachCur.Insert();
 			}
 			else{
-				RefAttaches.UpdateCur();
+				RefAttachCur.Update();
 			}
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
 
 

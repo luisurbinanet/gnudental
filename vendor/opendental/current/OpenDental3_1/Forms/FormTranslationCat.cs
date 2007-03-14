@@ -12,9 +12,9 @@ namespace OpenDental{
 	public class FormTranslationCat : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listCats;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butClose;
-		private System.Windows.Forms.Button butExport;
-		private System.Windows.Forms.Button butDownload;
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butExport;
+		private OpenDental.UI.Button butDownload;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -24,9 +24,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormTranslationCat(){
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-			  butClose,																											
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -44,9 +42,9 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.listCats = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butClose = new System.Windows.Forms.Button();
-			this.butExport = new System.Windows.Forms.Button();
-			this.butDownload = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
+			this.butExport = new OpenDental.UI.Button();
+			this.butDownload = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -200,7 +198,10 @@ namespace OpenDental{
 				return;
 			}
 			ClassConvertDatabase ConvertDB=new ClassConvertDatabase();
-			if(!ConvertDB.ExecuteFile(fileName)){
+			try{
+				ConvertDB.ExecuteFile(fileName);
+			}
+			catch{
 				MessageBox.Show("Translations not installed properly.");
 				return;
 			}
@@ -228,6 +229,7 @@ namespace OpenDental{
 					);
 				}
 			}//for
+			sw.Close();
 			MessageBox.Show("Done");
 		}
 

@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
+using System.Text;
+using System.Windows.Forms;
 
 namespace OpenDental{
 	
 	/*=========================================================================================
 	=================================== class PIn ===========================================*/
-	///<summary>Converts strings coming in from the database into the appropriate type. "P" was originally short for Parameter because this class was written specifically to replace parameters in the mysql queries. Using strings instead of parameters is much easier to debug.  This will later be rewritten as a System.IConvertible interface on custom mysql types.  I would rather not ever depend on the mysql connector for this so that this program remains very db independent.</remarks>
+	///<summary>Converts strings coming in from the database into the appropriate type. "P" was originally short for Parameter because this class was written specifically to replace parameters in the mysql queries. Using strings instead of parameters is much easier to debug.  This will later be rewritten as a System.IConvertible interface on custom mysql types.  I would rather not ever depend on the mysql connector for this so that this program remains very db independent.</summary>
 	public class PIn{
 		///<summary></summary>
 		public static bool PBool (string myString){
@@ -26,6 +28,8 @@ namespace OpenDental{
 		public static DateTime PDate(string myString){
 			if(myString=="")
 				return DateTime.MinValue;
+			//if(myString=="0000-00-00")//this is useless because of culture differences
+			//	return DateTime.MinValue;
 			try{
 				return (DateTime.Parse(myString));
 			}
@@ -38,6 +42,8 @@ namespace OpenDental{
 		public static DateTime PDateT(string myString){
 			if(myString=="")
 				return DateTime.MinValue;
+			//if(myString=="0000-00-00 00:00:00")//useless
+			//	return DateTime.MinValue;
 			try{
 				return (DateTime.Parse(myString));
 			}
@@ -56,7 +62,7 @@ namespace OpenDental{
 					return System.Convert.ToDouble(myString);
 				}
 				catch{
-					//MessageBox.Show(myString);
+					MessageBox.Show("Error converting "+myString+" to double");
 					return 0;
 				}
 			}
@@ -95,6 +101,12 @@ namespace OpenDental{
 		public static string PTime (string myTime){
 			return DateTime.Parse(myTime).ToString("HH:mm:ss");
 		}
+
+		//<summary></summary>
+		//public static string PBytes (byte[] myBytes){
+		//	return Convert.ToBase64String(myBytes);
+		//}
+
 
 	}
 

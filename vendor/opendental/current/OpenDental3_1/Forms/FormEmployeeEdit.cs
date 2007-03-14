@@ -17,12 +17,12 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableUserPermissions tbUserPerm;
-		private System.Windows.Forms.Button butNone;
-		private System.Windows.Forms.Button butAll;
+		private OpenDental.UI.Button butNone;
+		private OpenDental.UI.Button butAll;
 		private System.Windows.Forms.TextBox textUserName;
 		private System.Windows.Forms.CheckBox checkIsHidden;
 		private System.Windows.Forms.GroupBox groupSecurity;
@@ -32,21 +32,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormEmployeeEdit(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1,
-				this.label10,
-				this.label7,
-				this.label8,
-				this.label9,
-				this.groupSecurity,
-				this.checkIsHidden,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				butAll,
-				butNone
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -73,11 +59,11 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.checkIsHidden = new System.Windows.Forms.CheckBox();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.tbUserPerm = new OpenDental.TableUserPermissions();
-			this.butNone = new System.Windows.Forms.Button();
-			this.butAll = new System.Windows.Forms.Button();
+			this.butNone = new OpenDental.UI.Button();
+			this.butAll = new OpenDental.UI.Button();
 			this.groupSecurity = new System.Windows.Forms.GroupBox();
 			this.groupSecurity.SuspendLayout();
 			this.SuspendLayout();
@@ -111,7 +97,7 @@ namespace OpenDental{
 			// 
 			// textPassword
 			// 
-			this.textPassword.Location = new System.Drawing.Point(64, 40);
+			this.textPassword.Location = new System.Drawing.Point(64, 42);
 			this.textPassword.MaxLength = 100;
 			this.textPassword.Name = "textPassword";
 			this.textPassword.PasswordChar = '*';
@@ -121,7 +107,7 @@ namespace OpenDental{
 			// 
 			// textUserName
 			// 
-			this.textUserName.Location = new System.Drawing.Point(64, 16);
+			this.textUserName.Location = new System.Drawing.Point(64, 18);
 			this.textUserName.MaxLength = 100;
 			this.textUserName.Name = "textUserName";
 			this.textUserName.Size = new System.Drawing.Size(310, 20);
@@ -139,7 +125,7 @@ namespace OpenDental{
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(4, 42);
+			this.label9.Location = new System.Drawing.Point(4, 44);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(60, 14);
 			this.label9.TabIndex = 30;
@@ -166,7 +152,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(4, 18);
+			this.label1.Location = new System.Drawing.Point(4, 20);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(60, 14);
 			this.label1.TabIndex = 27;
@@ -184,19 +170,29 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(720, 550);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 35;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(720, 522);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(720, 518);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 34;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -215,18 +211,26 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
-			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butNone.Location = new System.Drawing.Point(102, 440);
+			this.butNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNone.Autosize = true;
+			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butNone.Location = new System.Drawing.Point(102, 439);
 			this.butNone.Name = "butNone";
+			this.butNone.Size = new System.Drawing.Size(75, 25);
 			this.butNone.TabIndex = 38;
 			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// butAll
 			// 
-			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAll.Location = new System.Drawing.Point(14, 440);
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.Autosize = true;
+			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAll.Location = new System.Drawing.Point(10, 439);
 			this.butAll.Name = "butAll";
+			this.butAll.Size = new System.Drawing.Size(75, 25);
 			this.butAll.TabIndex = 37;
 			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);

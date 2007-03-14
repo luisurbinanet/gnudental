@@ -32,16 +32,16 @@ namespace OpenDental{
 		public static PatientNote Cur;
 		
 		///<summary></summary>
-		public static void Refresh(){
+		public static void Refresh(int patNum,int guarantor){
 			cmd.CommandText = 
-				"SELECT * FROM patientnote WHERE patnum = '"+POut.PInt(Patients.Cur.PatNum)+"'";
+				"SELECT * FROM patientnote WHERE patnum = '"+POut.PInt(patNum)+"'";
 			FillTable();
 			if(table.Rows.Count==0){
-				InsertRow(Patients.Cur.PatNum);
+				InsertRow(patNum);
 			}
 			cmd.CommandText = 
 				"SELECT PatNum,ApptPhone,Medical,Service,MedicalComp,Treatment "
-				+"FROM patientnote WHERE patnum ='"+POut.PInt(Patients.Cur.PatNum)+"'";
+				+"FROM patientnote WHERE patnum ='"+POut.PInt(patNum)+"'";
 			FillTable();
 			Cur.PatNum      = PIn.PInt   (table.Rows[0][0].ToString());
 			Cur.ApptPhone   = PIn.PString(table.Rows[0][1].ToString());
@@ -51,21 +51,21 @@ namespace OpenDental{
 			Cur.Treatment   = PIn.PString(table.Rows[0][5].ToString());
 			//fam financial note:
 			cmd.CommandText = 
-				"SELECT * FROM patientnote WHERE patnum ='"+POut.PInt(Patients.Cur.Guarantor)+"'";
+				"SELECT * FROM patientnote WHERE patnum ='"+POut.PInt(guarantor)+"'";
 			FillTable();
 			if(table.Rows.Count==0){
-				InsertRow(Patients.Cur.Guarantor);
+				InsertRow(guarantor);
 			}
 			cmd.CommandText = 
 				"SELECT famfinancial "
-				+"FROM patientnote WHERE patnum ='"+POut.PInt(Patients.Cur.Guarantor)+"'";
+				+"FROM patientnote WHERE patnum ='"+POut.PInt(guarantor)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
 			Cur.FamFinancial= PIn.PString(table.Rows[0][0].ToString());
 		}
 
 		///<summary></summary>
-		public static void UpdateCur(){
+		public static void UpdateCur(int guarantor){
 			cmd.CommandText = "UPDATE patientnote SET "
 				//+ "apptphone = '"   +POut.PString(Cur.ApptPhone)+"'"
 				+ "Medical = '"     +POut.PString(Cur.Medical)+"'"
@@ -77,7 +77,7 @@ namespace OpenDental{
 			NonQ(false);
 			cmd.CommandText = "UPDATE patientnote SET "
 				+ "famfinancial = '"+POut.PString(Cur.FamFinancial)+"'"
-				+" WHERE patnum = '"+POut.PInt   (Patients.Cur.Guarantor)+"'";
+				+" WHERE patnum = '"+POut.PInt   (guarantor)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}

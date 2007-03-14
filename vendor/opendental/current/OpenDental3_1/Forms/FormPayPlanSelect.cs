@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 	/// <summary>Lets the user choose which payment plan to attach a payment to if there are more than one available.</summary>
 	public class FormPayPlanSelect : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -26,10 +26,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -55,8 +52,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormPayPlanSelect));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.listPayPlans = new System.Windows.Forms.ListBox();
 			this.SuspendLayout();
 			// 

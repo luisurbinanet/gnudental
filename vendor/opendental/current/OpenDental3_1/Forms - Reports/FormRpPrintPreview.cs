@@ -9,16 +9,13 @@ namespace OpenDental{
 	public class FormRpPrintPreview : System.Windows.Forms.Form{
 		///<summary></summary>
 		public System.Windows.Forms.PrintPreviewControl printPreviewControl2;
-		private System.Windows.Forms.Button button1;
+		private OpenDental.UI.Button button1;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
 		public FormRpPrintPreview(){
 			InitializeComponent();
- 			Lan.C(this, new System.Windows.Forms.Control[] {
-				button1,
-			});
-
+ 			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -35,7 +32,7 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
-			this.button1 = new System.Windows.Forms.Button();
+			this.button1 = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// printPreviewControl2
@@ -49,7 +46,10 @@ namespace OpenDental{
 			// 
 			// button1
 			// 
-			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.button1.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.button1.Autosize = true;
+			this.button1.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.button1.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.button1.Location = new System.Drawing.Point(323, 709);
 			this.button1.Name = "button1";
 			this.button1.TabIndex = 8;
@@ -65,7 +65,7 @@ namespace OpenDental{
 			this.Controls.Add(this.printPreviewControl2);
 			this.Name = "FormRpPrintPreview";
 			this.ShowInTaskbar = false;
-			this.Text = "FormRxPrintPreview";
+			this.Text = "FormRpPrintPreview";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.FormRpPrintPreview_Load);
 			this.ResumeLayout(false);

@@ -10,12 +10,11 @@ using System.IO;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormTranslation : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private OpenDental.TableLan tbLan;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butObsolete;
-		private System.Windows.Forms.Button butNot;
-		private System.Windows.Forms.Label label2;
+		private OpenDental.UI.Button butObsolete;
+		private OpenDental.UI.Button butNot;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
@@ -25,6 +24,7 @@ namespace OpenDental{
 			tbLan.Heading=Lan.CurCat+" Words";
 			tbLan.Fields[2]=CultureInfo.CurrentCulture.Parent.DisplayName;
 			tbLan.Fields[3]=CultureInfo.CurrentCulture.Parent.DisplayName + " Comments";
+			//no need to translate much here
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butClose,																											
 			});
@@ -45,29 +45,31 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.tbLan = new OpenDental.TableLan();
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butObsolete = new System.Windows.Forms.Button();
-			this.butNot = new System.Windows.Forms.Button();
-			this.label2 = new System.Windows.Forms.Label();
+			this.butObsolete = new OpenDental.UI.Button();
+			this.butNot = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// tbLan
 			// 
 			this.tbLan.BackColor = System.Drawing.SystemColors.Window;
-			this.tbLan.Location = new System.Drawing.Point(20, 40);
+			this.tbLan.Location = new System.Drawing.Point(20, 23);
 			this.tbLan.Name = "tbLan";
-			this.tbLan.ScrollValue = 700;
+			this.tbLan.ScrollValue = 143;
 			this.tbLan.SelectedIndices = new int[0];
 			this.tbLan.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbLan.Size = new System.Drawing.Size(859, 576);
+			this.tbLan.Size = new System.Drawing.Size(859, 637);
 			this.tbLan.TabIndex = 0;
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(864, 658);
+			this.butClose.Location = new System.Drawing.Point(827, 671);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
@@ -76,7 +78,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(20, 628);
+			this.label1.Location = new System.Drawing.Point(19, 676);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(256, 18);
 			this.label1.TabIndex = 4;
@@ -84,8 +86,11 @@ namespace OpenDental{
 			// 
 			// butObsolete
 			// 
-			this.butObsolete.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butObsolete.Location = new System.Drawing.Point(386, 650);
+			this.butObsolete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butObsolete.Autosize = true;
+			this.butObsolete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butObsolete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butObsolete.Location = new System.Drawing.Point(386, 669);
 			this.butObsolete.Name = "butObsolete";
 			this.butObsolete.Size = new System.Drawing.Size(94, 26);
 			this.butObsolete.TabIndex = 5;
@@ -95,8 +100,11 @@ namespace OpenDental{
 			// 
 			// butNot
 			// 
-			this.butNot.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butNot.Location = new System.Drawing.Point(510, 650);
+			this.butNot.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNot.Autosize = true;
+			this.butNot.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNot.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butNot.Location = new System.Drawing.Point(510, 669);
 			this.butNot.Name = "butNot";
 			this.butNot.Size = new System.Drawing.Size(64, 26);
 			this.butNot.TabIndex = 6;
@@ -104,21 +112,11 @@ namespace OpenDental{
 			this.butNot.Visible = false;
 			this.butNot.Click += new System.EventHandler(this.butNot_Click);
 			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(22, 14);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(866, 18);
-			this.label2.TabIndex = 7;
-			this.label2.Text = "Please be aware that there is a lot of clutter and extra phrases that do not belo" +
-				"ng.   Just disregard them for now and we will work on cleaning it up.";
-			// 
 			// FormTranslation
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(958, 708);
-			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butNot);
 			this.Controls.Add(this.butObsolete);
 			this.Controls.Add(this.label1);

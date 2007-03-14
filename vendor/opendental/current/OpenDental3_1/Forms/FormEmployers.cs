@@ -9,15 +9,15 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormEmployers : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.ListBox listEmp;
-		private OpenDental.XPButton butAdd;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button butAdd;
+		private OpenDental.UI.Button butDelete;
 		private System.ComponentModel.IContainer components;
-		private OpenDental.XPButton butEdit;
+		private OpenDental.UI.Button butEdit;
 		private System.Windows.Forms.ToolTip toolTip1;
-		private System.Windows.Forms.Button butCombine;
+		private OpenDental.UI.Button butCombine;
 		///<summary>Set to true if using this dialog to select an employer.</summary>
 		public bool IsSelectMode;
 
@@ -28,10 +28,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -58,33 +55,41 @@ namespace OpenDental{
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormEmployers));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.listEmp = new System.Windows.Forms.ListBox();
-			this.butAdd = new OpenDental.XPButton();
-			this.butDelete = new OpenDental.XPButton();
-			this.butEdit = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
+			this.butEdit = new OpenDental.UI.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.butCombine = new System.Windows.Forms.Button();
+			this.butCombine = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(359, 597);
+			this.butCancel.Location = new System.Drawing.Point(349, 597);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(90, 26);
+			this.butCancel.Size = new System.Drawing.Size(79, 26);
 			this.butCancel.TabIndex = 0;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(359, 560);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(349, 560);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(90, 26);
+			this.butOK.Size = new System.Drawing.Size(79, 26);
 			this.butOK.TabIndex = 1;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -101,13 +106,15 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(359, 352);
+			this.butAdd.Location = new System.Drawing.Point(349, 352);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(90, 26);
+			this.butAdd.Size = new System.Drawing.Size(79, 26);
 			this.butAdd.TabIndex = 7;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
@@ -115,13 +122,15 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(359, 389);
+			this.butDelete.Location = new System.Drawing.Point(349, 389);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(90, 26);
+			this.butDelete.Size = new System.Drawing.Size(79, 26);
 			this.butDelete.TabIndex = 8;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -129,23 +138,29 @@ namespace OpenDental{
 			// butEdit
 			// 
 			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butEdit.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butEdit.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butEdit.Autosize = true;
+			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEdit.Image = ((System.Drawing.Image)(resources.GetObject("butEdit.Image")));
 			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEdit.Location = new System.Drawing.Point(359, 426);
+			this.butEdit.Location = new System.Drawing.Point(349, 426);
 			this.butEdit.Name = "butEdit";
-			this.butEdit.Size = new System.Drawing.Size(90, 26);
+			this.butEdit.Size = new System.Drawing.Size(79, 26);
 			this.butEdit.TabIndex = 9;
 			this.butEdit.Text = "&Edit";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
 			// 
 			// butCombine
 			// 
-			this.butCombine.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCombine.Location = new System.Drawing.Point(359, 463);
+			this.butCombine.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCombine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCombine.Autosize = true;
+			this.butCombine.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCombine.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butCombine.Location = new System.Drawing.Point(349, 463);
 			this.butCombine.Name = "butCombine";
-			this.butCombine.Size = new System.Drawing.Size(90, 26);
+			this.butCombine.Size = new System.Drawing.Size(79, 26);
 			this.butCombine.TabIndex = 10;
 			this.butCombine.Text = "Co&mbine";
 			this.toolTip1.SetToolTip(this.butCombine, "Combines multiple Employers");
@@ -155,7 +170,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(468, 649);
+			this.ClientSize = new System.Drawing.Size(447, 649);
 			this.Controls.Add(this.listEmp);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);

@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Data;
-//using System.Drawing;
-//using System.IO;
 using System.Windows.Forms;
-using ByteFX.Data.MySqlClient;
+//using ByteFX.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 
 namespace OpenDental{
 	
@@ -13,7 +12,7 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class Conversions ==========================================*/
 
-	///<summary>Handles all database interactions for the ClassConvertDatabase.</summary>
+	///<summary>Previously handled all database interactions for the ClassConvertDatabase.  But getting phased out in favor of the new DataConnection class.</summary>
 	public class Conversions:DataClass{
 		///<summary>Set up an array of strings here, and then execute them all by calling SubmitNonQArray().</summary>
 		public static string[] NonQArray;
@@ -26,50 +25,22 @@ namespace OpenDental{
 		///<summary>Temporary only. Used for backing up.</summary>
 		public static string ReaderText;
 
-		///<summary></summary>
-		public static bool SubmitNonQArray(){//return true if successful
-			try{
-				//int rowsUpdated;
-				con.Open();
-				for(int i=0;i<NonQArray.Length;i++){
-					cmd.CommandText=NonQArray[i];
-					cmd.ExecuteNonQuery();
-				}
-			}
-			catch(MySqlException e){
-				MessageBox.Show("e:"+e.Message);
-				return false;
-			}
-			catch{
-				MessageBox.Show("Command:"+cmd.CommandText);
-				return false;
-			}
-			finally{
-				con.Close();
-			}
-			return true;
-		}
-
-		///<summary></summary>
-		public static bool SubmitNonQString(){//return true if successful
-			try{
-				//int rowsUpdated;
-				con.Open();
-				cmd.CommandText=NonQString;
+		///<summary>throws an exception if fails.</summary>
+		public static void SubmitNonQArray(){
+			con.Open();
+			for(int i=0;i<NonQArray.Length;i++){
+				cmd.CommandText=NonQArray[i];
 				cmd.ExecuteNonQuery();
 			}
-			catch(MySqlException e){
-				MessageBox.Show("e:"+e.Message);
-				return false;
-			}
-			catch{
-				MessageBox.Show("Command:"+cmd.CommandText);
-				return false;
-			}
-			finally{
-				con.Close();
-			}
-			return true;
+			con.Close();
+		}
+
+		///<summary>throws an exception if fails.</summary>
+		public static void SubmitNonQString(){
+			con.Open();
+			cmd.CommandText=NonQString;
+			cmd.ExecuteNonQuery();
+			con.Close();
 		}
 
 		///<summary>Only used in making backups. always returns the second column of row 1. This is used because of a bug in the data adaptor.</summary>
@@ -102,45 +73,14 @@ namespace OpenDental{
 			//return "";//true;
 		}	
 
-		///<summary>Returns true if successful.</summary>
-		public static bool SubmitSelect(){
-			//try{
-				cmd.CommandText=SelectText;
-				FillTable();
-				TableQ=table.Copy();
-			//}
-			//catch(MySqlException e){
-			//	MessageBox.Show("e:"+e.Message);
-			//	return false;
-			//}
-			//catch{
-			//	MessageBox.Show("Command:"+cmd.CommandText);
-			//	return false;
-			//}
-			return true;
+		///<summary>throws an exception if fails.</summary>
+		public static void SubmitSelect(){
+			cmd.CommandText=SelectText;
+			FillTable();
+			TableQ=table.Copy();
 		}	
 
-		///<summary></summary>
-		public static bool AddressNotesVers2_0(){
-			try{
-				cmd.CommandText="SELECT patnum,addrnote FROM patient WHERE patnum = guarantor";
-				FillTable();
-				for(int i=0;i<table.Rows.Count;i++){
-					cmd.CommandText="UPDATE patient SET "
-						+"addrnote = '"+POut.PString(table.Rows[i][1].ToString())+"' "
-						+"WHERE guarantor = '"+table.Rows[i][0].ToString()+"'";
-					NonQ(false);
-				}
-				return true;
-			}
-			catch{
-				MessageBox.Show(cmd.CommandText);
-				return false;
-			}
-			finally{
-				con.Close();
-			}
-		}
+		
 
 	}		
 

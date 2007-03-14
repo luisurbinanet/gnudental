@@ -8,16 +8,16 @@ namespace OpenDental{
 	///<summary></summary>
 	public class FormApptsOther : System.Windows.Forms.Form{
 		private System.Windows.Forms.CheckBox checkDone;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableApptsOther tbApts;
 		///<summary></summary>
 		public OtherResult oResult;
 		private System.Windows.Forms.TextBox textApptModNote;
 		private System.Windows.Forms.Label label1;
-		private OpenDental.XPButton butGoTo;
-		private OpenDental.XPButton butPin;
-		private OpenDental.XPButton butNew;
+		private OpenDental.UI.Button butGoTo;
+		private OpenDental.UI.Button butPin;
+		private OpenDental.UI.Button butNew;
 		private System.Windows.Forms.Label label2;
 		///<summary></summary>
 		public bool InitialClick;
@@ -28,22 +28,20 @@ namespace OpenDental{
 		private System.Windows.Forms.ColumnHeader columnHeader3;
 		private System.Windows.Forms.ColumnHeader columnHeader5;
 		private Appointment[] ListOth;
+		private Recall[] RecallList;
+		private Patient PatCur;
+		private Family FamCur;
 
 		///<summary></summary>
-		public FormApptsOther(){
+		public FormApptsOther(Patient pat,Family fam){
 			InitializeComponent();
+			PatCur=pat;
+			FamCur=fam;
 			tbApts.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbApts_CellDoubleClicked);
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butGoTo,
-				this.butNew,
-				this.butPin,
-				this.label1,
-				this.label2,
-				this.checkDone,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butCancel,
-			}); 
+			Lan.F(this);
+			for(int i=0;i<listFamily.Columns.Count;i++){
+				listFamily.Columns[i].Text=Lan.g(this,listFamily.Columns[i].Text);
+			}
 		}
 
 		///<summary></summary>
@@ -62,12 +60,12 @@ namespace OpenDental{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormApptsOther));
 			this.checkDone = new System.Windows.Forms.CheckBox();
 			this.tbApts = new OpenDental.TableApptsOther();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.textApptModNote = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butGoTo = new OpenDental.XPButton();
-			this.butPin = new OpenDental.XPButton();
-			this.butNew = new OpenDental.XPButton();
+			this.butGoTo = new OpenDental.UI.Button();
+			this.butPin = new OpenDental.UI.Button();
+			this.butNew = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.listFamily = new System.Windows.Forms.ListView();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
@@ -87,7 +85,7 @@ namespace OpenDental{
 			this.checkDone.Size = new System.Drawing.Size(210, 16);
 			this.checkDone.TabIndex = 1;
 			this.checkDone.TabStop = false;
-			this.checkDone.Text = "Next Appt Done";
+			this.checkDone.Text = "Planned Appt Done";
 			// 
 			// tbApts
 			// 
@@ -103,8 +101,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.butCancel.Location = new System.Drawing.Point(834, 618);
 			this.butCancel.Name = "butCancel";
@@ -140,8 +141,9 @@ namespace OpenDental{
 			// butGoTo
 			// 
 			this.butGoTo.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butGoTo.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butGoTo.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butGoTo.Autosize = true;
+			this.butGoTo.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butGoTo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butGoTo.Image = ((System.Drawing.Image)(resources.GetObject("butGoTo.Image")));
 			this.butGoTo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butGoTo.Location = new System.Drawing.Point(411, 618);
@@ -154,8 +156,9 @@ namespace OpenDental{
 			// butPin
 			// 
 			this.butPin.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPin.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPin.Autosize = true;
+			this.butPin.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPin.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
 			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPin.Location = new System.Drawing.Point(532, 618);
@@ -168,8 +171,9 @@ namespace OpenDental{
 			// butNew
 			// 
 			this.butNew.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butNew.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butNew.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butNew.Autosize = true;
+			this.butNew.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNew.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butNew.Image = ((System.Drawing.Image)(resources.GetObject("butNew.Image")));
 			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butNew.Location = new System.Drawing.Point(681, 618);
@@ -266,34 +270,40 @@ namespace OpenDental{
 		}
 
 		private void FormApptsOther_Load(object sender, System.EventArgs e) {
-			Text=Lan.g(this,"Appointments for")+" "+Patients.GetCurNameLF();
-			textApptModNote.Text=Patients.Cur.ApptModNote;
+			Text=Lan.g(this,"Appointments for")+" "+PatCur.GetNameLF();
+			textApptModNote.Text=PatCur.ApptModNote;
 			Filltb();
 		}
 
 		private void Filltb(){
+			RecallList=Recalls.GetList(FamCur.List);
 			Appointment[] aptsOnePat;
 			listFamily.Items.Clear();
 			ListViewItem item;
-			DateTime dueDate;
-			for(int i=0;i<Patients.FamilyList.Length;i++){
-				item=new ListViewItem(Patients.GetNameInFamFLI(i));
-				if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
+			DateTime dateDue;
+			for(int i=0;i<FamCur.List.Length;i++){
+				item=new ListViewItem(FamCur.GetNameInFamFLI(i));
+				if(FamCur.List[i].PatNum==PatCur.PatNum){
 					item.BackColor=Color.Silver;
 				}
-				item.SubItems.Add(Patients.FamilyList[i].Age.ToString());
-				item.SubItems.Add(Patients.FamilyList[i].Gender.ToString());
-				dueDate=Patients.GetRecallDue(Patients.FamilyList[i].PatNum);
-				if(dueDate.Year<1880){
+				item.SubItems.Add(FamCur.List[i].Age.ToString());
+				item.SubItems.Add(FamCur.List[i].Gender.ToString());
+				dateDue=DateTime.MinValue;
+				for(int j=0;j<RecallList.Length;j++){
+					if(RecallList[j].PatNum==FamCur.List[i].PatNum){
+						dateDue=RecallList[j].DateDue;
+					}
+				}
+				if(dateDue.Year<1880){
 					item.SubItems.Add("");
 				}
 				else{
-					item.SubItems.Add(dueDate.ToShortDateString());
+					item.SubItems.Add(dateDue.ToShortDateString());
 				}
-				if(dueDate<=DateTime.Today){
+				if(dateDue<=DateTime.Today){
 					item.ForeColor=Color.Red;
 				}
-				aptsOnePat=Appointments.GetForPat(Patients.FamilyList[i].PatNum);
+				aptsOnePat=Appointments.GetForPat(FamCur.List[i].PatNum);
 				for(int a=0;a<aptsOnePat.Length;a++){
 					if(aptsOnePat[a].AptDateTime.Date<=DateTime.Today){
 						continue;//disregard old appts.
@@ -304,20 +314,22 @@ namespace OpenDental{
 				}
 				listFamily.Items.Add(item);
 			}
-			if(Patients.Cur.NextAptNum==-1){ 
+			if(PatCur.NextAptNum==-1){ 
         checkDone.Checked=true;
       }
 			else{ 
         checkDone.Checked=false;
       }
-			ListOth=Appointments.GetForPat(Patients.Cur.PatNum);
+			ListOth=Appointments.GetForPat(PatCur.PatNum);
 			tbApts.ResetRows(ListOth.Length);
 			tbApts.SetGridColor(Color.DarkGray);
 			for(int i=0;i<ListOth.Length;i++){
 				tbApts.Cell[0,i]=ListOth[i].AptStatus.ToString();
 				if(ListOth[i].AptDateTime.Year > 1880){
-					tbApts.Cell[1,i]=ListOth[i].AptDateTime.ToString("d");
-					tbApts.Cell[2,i]=ListOth[i].AptDateTime.ToString("t");
+					if(ListOth[i].AptStatus!=ApptStatus.Planned){//don't show date/time for planned appts.
+						tbApts.Cell[1,i]=ListOth[i].AptDateTime.ToString("d");
+						tbApts.Cell[2,i]=ListOth[i].AptDateTime.ToString("t");
+					}
         }
 				else{
           tbApts.Cell[1,i]="";
@@ -332,20 +344,20 @@ namespace OpenDental{
 
 		private void butNew_Click(object sender, System.EventArgs e) {
 			Appointments.Cur=new Appointment();
-			Appointments.Cur.PatNum=Patients.Cur.PatNum;
-			if(Patients.Cur.DateFirstVisit.Year<1880
-				&& !Procedures.AreAnyComplete(Patients.Cur.PatNum))//this only runs if firstVisit blank
+			Appointments.Cur.PatNum=PatCur.PatNum;
+			if(PatCur.DateFirstVisit.Year<1880
+				&& !Procedures.AreAnyComplete(PatCur.PatNum))//this only runs if firstVisit blank
 			{
 				Appointments.Cur.IsNewPatient=true;
 			}
 			Appointments.Cur.Pattern="/X/";
-			if(Patients.Cur.PriProv==0){
+			if(PatCur.PriProv==0){
 				Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
 			}
 			else{			
-				Appointments.Cur.ProvNum=Patients.Cur.PriProv;
+				Appointments.Cur.ProvNum=PatCur.PriProv;
 			}
-			Appointments.Cur.ProvHyg=Patients.Cur.SecProv;
+			Appointments.Cur.ProvHyg=PatCur.SecProv;
 			Appointments.Cur.AptStatus=ApptStatus.Scheduled;
 			if(InitialClick){//initially double clicked on appt module
 				DateTime d=Appointments.DateSelected;
@@ -392,20 +404,20 @@ namespace OpenDental{
 
 		/// <summary>Tests the current appointment to see if it is acceptable to send it to the pinboard.  Also asks user appropriate questions to verify that's what they want to do.  Returns false if it will not be going to pinboard after all.</summary>
 		private bool OKtoSendToPinboard(){
-			if(Appointments.Cur.AptStatus==ApptStatus.Next){//if is a NEXT appointment
-				bool NextIsSched=false;
+			if(Appointments.Cur.AptStatus==ApptStatus.Planned){//if is a Planned appointment
+				bool PlannedIsSched=false;
 				for(int i=0;i<ListOth.Length;i++){
-					if(ListOth[i].NextAptNum==Patients.Cur.NextAptNum){//if the next appointment is already sched
-						NextIsSched=true;
+					if(ListOth[i].NextAptNum==PatCur.NextAptNum){//if the planned appointment is already sched
+						PlannedIsSched=true;
 					}
 				}
-				if(NextIsSched){
-					if(MessageBox.Show(Lan.g(this,"The Next appointment is already scheduled.  Do you wish to continue?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+				if(PlannedIsSched){
+					if(MessageBox.Show(Lan.g(this,"The Planned appointment is already scheduled.  Do you wish to continue?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 						return false;
 					}
 				}
 			}
-			else{//if appointment is not NEXT
+			else{//if appointment is not Planned
 				switch(Appointments.Cur.AptStatus){
 					case ApptStatus.Complete:
 						MessageBox.Show(Lan.g(this,"Not allowed to move a completed appointment from here."));
@@ -422,7 +434,7 @@ namespace OpenDental{
 						break;
 				}			
 			}
-			//if it's a next appointment, the next appointment will end up on the pinboard.  The copy will be made after dragging it off the pinboard.
+			//if it's a planned appointment, the planned appointment will end up on the pinboard.  The copy will be made after dragging it off the pinboard.
 			return true;
 		}
 
@@ -456,7 +468,7 @@ namespace OpenDental{
 			ContrAppt.CurInfo=new InfoApt();
 			ContrAppt.CurInfo.MyApt=Appointments.Cur;
 			ProcDesc procsForSingle;
-			if(Appointments.Cur.AptNum==Patients.Cur.NextAptNum){//if is Next apt
+			if(Appointments.Cur.AptNum==PatCur.NextAptNum){//if is Next apt
 				procsForSingle=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
 			}
 			else{//normal apt
@@ -464,7 +476,7 @@ namespace OpenDental{
 			}
 			ContrAppt.CurInfo.Procs=procsForSingle.ProcLines;
 			ContrAppt.CurInfo.Production=procsForSingle.Production;
-			ContrAppt.CurInfo.MyPatient=Patients.Cur;
+			ContrAppt.CurInfo.MyPatient=PatCur.Copy();
 		}
 
 		private void butGoTo_Click(object sender, System.EventArgs e) {
@@ -496,20 +508,28 @@ namespace OpenDental{
 			if(listFamily.SelectedIndices.Count==0){
 				return;
 			}
-			int originalPatNum=Patients.Cur.PatNum;
-			FormRecallEdit FormRE=new FormRecallEdit();
-			//FormRE.DisplayedRecallItem=(RecallItem)MainAL[e.Row];
-			FormRE.PatNum=Patients.FamilyList[listFamily.SelectedIndices[0]].PatNum;
-			FormRE.RecallStatus=Patients.FamilyList[listFamily.SelectedIndices[0]].RecallStatus;
-			FormRE.DueDate=PIn.PDate(listFamily.Items[listFamily.SelectedIndices[0]].SubItems[2].Text);
-			FormRE.ShowDialog();
-			if(FormRE.PinClicked){
+			int originalPatNum=PatCur.PatNum;
+			Recall recallCur=null;
+			for(int i=0;i<RecallList.Length;i++){
+				if(RecallList[i].PatNum==FamCur.List[listFamily.SelectedIndices[0]].PatNum){
+					recallCur=RecallList[i];
+				}
+			}
+			if(recallCur==null){
+				recallCur=new Recall();
+				recallCur.PatNum=FamCur.List[listFamily.SelectedIndices[0]].PatNum;
+				recallCur.RecallInterval=new Interval(0,0,6,0);
+			}
+			FormRecallListEdit FormRLE=new FormRecallListEdit(recallCur);
+			FormRLE.ShowDialog();
+			if(FormRLE.PinClicked){
 				oResult=OtherResult.CopyToPinBoard;
 				//already created curInfo in FormRE.
 				DialogResult=DialogResult.OK;
 			}
 			else{
-				Patients.GetFamily(originalPatNum);
+				FamCur=Patients.GetFamily(originalPatNum);
+				PatCur=FamCur.GetPatient(originalPatNum);
 				Filltb();
 			}
 		}

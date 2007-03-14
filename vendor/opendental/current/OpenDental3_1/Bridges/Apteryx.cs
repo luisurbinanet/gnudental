@@ -15,25 +15,25 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Launches the program using a combination of command line characters and the patient.Cur data.</summary>
-		public static void SendData(){
+		public static void SendData(Patient pat){
 			ProgramProperties.GetForProgram();
-			if(Patients.PatIsLoaded){
-				string info="\""+Patients.Cur.LName+", "+Patients.Cur.FName+"::";
-				if(Patients.Cur.SSN.Length==9){
-					info+=Patients.Cur.SSN.Substring(0,3)+"-"
-						+Patients.Cur.SSN.Substring(3,2)+"-"
-						+Patients.Cur.SSN.Substring(5,4);
+			if(pat!=null){
+				string info="\""+pat.LName+", "+pat.FName+"::";
+				if(pat.SSN.Length==9){
+					info+=pat.SSN.Substring(0,3)+"-"
+						+pat.SSN.Substring(3,2)+"-"
+						+pat.SSN.Substring(5,4);
 				}
 				//Patient id can be any string format
 				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
 				if(ProgramProperties.Cur.PropertyValue=="0"){
-					info+="::"+Patients.Cur.PatNum.ToString();
+					info+="::"+pat.PatNum.ToString();
 				}
 				else{
-					info+="::"+Patients.Cur.ChartNumber;
+					info+="::"+pat.ChartNumber;
 				}
-				info+="::"+Patients.Cur.Birthdate.ToShortDateString()+"::";
-				if(Patients.Cur.Gender==PatientGender.Female)
+				info+="::"+pat.Birthdate.ToShortDateString()+"::";
+				if(pat.Gender==PatientGender.Female)
 					info+="F";
 				else
 					info+="M";

@@ -10,9 +10,9 @@ using System.IO;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormTranslationEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox textEnglish;
 		private System.Windows.Forms.Label label4;
@@ -27,10 +27,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormTranslationEdit(){
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			//no need to translate anything here
 		}
 
 		///<summary></summary>
@@ -46,8 +43,8 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textEnglish = new System.Windows.Forms.TextBox();

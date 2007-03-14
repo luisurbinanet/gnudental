@@ -196,8 +196,10 @@ namespace OpenDental{
 	//public enum StudentStat{None,Full,Part};
 	///<summary>Used in procedurecode setup to specify the treatment area for a procedure.  This determines what fields are available when editing an appointment.</summary>
 	public enum TreatmentArea{
+		///<summary>0-never used</summary>
+		None,
 		///<summary>1</summary>
-		Surf=1,
+		Surf,
 		///<summary>2</summary>
 		Tooth,
 		///<summary>3</summary>
@@ -251,7 +253,8 @@ namespace OpenDental{
 		///<summary>12</summary>
 		PublicHealth,
 		///<summary>13</summary>
-		Radiology}
+		Radiology
+	}
 	///<summary>Appointment status.</summary>
 	public enum ApptStatus{
 		///<summary>0- No appointment should ever have this status.</summary>
@@ -266,8 +269,8 @@ namespace OpenDental{
 		ASAP,
 		///<summary>5- Shows with a big X on it.</summary>
 		Broken,
-		///<summary>6- Next appointment.  Only shows in Chart module. User not allowed to change this status, and it does not display as one of the options.</summary>
-		Next}
+		///<summary>6- Planned appointment.  Only shows in Chart module. User not allowed to change this status, and it does not display as one of the options.</summary>
+		Planned}
 	///<summary></summary>
 	public enum PatientStatus{
 		///<summary>0</summary>
@@ -462,9 +465,9 @@ namespace OpenDental{
 		CapClaim,
 		///<summary>6: Estimates have replaced the fields that were in the procedure table.  Once a procedure is complete, the claimprocstatus will still be Estimate.  An Estimate can be attached to a claim and status gets changed to NotReceived.</summary>
 		Estimate,
-		///<summary>7: For capitation procedures that are complete.  This replaces the old procedurelog.CapCoPay field. This stores the copay and writeoff amounts.  The copay is only there for reference, while it is the writeoff that actually affects the balance. Never attached to a claim. If procedure is TP, then status will be CapEstimate.  Only set to CapComplete if procedure is Complete.  Never attach this to a claim.</summary>
+		///<summary>7: For capitation procedures that are complete.  This replaces the old procedurelog.CapCoPay field. This stores the copay and writeoff amounts.  The copay is only there for reference, while it is the writeoff that actually affects the balance. Never attached to a claim. If procedure is TP, then status will be CapEstimate.  Only set to CapComplete if procedure is Complete.</summary>
 		CapComplete,
-		///<summary>8: For capitation procedures that are still estimates rather than complete.  When procedure is completed, this can be changed to CapCompleted, but never to anything else.</summary>
+		///<summary>8: For capitation procedures that are still estimates rather than complete.  When procedure is completed, this can be changed to CapComplete, but never to anything else.</summary>
 		CapEstimate
 	}
 	///<summary>CommItemType of 0 is reserved for later use with user defined types.</summary>
@@ -691,7 +694,45 @@ namespace OpenDental{
 		///<summary>22</summary>
     MedicalUrgent,
 		///<summary>23</summary>
-    Statement
+    Statement,
+		///<summary>24</summary>
+    Recall
+	}
+
+	///<summary>For every type of electronic claim format that Open Dental can create, there will be an item in this enumeration.  All e-claim formats are hard coded due to complexity.</summary>
+	public enum ElectronicClaimFormat{
+		///<summary>0-Not in database, but used in various places in program.</summary>
+		None,
+		///<summary>1-The American standard. HIPAA mandated.</summary>
+		X12,
+		///<summary>2-Proprietary format for Renaissance.</summary>
+		Renaissance
+	}
+
+	///<summary>Used when submitting e-claims to some carriers who require extra provider identifiers.Usage varies by company.  Only used as needed.</summary>
+	public enum ProviderSupplementalID{
+		///<summary>0</summary>
+		BlueCross,
+		///<summary>1</summary>
+		BlueShield,
+		///<summary>2</summary>
+		SiteNumber
+	}
+
+	///<summary>Each clearinghouse can have a hard-coded comm bridge which handles all the communications of transfering the claim files to the clearinghouse/carrier.  Does not just include X12, but can include any format at all.</summary>
+	public enum EclaimsCommBridge{
+		///<summary>0-No comm bridge will be activated. The claim files will be created to the specified path, but they will not be uploaded.</summary>
+		None,
+		///<summary>1</summary>
+		WebMD,
+		///<summary>2</summary>
+		BCBSGA,
+		///<summary>3</summary>
+		Renaissance,
+		///<summary>4</summary>
+		WebClaim,
+		///<summary>5</summary>
+		RECS
 	}
 
 

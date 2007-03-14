@@ -1,73 +1,29 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the referral table in the database.</summary>
-	public struct Referral{
-		///<summary>Primary key.</summary>
-		public int ReferralNum;
-		///<summary>Last name.</summary>
-		public string LName;
-		///<summary>First name.</summary>
-		public string FName;
-		///<summary>Middle name or initial.</summary>
-		public string MName;
-		///<summary>SSN or TIN, no punctuation.</summary>
-		public string SSN;
-		///<summary>Specificies if SSN is real SSN.</summary>
-		public bool UsingTIN;
-		///<summary>See the DentalSpecialty enumeration.</summary>
-		public DentalSpecialty Specialty;
-		///<summary>State</summary>
-		public string ST;
-		///<summary>Primary phone, restrictive, must only be 10 digits and only numbers.</summary>
-		public string Telephone;
-		///<summary></summary>
-		public string Address;
-		///<summary></summary>
-		public string Address2;
-		///<summary></summary>
-		public string City;
-		///<summary></summary>
-		public string Zip;
-		///<summary>Holds important info about the referral.</summary>
-		public string Note;//
-		///<summary>Additional phone no restrictions</summary>
-		public string Phone2;
-		///<summary>Can't delete a referral, but can hide if not needed any more.</summary>
-		public bool IsHidden;//
-		///<summary>Set to true for referralls such as Yellow Pages.</summary>
-		public bool NotPerson;
-		///<summary>i.e. DMD or DDS</summary>
-		public string Title;
-		///<summary></summary>
-		public string EMail;
-		///<summary>Foreign key to patient.PatNum for referrals that are patients.</summary>
-		public int PatNum;
-	}
 	
-	/*==============================================================================================
-		=================================== class Referrals ==========================================*/
 ///<summary></summary>
-	public class Referrals:DataClass{
+	public class Referrals{
 		///<summary>All referrals for all patients</summary>
 		public static Referral[] List;
-		//should later add a list for single patient, along with a faster refresh sequence.
-		///<summary></summary>
-		public static Referral Cur;
+		//should later add a faster refresh sequence.
 		private static Hashtable HList;
 
-		///<summary></summary>
+		///<summary>Refreshes all referrals for all patients.</summary>
 		public static void Refresh(){
-			cmd.CommandText =
+			string command=
 				"SELECT * from referral "
 				+"ORDER BY lname";
-			FillTable();
+			DataConnection dcon=new DataConnection();
+ 			DataTable table=dcon.GetTable(command);
 			List=new Referral[table.Rows.Count];
 			HList=new Hashtable();
 			for(int i=0;i<table.Rows.Count;i++){
+				List[i]=new Referral();
 				List[i].ReferralNum= PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].LName      = PIn.PString(table.Rows[i][1].ToString());
 				List[i].FName      = PIn.PString(table.Rows[i][2].ToString());
@@ -92,100 +48,21 @@ namespace OpenDental{
 			}
 		}
 	
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE referral SET " 
-				+ "lname = '"      +POut.PString(Cur.LName)+"'"
-				+ ",fname = '"     +POut.PString(Cur.FName)+"'"
-				+ ",mname = '"     +POut.PString(Cur.MName)+"'"
-				+ ",ssn = '"       +POut.PString(Cur.SSN)+"'"
-				+ ",usingtin = '"  +POut.PBool  (Cur.UsingTIN)+"'"
-				+ ",specialty = '" +POut.PInt   ((int)Cur.Specialty)+"'"
-				+ ",st = '"        +POut.PString(Cur.ST)+"'"
-				+ ",telephone = '" +POut.PString(Cur.Telephone)+"'"
-				+ ",address = '"   +POut.PString(Cur.Address)+"'"
-				+ ",address2 = '"  +POut.PString(Cur.Address2)+"'"
-				+ ",city = '"      +POut.PString(Cur.City)+"'"
-				+ ",zip = '"       +POut.PString(Cur.Zip)+"'"
-				+ ",note = '"      +POut.PString(Cur.Note)+"'"
-				+ ",phone2 = '"    +POut.PString(Cur.Phone2)+"'"
-				+ ",ishidden = '"  +POut.PBool  (Cur.IsHidden)+"'"
-				+ ",notperson = '" +POut.PBool  (Cur.NotPerson)+"'"
-				+ ",title = '"     +POut.PString(Cur.Title)+"'"
-				+ ",email = '"     +POut.PString(Cur.EMail)+"'"
-				+ ",patnum = '"     +POut.PInt  (Cur.PatNum)+"'"     
-
-				+" WHERE ReferralNum = '" +POut.PInt (Cur.ReferralNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
-		}
-
-		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO referral (lname,fname,mname,ssn,usingtin,specialty,st,"
-				+"telephone,address,address2,city,zip,note,phone2,ishidden,notperson,title,email,patnum) VALUES("
-				+"'"+POut.PString(Cur.LName)+"', "
-				+"'"+POut.PString(Cur.FName)+"', "
-				+"'"+POut.PString(Cur.MName)+"', "
-				+"'"+POut.PString(Cur.SSN)+"', "
-				+"'"+POut.PBool  (Cur.UsingTIN)+"', "
-				+"'"+POut.PInt   ((int)Cur.Specialty)+"', "
-				+"'"+POut.PString(Cur.ST)+"', "
-				+"'"+POut.PString(Cur.Telephone)+"', "    
-				+"'"+POut.PString(Cur.Address)+"', "
-				+"'"+POut.PString(Cur.Address2)+"', "
-				+"'"+POut.PString(Cur.City)+"', "
-				+"'"+POut.PString(Cur.Zip)+"', "
-				+"'"+POut.PString(Cur.Note)+"', "
-				+"'"+POut.PString(Cur.Phone2)+"', "
-				+"'"+POut.PBool  (Cur.IsHidden)+"', "
-				+"'"+POut.PBool  (Cur.NotPerson)+"', "
-				+"'"+POut.PString(Cur.Title)+"', "
-				+"'"+POut.PString(Cur.EMail)+"', "
-				+"'"+POut.PInt   (Cur.PatNum)+"')";
-			NonQ(true);
-			Cur.ReferralNum=InsertID;
-		}
-
-		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE FROM referral "
-				+"WHERE referralnum = '"+Cur.ReferralNum+"'";
-			NonQ(false);
-		}
-
-		///<summary></summary>
-		public static void GetCur(int referralNum){
+		///<summary>Gets Referral info from memory (HList). Does not make a call to the database.</summary>
+		public static Referral GetReferral(int referralNum){
 			if(referralNum==0){
-				Cur=new Referral();
-				return;
+				return null;
 			}
 			if(HList.ContainsKey(referralNum)){
-				Cur=(Referral)HList[referralNum];
-				return;
+				return (Referral)HList[referralNum];
 			}
 			Refresh();//must be outdated
 			if(!HList.ContainsKey(referralNum)){
 				MessageBox.Show("Error.  Referral not found: "+referralNum.ToString());
-				Cur=new Referral();
-				return;
+				return null;
 			}
-			Cur=(Referral)HList[referralNum];
+			return (Referral)HList[referralNum];
 		}
-
-		///<summary></summary>
-		public static string GetCurName(){
-			if(Cur.ReferralNum==0)
-				return "";
-			string retVal=Referrals.Cur.LName;
-			if(Referrals.Cur.FName!=""){
-				retVal+=", "+Referrals.Cur.FName+" "+Referrals.Cur.MName;
-			}
-			return retVal;
-		}
-
-
-
 
 
 	}

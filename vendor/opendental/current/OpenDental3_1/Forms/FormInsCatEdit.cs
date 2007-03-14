@@ -10,8 +10,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.TextBox textDescription;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.CheckBox checkPreventive;
 		private System.Windows.Forms.CheckBox checkHidden;
 		private System.Windows.Forms.Label label2;
@@ -24,18 +24,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormInsCatEdit(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1,
-				label2,
-				label3,
-				label6,
-				this.checkHidden,
-				this.checkPreventive,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -58,8 +47,8 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.textDescription = new System.Windows.Forms.TextBox();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.checkPreventive = new System.Windows.Forms.CheckBox();
 			this.checkHidden = new System.Windows.Forms.CheckBox();
 			this.label2 = new System.Windows.Forms.Label();
@@ -69,16 +58,16 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(36, 24);
+			this.label1.Location = new System.Drawing.Point(14, 25);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(70, 18);
+			this.label1.Size = new System.Drawing.Size(95, 18);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Description";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(8, 48);
+			this.label6.Location = new System.Drawing.Point(10, 48);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(100, 18);
 			this.label6.TabIndex = 5;
@@ -95,19 +84,29 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(274, 146);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 4;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(274, 184);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 5;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -116,21 +115,23 @@ namespace OpenDental{
 			// 
 			this.checkPreventive.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkPreventive.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkPreventive.Location = new System.Drawing.Point(36, 70);
+			this.checkPreventive.Location = new System.Drawing.Point(11, 70);
 			this.checkPreventive.Name = "checkPreventive";
-			this.checkPreventive.Size = new System.Drawing.Size(92, 20);
+			this.checkPreventive.Size = new System.Drawing.Size(117, 20);
 			this.checkPreventive.TabIndex = 2;
 			this.checkPreventive.Text = "Is Preventive";
+			this.checkPreventive.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// checkHidden
 			// 
 			this.checkHidden.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkHidden.Location = new System.Drawing.Point(54, 94);
+			this.checkHidden.Location = new System.Drawing.Point(23, 94);
 			this.checkHidden.Name = "checkHidden";
-			this.checkHidden.Size = new System.Drawing.Size(74, 16);
+			this.checkHidden.Size = new System.Drawing.Size(105, 16);
 			this.checkHidden.TabIndex = 3;
 			this.checkHidden.Text = "Is Hidden";
+			this.checkHidden.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label2
 			// 
@@ -144,7 +145,7 @@ namespace OpenDental{
 			// 
 			this.label3.Location = new System.Drawing.Point(10, 136);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(176, 23);
+			this.label3.Size = new System.Drawing.Size(203, 23);
 			this.label3.TabIndex = 13;
 			this.label3.Text = "Changes affect all patients";
 			// 

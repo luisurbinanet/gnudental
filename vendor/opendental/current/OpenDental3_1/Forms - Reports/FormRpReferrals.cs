@@ -8,17 +8,17 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormRpReferrals : System.Windows.Forms.Form	{
 		private System.Windows.Forms.TabPage tabData;
-		private System.Windows.Forms.Button butCheckAll;
-		private System.Windows.Forms.Button butClear;
+		private OpenDental.UI.Button butCheckAll;
+		private OpenDental.UI.Button butClear;
 		private System.Windows.Forms.TabPage tabFilters;
 		private System.Windows.Forms.ListBox comboBox;
 		private System.Windows.Forms.ListBox ListPrerequisites;
-		private System.Windows.Forms.Button butAddFilter;
+		private OpenDental.UI.Button butAddFilter;
 		private System.Windows.Forms.ListBox ListConditions;
 		private System.Windows.Forms.TextBox textBox;
 		private System.Windows.Forms.ComboBox DropListFilter;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.TextBox textSQL;
 		private System.Windows.Forms.TabControl tabReferrals;
 		private System.ComponentModel.Container components = null;
@@ -33,7 +33,7 @@ namespace OpenDental{
 		private string[]  AfieldsSelected;
 		private ArrayList ALrefSelect;
 		private System.Windows.Forms.ListBox listSelect;
-		private OpenDental.XPButton butDeleteFilter;  //fields used in SELECT 
+		private OpenDental.UI.Button butDeleteFilter;  //fields used in SELECT 
 		private ArrayList ALrefFilter;
 
 		///<summary></summary>
@@ -47,19 +47,7 @@ namespace OpenDental{
 			SQLfrom="FROM referral ";
 			SQLwhere="";
 			ListConditions.SelectedIndex=0;
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butAddFilter,
-				this.butCheckAll,
-				this.butClear,
-				this.butDeleteFilter,
-				this.tabData,
-				this.tabFilters,
-				this.tabReferrals,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -83,18 +71,18 @@ namespace OpenDental{
 			this.tabReferrals = new System.Windows.Forms.TabControl();
 			this.tabData = new System.Windows.Forms.TabPage();
 			this.listSelect = new System.Windows.Forms.ListBox();
-			this.butCheckAll = new System.Windows.Forms.Button();
-			this.butClear = new System.Windows.Forms.Button();
+			this.butCheckAll = new OpenDental.UI.Button();
+			this.butClear = new OpenDental.UI.Button();
 			this.tabFilters = new System.Windows.Forms.TabPage();
-			this.butDeleteFilter = new OpenDental.XPButton();
+			this.butDeleteFilter = new OpenDental.UI.Button();
 			this.comboBox = new System.Windows.Forms.ListBox();
 			this.ListPrerequisites = new System.Windows.Forms.ListBox();
-			this.butAddFilter = new System.Windows.Forms.Button();
+			this.butAddFilter = new OpenDental.UI.Button();
 			this.ListConditions = new System.Windows.Forms.ListBox();
 			this.textBox = new System.Windows.Forms.TextBox();
 			this.DropListFilter = new System.Windows.Forms.ComboBox();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.textSQL = new System.Windows.Forms.TextBox();
 			this.tabReferrals.SuspendLayout();
 			this.tabData.SuspendLayout();
@@ -171,8 +159,8 @@ namespace OpenDental{
 			// 
 			this.butDeleteFilter.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butDeleteFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butDeleteFilter.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDeleteFilter.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDeleteFilter.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDeleteFilter.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDeleteFilter.Image = ((System.Drawing.Image)(resources.GetObject("butDeleteFilter.Image")));
 			this.butDeleteFilter.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDeleteFilter.Location = new System.Drawing.Point(10, 426);
@@ -308,47 +296,47 @@ namespace OpenDental{
 		}
  
 		private void FillALrefSelect(){
-      ALrefSelect.Add(Lan.g(this,"Address")); 
-      ALrefSelect.Add(Lan.g(this,"Address2")); 
-      ALrefSelect.Add(Lan.g(this,"City"));
-      ALrefSelect.Add(Lan.g(this,"Email"));  
-      ALrefSelect.Add(Lan.g(this,"FName")); 
-      ALrefSelect.Add(Lan.g(this,"IsHidden")); 
-      ALrefSelect.Add(Lan.g(this,"LName"));
-      ALrefSelect.Add(Lan.g(this,"MName")); 
-      ALrefSelect.Add(Lan.g(this,"Note"));  
-      ALrefSelect.Add(Lan.g(this,"NotPerson"));   
-      ALrefSelect.Add(Lan.g(this,"Phone2"));
-			ALrefSelect.Add(Lan.g(this,"ReferralNum")); 
-      ALrefSelect.Add(Lan.g(this,"Specialty")); 
-      ALrefSelect.Add(Lan.g(this,"SSN")); 
-      ALrefSelect.Add(Lan.g(this,"ST")); 
-      ALrefSelect.Add(Lan.g(this,"Telephone"));
-      ALrefSelect.Add(Lan.g(this,"Title")); 
-      ALrefSelect.Add(Lan.g(this,"UsingTIN"));
-      ALrefSelect.Add(Lan.g(this,"Zip"));
+      ALrefSelect.Add("Address"); 
+      ALrefSelect.Add("Address2"); 
+      ALrefSelect.Add("City");
+      ALrefSelect.Add("Email");  
+      ALrefSelect.Add("FName"); 
+      ALrefSelect.Add("IsHidden"); 
+      ALrefSelect.Add("LName");
+      ALrefSelect.Add("MName"); 
+      ALrefSelect.Add("Note");  
+      ALrefSelect.Add("NotPerson");   
+      ALrefSelect.Add("Phone2");
+			ALrefSelect.Add("ReferralNum"); 
+      ALrefSelect.Add("Specialty"); 
+      ALrefSelect.Add("SSN"); 
+      ALrefSelect.Add("ST"); 
+      ALrefSelect.Add("Telephone");
+      ALrefSelect.Add("Title"); 
+      ALrefSelect.Add("UsingTIN");
+      ALrefSelect.Add("Zip");
  		}
 
 		private void FillALrefFilter(){//FillALrefFilter
-      ALrefFilter.Add(Lan.g(this,"Address")); 
-      ALrefFilter.Add(Lan.g(this,"Address2")); 
-      ALrefFilter.Add(Lan.g(this,"City"));
-      ALrefFilter.Add(Lan.g(this,"Email"));  
-      ALrefFilter.Add(Lan.g(this,"FName")); 
-      ALrefFilter.Add(Lan.g(this,"IsHidden")); 
-      ALrefFilter.Add(Lan.g(this,"LName"));
-      ALrefFilter.Add(Lan.g(this,"MName"));
-      ALrefFilter.Add(Lan.g(this,"Note"));  
-      ALrefFilter.Add(Lan.g(this,"NotPerson"));   
-      ALrefFilter.Add(Lan.g(this,"Phone2"));
-			ALrefFilter.Add(Lan.g(this,"ReferralNum")); 
-      ALrefFilter.Add(Lan.g(this,"Specialty")); 
-      ALrefFilter.Add(Lan.g(this,"SSN")); 
-      ALrefFilter.Add(Lan.g(this,"ST")); 
-      ALrefFilter.Add(Lan.g(this,"Telephone"));
-      ALrefFilter.Add(Lan.g(this,"Title")); 
-      ALrefFilter.Add(Lan.g(this,"UsingTIN"));
-      ALrefFilter.Add(Lan.g(this,"Zip"));  
+      ALrefFilter.Add("Address"); 
+      ALrefFilter.Add("Address2"); 
+      ALrefFilter.Add("City");
+      ALrefFilter.Add("Email");  
+      ALrefFilter.Add("FName"); 
+      ALrefFilter.Add("IsHidden"); 
+      ALrefFilter.Add("LName");
+      ALrefFilter.Add("MName");
+      ALrefFilter.Add("Note");  
+      ALrefFilter.Add("NotPerson");   
+      ALrefFilter.Add("Phone2");
+			ALrefFilter.Add("ReferralNum"); 
+      ALrefFilter.Add("Specialty"); 
+      ALrefFilter.Add("SSN"); 
+      ALrefFilter.Add("ST"); 
+      ALrefFilter.Add("Telephone");
+      ALrefFilter.Add("Title"); 
+      ALrefFilter.Add("UsingTIN");
+      ALrefFilter.Add("Zip");  
 		}
 	  
 		private void FillSelectList(){
@@ -363,8 +351,6 @@ namespace OpenDental{
 			  DropListFilter.Items.Add(ALrefFilter[i]);
 			}
 		}
-
-		
     
 		private void fillSQLbox(){
       textSQL.Text=SQLselect+SQLfrom+SQLwhere;

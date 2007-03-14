@@ -13,14 +13,14 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormRpStatement : System.Windows.Forms.Form{
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
-		private System.Windows.Forms.Button butPrint;
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butPrint;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.Panel panelZoom;
-		private System.Windows.Forms.Button butFwd;
-		private System.Windows.Forms.Button butBack;
+		private OpenDental.UI.Button butFwd;
+		private OpenDental.UI.Button butBack;
 		private System.Windows.Forms.Label labelTotPages;
-		private System.Windows.Forms.Button butZoomIn;
-		private System.Windows.Forms.Button butFullPage;
+		private OpenDental.UI.Button butZoomIn;
+		private OpenDental.UI.Button butFullPage;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Drawing.Printing.PrintDocument pd2;
@@ -40,21 +40,16 @@ namespace OpenDental{
 		public string Note;
 		///<summary>2D array simply holds the table to print.  This will be improved some day.  Gets set externally before printing.  It has to be public for debugging.</summary>
 		public string[,] StatementA;
+		private Family FamCur;
 
 		///<summary></summary>
-		public FormRpStatement(){
+		public FormRpStatement(Family famCur){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				labelTotPages,
-				butZoomIn,
-				butFullPage,
-				butFwd,
-				butBack,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butPrint,
-			});
+			FamCur=famCur;
+			Lan.F(this, new Control[] 
+				{//exclude:
+					labelTotPages
+				});
 		}
 
 		///<summary></summary>
@@ -77,14 +72,14 @@ namespace OpenDental{
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormRpStatement));
 			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
-			this.butPrint = new System.Windows.Forms.Button();
-			this.butClose = new System.Windows.Forms.Button();
+			this.butPrint = new OpenDental.UI.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.panelZoom = new System.Windows.Forms.Panel();
-			this.butFwd = new System.Windows.Forms.Button();
-			this.butBack = new System.Windows.Forms.Button();
+			this.butFwd = new OpenDental.UI.Button();
+			this.butBack = new OpenDental.UI.Button();
 			this.labelTotPages = new System.Windows.Forms.Label();
-			this.butZoomIn = new System.Windows.Forms.Button();
-			this.butFullPage = new System.Windows.Forms.Button();
+			this.butZoomIn = new OpenDental.UI.Button();
+			this.butFullPage = new OpenDental.UI.Button();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.panelZoom.SuspendLayout();
@@ -239,7 +234,7 @@ namespace OpenDental{
 			}
 			//uses default printer if selected printer not valid
 			tempPD.Dispose();
-			//try{
+			try{
 				if(justPreview){
 					printPreviewControl2.Document=pd2;
 				}
@@ -255,10 +250,10 @@ namespace OpenDental{
 					DialogResult=DialogResult.OK;
 					//}
 				}
-			//}
-			//catch{
-			//	MessageBox.Show(Lan.g(this,"Printer not available"));
-			//}
+			}
+			catch{
+				MessageBox.Show(Lan.g(this,"Printer not available"));
+			}
 		}
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed
 			Graphics g=ev.Graphics;
@@ -426,19 +421,19 @@ namespace OpenDental{
 				Font addrFont=new Font("Arial",11,FontStyle.Regular);
 				yPos=225 + 1;//+10
 				labelX=(float)(62.5+12.5);
-				Patients.Cur=Patients.FamilyList[Patients.GuarIndex];
-				string pName=Patients.Cur.FName +" "+Patients.Cur.MiddleI+" "+Patients.Cur.LName;
-				pAddress=Patients.Cur.Address;
-				pCity=Patients.Cur.City;
-				pState=Patients.Cur.State;
-				pZip=Patients.Cur.Zip;
+				Patient PatCur=FamCur.List[0].Copy();
+				string pName=PatCur.FName +" "+PatCur.MiddleI+" "+PatCur.LName;
+				pAddress=PatCur.Address;
+				pCity=PatCur.City;
+				pState=PatCur.State;
+				pZip=PatCur.Zip;
 				CityStateZip=pCity+", "+pState+" "+pZip;
 				g.DrawString(pName,addrFont,Brushes.Black,labelX,yPos);
 				yPos+=19;
 				g.DrawString(pAddress,addrFont,Brushes.Black,labelX,yPos);	    
 				yPos+=19;
-				if(Patients.Cur.Address2!=""){
-					g.DrawString(Patients.Cur.Address2,addrFont,Brushes.Black,labelX,yPos);	    
+				if(PatCur.Address2!=""){
+					g.DrawString(PatCur.Address2,addrFont,Brushes.Black,labelX,yPos);	    
 					yPos+=19;  
 				}
    			g.DrawString(CityStateZip,addrFont,Brushes.Black,labelX,yPos);

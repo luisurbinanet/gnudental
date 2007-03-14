@@ -8,20 +8,16 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormZipCodes : System.Windows.Forms.Form{
 		private OpenDental.TableZips tbZips;
-		private System.Windows.Forms.Button butAdd;
-		private System.Windows.Forms.Button butDelete;
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butAdd;
+		private OpenDental.UI.Button butDelete;
+		private OpenDental.UI.Button butClose;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
 		public FormZipCodes(){
 			InitializeComponent();
       tbZips.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbZips_CellDoubleClicked);
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butAdd,
-				butDelete,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -38,9 +34,9 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.tbZips = new OpenDental.TableZips();
-			this.butAdd = new System.Windows.Forms.Button();
-			this.butClose = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.UI.Button();
+			this.butClose = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// tbZips

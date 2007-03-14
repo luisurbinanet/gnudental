@@ -7,8 +7,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 	///<summary></summary>
 	public class FormStatementOptions : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.ComponentModel.IContainer components;// Required designer variable.
 		private System.Windows.Forms.Label label1;
 		private OpenDental.ValidDate textDateFrom;
@@ -18,13 +18,13 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.RadioButton radioFamAll;
 		private System.Windows.Forms.RadioButton radioFamCur;
-		private System.Windows.Forms.Button butAll;
-		private System.Windows.Forms.Button but30;
-		private System.Windows.Forms.Button but45;
+		private OpenDental.UI.Button butAll;
+		private OpenDental.UI.Button but30;
+		private OpenDental.UI.Button but45;
 		private System.Windows.Forms.CheckBox checkIncludeClaims;
-		private System.Windows.Forms.Button butToday;
+		private OpenDental.UI.Button butToday;
 		private System.Windows.Forms.CheckBox checkSubtotals;
-		private System.Windows.Forms.Button butWalkout;
+		private OpenDental.UI.Button butWalkout;
 		private System.Windows.Forms.CheckBox checkNextAppt;
 		private System.Windows.Forms.CheckBox checkHidePayment;
 		///<summary></summary>
@@ -46,19 +46,19 @@ namespace OpenDental{
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label label3;
 		private OpenDental.ODtextBox textNote;
-		
+		private Patient PatCur;
+		private Family FamCur;
 
 		///<summary></summary>
-		public FormStatementOptions()
+		public FormStatementOptions(Patient patCur,Family famCur)
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			PatCur=patCur;
+			FamCur=famCur;
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -85,8 +85,8 @@ namespace OpenDental{
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormStatementOptions));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.textDateFrom = new OpenDental.ValidDate();
 			this.textDateTo = new OpenDental.ValidDate();
@@ -95,11 +95,11 @@ namespace OpenDental{
 			this.radioFamCur = new System.Windows.Forms.RadioButton();
 			this.radioFamAll = new System.Windows.Forms.RadioButton();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.butToday = new System.Windows.Forms.Button();
-			this.but45 = new System.Windows.Forms.Button();
-			this.but30 = new System.Windows.Forms.Button();
-			this.butAll = new System.Windows.Forms.Button();
-			this.butWalkout = new System.Windows.Forms.Button();
+			this.butToday = new OpenDental.UI.Button();
+			this.but45 = new OpenDental.UI.Button();
+			this.but30 = new OpenDental.UI.Button();
+			this.butAll = new OpenDental.UI.Button();
+			this.butWalkout = new OpenDental.UI.Button();
 			this.checkIncludeClaims = new System.Windows.Forms.CheckBox();
 			this.checkSubtotals = new System.Windows.Forms.CheckBox();
 			this.checkNextAppt = new System.Windows.Forms.CheckBox();
@@ -113,8 +113,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(535, 407);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -124,7 +128,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(535, 367);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -218,7 +226,10 @@ namespace OpenDental{
 			// 
 			// butToday
 			// 
-			this.butToday.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butToday.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butToday.Autosize = true;
+			this.butToday.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butToday.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butToday.Location = new System.Drawing.Point(285, 13);
 			this.butToday.Name = "butToday";
 			this.butToday.Size = new System.Drawing.Size(96, 23);
@@ -228,7 +239,10 @@ namespace OpenDental{
 			// 
 			// but45
 			// 
-			this.but45.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.but45.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.but45.Autosize = true;
+			this.but45.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but45.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but45.Location = new System.Drawing.Point(285, 65);
 			this.but45.Name = "but45";
 			this.but45.Size = new System.Drawing.Size(96, 23);
@@ -238,7 +252,10 @@ namespace OpenDental{
 			// 
 			// but30
 			// 
-			this.but30.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.but30.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.but30.Autosize = true;
+			this.but30.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but30.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but30.Location = new System.Drawing.Point(285, 39);
 			this.but30.Name = "but30";
 			this.but30.Size = new System.Drawing.Size(96, 23);
@@ -248,7 +265,10 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
-			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.Autosize = true;
+			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAll.Location = new System.Drawing.Point(285, 91);
 			this.butAll.Name = "butAll";
 			this.butAll.Size = new System.Drawing.Size(96, 23);
@@ -258,7 +278,11 @@ namespace OpenDental{
 			// 
 			// butWalkout
 			// 
-			this.butWalkout.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butWalkout.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butWalkout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butWalkout.Autosize = true;
+			this.butWalkout.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butWalkout.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butWalkout.Location = new System.Drawing.Point(514, 289);
 			this.butWalkout.Name = "butWalkout";
 			this.butWalkout.Size = new System.Drawing.Size(96, 26);
@@ -362,7 +386,10 @@ namespace OpenDental{
 				textDateFrom.Text="";
 			else
 				textDateFrom.Text=FromDate.ToShortDateString();
-			textDateTo.Text=DateTime.Today.ToShortDateString();
+			if(ToDate.Year>2100)
+				textDateTo.Text="";
+			else
+				textDateTo.Text=ToDate.ToShortDateString();
 		}
 
 		private void butToday_Click(object sender, System.EventArgs e) {
@@ -393,7 +420,7 @@ namespace OpenDental{
 
 		private void butAll_Click(object sender, System.EventArgs e) {
 			textDateFrom.Text="";
-			textDateTo.Text=DateTime.Today.ToShortDateString();
+			textDateTo.Text="";//DateTime.Today.ToShortDateString();
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -412,7 +439,7 @@ namespace OpenDental{
 			else
 				FromDate=PIn.PDate(textDateFrom.Text);
 			if(textDateTo.Text=="")
-				ToDate=DateTime.Today;
+				ToDate=DateTime.MaxValue;//Today;
 			else
 				ToDate=PIn.PDate(textDateTo.Text);
 			IncludeClaims=checkIncludeClaims.Checked;
@@ -421,14 +448,14 @@ namespace OpenDental{
 			NextAppt=checkNextAppt.Checked;
 			Note=textNote.Text;
 			if(radioFamAll.Checked){
-				PatNums=new int[Patients.FamilyList.Length];
-				for(int i=0;i<Patients.FamilyList.Length;i++){
-					PatNums[i]=Patients.FamilyList[i].PatNum;
+				PatNums=new int[FamCur.List.Length];
+				for(int i=0;i<FamCur.List.Length;i++){
+					PatNums[i]=FamCur.List[i].PatNum;
 				}
 			}
 			else{
 				PatNums=new int[1];
-				PatNums[0]=Patients.Cur.PatNum;
+				PatNums[0]=PatCur.PatNum;
 			}
 			DialogResult=DialogResult.OK;
 		}

@@ -14,10 +14,10 @@ namespace OpenDental{
 		private System.Windows.Forms.ColumnHeader columnHeader4;
 		private System.Windows.Forms.TextBox textDateFrom;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Button butRefresh;
+		private OpenDental.UI.Button butRefresh;
 		private System.Windows.Forms.TextBox textDateTo;
-		private System.Windows.Forms.Button butAdd;
-		private System.Windows.Forms.Button butDelete;
+		private OpenDental.UI.Button butAdd;
+		private OpenDental.UI.Button butDelete;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -30,9 +30,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				//butClose
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -65,9 +63,9 @@ namespace OpenDental{
 			this.textDateFrom = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDateTo = new System.Windows.Forms.TextBox();
-			this.butRefresh = new System.Windows.Forms.Button();
-			this.butAdd = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
+			this.butRefresh = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// listMain

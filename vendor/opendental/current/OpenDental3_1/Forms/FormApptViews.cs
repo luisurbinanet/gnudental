@@ -10,16 +10,16 @@ namespace OpenDental{
 	/// </summary>
 	public class FormApptViews : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
-		private OpenDental.XPButton butDown;
-		private OpenDental.XPButton butUp;
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butDown;
+		private OpenDental.UI.Button butUp;
+		private OpenDental.UI.Button butAdd;
 		private System.Windows.Forms.ListBox listViews;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.RadioButton radioTen;
 		private System.Windows.Forms.RadioButton radioFifteen;
 		private System.Windows.Forms.CheckBox checkTwoRows;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label2;
 		/// <summary>
 		/// Required designer variable.
@@ -33,21 +33,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1, //*Ann
-				this.groupBox1, //*Ann
-				this.radioTen, //*Ann
-				this.radioFifteen, //*Ann
-				this.label2, //*Ann
-			});
-			Lan.C("All", new System.Windows.Forms.Control[]
-			{
-				this.butAdd,
-				this.butDown,
-				this.butUp,
-				butOK,
-				butCancel
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -73,27 +59,32 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormApptViews));
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.listViews = new System.Windows.Forms.ListBox();
-			this.butDown = new OpenDental.XPButton();
-			this.butUp = new OpenDental.XPButton();
-			this.butAdd = new OpenDental.XPButton();
+			this.butDown = new OpenDental.UI.Button();
+			this.butUp = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.radioFifteen = new System.Windows.Forms.RadioButton();
 			this.radioTen = new System.Windows.Forms.RadioButton();
 			this.checkTwoRows = new System.Windows.Forms.CheckBox();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(435, 433);
+			this.butCancel.Location = new System.Drawing.Point(447, 433);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -118,8 +109,9 @@ namespace OpenDental{
 			// butDown
 			// 
 			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.Autosize = true;
+			this.butDown.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDown.Location = new System.Drawing.Point(151, 437);
@@ -132,8 +124,9 @@ namespace OpenDental{
 			// butUp
 			// 
 			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.Autosize = true;
+			this.butUp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butUp.Location = new System.Drawing.Point(151, 399);
@@ -146,8 +139,9 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(55, 399);
@@ -195,18 +189,23 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(435, 394);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(447, 394);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 41;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(298, 426);
+			this.label2.Location = new System.Drawing.Point(299, 413);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(127, 31);
+			this.label2.Size = new System.Drawing.Size(126, 44);
 			this.label2.TabIndex = 42;
 			this.label2.Text = "Changes to the Views will always be saved";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomRight;

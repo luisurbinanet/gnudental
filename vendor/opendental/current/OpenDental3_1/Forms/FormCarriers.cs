@@ -9,16 +9,16 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormCarriers : System.Windows.Forms.Form{
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butAdd;
 		private System.ComponentModel.IContainer components;
-		private OpenDental.XPButton butEdit;
+		private OpenDental.UI.Button butEdit;
 		private System.Windows.Forms.ToolTip toolTip1;
-		private System.Windows.Forms.Button butCombine;
+		private OpenDental.UI.Button butCombine;
 		private OpenDental.Forms.TableCarriers tbCarriers;
 		///<summary>Set to true if using this dialog to select a carrier.</summary>
 		public bool IsSelectMode;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private bool listHasChanged;//keeps track of whether an update is necessary.
 
 		///<summary></summary>
@@ -28,15 +28,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				butAdd,
-				butEdit,
-				butCombine
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -63,18 +55,22 @@ namespace OpenDental{
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormCarriers));
-			this.butOK = new System.Windows.Forms.Button();
-			this.butAdd = new OpenDental.XPButton();
-			this.butEdit = new OpenDental.XPButton();
+			this.butOK = new OpenDental.UI.Button();
+			this.butAdd = new OpenDental.UI.Button();
+			this.butEdit = new OpenDental.UI.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.butCombine = new System.Windows.Forms.Button();
+			this.butCombine = new OpenDental.UI.Button();
 			this.tbCarriers = new OpenDental.Forms.TableCarriers();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(873, 592);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(90, 26);
@@ -85,8 +81,10 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(873, 432);
@@ -99,8 +97,10 @@ namespace OpenDental{
 			// butEdit
 			// 
 			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butEdit.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butEdit.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butEdit.Autosize = true;
+			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butEdit.Image = ((System.Drawing.Image)(resources.GetObject("butEdit.Image")));
 			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butEdit.Location = new System.Drawing.Point(873, 469);
@@ -112,7 +112,11 @@ namespace OpenDental{
 			// 
 			// butCombine
 			// 
-			this.butCombine.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCombine.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCombine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCombine.Autosize = true;
+			this.butCombine.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCombine.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCombine.Location = new System.Drawing.Point(873, 506);
 			this.butCombine.Name = "butCombine";
 			this.butCombine.Size = new System.Drawing.Size(90, 26);
@@ -126,7 +130,7 @@ namespace OpenDental{
 			this.tbCarriers.BackColor = System.Drawing.SystemColors.Window;
 			this.tbCarriers.Location = new System.Drawing.Point(11, 14);
 			this.tbCarriers.Name = "tbCarriers";
-			this.tbCarriers.ScrollValue = 700;
+			this.tbCarriers.ScrollValue = 72;
 			this.tbCarriers.SelectedIndices = new int[0];
 			this.tbCarriers.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbCarriers.Size = new System.Drawing.Size(839, 647);
@@ -135,7 +139,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.Location = new System.Drawing.Point(873, 628);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(90, 26);

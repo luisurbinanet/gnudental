@@ -9,9 +9,9 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormApptViewEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ListBox listOps;
 		private System.Windows.Forms.ListBox listProv;
@@ -26,10 +26,10 @@ namespace OpenDental{
 		private System.Windows.Forms.ListView listViewDisplay;
 		private System.Windows.Forms.ListView listViewAvailable;
 		private System.Windows.Forms.Label label5;
-		private OpenDental.XPButton butDown;
-		private OpenDental.XPButton butUp;
-		private OpenDental.XPButton butLeft;
-		private OpenDental.XPButton butRight;
+		private OpenDental.UI.Button butDown;
+		private OpenDental.UI.Button butUp;
+		private OpenDental.UI.Button butLeft;
+		private OpenDental.UI.Button butRight;
 		///<summary></summary>
 		public bool IsNew;
 		///<summary>A collection of strings of all available element descriptions.</summary>
@@ -47,21 +47,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.label1, //*Ann
-				this.label2, //*Ann
-				this.label3, //*Ann
-				this.label4, //*Ann
-				this.label5, //*Ann
-				this.label6, //*Ann
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				butUp, //*Ann
-				butDown, //*Ann
-				butDelete //*Ann
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -93,9 +79,9 @@ namespace OpenDental{
 			System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
 																																																						 "Row 1"}, -1, System.Drawing.Color.Red, System.Drawing.Color.Empty, null);
 			System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("row2");
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butDelete = new OpenDental.XPButton();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.listOps = new System.Windows.Forms.ListBox();
 			this.listProv = new System.Windows.Forms.ListBox();
@@ -106,10 +92,10 @@ namespace OpenDental{
 			this.listViewDisplay = new System.Windows.Forms.ListView();
 			this.listViewAvailable = new System.Windows.Forms.ListView();
 			this.label5 = new System.Windows.Forms.Label();
-			this.butDown = new OpenDental.XPButton();
-			this.butUp = new OpenDental.XPButton();
-			this.butLeft = new OpenDental.XPButton();
-			this.butRight = new OpenDental.XPButton();
+			this.butDown = new OpenDental.UI.Button();
+			this.butUp = new OpenDental.UI.Button();
+			this.butLeft = new OpenDental.UI.Button();
+			this.butRight = new OpenDental.UI.Button();
 			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
 			this.label6 = new System.Windows.Forms.Label();
 			this.textRowsPerIncr = new System.Windows.Forms.TextBox();
@@ -117,8 +103,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(556, 537);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -128,7 +118,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(556, 496);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -139,13 +133,14 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(32, 543);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(101, 26);
+			this.butDelete.Size = new System.Drawing.Size(87, 26);
 			this.butDelete.TabIndex = 38;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -253,8 +248,9 @@ namespace OpenDental{
 			// butDown
 			// 
 			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.Autosize = true;
+			this.butDown.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDown.Location = new System.Drawing.Point(311, 469);
@@ -267,8 +263,9 @@ namespace OpenDental{
 			// butUp
 			// 
 			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.Autosize = true;
+			this.butUp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butUp.Location = new System.Drawing.Point(217, 469);
@@ -281,8 +278,9 @@ namespace OpenDental{
 			// butLeft
 			// 
 			this.butLeft.AdjustImageLocation = new System.Drawing.Point(-1, 0);
-			this.butLeft.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butLeft.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butLeft.Autosize = true;
+			this.butLeft.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butLeft.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butLeft.Image = ((System.Drawing.Image)(resources.GetObject("butLeft.Image")));
 			this.butLeft.Location = new System.Drawing.Point(404, 197);
 			this.butLeft.Name = "butLeft";
@@ -293,8 +291,9 @@ namespace OpenDental{
 			// butRight
 			// 
 			this.butRight.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butRight.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butRight.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butRight.Autosize = true;
+			this.butRight.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRight.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butRight.Image = ((System.Drawing.Image)(resources.GetObject("butRight.Image")));
 			this.butRight.Location = new System.Drawing.Point(404, 237);
 			this.butRight.Name = "butRight";

@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Data;
+using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -91,26 +93,26 @@ namespace OpenDental{
 		public static Hashtable HList;
 		///<summary></summary>
 		public static Claim Cur;
-		///<summary></summary>
-		public static QueueItem[] ListQueue;
-		///<summary></summary>
-		public static QueueItem CurQueue;
+		//<summary></summary>
+		//public static QueueItem[] ListQueue;
+		//<summary></summary>
+		//public static QueueItem CurQueue;
 
 		///<summary></summary>
-		public static void RefreshByCheck(int claimPaymentNum, bool showUnattached){
+		public static ClaimPaySplit[] RefreshByCheck(int claimPaymentNum, bool showUnattached){
 			cmd.CommandText =
 				"SELECT claim.DateService,claim.ProvTreat,CONCAT(patient.LName,', ',patient.FName)"
 				+",carrier.CarrierName,SUM(claimproc.FeeBilled),SUM(claimproc.InsPayAmt),claim.ClaimNum"
 				+",claimproc.ClaimPaymentNum"
 				+" FROM claim,patient,insplan,carrier,claimproc" // added carrier, SPK 8/04
 				+" WHERE claimproc.ClaimNum = claim.ClaimNum"
-				+" && patient.PatNum = claim.PatNum"
-				+" && insplan.PlanNum = claim.PlanNum"
-				+" && insplan.CarrierNum = carrier.CarrierNum"	// added SPK
-				+" && (claimproc.Status = '1' || claimproc.Status = '4')"//received or supplemental
- 				+" && (claimproc.ClaimPaymentNum = '"+claimPaymentNum+"'";
+				+" AND patient.PatNum = claim.PatNum"
+				+" AND insplan.PlanNum = claim.PlanNum"
+				+" AND insplan.CarrierNum = carrier.CarrierNum"	// added SPK
+				+" AND (claimproc.Status = '1' OR claimproc.Status = '4')"//received or supplemental
+ 				+" AND (claimproc.ClaimPaymentNum = '"+claimPaymentNum+"'";
 			if(showUnattached){
-				cmd.CommandText+=" || (claimproc.InsPayAmt > 0 && claimproc.ClaimPaymentNum = '0'))"
+				cmd.CommandText+=" OR (claimproc.InsPayAmt > 0 && claimproc.ClaimPaymentNum = '0'))"
 					+" GROUP BY claimproc.ClaimNum";
 			}
 			else{//shows only items attached to this payment
@@ -119,65 +121,92 @@ namespace OpenDental{
 			}
 			//MessageBox.Show(
 			FillTable();
-			ListQueue=new QueueItem[table.Rows.Count];
+			ClaimPaySplit[] splits=new ClaimPaySplit[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				ListQueue[i].DateClaim      =PIn.PDate  (table.Rows[i][0].ToString());
-				ListQueue[i].ProvAbbr       =Providers.GetAbbr(PIn.PInt(table.Rows[i][1].ToString()));
-				ListQueue[i].PatName        =PIn.PString(table.Rows[i][2].ToString());
-				ListQueue[i].Carrier        =PIn.PString(table.Rows[i][3].ToString());
-				ListQueue[i].FeeBilled      =PIn.PDouble(table.Rows[i][4].ToString());
-				ListQueue[i].InsPayAmt      =PIn.PDouble(table.Rows[i][5].ToString());
-				ListQueue[i].ClaimNum       =PIn.PInt   (table.Rows[i][6].ToString());
-				ListQueue[i].ClaimPaymentNum=PIn.PInt   (table.Rows[i][7].ToString());
+				splits[i]=new ClaimPaySplit();
+				splits[i].DateClaim      =PIn.PDate  (table.Rows[i][0].ToString());
+				splits[i].ProvAbbr       =Providers.GetAbbr(PIn.PInt(table.Rows[i][1].ToString()));
+				splits[i].PatName        =PIn.PString(table.Rows[i][2].ToString());
+				splits[i].Carrier        =PIn.PString(table.Rows[i][3].ToString());
+				splits[i].FeeBilled      =PIn.PDouble(table.Rows[i][4].ToString());
+				splits[i].InsPayAmt      =PIn.PDouble(table.Rows[i][5].ToString());
+				splits[i].ClaimNum       =PIn.PInt   (table.Rows[i][6].ToString());
+				splits[i].ClaimPaymentNum=PIn.PInt   (table.Rows[i][7].ToString());
 			}
+			return splits;
 		}
 
-		///<summary></summary>
-		public static void Refresh(){
-			cmd.CommandText =
+		///<summary>Gets the specified claim from the database.</summary>
+		public static Claim GetClaim(int claimNum){
+			string command="SELECT * FROM claim"
+				+" WHERE ClaimNum = "+claimNum.ToString();
+			Claim retClaim=SubmitAndFill(command,true);
+			return retClaim;
+		}
+
+		///<summary>Gets all claims for the specified patient.</summary>
+		public static void Refresh(int patNum){
+			string command=
 				"SELECT * FROM claim"
-				+" WHERE patnum = '"+Patients.Cur.PatNum+"'"
+				+" WHERE PatNum = "+patNum.ToString()
 				+" ORDER BY dateservice";
+			SubmitAndFill(command,false);
+		}
+
+		private static Claim SubmitAndFill(string command,bool single){
+			cmd.CommandText=command;
 			FillTable();
-			List=new Claim[table.Rows.Count];
-			HList=new Hashtable();
+			Claim tempClaim;
+			if(!single){
+				List=new Claim[table.Rows.Count];
+				HList=new Hashtable();
+			}
+			Claim retVal=new Claim();
 			for(int i=0;i<table.Rows.Count;i++){
-				List[i].ClaimNum     =		PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum       =		PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].DateService  =		PIn.PDate  (table.Rows[i][2].ToString());
-				List[i].DateSent     =		PIn.PDate  (table.Rows[i][3].ToString());
-				List[i].ClaimStatus  =		PIn.PString(table.Rows[i][4].ToString());
-				List[i].DateReceived =		PIn.PDate  (table.Rows[i][5].ToString());
-				List[i].PlanNum      =		PIn.PInt   (table.Rows[i][6].ToString());
-				List[i].ProvTreat    =		PIn.PInt   (table.Rows[i][7].ToString());
-				List[i].ClaimFee     =		PIn.PDouble(table.Rows[i][8].ToString());
-				List[i].InsPayEst    =		PIn.PDouble(table.Rows[i][9].ToString());
-				List[i].InsPayAmt    =		PIn.PDouble(table.Rows[i][10].ToString());
-				List[i].DedApplied   =		PIn.PDouble(table.Rows[i][11].ToString());
-				List[i].PreAuthString=		PIn.PString(table.Rows[i][12].ToString());
-				List[i].IsProsthesis =		PIn.PString(table.Rows[i][13].ToString());
-				List[i].PriorDate    =		PIn.PDate  (table.Rows[i][14].ToString());
-				List[i].ReasonUnderPaid=	PIn.PString(table.Rows[i][15].ToString());
-				List[i].ClaimNote    =		PIn.PString(table.Rows[i][16].ToString());
-				List[i].ClaimType    =    PIn.PString(table.Rows[i][17].ToString());
-				List[i].ProvBill     =		PIn.PInt   (table.Rows[i][18].ToString());
-				List[i].ReferringProv=		PIn.PInt   (table.Rows[i][19].ToString());
-				List[i].RefNumString =		PIn.PString(table.Rows[i][20].ToString());
-				List[i].PlaceService = (PlaceOfService)PIn.PInt(table.Rows[i][21].ToString());
-				List[i].AccidentRelated=	PIn.PString(table.Rows[i][22].ToString());
-				List[i].AccidentDate  =		PIn.PDate  (table.Rows[i][23].ToString());
-				List[i].AccidentST    =		PIn.PString(table.Rows[i][24].ToString());
-				List[i].EmployRelated=(YN)PIn.PInt   (table.Rows[i][25].ToString());
-				List[i].IsOrtho       =		PIn.PBool  (table.Rows[i][26].ToString());
-				List[i].OrthoRemainM  =		PIn.PInt   (table.Rows[i][27].ToString());
-				List[i].OrthoDate     =		PIn.PDate  (table.Rows[i][28].ToString());
-				List[i].PatRelat      =(Relat)PIn.PInt(table.Rows[i][29].ToString());
-				List[i].PlanNum2      =   PIn.PInt   (table.Rows[i][30].ToString());
-				List[i].PatRelat2     =(Relat)PIn.PInt(table.Rows[i][31].ToString());
-				List[i].WriteOff      =   PIn.PDouble(table.Rows[i][32].ToString());
-				List[i].Radiographs   =   PIn.PInt   (table.Rows[i][33].ToString());
-				HList.Add(List[i].ClaimNum,List[i]);
+				tempClaim=new Claim();
+				tempClaim.ClaimNum     =		PIn.PInt   (table.Rows[i][0].ToString());
+				tempClaim.PatNum       =		PIn.PInt   (table.Rows[i][1].ToString());
+				tempClaim.DateService  =		PIn.PDate  (table.Rows[i][2].ToString());
+				tempClaim.DateSent     =		PIn.PDate  (table.Rows[i][3].ToString());
+				tempClaim.ClaimStatus  =		PIn.PString(table.Rows[i][4].ToString());
+				tempClaim.DateReceived =		PIn.PDate  (table.Rows[i][5].ToString());
+				tempClaim.PlanNum      =		PIn.PInt   (table.Rows[i][6].ToString());
+				tempClaim.ProvTreat    =		PIn.PInt   (table.Rows[i][7].ToString());
+				tempClaim.ClaimFee     =		PIn.PDouble(table.Rows[i][8].ToString());
+				tempClaim.InsPayEst    =		PIn.PDouble(table.Rows[i][9].ToString());
+				tempClaim.InsPayAmt    =		PIn.PDouble(table.Rows[i][10].ToString());
+				tempClaim.DedApplied   =		PIn.PDouble(table.Rows[i][11].ToString());
+				tempClaim.PreAuthString=		PIn.PString(table.Rows[i][12].ToString());
+				tempClaim.IsProsthesis =		PIn.PString(table.Rows[i][13].ToString());
+				tempClaim.PriorDate    =		PIn.PDate  (table.Rows[i][14].ToString());
+				tempClaim.ReasonUnderPaid=	PIn.PString(table.Rows[i][15].ToString());
+				tempClaim.ClaimNote    =		PIn.PString(table.Rows[i][16].ToString());
+				tempClaim.ClaimType    =    PIn.PString(table.Rows[i][17].ToString());
+				tempClaim.ProvBill     =		PIn.PInt   (table.Rows[i][18].ToString());
+				tempClaim.ReferringProv=		PIn.PInt   (table.Rows[i][19].ToString());
+				tempClaim.RefNumString =		PIn.PString(table.Rows[i][20].ToString());
+				tempClaim.PlaceService = (PlaceOfService)PIn.PInt(table.Rows[i][21].ToString());
+				tempClaim.AccidentRelated=	PIn.PString(table.Rows[i][22].ToString());
+				tempClaim.AccidentDate  =		PIn.PDate  (table.Rows[i][23].ToString());
+				tempClaim.AccidentST    =		PIn.PString(table.Rows[i][24].ToString());
+				tempClaim.EmployRelated=(YN)PIn.PInt   (table.Rows[i][25].ToString());
+				tempClaim.IsOrtho       =		PIn.PBool  (table.Rows[i][26].ToString());
+				tempClaim.OrthoRemainM  =		PIn.PInt   (table.Rows[i][27].ToString());
+				tempClaim.OrthoDate     =		PIn.PDate  (table.Rows[i][28].ToString());
+				tempClaim.PatRelat      =(Relat)PIn.PInt(table.Rows[i][29].ToString());
+				tempClaim.PlanNum2      =   PIn.PInt   (table.Rows[i][30].ToString());
+				tempClaim.PatRelat2     =(Relat)PIn.PInt(table.Rows[i][31].ToString());
+				tempClaim.WriteOff      =   PIn.PDouble(table.Rows[i][32].ToString());
+				tempClaim.Radiographs   =   PIn.PInt   (table.Rows[i][33].ToString());
+				if(single){
+					retVal=tempClaim;
+				}
+				else{
+					List[i]=tempClaim;
+					HList.Add(tempClaim.ClaimNum,tempClaim);
+				}
 			}//end for
+			return retVal;//only really used if single
 		}
 
 		///<summary></summary>
@@ -288,11 +317,11 @@ namespace OpenDental{
 		}
 
 		///<summary>Called from claimsend window.</summary>
-		public static void GetQueueList(){
+		public static ClaimSendQueueItem[] GetQueueList(){
 			cmd.CommandText =
 				"SELECT claim.ClaimNum,carrier.NoSendElect"
 				+",concat(patient.LName,', ',patient.FName,' ',patient.MiddleI)"
-				+",claim.ClaimStatus,carrier.CarrierName,patient.PatNum "
+				+",claim.ClaimStatus,carrier.CarrierName,patient.PatNum,carrier.ElectID "
 				+"FROM claim "
 				+"Left join insplan on claim.PlanNum = insplan.PlanNum "
 				+"Left join carrier on insplan.CarrierNum = carrier.CarrierNum "
@@ -300,15 +329,19 @@ namespace OpenDental{
 				+"WHERE claim.ClaimStatus = 'W' || claim.ClaimStatus = 'P'";
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
-			ListQueue=new QueueItem[table.Rows.Count];
+			ClaimSendQueueItem[] listQueue=new ClaimSendQueueItem[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				ListQueue[i].ClaimNum   = PIn.PInt   (table.Rows[i][0].ToString());
-				ListQueue[i].NoSendElect= PIn.PBool  (table.Rows[i][1].ToString());
-				ListQueue[i].PatName    = PIn.PString(table.Rows[i][2].ToString());
-				ListQueue[i].ClaimStatus= PIn.PString(table.Rows[i][3].ToString());
-				ListQueue[i].Carrier    = PIn.PString(table.Rows[i][4].ToString());
-				ListQueue[i].PatNum     = PIn.PInt   (table.Rows[i][5].ToString());
+				listQueue[i]=new ClaimSendQueueItem();
+				listQueue[i].ClaimNum        = PIn.PInt   (table.Rows[i][0].ToString());
+				listQueue[i].NoSendElect     = PIn.PBool  (table.Rows[i][1].ToString());
+				listQueue[i].PatName         = PIn.PString(table.Rows[i][2].ToString());
+				listQueue[i].ClaimStatus     = PIn.PString(table.Rows[i][3].ToString());
+				listQueue[i].Carrier         = PIn.PString(table.Rows[i][4].ToString());
+				listQueue[i].PatNum          = PIn.PInt   (table.Rows[i][5].ToString());
+				listQueue[i].ClearinghouseNum   
+					=Clearinghouses.GetNumForPayor(PIn.PString(table.Rows[i][6].ToString()));
 			}
+			return listQueue;
 		}
 
 		///<summary></summary>
@@ -319,14 +352,164 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary>Supply an arrayList of type ClaimSendQueueItem. Called from X12 to begin the sorting process on claims going to one clearinghouse. Returns an array with Carrier,ProvBill,Subscriber,PatNum,ClaimNum, all in the correct order. Carrier is a string, the rest are int.</summary>
+		public static object[,] GetX12TransactionInfo(ArrayList queueItems){
+			StringBuilder str=new StringBuilder();
+			for(int i=0;i<queueItems.Count;i++){
+				if(i>0){
+					str.Append(" OR");
+				}
+				str.Append(" claim.ClaimNum="+((ClaimSendQueueItem)queueItems[i]).ClaimNum.ToString());
+			}
+			cmd.CommandText="SELECT carrier.ElectID,claim.ProvBill,insplan.Subscriber,"
+				+"claim.PatNum,claim.ClaimNum "
+				+"FROM claim,insplan,carrier "
+				+"WHERE claim.PlanNum=insplan.PlanNum "
+				+"AND carrier.CarrierNum=insplan.CarrierNum "
+				+"AND ("+str.ToString()+") "
+				+"ORDER BY carrier.ElectID,claim.ProvBill,insplan.Subscriber,claim.PatNum";
+			FillTable();
+			object[,] myA=new object[5,table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				myA[0,i]=PIn.PString(table.Rows[i][0].ToString());
+				myA[1,i]=PIn.PInt   (table.Rows[i][1].ToString());
+				myA[2,i]=PIn.PInt   (table.Rows[i][2].ToString());
+				myA[3,i]=PIn.PInt   (table.Rows[i][3].ToString());
+				myA[4,i]=PIn.PInt   (table.Rows[i][4].ToString());
+			}
+			return myA;
+		}
+
+		///<summary>Updates all claimproc estimates and also updates claim totals to db. Must supply all claimprocs for this patient.  Must supply procList which includes all procedures that this claim is linked to.  Will also need to refresh afterwards to see the results</summary>
+		public static void CalculateAndUpdate(ClaimProc[] ClaimProcList,Procedure[] procList,Patient pat,InsPlan[] PlanList,Claim ClaimCur){
+			//Remember that this can be called externally also
+			//ClaimProcList=claimProcList;
+			ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
+			double claimFee=0;
+			double dedApplied=0;
+			double insPayEst=0;
+			double insPayAmt=0;
+			InsPlan PlanCur=InsPlans.GetPlan(ClaimCur.PlanNum,PlanList);
+			//InsPlans.Cur=(InsPlan)InsPlans.HList[ClaimCur.PlanNum];
+			int provNum;
+			double dedRem;
+			double insRem;//takes annual max into consideration
+			//first loop handles totals for received items.
+			for(int i=0;i<ClaimProcsForClaim.Length;i++){
+				if(ClaimProcsForClaim[i].Status!=ClaimProcStatus.Received){
+					continue;//disregard any status except Receieved.
+				}
+				claimFee+=ClaimProcsForClaim[i].FeeBilled;
+				dedApplied+=ClaimProcsForClaim[i].DedApplied;
+				insPayEst+=ClaimProcsForClaim[i].InsPayEst;
+				insPayAmt+=ClaimProcsForClaim[i].InsPayAmt;
+			}
+			//loop again only for procs not received.
+			//And for preauth.
+			Procedure ProcCur;
+			for(int i=0;i<ClaimProcsForClaim.Length;i++){
+				if(ClaimProcsForClaim[i].Status!=ClaimProcStatus.NotReceived
+					&& ClaimProcsForClaim[i].Status!=ClaimProcStatus.Preauth){
+					continue;
+				}
+				ProcCur=Procedures.GetProc(procList,ClaimProcsForClaim[i].ProcNum);
+				if(ProcCur.ProcNum==0){
+					continue;//ignores payments, etc
+				}
+				//fee:
+				if(PlanCur.ClaimsUseUCR){//use UCR for the provider of the procedure
+					provNum=ProcCur.ProvNum;
+					if(provNum==0){//if no prov set, then use practice default.
+						provNum=Convert.ToInt32(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
+					}
+					ClaimProcsForClaim[i].FeeBilled=Fees.GetAmount(//get the fee based on ada and prov fee sched
+						ProcCur.ADACode
+						,Providers.ListLong[Providers.GetIndexLong(provNum)].FeeSched);
+				}
+				else{//don't use ucr.  Use the procedure fee instead.
+					ClaimProcsForClaim[i].FeeBilled=ProcCur.ProcFee;
+				}
+				claimFee+=ClaimProcsForClaim[i].FeeBilled;
+				if(ClaimCur.ClaimType=="PreAuth" || ClaimCur.ClaimType=="Other"){
+					//only the fee gets calculated, the rest does not
+					ClaimProcsForClaim[i].Update();
+					continue;
+				}
+				//deduct:
+				if((CovCats.GetIsPrev(ProcCur.ADACode)//if is preventive 
+					&& PlanCur.DeductWaivPrev==YN.No)//and deductible is not waived on preventive
+					|| !CovCats.GetIsPrev(ProcCur.ADACode))//or if not preventive
+				{
+					dedRem=InsPlans.GetDedRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate
+						,ClaimCur.PlanNum,ClaimCur.ClaimNum,PlanList)
+						-dedApplied;//subtracts deductible amounts already applied on this claim
+					if(dedRem<0){
+						dedRem=0;
+					}
+					if(dedRem > ClaimProcsForClaim[i].FeeBilled){//if deductible is more than cost of procedure
+						ClaimProcsForClaim[i].DedApplied=ClaimProcsForClaim[i].FeeBilled;
+					}
+					else{
+						ClaimProcsForClaim[i].DedApplied=dedRem;
+					}
+				}
+				//??obsolete: if dedApplied is too big, it might be adjusted in the next few lines.??
+				//insest:
+				//Unlike deductible, we do not need to take into account any of the received claimprocs when calculating insest.  So insRem takes care of annual max rather than received+est.
+				insRem
+					=InsPlans.GetInsRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate
+					,ClaimCur.PlanNum,ClaimCur.ClaimNum,PlanList)
+					-insPayEst;//subtracts insest amounts already applied on this claim
+				if(insRem<0){
+					insRem=0;
+				}
+				if(ClaimCur.ClaimType=="P"){//primary
+					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Pri,pat,PlanList);//handles dedBeforePerc
+					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Pri,pat);
+						//ClaimProcsForClaim[i].BaseEst;
+					if(!ClaimProcsForClaim[i].DedBeforePerc){
+						ClaimProcsForClaim[i].InsPayEst-=ClaimProcsForClaim[i].DedApplied;
+					}
+				}
+				else if(ClaimCur.ClaimType=="S"){//secondary
+					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Sec,pat,PlanList);
+					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Sec,pat);
+						//ClaimProcsForClaim[i].BaseEst;
+					if(!ClaimProcsForClaim[i].DedBeforePerc){
+						ClaimProcsForClaim[i].InsPayEst-=ClaimProcsForClaim[i].DedApplied;
+					}
+				}
+				//other claimtypes only changed manually
+				if(ClaimProcsForClaim[i].InsPayEst < 0){
+					//example: if inspayest = 19 - 50(ded) for total of -31.
+					ClaimProcsForClaim[i].DedApplied+=ClaimProcsForClaim[i].InsPayEst;//eg. 50+(-31)=19
+					ClaimProcsForClaim[i].InsPayEst=0;
+					//so only 19 of deductible gets applied, and inspayest is 0
+				}
+				if(ClaimProcsForClaim[i].InsPayEst>insRem){
+					ClaimProcsForClaim[i].InsPayEst=insRem;
+				}
+				dedApplied+=ClaimProcsForClaim[i].DedApplied;
+				insPayEst+=ClaimProcsForClaim[i].InsPayEst;
+				ClaimProcsForClaim[i].Update();
+				//but notice that the ClaimProcs lists are not refreshed until the loop is finished.
+			}//for claimprocs.forclaim
+			ClaimCur.ClaimFee=claimFee;
+			ClaimCur.DedApplied=dedApplied;
+			ClaimCur.InsPayEst=insPayEst;
+			ClaimCur.InsPayAmt=insPayAmt;
+			Cur=ClaimCur;
+			UpdateCur();
+		}
+
 	
 
 	}//end class Claims
 
 
 
-	///<summary>Used to hold a list of claims to show in the claims 'queue' waiting to be sent, and in the Claim Check Edit window.</summary>
-	public struct QueueItem{
+	///<summary>Used to hold a list of claims to show in the claims 'queue' waiting to be sent.</summary>
+	public class ClaimSendQueueItem{
 		///<summary></summary>
 		public int ClaimNum;
 		///<summary></summary>
@@ -340,6 +523,18 @@ namespace OpenDental{
 		public string Carrier;
 		///<summary></summary>
 		public int PatNum;
+		///<summary></summary>
+		public int ClearinghouseNum;
+	}
+
+	///<summary>Used to hold a list of claims to show in the Claim Check Edit window.</summary>
+	public class ClaimPaySplit{
+		///<summary></summary>
+		public int ClaimNum;
+		///<summary></summary>
+		public string PatName;
+		///<summary></summary>
+		public string Carrier;
 		///<summary></summary>
 		public DateTime DateClaim;
 		///<summary></summary>

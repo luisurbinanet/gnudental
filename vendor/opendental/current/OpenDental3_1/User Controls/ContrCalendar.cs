@@ -3,21 +3,21 @@ using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
-using System.Windows.Forms;
 using System.Drawing.Text;
 using System.Drawing.Design;
 using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 using System.Drawing.Imaging;
-
+using System.Globalization;
+using System.Windows.Forms;
 
 namespace OpenDental{
 
 	///<summary></summary>
 	public class ContrCalendar : System.Windows.Forms.UserControl	{
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butPrevious;
-		private System.Windows.Forms.Button butNext; 
+		private OpenDental.UI.Button butPrevious;
+		private OpenDental.UI.Button butNext; 
 
     //private Graphics grfx;
     private int RowCount;
@@ -100,8 +100,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(ContrCalendar));
-			this.butPrevious = new System.Windows.Forms.Button();
-			this.butNext = new System.Windows.Forms.Button();
+			this.butPrevious = new OpenDental.UI.Button();
+			this.butNext = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butPrevious
@@ -205,32 +205,30 @@ namespace OpenDental{
       float xPos=(int)(FixedWidth+((Width-(FixedWidth*2))/2)
 				-(grfx.MeasureString(Header,FontHeader).Width/2));
       float yPos=(int)((FixedHeight)+((FixedHeight-FontHeader.GetHeight())/2));
-      grfx.DrawString(Lan.g(this,Header),FontHeader,Brushes.Black,xPos,yPos);  
+      grfx.DrawString(Header,FontHeader,Brushes.Black,xPos,yPos);  
     }
 
+		///<summary>Draws the days of the week</summary>
     private void DisplayDayHeader(Graphics grfx){
-      int count=0;
-
-//////Draw Day Header
       grfx.FillRectangle(new SolidBrush(DayHeadColor),RecDayHead); 
       grfx.DrawRectangle(LinePen,RecDayHead);
       for(int i=0;i<=ColCount;i++){
          grfx.DrawLine(LinePen,ColWidth*i+FixedWidth,FixedHeight*2,ColWidth*i+FixedWidth
 					 ,(FixedHeight*2)+DayHeadHeight); 
-      }       
-      foreach(string s in Enum.GetNames(typeof(DayOfWeek))){
-				float xPos=(int)(FixedWidth+(count*(ColWidth)+(ColWidth/2))
-					-(grfx.MeasureString(s,FontText).Width/2));
+      }
+			string[] daysOfWeek=CultureInfo.CurrentCulture.DateTimeFormat.DayNames;//already translated
+			for(int i=0;i<daysOfWeek.Length;i++){
+				float xPos=(int)(FixedWidth+(i*(ColWidth)+(ColWidth/2))
+					-(grfx.MeasureString(daysOfWeek[i],FontText).Width/2));
 				float yPos=(int)((FixedHeight*2)+((DayHeadHeight-FontText.GetHeight())/2));
-				grfx.DrawString(Lan.g(this,s),FontText,Brushes.Black,xPos,yPos); 
-        count++;         
+				grfx.DrawString(daysOfWeek[i],FontText,Brushes.Black,xPos,yPos); 
       } 
     }
 
     private void DisplayFooter(Graphics grfx){
       grfx.FillRectangle(new SolidBrush(FootColor),RecFoot); 
       grfx.DrawRectangle(LinePen,RecFoot);
-      Footer="Today: "+DateTime.Today.ToString("MM/dd/yyyy");  
+      Footer="Today: "+DateTime.Today.ToShortDateString();  
       float xPos=(int)(FixedWidth+((Width-(FixedWidth*2))/2)
 				-(grfx.MeasureString(Footer,FontText).Width/2));
       float yPos=(int)((Height-(FixedHeight*2))+((FixedHeight-FontText.GetHeight())/2));
@@ -239,14 +237,12 @@ namespace OpenDental{
     
     private void DisplayDaysInMonth(Graphics grfx){
       int dayOfWeek;
-
       int column;
       int row=0;
       float fHeight;
       float fWidth;
       float fHeight2;
       float fWidth2;
- 
       fWidth=FixedWidth+ColWidth-1;
       fWidth2=FixedWidth+ColWidth;
       fHeight=(FixedHeight*2)+DayHeadHeight+2;
@@ -255,7 +251,6 @@ namespace OpenDental{
       dayOfWeek=(int)TempDate.DayOfWeek;  
       column=dayOfWeek;
       DaysInMonth=DateTime.DaysInMonth(selectedDate.Year,selectedDate.Month);
-
       for(int i=1;i<=DaysInMonth;i++){
         if(column==7){
           row++;
@@ -270,8 +265,10 @@ namespace OpenDental{
         List[i].xPos=xPos;
         List[i].yPos=yPos;
         List[i].Date=new DateTime(selectedDate.Year,selectedDate.Month,i);
-        
-        if(i==DateTime.Today.Day && selectedDate.Month==DateTime.Today.Month && selectedDate.Year==DateTime.Today.Year){
+        if(i==DateTime.Today.Day
+					&& selectedDate.Month==DateTime.Today.Month 
+					&& selectedDate.Year==DateTime.Today.Year)
+				{
           CurrentDay=List[i];
           CurrentDay.Rec.X+=1;
           CurrentDay.Rec.Y+=2;
@@ -292,18 +289,18 @@ namespace OpenDental{
       for(int i=1;i<=DaysInMonth;i++){
 				if(i==SelectedDay){
 					grfx.FillRectangle(new SolidBrush(SelectedDayColor),List[i].Rec);
-					grfx.DrawString(Lan.g(this,List[i].Day.ToString())
+					grfx.DrawString(List[i].Day.ToString()
 						,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
 				}
 				else{
           if(List[i].color.Equals(Color.Empty)){   
 					  grfx.FillRectangle(new SolidBrush(ActiveDayColor),List[i].Rec);
-					  grfx.DrawString(Lan.g(this,List[i].Day.ToString())
+					  grfx.DrawString(List[i].Day.ToString()
 							,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
           }
           else{
 					  grfx.FillRectangle(new SolidBrush(List[i].color),List[i].Rec);
-					  grfx.DrawString(Lan.g(this,List[i].Day.ToString())
+					  grfx.DrawString(List[i].Day.ToString()
 							,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
           }           
 				}
@@ -320,13 +317,12 @@ namespace OpenDental{
       float yCoord=(float)(List[day].Rec.Y+(FontText2.GetHeight()*1.5));
       RectangleF r=new RectangleF(xCoord,yCoord,List[day].Rec.Width-(2*extra)
 				,(float)(FontText2.GetHeight())); 
-      grfx.DrawString(Lan.g(this,List[day].RowsOfText[0]),FontText2,Brushes.Black,r);
-
+      grfx.DrawString(List[day].RowsOfText[0],FontText2,Brushes.Black,r);
 			for(int i=0;i<List[day].RowsOfText.Length;i++){
 				if(List[day].RowsOfText[i]==""){
         }
         else{ 
-          grfx.DrawString(Lan.g(this,List[day].RowsOfText[i]),FontText2,Brushes.Black
+          grfx.DrawString(List[day].RowsOfText[i],FontText2,Brushes.Black
             ,new RectangleF(xCoord,yCoord,List[day].Rec.Width-(2*extra),FontText2.GetHeight()));
 					  yCoord+=FontText2.GetHeight();
 				}  
@@ -336,7 +332,6 @@ namespace OpenDental{
     private void DrawMonthGrid(Graphics grfx){ 
       //draw Rows  
       float height=(FixedHeight*2)+DayHeadHeight;
-
       for(int i=1;i<=RowCount;i++){
         grfx.DrawLine(LinePen,FixedWidth,(height+(RowHeight*i))
 					,(Width-FixedWidth),(height)+(RowHeight*i)); 
@@ -373,13 +368,13 @@ namespace OpenDental{
           }
           else{
 						grfx.FillRectangle(new SolidBrush(List[OldSelected].color),List[OldSelected].Rec);
-						grfx.DrawString(Lan.g(this,List[OldSelected].Day.ToString())
+						grfx.DrawString(List[OldSelected].Day.ToString()
 							,FontText,Brushes.Black,List[OldSelected].xPos,List[OldSelected].yPos);
             DrawRowsOfText(OldSelected,grfx);            
           }
 					//painting Selected   
 					grfx.FillRectangle(new SolidBrush(SelectedDayColor),List[i].Rec); 
-					grfx.DrawString(Lan.g(this,List[i].Day.ToString())
+					grfx.DrawString(List[i].Day.ToString()
 						,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
           DrawRowsOfText(i,grfx);
 					DrawMonthGrid(grfx); 

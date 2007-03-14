@@ -21,37 +21,28 @@ namespace OpenDental
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private OpenDental.TableClaimProc tbProc;
-		private System.Windows.Forms.Button butDeductible;
-		private System.Windows.Forms.Button butWriteOff;
+		private OpenDental.UI.Button butDeductible;
+		private OpenDental.UI.Button butWriteOff;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
 		///<summary></summary>
 		public ClaimProc[] ClaimProcsToEdit;
 		private Procedure[] ProcList;
+		private Patient PatCur;
+		private Family FamCur;
+		private InsPlan[] PlanList;
 
 		///<summary></summary>
-		public FormClaimPayTotal(){
-			//
-			// Required for Windows Form Designer support
-			//
-			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] { //*Ann
-				this, //*Ann
-				this.label1, //*Ann
-				this.label2, //*Ann
-				this.label3, //*Ann
-				this.label4, //*Ann
-				this.butDeductible, //*Ann
-				this.butWriteOff //*Ann
-			}); //*Ann
-			Lan.C("All", new System.Windows.Forms.Control[] { //*Ann
-				butOK, //*Ann
-				butCancel, //*Ann
-			}); //*Ann
+		public FormClaimPayTotal(Patient patCur,Family famCur,InsPlan[] planList){
+			InitializeComponent();// Required for Windows Form Designer support
+			FamCur=famCur;
+			PatCur=patCur;
+			PlanList=planList;
+			Lan.F(this);
 			tbProc.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbProc_CellDoubleClicked);
 			
 		}
@@ -79,16 +70,16 @@ namespace OpenDental
 		private void InitializeComponent()
 		{
 			this.tbProc = new OpenDental.TableClaimProc();
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.textWriteOff = new OpenDental.ValidDouble();
 			this.textInsPayEst = new System.Windows.Forms.TextBox();
 			this.textInsPayAmt = new OpenDental.ValidDouble();
 			this.textClaimFee = new System.Windows.Forms.TextBox();
 			this.textDedApplied = new OpenDental.ValidDouble();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butDeductible = new System.Windows.Forms.Button();
-			this.butWriteOff = new System.Windows.Forms.Button();
+			this.butDeductible = new OpenDental.UI.Button();
+			this.butWriteOff = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
@@ -99,7 +90,7 @@ namespace OpenDental
 			this.tbProc.BackColor = System.Drawing.SystemColors.Window;
 			this.tbProc.Location = new System.Drawing.Point(8, 19);
 			this.tbProc.Name = "tbProc";
-			this.tbProc.ScrollValue = 280;
+			this.tbProc.ScrollValue = 62;
 			this.tbProc.SelectedIndices = new int[0];
 			this.tbProc.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbProc.Size = new System.Drawing.Size(939, 253);
@@ -107,19 +98,27 @@ namespace OpenDental
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(757, 324);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 1;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(846, 324);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 2;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -188,20 +187,26 @@ namespace OpenDental
 			// 
 			// butDeductible
 			// 
-			this.butDeductible.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butDeductible.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDeductible.Autosize = true;
+			this.butDeductible.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDeductible.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDeductible.Location = new System.Drawing.Point(14, 324);
 			this.butDeductible.Name = "butDeductible";
-			this.butDeductible.Size = new System.Drawing.Size(97, 23);
+			this.butDeductible.Size = new System.Drawing.Size(92, 25);
 			this.butDeductible.TabIndex = 120;
 			this.butDeductible.Text = "&Deductible";
 			this.butDeductible.Click += new System.EventHandler(this.butDeductible_Click);
 			// 
 			// butWriteOff
 			// 
-			this.butWriteOff.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butWriteOff.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butWriteOff.Autosize = true;
+			this.butWriteOff.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butWriteOff.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butWriteOff.Location = new System.Drawing.Point(154, 324);
 			this.butWriteOff.Name = "butWriteOff";
-			this.butWriteOff.Size = new System.Drawing.Size(96, 23);
+			this.butWriteOff.Size = new System.Drawing.Size(90, 25);
 			this.butWriteOff.TabIndex = 121;
 			this.butWriteOff.Text = "&Write Off";
 			this.butWriteOff.Click += new System.EventHandler(this.butWriteOff_Click);
@@ -266,7 +271,7 @@ namespace OpenDental
 		#endregion
 
 		private void FormClaimPayTotal_Load(object sender, System.EventArgs e) {
-			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
+			ProcList=Procedures.Refresh(PatCur.PatNum);
 			FillGrid();
 		}
 
@@ -338,7 +343,7 @@ namespace OpenDental
 		}
 
 		private void tbProc_CellDoubleClicked(object sender, CellEventArgs e){
-			FormClaimProc FormCP=new FormClaimProc(ClaimProcsToEdit[e.Row],null);
+			FormClaimProc FormCP=new FormClaimProc(ClaimProcsToEdit[e.Row],null,FamCur,PlanList);
 			FormCP.IsInClaim=true;
 			FormCP.ShowDialog();
 			if(FormCP.DialogResult!=DialogResult.OK){
@@ -380,7 +385,7 @@ namespace OpenDental
 			}
 			//fix later: does not take into account other payments.
 			double unpaidAmt=0;
-			Procedure[] ProcList=Procedures.Refresh(Patients.Cur.PatNum);
+			Procedure[] ProcList=Procedures.Refresh(PatCur.PatNum);
 			for(int i=0;i<ClaimProcsToEdit.Length;i++){
 				unpaidAmt=Procedures.GetProc(ProcList,ClaimProcsToEdit[i].ProcNum).ProcFee
 					//((Procedure)Procedures.HList[ClaimProcsToEdit[i].ProcNum]).ProcFee

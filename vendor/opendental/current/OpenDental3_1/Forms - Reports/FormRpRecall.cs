@@ -8,8 +8,8 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormRpRecall : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label labelPatient;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.ComponentModel.Container components = null;
 		private FormQuery FormQuery2;
 		private string SQLselect;
@@ -32,13 +32,7 @@ namespace OpenDental{
 			SQLfrom="FROM patient "; 
       SQLwhere="WHERE ";
       Fill(); 
- 			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.labelPatient,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});  
+ 			Lan.F(this); 
 		}
   
 		///<summary></summary>
@@ -68,8 +62,8 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.labelPatient = new System.Windows.Forms.Label();
 			this.listPatientSelect = new System.Windows.Forms.ListBox();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.listPatientSelect2 = new System.Windows.Forms.ListBox();
 			this.SuspendLayout();
@@ -175,6 +169,7 @@ namespace OpenDental{
 			ALpatSelect.Add(Lan.g(this,"WirelessPhone")); 
 			ALpatSelect.Add(Lan.g(this,"Birthdate"));
       ALpatSelect.Add(Lan.g(this,"RecallStatus"));
+			ALpatSelect.Add(Lan.g(this,"DateDue"));
       ALpatSelect2.Add(Lan.g(this,"BillingType"));      
       ALpatSelect2.Add(Lan.g(this,"CreditType"));
 			ALpatSelect2.Add(Lan.g(this,"SSN"));  
@@ -239,22 +234,31 @@ namespace OpenDental{
 			listPatientSelect.SelectedItems.CopyTo(PatFieldsSelected,0);
 			listPatientSelect2.SelectedItems.CopyTo(PatFieldsSelected,listPatientSelect.SelectedItems.Count);
 			for(int i=0;i<PatFieldsSelected.Length;i++){
-				if(i>0) SQLselect+=","; 
-				SQLselect+="patient."+PatFieldsSelected[i].ToString();  
+				if(i>0){
+					SQLselect+=",";
+				}
+				if(PatFieldsSelected[i]=="DateDue"
+					|| PatFieldsSelected[i]=="RecallStatus"){
+					SQLselect+="recall."+PatFieldsSelected[i];
+				}
+				else{
+					SQLselect+="patient."+PatFieldsSelected[i];
+				}
 			}
 			butOK.Enabled=true;
 		}
 
     private void CreateSQLfrom(){ 
-      SQLfrom=" FROM patient ";
+      SQLfrom=" FROM patient,recall ";
     }
 
     private void CreateSQLwhere(){  
-      SQLwhere="WHERE";       
+      SQLwhere="WHERE patient.PatNum=recall.PatNum AND(";       
       for(int i=0;i<Apatnums.Length;i++){
-        if(i>0) SQLwhere+=" ||";
+        if(i>0) SQLwhere+=" OR";
         SQLwhere+=" patient.patnum='"+Apatnums[i]+"'";
       }
+			SQLwhere+=")";
     }
 
 		private void ListPatientSelect_SelectedIndexChanged(object sender, System.EventArgs e) {

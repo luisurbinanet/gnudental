@@ -9,10 +9,10 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormContacts : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ListBox listCategory;
-		private System.Windows.Forms.Button butAdd;
+		private OpenDental.UI.Button butAdd;
 		private OpenDental.TableContacts tbContacts;
 		/// <summary>
 		/// Required designer variable.
@@ -28,13 +28,7 @@ namespace OpenDental{
 			InitializeComponent();
 			tbContacts.CellDoubleClicked
 				+= new OpenDental.ContrTable.CellEventHandler(tbContacts_CellDoubleClicked);
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butAdd
-			});
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -60,19 +54,23 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormContacts));
-			this.butOK = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.listCategory = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.tbContacts = new OpenDental.TableContacts();
-			this.butAdd = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(798, 627);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 1;
 			this.butOK.Text = "&Close";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -106,9 +104,13 @@ namespace OpenDental{
 			// 
 			// butAdd
 			// 
-			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Location = new System.Drawing.Point(797, 494);
 			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(75, 25);
 			this.butAdd.TabIndex = 5;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);

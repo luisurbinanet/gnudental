@@ -2,10 +2,11 @@
 Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
-using ByteFX.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -36,6 +37,31 @@ namespace OpenDental{
 			//table=new DataTable();
 		}
 
+		///<summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first, and in FormConfig to get db names.</summary>
+		public DataConnection(string db){
+		  con= new MySqlConnection(
+				"Server="+FormConfig.ComputerName
+				+";Database="+db
+				+";User ID="+FormConfig.User
+				+";Password="+FormConfig.Password);
+			//dr = null;
+			cmd = new MySqlCommand();
+			cmd.Connection = con;
+			//table=new DataTable(null);
+		}
+
+		///<summary>Tests to see if the connection is valid.</summary>
+		public bool IsValid(){
+			try{
+				con.Open();
+				con.Close();
+			}
+			catch{//(MySQLDriverCS.MySQLException ex){
+				return false; 
+			}
+			return true;
+		}
+
 		///<summary>Fills table with data from the database.</summary>
 		public DataTable GetTable(string command){
 			cmd.CommandText=command;
@@ -44,11 +70,11 @@ namespace OpenDental{
  				da=new MySqlDataAdapter(cmd);
  				da.Fill(table);
  			}
+			//catch(MySqlException e){
+			//	MessageBox.Show("MySQL Error: "+e.Message);
+			//}
 			catch(MySqlException e){
-				MessageBox.Show("MySQL Error: "+e.Message);
-			}
-			catch{
-				MessageBox.Show("Error: "+cmd.CommandText);
+				MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
 			}
 			finally{
 				con.Close();
@@ -56,11 +82,12 @@ namespace OpenDental{
  			return table;
 		}
 
-		///<summary>Sends a non query command to the database and returns the number of rows affected. If true, then InsertID will be set to the value of the primary key of the newly inserted row.</summary>summary>
+		///<summary>Sends a non query command to the database and returns the number of rows affected. If true, then InsertID will be set to the value of the primary key of the newly inserted row.</summary>
 		public int NonQ(string command){
 			return NonQ(command,false);
 		}
 
+		///<summary>Sends a non query command to the database and returns the number of rows affected. If true, then InsertID will be set to the value of the primary key of the newly inserted row.</summary>
 		public int NonQ(string command,bool getInsertID){
  			cmd.CommandText=command;
 			int rowsChanged=0;
@@ -85,6 +112,19 @@ namespace OpenDental{
 			}
  			return rowsChanged;
  		}
+
+		///<summary>Submits an array of commands in sequence. Used in conversions. Throws an exception if unsuccessful.  Returns the number of rows affected</summary>
+		public int NonQ(string[] commands){
+			int rowsChanged=0;
+			con.Open();
+			for(int i=0;i<commands.Length;i++){
+				cmd.CommandText=commands[i];
+				//Debug.WriteLine(cmd.CommandText);
+				rowsChanged+=cmd.ExecuteNonQuery();
+			}
+			con.Close();
+			return rowsChanged;
+		}
 
 
 

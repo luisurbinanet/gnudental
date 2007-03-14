@@ -11,19 +11,19 @@ namespace OpenDental{
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
 	public class FormPerio : System.Windows.Forms.Form{
-		private OpenDental.XPButton but7;
+		private OpenDental.UI.Button but7;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.RadioButton radioLeft;
 		private System.Windows.Forms.RadioButton radioRight;
-		private OpenDental.XPButton but3;
-		private OpenDental.XPButton but2;
-		private OpenDental.XPButton but1;
-		private OpenDental.XPButton but6;
-		private OpenDental.XPButton but9;
-		private OpenDental.XPButton but5;
-		private OpenDental.XPButton but4;
-		private OpenDental.XPButton but8;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button but3;
+		private OpenDental.UI.Button but2;
+		private OpenDental.UI.Button but1;
+		private OpenDental.UI.Button but6;
+		private OpenDental.UI.Button but9;
+		private OpenDental.UI.Button but5;
+		private OpenDental.UI.Button but4;
+		private OpenDental.UI.Button but8;
+		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
@@ -35,27 +35,27 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butColorPus;
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butClose;
-		private OpenDental.XPButton butAdd;
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butAdd;
 		private System.Windows.Forms.Label label6;
-		private OpenDental.XPButton but0;
-		private OpenDental.XPButton but10;
-		private OpenDental.XPButton butBleed;
-		private OpenDental.XPButton butPus;
+		private OpenDental.UI.Button but0;
+		private OpenDental.UI.Button but10;
+		private OpenDental.UI.Button butBleed;
+		private OpenDental.UI.Button butPus;
 		private System.Windows.Forms.CheckBox checkThree;
 		private bool localDefsChanged;
 		private System.Windows.Forms.ListBox listExams;
-		private System.Windows.Forms.Button butSkip;
-		private OpenDental.XPButton butPrint;
+		private OpenDental.UI.Button butSkip;
+		private OpenDental.UI.Button butPrint;
 		private System.Windows.Forms.Button butColorCalculus;
 		private System.Windows.Forms.Button butColorPlaque;
-		private OpenDental.XPButton butCalculus;
-		private OpenDental.XPButton butPlaque;
+		private OpenDental.UI.Button butCalculus;
+		private OpenDental.UI.Button butPlaque;
 		private System.Windows.Forms.TextBox textIndexPlaque;
 		private System.Windows.Forms.TextBox textIndexSupp;
 		private System.Windows.Forms.TextBox textIndexBleeding;
 		private System.Windows.Forms.TextBox textIndexCalculus;
-		private System.Windows.Forms.Button butCalcIndex;
+		private OpenDental.UI.Button butCalcIndex;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label10;
@@ -64,7 +64,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.TextBox textRedProb;
-		private System.Windows.Forms.Button butCount;
+		private OpenDental.UI.Button butCount;
 		private System.Windows.Forms.DomainUpDown updownProb;
 		private System.Windows.Forms.TextBox textCountProb;
 		private System.Windows.Forms.Label label14;
@@ -91,18 +91,18 @@ namespace OpenDental{
 		private bool TenIsDown;
 		private System.Windows.Forms.PrintPreviewDialog printPreviewDlg;
 		//private int pagesPrinted;
+		private ArrayList MissingTeeth;
+		private Patient PatCur;
 
 		///<summary></summary>
-		public FormPerio()
+		public FormPerio(Patient patCur)
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[]
-			{
-				butClose
-			});
+			PatCur=patCur;
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -129,40 +129,40 @@ namespace OpenDental{
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormPerio));
-			this.butClose = new System.Windows.Forms.Button();
-			this.but7 = new OpenDental.XPButton();
-			this.but3 = new OpenDental.XPButton();
-			this.but2 = new OpenDental.XPButton();
-			this.but1 = new OpenDental.XPButton();
-			this.but6 = new OpenDental.XPButton();
-			this.but9 = new OpenDental.XPButton();
-			this.but5 = new OpenDental.XPButton();
-			this.but4 = new OpenDental.XPButton();
-			this.but8 = new OpenDental.XPButton();
+			this.butClose = new OpenDental.UI.Button();
+			this.but7 = new OpenDental.UI.Button();
+			this.but3 = new OpenDental.UI.Button();
+			this.but2 = new OpenDental.UI.Button();
+			this.but1 = new OpenDental.UI.Button();
+			this.but6 = new OpenDental.UI.Button();
+			this.but9 = new OpenDental.UI.Button();
+			this.but5 = new OpenDental.UI.Button();
+			this.but4 = new OpenDental.UI.Button();
+			this.but8 = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.radioRight = new System.Windows.Forms.RadioButton();
 			this.radioLeft = new System.Windows.Forms.RadioButton();
-			this.butDelete = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
-			this.but0 = new OpenDental.XPButton();
-			this.but10 = new OpenDental.XPButton();
+			this.but0 = new OpenDental.UI.Button();
+			this.but10 = new OpenDental.UI.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.butBleed = new OpenDental.XPButton();
-			this.butPus = new OpenDental.XPButton();
+			this.butBleed = new OpenDental.UI.Button();
+			this.butPus = new OpenDental.UI.Button();
 			this.butColorBleed = new System.Windows.Forms.Button();
 			this.butColorPus = new System.Windows.Forms.Button();
-			this.butSkip = new System.Windows.Forms.Button();
+			this.butSkip = new OpenDental.UI.Button();
 			this.butColorCalculus = new System.Windows.Forms.Button();
 			this.butColorPlaque = new System.Windows.Forms.Button();
-			this.butCalculus = new OpenDental.XPButton();
-			this.butPlaque = new OpenDental.XPButton();
-			this.butCalcIndex = new System.Windows.Forms.Button();
-			this.butCount = new System.Windows.Forms.Button();
+			this.butCalculus = new OpenDental.UI.Button();
+			this.butPlaque = new OpenDental.UI.Button();
+			this.butCalcIndex = new OpenDental.UI.Button();
+			this.butCount = new OpenDental.UI.Button();
 			this.checkThree = new System.Windows.Forms.CheckBox();
-			this.butPrint = new OpenDental.XPButton();
+			this.butPrint = new OpenDental.UI.Button();
 			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.textCountMob = new System.Windows.Forms.TextBox();
@@ -192,7 +192,7 @@ namespace OpenDental{
 			this.label9 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butAdd = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.UI.Button();
 			this.label6 = new System.Windows.Forms.Label();
 			this.listExams = new System.Windows.Forms.ListBox();
 			this.textIndexPlaque = new System.Windows.Forms.TextBox();
@@ -220,8 +220,8 @@ namespace OpenDental{
 			// but7
 			// 
 			this.but7.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but7.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but7.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but7.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but7.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but7.Location = new System.Drawing.Point(763, 68);
 			this.but7.Name = "but7";
 			this.but7.Size = new System.Drawing.Size(32, 32);
@@ -232,8 +232,8 @@ namespace OpenDental{
 			// but3
 			// 
 			this.but3.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but3.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but3.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but3.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but3.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but3.Location = new System.Drawing.Point(833, 138);
 			this.but3.Name = "but3";
 			this.but3.Size = new System.Drawing.Size(32, 32);
@@ -244,8 +244,8 @@ namespace OpenDental{
 			// but2
 			// 
 			this.but2.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but2.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but2.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but2.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but2.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but2.Location = new System.Drawing.Point(798, 138);
 			this.but2.Name = "but2";
 			this.but2.Size = new System.Drawing.Size(32, 32);
@@ -256,8 +256,8 @@ namespace OpenDental{
 			// but1
 			// 
 			this.but1.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but1.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but1.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but1.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but1.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but1.Location = new System.Drawing.Point(763, 138);
 			this.but1.Name = "but1";
 			this.but1.Size = new System.Drawing.Size(32, 32);
@@ -268,8 +268,8 @@ namespace OpenDental{
 			// but6
 			// 
 			this.but6.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but6.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but6.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but6.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but6.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but6.Location = new System.Drawing.Point(833, 103);
 			this.but6.Name = "but6";
 			this.but6.Size = new System.Drawing.Size(32, 32);
@@ -280,8 +280,8 @@ namespace OpenDental{
 			// but9
 			// 
 			this.but9.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but9.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but9.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but9.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but9.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but9.Location = new System.Drawing.Point(833, 68);
 			this.but9.Name = "but9";
 			this.but9.Size = new System.Drawing.Size(32, 32);
@@ -292,8 +292,8 @@ namespace OpenDental{
 			// but5
 			// 
 			this.but5.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but5.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but5.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but5.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but5.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but5.Location = new System.Drawing.Point(798, 103);
 			this.but5.Name = "but5";
 			this.but5.Size = new System.Drawing.Size(32, 32);
@@ -304,8 +304,8 @@ namespace OpenDental{
 			// but4
 			// 
 			this.but4.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but4.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but4.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but4.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but4.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but4.Location = new System.Drawing.Point(763, 103);
 			this.but4.Name = "but4";
 			this.but4.Size = new System.Drawing.Size(32, 32);
@@ -316,8 +316,8 @@ namespace OpenDental{
 			// but8
 			// 
 			this.but8.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but8.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but8.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but8.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but8.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but8.Location = new System.Drawing.Point(798, 68);
 			this.but8.Name = "but8";
 			this.but8.Size = new System.Drawing.Size(32, 32);
@@ -365,8 +365,8 @@ namespace OpenDental{
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(7, 228);
@@ -419,8 +419,8 @@ namespace OpenDental{
 			// but0
 			// 
 			this.but0.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but0.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but0.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but0.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but0.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but0.Location = new System.Drawing.Point(763, 173);
 			this.but0.Name = "but0";
 			this.but0.Size = new System.Drawing.Size(67, 32);
@@ -431,8 +431,8 @@ namespace OpenDental{
 			// but10
 			// 
 			this.but10.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.but10.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.but10.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.but10.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.but10.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.but10.Location = new System.Drawing.Point(833, 173);
 			this.but10.Name = "but10";
 			this.but10.Size = new System.Drawing.Size(32, 32);
@@ -444,8 +444,8 @@ namespace OpenDental{
 			// butBleed
 			// 
 			this.butBleed.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butBleed.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butBleed.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butBleed.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBleed.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBleed.Location = new System.Drawing.Point(762, 301);
 			this.butBleed.Name = "butBleed";
 			this.butBleed.Size = new System.Drawing.Size(88, 26);
@@ -457,8 +457,8 @@ namespace OpenDental{
 			// butPus
 			// 
 			this.butPus.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPus.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPus.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPus.Location = new System.Drawing.Point(762, 331);
 			this.butPus.Name = "butPus";
 			this.butPus.Size = new System.Drawing.Size(88, 26);
@@ -525,8 +525,8 @@ namespace OpenDental{
 			// butCalculus
 			// 
 			this.butCalculus.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butCalculus.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butCalculus.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butCalculus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCalculus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCalculus.Location = new System.Drawing.Point(762, 271);
 			this.butCalculus.Name = "butCalculus";
 			this.butCalculus.Size = new System.Drawing.Size(88, 26);
@@ -538,8 +538,8 @@ namespace OpenDental{
 			// butPlaque
 			// 
 			this.butPlaque.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPlaque.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPlaque.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPlaque.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPlaque.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPlaque.Location = new System.Drawing.Point(762, 241);
 			this.butPlaque.Name = "butPlaque";
 			this.butPlaque.Size = new System.Drawing.Size(88, 26);
@@ -584,8 +584,8 @@ namespace OpenDental{
 			// butPrint
 			// 
 			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPrint.Location = new System.Drawing.Point(885, 609);
@@ -878,8 +878,8 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(7, 197);
@@ -1043,6 +1043,8 @@ namespace OpenDental{
 			textRedCAL.Text =((Pref)Prefs.HList["PerioRedCAL"] ).ValueString;
 			textRedFurc.Text=((Pref)Prefs.HList["PerioRedFurc"]).ValueString;
 			textRedMob.Text =((Pref)Prefs.HList["PerioRedMob"] ).ValueString;
+			Procedure[] procList=Procedures.Refresh(PatCur.PatNum);
+			MissingTeeth=Procedures.GetMissingTeeth(procList);
 			RefreshListExams();
 			listExams.SelectedIndex=PerioExams.List.Length-1;//this works even if no items.
 			FillGrid();
@@ -1051,7 +1053,7 @@ namespace OpenDental{
 		///<summary>After this method runs, the selected index is usually set.</summary>
 		private void RefreshListExams(){
 			//most recent date at the bottom
-			PerioExams.Refresh();
+			PerioExams.Refresh(PatCur.PatNum);
 			listExams.Items.Clear();
 			for(int i=0;i<PerioExams.List.Length;i++){
 				listExams.Items.Add(PerioExams.List[i].ExamDate.ToShortDateString()+"   "
@@ -1078,7 +1080,7 @@ namespace OpenDental{
 			//Only continues if clicked on other than current exam
 			gridP.SaveCurExam();
 			//no need to RefreshListExams because it has not changed
-			PerioExams.Refresh();//refresh instead
+			PerioExams.Refresh(PatCur.PatNum);//refresh instead
 			FillGrid();
 		}
 
@@ -1089,7 +1091,7 @@ namespace OpenDental{
 				return;
 			//a PerioExam.Cur will always have been set through mousedown(or similar),then FillGrid
 			gridP.SaveCurExam();
-			PerioExams.Refresh();//list will not change
+			PerioExams.Refresh(PatCur.PatNum);//list will not change
 			FormPerioEdit FormPE=new FormPerioEdit();
 			FormPE.ShowDialog();
 			int curIndex=listExams.SelectedIndex;
@@ -1103,17 +1105,17 @@ namespace OpenDental{
 				gridP.SaveCurExam();
 			}
 			PerioExams.Cur=new PerioExam();
-			PerioExams.Cur.PatNum=Patients.Cur.PatNum;
+			PerioExams.Cur.PatNum=PatCur.PatNum;
 			PerioExams.Cur.ExamDate=DateTime.Today;
-			PerioExams.Cur.ProvNum=Patients.Cur.PriProv;
+			PerioExams.Cur.ProvNum=PatCur.PriProv;
 			PerioExams.InsertCur();
 			ArrayList skippedTeeth=new ArrayList();//int 1-32
 			if(PerioExams.List.Length==0){
-				for(int i=0;i<Procedures.MissingTeeth.Count;i++){
-					if(((string)Procedures.MissingTeeth[i]).CompareTo("A")<0//if a number
-						|| ((string)Procedures.MissingTeeth[i]).CompareTo("Z")>0)
+				for(int i=0;i<MissingTeeth.Count;i++){
+					if(((string)MissingTeeth[i]).CompareTo("A")<0//if a number
+						|| ((string)MissingTeeth[i]).CompareTo("Z")>0)
 					{
-						skippedTeeth.Add(PIn.PInt((string)Procedures.MissingTeeth[i]));
+						skippedTeeth.Add(PIn.PInt((string)MissingTeeth[i]));
 					}
 				}
 			}
@@ -1451,7 +1453,7 @@ namespace OpenDental{
 			grfx.DrawString("Periodontal Charting",new Font(FontFamily.GenericSansSerif,15),Brushes.Black
 				,new RectangleF(xPos,yPos,650,25),format);
 			yPos+=30;
-			grfx.DrawString(Patients.GetCurNameFL(),font,Brushes.Black
+			grfx.DrawString(PatCur.GetNameFL(),font,Brushes.Black
 				,new RectangleF(xPos,yPos,650,25),format);
 			yPos+=25;
 			grfx.TranslateTransform(xPos,yPos);

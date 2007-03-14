@@ -5,10 +5,10 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-///<summary></summary>
+///<summary>Lists all insurance plans for which the supplied patient is the subscriber. Lets you select an insurance plan based on a patNum. SelectedPlan will contain the plan selected.</summary>
 	public class FormInsPlanSelect : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.ListBox listRelat;
 		private OpenDental.TableInsPlans tbPlans;
@@ -17,17 +17,19 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelRelat;
 		///<summary>Set to true to view the relationship selection</summary>
 		public bool ViewRelat;
+		private Patient PatCur;
+		private Family FamCur;
+		///<summary>After closing this form, this will contain the selected plan.</summary>
+		public InsPlan SelectedPlan;
+		private InsPlan[] PlanList;
+		private int PatNum;
 
 		///<summary></summary>
-		public FormInsPlanSelect(){
+		public FormInsPlanSelect(int patNum){
 			InitializeComponent();
+			PatNum=patNum;
 			tbPlans.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbPlans_CellDoubleClicked);
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-				this,
-				//label1
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -44,8 +46,8 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.tbPlans = new OpenDental.TableInsPlans();
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.labelRelat = new System.Windows.Forms.Label();
 			this.listRelat = new System.Windows.Forms.ListBox();
 			this.SuspendLayout();
@@ -63,8 +65,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(618, 374);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(76, 26);
@@ -74,7 +80,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(618, 338);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(76, 26);
@@ -127,31 +137,33 @@ namespace OpenDental{
 				labelRelat.Visible=false;
 				listRelat.Visible=false;
 			}
-			//usage: eg. from coverage.  Since totally new subscriber, need to get all plans for them.
-			Patients.GetFamily(Patients.Cur.PatNum);
-      InsPlans.Refresh();
+			//usage: eg. from coverage.  Since can be totally new subscriber, get all plans for them.
+			FamCur=Patients.GetFamily(PatNum);
+			PatCur=FamCur.GetPatient(PatNum);
+      PlanList=InsPlans.Refresh(FamCur);
 			FillPlanData();
     }
 
 		private void FillPlanData(){
-			tbPlans.ResetRows(InsPlans.List.Length);
+			tbPlans.ResetRows(PlanList.Length);
 			tbPlans.SetGridColor(Color.Gray);
 			tbPlans.SetBackGColor(Color.White);
-			for(int i=0;i<InsPlans.List.Length;i++){
+			for(int i=0;i<PlanList.Length;i++){
 				tbPlans.Cell[0,i]=(i+1).ToString();
-				tbPlans.Cell[1,i]=Patients.GetNameInFamLF(InsPlans.List[i].Subscriber);
-				tbPlans.Cell[2,i]=Carriers.GetName(InsPlans.List[i].CarrierNum);
-				if(InsPlans.List[i].DateEffective.Year < 1870)
+				tbPlans.Cell[1,i]=FamCur.GetNameInFamLF(PlanList[i].Subscriber);
+				tbPlans.Cell[2,i]=Carriers.GetName(PlanList[i].CarrierNum);
+				if(PlanList[i].DateEffective.Year < 1870)
 					tbPlans.Cell[3,i]="";
 				else
-					tbPlans.Cell[3,i]=InsPlans.List[i].DateEffective.ToString("d");
-				if(InsPlans.List[i].DateTerm.Year < 1870)
+					tbPlans.Cell[3,i]=PlanList[i].DateEffective.ToString("d");
+				if(PlanList[i].DateTerm.Year < 1870)
 					tbPlans.Cell[4,i]="";
 				else
-					tbPlans.Cell[4,i]=InsPlans.List[i].DateTerm.ToString("d");
+					tbPlans.Cell[4,i]=PlanList[i].DateTerm.ToString("d");
 			}
 			tbPlans.SelectedRow=-1;
 			tbPlans.LayoutTables();
+			listRelat.Items.Clear();
 			for(int i=0;i<Enum.GetNames(typeof(Relat)).Length;i++){
 				listRelat.Items.Add(Lan.g("enumRelat",Enum.GetNames(typeof(Relat))[i]));
 			}
@@ -165,7 +177,7 @@ namespace OpenDental{
 			if(ViewRelat){
 				PatRelat=(Relat)listRelat.SelectedIndex;
 			}
-			InsPlans.Cur=InsPlans.List[e.Row];
+			SelectedPlan=PlanList[e.Row];
       DialogResult=DialogResult.OK;
 		}
 
@@ -181,7 +193,7 @@ namespace OpenDental{
 			if(ViewRelat){
 				PatRelat=(Relat)listRelat.SelectedIndex;
 			}
-			InsPlans.Cur=InsPlans.List[tbPlans.SelectedRow];
+			SelectedPlan=PlanList[tbPlans.SelectedRow];
       DialogResult=DialogResult.OK;		
 		}
 

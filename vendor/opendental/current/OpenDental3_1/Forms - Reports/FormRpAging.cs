@@ -9,8 +9,8 @@ namespace OpenDental{
 	///<summary></summary>
 	public class FormRpAging : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private FormQuery FormQuery2;
 		private System.Windows.Forms.Label label1;
@@ -20,7 +20,7 @@ namespace OpenDental{
 		private System.Windows.Forms.RadioButton radio30;
 		private System.Windows.Forms.RadioButton radio90;
 		private System.Windows.Forms.RadioButton radio60;
-		private System.Windows.Forms.Button butAll;
+		private OpenDental.UI.Button butAll;
 		private System.Windows.Forms.CheckBox checkIncludeNeg;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.CheckBox checkOnlyNeg;
@@ -30,19 +30,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormRpAging(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2,
-				radio30,
-				radio60,
-				radio90,
-				radioAny,
-				groupBox1,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			}); 
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -58,8 +46,8 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.radio30 = new System.Windows.Forms.RadioButton();
 			this.radio90 = new System.Windows.Forms.RadioButton();
@@ -69,7 +57,7 @@ namespace OpenDental{
 			this.textDate = new OpenDental.ValidDate();
 			this.listBillType = new System.Windows.Forms.ListBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.butAll = new System.Windows.Forms.Button();
+			this.butAll = new OpenDental.UI.Button();
 			this.checkIncludeNeg = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.checkOnlyNeg = new System.Windows.Forms.CheckBox();

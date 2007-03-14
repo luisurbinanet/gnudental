@@ -8,8 +8,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRpPrescriptions : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.RadioButton radioDrug;
 		private System.Windows.Forms.RadioButton radioPatient;
@@ -21,16 +21,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormRpPrescriptions(){
 			InitializeComponent();
- 			Lan.C(this, new System.Windows.Forms.Control[] {
-				panel1,
-				radioDrug,
-				radioPatient,
-				labelInstruct,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});  
+ 			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -50,8 +41,8 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.radioDrug = new System.Windows.Forms.RadioButton();
 			this.radioPatient = new System.Windows.Forms.RadioButton();

@@ -12,7 +12,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public System.Windows.Forms.ErrorProvider errorProvider1;
 		///<summary></summary>
-		public int MaxVal=255;
+		private int maxVal=255;
 		///<summary></summary>
 		private int minVal=0;
 
@@ -59,6 +59,16 @@ namespace OpenDental{
 			}
 			set{
 				minVal=value;
+			}
+		}
+
+		///<summary>The maximum value that this number can be set to without generating an error.</summary>
+		public int MaxVal{
+			get{
+				return maxVal;
+			}
+			set{
+				maxVal=value;
 			}
 		}
 

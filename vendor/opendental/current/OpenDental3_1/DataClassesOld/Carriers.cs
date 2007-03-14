@@ -132,21 +132,30 @@ namespace OpenDental{
 			return "";
 		}
 
-		///<summary>Sets Cur to the carrier based on the carrierNum.  This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently..</summary>
+		///<summary>Getting phased out.  Sets Cur to the carrier based on the carrierNum.  This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently..</summary>
 		public static void GetCur(int carrierNum){
+			Cur=GetCarrier(carrierNum);
+		}
+
+		///<summary>Replacing GetCur. Gets the specified carrier. This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently.</summary>
+		public static Carrier GetCarrier(int carrierNum){
+			if(carrierNum==0){
+				Carrier retVal=new Carrier();
+				retVal.CarrierName="";//instead of null. Helps prevent crash.
+				return retVal;
+			}
 			if(HList.ContainsKey(carrierNum)){
-				Cur=(Carrier)HList[carrierNum];
-				return;
+				return (Carrier)HList[carrierNum];
 			}
 			//if the carrierNum could not be found:
 			Refresh();
 			if(HList.ContainsKey(carrierNum)){
-				Cur=(Carrier)HList[carrierNum];
-				return;
+				return (Carrier)HList[carrierNum];
 			}
 			//this could only happen if corrupted:
-			Cur=new Carrier();
-			Cur.CarrierName="";//instead of null. Helps prevent crash.
+			Carrier retVall=new Carrier();
+			retVall.CarrierName="";//instead of null. Helps prevent crash.
+			return retVall;
 		}
 
 		///<summary>Gets a carrierNum based on the other data in Cur.  If there is no matching carrier, then a new carrier is created.  The end result is that a valid Cur will always be set.</summary>

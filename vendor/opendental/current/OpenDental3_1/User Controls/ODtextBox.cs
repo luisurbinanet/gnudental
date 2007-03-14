@@ -27,6 +27,7 @@ namespace OpenDental
 			//
 		}*/
 
+		///<summary></summary>
 		public ODtextBox(){
 			InitializeComponent();// Required for Windows.Forms Class Composition Designer support
 			EventHandler onClick=new EventHandler(menuItem_Click);
@@ -142,6 +143,7 @@ namespace OpenDental
 			}
 		}
 
+		///<summary></summary>
 		protected override void OnKeyUp(KeyEventArgs e) {
 			base.OnKeyUp (e);
 			int originalLength=Text.Length;

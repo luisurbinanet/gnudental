@@ -7,23 +7,17 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormPasswordReset : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.TextBox textMasterPass;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		private string masterHash;
 
 		///<summary></summary>
 		public FormPasswordReset(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1
-				//labelPassword,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -40,9 +34,9 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.textMasterPass = new System.Windows.Forms.TextBox();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// textMasterPass

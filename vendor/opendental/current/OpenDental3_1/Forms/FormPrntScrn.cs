@@ -24,7 +24,7 @@ namespace OpenDental{
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog2;
 
 		private IDataObject clipboard;
@@ -50,28 +50,17 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textMouseY;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
-		private OpenDental.XPButton butPrint;
-		private OpenDental.XPButton butZoomIn;
-		private OpenDental.XPButton butZoomOut;
-		private OpenDental.XPButton butExport;
+		private OpenDental.UI.Button butPrint;
+		private OpenDental.UI.Button butZoomIn;
+		private OpenDental.UI.Button butZoomOut;
+		private OpenDental.UI.Button butExport;
 
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
 		public FormPrntScrn(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				this.butExport,
-				this.butZoomIn,
-				this.butZoomOut,
-				this.label2,
-				this.label3,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				this.butPrint,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -95,16 +84,16 @@ namespace OpenDental{
 			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
 			this.textMouseX = new System.Windows.Forms.TextBox();
 			this.textMouseY = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
-			this.butPrint = new OpenDental.XPButton();
-			this.butZoomIn = new OpenDental.XPButton();
-			this.butZoomOut = new OpenDental.XPButton();
-			this.butExport = new OpenDental.XPButton();
+			this.butPrint = new OpenDental.UI.Button();
+			this.butZoomIn = new OpenDental.UI.Button();
+			this.butZoomOut = new OpenDental.UI.Button();
+			this.butExport = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -133,8 +122,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.Location = new System.Drawing.Point(884, 759);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -165,29 +158,32 @@ namespace OpenDental{
 			// label2
 			// 
 			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.label2.Location = new System.Drawing.Point(224, 766);
+			this.label2.Location = new System.Drawing.Point(209, 764);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(50, 23);
+			this.label2.Size = new System.Drawing.Size(63, 17);
 			this.label2.TabIndex = 11;
 			this.label2.Text = "Mouse X";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.label2.Visible = false;
 			// 
 			// label3
 			// 
 			this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.label3.Location = new System.Drawing.Point(344, 766);
+			this.label3.Location = new System.Drawing.Point(334, 763);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(46, 23);
+			this.label3.Size = new System.Drawing.Size(56, 20);
 			this.label3.TabIndex = 12;
 			this.label3.Text = "MouseY";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.label3.Visible = false;
 			// 
 			// butPrint
 			// 
 			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPrint.Location = new System.Drawing.Point(678, 759);
@@ -201,13 +197,14 @@ namespace OpenDental{
 			// 
 			this.butZoomIn.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butZoomIn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butZoomIn.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butZoomIn.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butZoomIn.Autosize = true;
+			this.butZoomIn.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butZoomIn.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butZoomIn.Image = ((System.Drawing.Image)(resources.GetObject("butZoomIn.Image")));
 			this.butZoomIn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butZoomIn.Location = new System.Drawing.Point(504, 759);
+			this.butZoomIn.Location = new System.Drawing.Point(502, 759);
 			this.butZoomIn.Name = "butZoomIn";
-			this.butZoomIn.Size = new System.Drawing.Size(75, 26);
+			this.butZoomIn.Size = new System.Drawing.Size(77, 26);
 			this.butZoomIn.TabIndex = 14;
 			this.butZoomIn.Text = "&Zoom +";
 			this.butZoomIn.Click += new System.EventHandler(this.butZoomIn_Click);
@@ -216,8 +213,9 @@ namespace OpenDental{
 			// 
 			this.butZoomOut.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butZoomOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butZoomOut.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butZoomOut.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butZoomOut.Autosize = true;
+			this.butZoomOut.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butZoomOut.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butZoomOut.Image = ((System.Drawing.Image)(resources.GetObject("butZoomOut.Image")));
 			this.butZoomOut.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butZoomOut.Location = new System.Drawing.Point(591, 759);
@@ -231,8 +229,9 @@ namespace OpenDental{
 			// 
 			this.butExport.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butExport.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butExport.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butExport.Autosize = true;
+			this.butExport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butExport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butExport.Image = ((System.Drawing.Image)(resources.GetObject("butExport.Image")));
 			this.butExport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butExport.Location = new System.Drawing.Point(765, 759);

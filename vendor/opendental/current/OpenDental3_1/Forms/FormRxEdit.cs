@@ -12,8 +12,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRxEdit : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.TextBox textSig;
 		private System.Windows.Forms.TextBox textDisp;
 		private System.Windows.Forms.TextBox textRefills;
@@ -32,28 +32,19 @@ namespace OpenDental{
 		private System.Drawing.Printing.PrintDocument pd2;
 		///<summary></summary>
 		public bool IsNew;
-		private OpenDental.XPButton butPrint;
-		private OpenDental.XPButton butDelete;
+		private OpenDental.UI.Button butPrint;
+		private OpenDental.UI.Button butDelete;
 		private OpenDental.ODtextBox textNotes;
 		///<summary></summary>
     public FormRpPrintPreview pView = new FormRpPrintPreview();
+		private Patient PatCur;
 
 		///<summary></summary>
-		public FormRxEdit(){
+		public FormRxEdit(Patient patCur){//RxPat rxPatCur){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label2,
-				label3,
-				label4,
-				label5,
-				label6,
-				label7,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			//RxPatCur=rxPatCur;
+			PatCur=patCur;
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -74,8 +65,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormRxEdit));
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.textSig = new System.Windows.Forms.TextBox();
 			this.textDisp = new System.Windows.Forms.TextBox();
 			this.textRefills = new System.Windows.Forms.TextBox();
@@ -91,15 +82,19 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
-			this.butPrint = new OpenDental.XPButton();
-			this.butDelete = new OpenDental.XPButton();
+			this.butPrint = new OpenDental.UI.Button();
+			this.butDelete = new OpenDental.UI.Button();
 			this.textNotes = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(618, 424);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -109,7 +104,11 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(618, 384);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -153,54 +152,54 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(70, 108);
+			this.label6.Location = new System.Drawing.Point(17, 108);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(36, 14);
+			this.label6.Size = new System.Drawing.Size(89, 14);
 			this.label6.TabIndex = 17;
 			this.label6.Text = "Sig";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(60, 164);
+			this.label5.Location = new System.Drawing.Point(7, 164);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(46, 14);
+			this.label5.Size = new System.Drawing.Size(99, 14);
 			this.label5.TabIndex = 16;
 			this.label5.Text = "Disp";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(60, 198);
+			this.label4.Location = new System.Drawing.Point(7, 198);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(46, 14);
+			this.label4.Size = new System.Drawing.Size(99, 14);
 			this.label4.TabIndex = 15;
 			this.label4.Text = "Refills";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(64, 232);
+			this.label3.Location = new System.Drawing.Point(11, 232);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(42, 14);
+			this.label3.Size = new System.Drawing.Size(95, 14);
 			this.label3.TabIndex = 14;
 			this.label3.Text = "Notes";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(66, 74);
+			this.label1.Location = new System.Drawing.Point(13, 74);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(40, 14);
+			this.label1.Size = new System.Drawing.Size(93, 14);
 			this.label1.TabIndex = 13;
 			this.label1.Text = "Drug";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(56, 44);
+			this.label2.Location = new System.Drawing.Point(3, 44);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(52, 14);
+			this.label2.Size = new System.Drawing.Size(105, 14);
 			this.label2.TabIndex = 25;
 			this.label2.Text = "Date";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -223,7 +222,7 @@ namespace OpenDental{
 			// 
 			this.label7.Location = new System.Drawing.Point(522, 10);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(52, 14);
+			this.label7.Size = new System.Drawing.Size(103, 14);
 			this.label7.TabIndex = 28;
 			this.label7.Text = "Provider";
 			// 
@@ -235,8 +234,9 @@ namespace OpenDental{
 			// 
 			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPrint.Location = new System.Drawing.Point(482, 424);
@@ -250,8 +250,9 @@ namespace OpenDental{
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(38, 424);
@@ -460,13 +461,13 @@ namespace OpenDental{
 			//Upper Left
 			Font bodyFont=new Font("Arial",9,FontStyle.Regular);			
   		string patName;
-			if(Patients.Cur.MiddleI!="")
-        patName=Patients.Cur.FName+" "+Patients.Cur.MiddleI+" "+Patients.Cur.LName;
+			if(PatCur.MiddleI!="")
+        patName=PatCur.FName+" "+PatCur.MiddleI+" "+PatCur.LName;
       else  
-        patName=Patients.Cur.FName+" "+Patients.Cur.LName;
-			string patAddress=Patients.Cur.Address;
-			string patAddress2=Patients.Cur.Address2;
-	    string patCSZ=Patients.Cur.City+", "+Patients.Cur.State+" "+Patients.Cur.Zip;
+        patName=PatCur.FName+" "+PatCur.LName;
+			string patAddress=PatCur.Address;
+			string patAddress2=PatCur.Address2;
+	    string patCSZ=PatCur.City+", "+PatCur.State+" "+PatCur.Zip;
 			fontH=(int)bodyFont.GetHeight(e.Graphics);
 			xPos=25;
 			yPos=120;
@@ -488,8 +489,8 @@ namespace OpenDental{
 			  e.Graphics.DrawString(patCSZ,bodyFont,Brushes.Black,xPos,yPos);     
   		}
 			//Phone and date
-			string patPhone=Patients.Cur.HmPhone;
-			string patDOB=Patients.Cur.Birthdate.ToShortDateString();
+			string patPhone=PatCur.HmPhone;
+			string patDOB=PatCur.Birthdate.ToShortDateString();
 			string rxDate=RxPats.Cur.RxDate.ToShortDateString();
 			xPos=280;
 			yPos=120;

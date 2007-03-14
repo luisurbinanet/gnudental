@@ -26,7 +26,7 @@ namespace OpenDental{
 		public bool SetRecall;
 		///<summary>If true, do not usually bill this procedure to insurance.</summary>
 		public bool NoBillIns;
-		///<summary>Not currently in use anywhere.  Might be used to designate a bridge, crown, or denture.</summary>
+		///<summary>True if Crown,Bridge,Denture, or RPD. Forces user to enter Initial or Replacement and Date.</summary>
 		public bool IsProsth;
 		///<summary>The default procedure note to copy when marking complete.</summary>
 		public string DefaultNote;

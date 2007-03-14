@@ -108,7 +108,7 @@ namespace OpenDental{
 				allCondsMet=true;
 				for(int j=0;j<AutoCodeConds.ListForItem.Length;j++){
 					if(!AutoCodeConds.ConditionIsMet
-						(AutoCodeConds.ListForItem[j].Condition,toothNum,surf,isAdditional,willBeMissing)){
+						(AutoCodeConds.ListForItem[j].Cond,toothNum,surf,isAdditional,willBeMissing)){
 						allCondsMet=false;
 					}
 				}
@@ -140,7 +140,7 @@ namespace OpenDental{
 				allCondsMet=true;
 				for(int j=0;j<AutoCodeConds.ListForItem.Length;j++){
 					if(!AutoCodeConds.ConditionIsMet
-						(AutoCodeConds.ListForItem[j].Condition,toothNum,surf,isAdditional,willBeMissing)){
+						(AutoCodeConds.ListForItem[j].Cond,toothNum,surf,isAdditional,willBeMissing)){
 						allCondsMet=false;
 					}
 				}

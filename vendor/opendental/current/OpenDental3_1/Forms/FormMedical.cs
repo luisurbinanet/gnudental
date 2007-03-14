@@ -7,14 +7,14 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormMedical : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Button butAdd;
+		private OpenDental.UI.Button butAdd;
 		private System.Windows.Forms.Label label8;
 		private OpenDental.TableMedications tbMeds;
 		private OpenDental.ODtextBox textMedical;
@@ -22,27 +22,14 @@ namespace OpenDental{
 		private OpenDental.ODtextBox textMedicalComp;
 		private OpenDental.ODtextBox textMedUrgNote;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		private Patient PatCur;
 
 		///<summary></summary>
-		public FormMedical(){
+		public FormMedical(Patient patCur){
 			InitializeComponent();// Required for Windows Form Designer support
+			PatCur=patCur;
 			tbMeds.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMeds_CellDoubleClicked);
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				//label1,
-				//label5,
-				label2,
-				label4,
-				label3,
-				label6,
-				//label7,
-				label8,
-				groupBox1,
-				this
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});
+			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -65,8 +52,8 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.textMedUrgNote = new OpenDental.ODtextBox();
 			this.textService = new OpenDental.ODtextBox();
@@ -75,7 +62,7 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
-			this.butAdd = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.UI.Button();
 			this.label8 = new System.Windows.Forms.Label();
 			this.tbMeds = new OpenDental.TableMedications();
 			this.textMedicalComp = new OpenDental.ODtextBox();
@@ -84,19 +71,29 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(786, 650);
 			this.butOK.Name = "butOK";
-			this.butOK.TabIndex = 3;
+			this.butOK.Size = new System.Drawing.Size(75, 25);
+			this.butOK.TabIndex = 0;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(879, 650);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -159,7 +156,7 @@ namespace OpenDental{
 			// 
 			this.label3.Location = new System.Drawing.Point(211, 63);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(100, 16);
+			this.label3.Size = new System.Drawing.Size(174, 16);
 			this.label3.TabIndex = 50;
 			this.label3.Text = "Service Notes";
 			// 
@@ -167,7 +164,7 @@ namespace OpenDental{
 			// 
 			this.label2.Location = new System.Drawing.Point(9, 21);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(116, 14);
+			this.label2.Size = new System.Drawing.Size(190, 14);
 			this.label2.TabIndex = 49;
 			this.label2.Text = "Urgent Medical Notes";
 			// 
@@ -190,7 +187,10 @@ namespace OpenDental{
 			// 
 			// butAdd
 			// 
-			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Location = new System.Drawing.Point(142, 0);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.TabIndex = 51;
@@ -255,15 +255,8 @@ namespace OpenDental{
 		}
 		#endregion
 
-		private void FormMedical_Load(object sender, System.EventArgs e) {
-			//for(int i=0;i<Defs.Short[(int)DefCat.MedicalNotes].Length;i++){
-			//	listMedical.Items.Add(Defs.Short[(int)DefCat.MedicalNotes][i].ItemName);
-			//	listMedicalComp.Items.Add(Defs.Short[(int)DefCat.MedicalNotes][i].ItemName);
-			//}
-			//for(int i=0;i<Defs.Short[(int)DefCat.ServiceNotes].Length;i++){
-			//	listService.Items.Add(Defs.Short[(int)DefCat.ServiceNotes][i].ItemName);
-			//}
-			textMedUrgNote.Text=Patients.Cur.MedUrgNote;
+		private void FormMedical_Load(object sender, System.EventArgs e){
+			textMedUrgNote.Text=PatCur.MedUrgNote;
 			textMedical.Text=PatientNotes.Cur.Medical;
 			textMedicalComp.Text=PatientNotes.Cur.MedicalComp;
 			textService.Text=PatientNotes.Cur.Service;
@@ -272,16 +265,17 @@ namespace OpenDental{
 
 		private void FillMeds(){
 			Medications.Refresh();
-			MedicationPats.Refresh();
+			MedicationPats.Refresh(PatCur.PatNum);
 			tbMeds.ResetRows(MedicationPats.List.Length);
 			tbMeds.SetGridColor(Color.Gray);
 			tbMeds.SetBackGColor(Color.White);  
 			for(int i=0;i<MedicationPats.List.Length;i++){
-				tbMeds.Cell[0,i]=((Medication)Medications.HList[MedicationPats.List[i].MedicationNum]).MedName;
-				tbMeds.Cell[1,i]=((Medication)Medications.HList[
-					((Medication)Medications.HList[MedicationPats.List[i].MedicationNum]).GenericNum]).MedName;
-				tbMeds.Cell[2,i]=((Medication)Medications.HList[
-					((Medication)Medications.HList[MedicationPats.List[i].MedicationNum]).GenericNum]).Notes;
+				tbMeds.Cell[0,i]=((Medication)Medications.HList
+					[MedicationPats.List[i].MedicationNum]).MedName;
+				tbMeds.Cell[1,i]=((Medication)Medications.HList[((Medication)Medications.HList
+					[MedicationPats.List[i].MedicationNum]).GenericNum]).MedName;
+				tbMeds.Cell[2,i]=((Medication)Medications.HList[((Medication)Medications.HList
+					[MedicationPats.List[i].MedicationNum]).GenericNum]).Notes;
 				tbMeds.Cell[3,i]=MedicationPats.List[i].PatNote;
 			}
 			tbMeds.LayoutTables(); 
@@ -303,7 +297,7 @@ namespace OpenDental{
 				return;
 			}
 			MedicationPats.Cur=new MedicationPat();
-			MedicationPats.Cur.PatNum=Patients.Cur.PatNum;
+			MedicationPats.Cur.PatNum=PatCur.PatNum;
 			MedicationPats.Cur.MedicationNum=FormM.MedicationNum;
 			FormMedPat FormMP=new FormMedPat();
 			FormMP.IsNew=true;
@@ -314,57 +308,14 @@ namespace OpenDental{
 			FillMeds();
 		}
 
-		/*private void listService_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(listService.IndexFromPoint(e.X,e.Y)==-1){
-				return;
-			}
-			int caret=textService.SelectionStart;
-			string strPaste;
-			strPaste=Defs.Short[(int)DefCat.ServiceNotes][listService.IndexFromPoint(e.X,e.Y)].ItemName;
-			textService.Text=textService.Text.Insert(caret,strPaste);
-			textService.Select();
-			textService.SelectionStart=caret+strPaste.Length;
-			textService.SelectionLength=0;
-			listService.SelectedIndex=-1;
-		}
-
-		private void listMedical_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(listMedical.IndexFromPoint(e.X,e.Y)==-1){
-				return;
-			}
-			int caret=textMedical.SelectionStart;
-			string strPaste;
-			strPaste=Defs.Short[(int)DefCat.MedicalNotes][listMedical.IndexFromPoint(e.X,e.Y)].ItemName;
-			textMedical.Text=textMedical.Text.Insert(caret,strPaste);
-			textMedical.Select();
-			textMedical.SelectionStart=caret+strPaste.Length;
-			textMedical.SelectionLength=0;
-			listMedical.SelectedIndex=-1;
-		}
-
-		private void listMedicalComp_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(listMedicalComp.IndexFromPoint(e.X,e.Y)==-1){
-				return;
-			}
-			int caret=textMedicalComp.SelectionStart;
-			string strPaste;
-			strPaste=Defs.Short[(int)DefCat.MedicalNotes][listMedicalComp.IndexFromPoint(e.X,e.Y)].ItemName;
-			textMedicalComp.Text=textMedicalComp.Text.Insert(caret,strPaste);
-			textMedicalComp.Select();
-			textMedicalComp.SelectionStart=caret+strPaste.Length;
-			textMedicalComp.SelectionLength=0;
-			listMedicalComp.SelectedIndex=-1;
-		}*/
-
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Patient PatCur=Patients.Cur;
+			Patient PatOld=PatCur.Copy();
 			PatCur.MedUrgNote=textMedUrgNote.Text;
-			Patients.Cur=PatCur;
-			Patients.UpdateCur();
+			PatCur.Update(PatOld);
 			PatientNotes.Cur.Medical=textMedical.Text;
 			PatientNotes.Cur.Service=textService.Text;
 			PatientNotes.Cur.MedicalComp=textMedicalComp.Text;
-			PatientNotes.UpdateCur();
+			PatientNotes.UpdateCur(PatCur.Guarantor);
 			DialogResult=DialogResult.OK;
 		}
 

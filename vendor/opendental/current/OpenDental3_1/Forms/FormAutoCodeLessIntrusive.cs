@@ -15,8 +15,8 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butNo;
-		private System.Windows.Forms.Button butYes;
+		private OpenDental.UI.Button butNo;
+		private OpenDental.UI.Button butYes;
 		///<summary>The text to display in this dialog</summary>
 		public string mainText;
 		///<summary>The user checked the box.</summary>
@@ -29,10 +29,8 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butYes,
-				butNo,
-			});
+			Lan.F(this,new Control[] {labelMain});
+			//labelMain is translated from calling Form (FormProcEdit)
 		}
 
 		/// <summary>
@@ -58,8 +56,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormAutoCodeLessIntrusive));
-			this.butNo = new System.Windows.Forms.Button();
-			this.butYes = new System.Windows.Forms.Button();
+			this.butNo = new OpenDental.UI.Button();
+			this.butYes = new OpenDental.UI.Button();
 			this.checkLessIntrusive = new System.Windows.Forms.CheckBox();
 			this.labelMain = new System.Windows.Forms.Label();
 			this.SuspendLayout();

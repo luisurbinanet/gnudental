@@ -28,7 +28,7 @@
                     BaseAddress = "285212672"
                     CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
-                    DefineConstants = "DEBUG;TRACE;ISXP"
+                    DefineConstants = "DEBUG;TRACE"
                     DocumentationFile = ""
                     DebugSymbols = "true"
                     FileAlignment = "4096"
@@ -40,15 +40,15 @@
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
-                    WarningLevel = "4"
+                    WarningLevel = "3"
                 />
                 <Config
-                    Name = "ReleaseXP"
+                    Name = "Release"
                     AllowUnsafeBlocks = "false"
                     BaseAddress = "285212672"
                     CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
-                    DefineConstants = "TRACE;ISXP"
+                    DefineConstants = "TRACE"
                     DocumentationFile = "OpenDental.xml"
                     DebugSymbols = "false"
                     FileAlignment = "4096"
@@ -56,27 +56,7 @@
                     NoStdLib = "false"
                     NoWarn = ""
                     Optimize = "true"
-                    OutputPath = "bin\ReleaseXP\"
-                    RegisterForComInterop = "false"
-                    RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "false"
-                    WarningLevel = "4"
-                />
-                <Config
-                    Name = "Release982000"
-                    AllowUnsafeBlocks = "false"
-                    BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "false"
-                    ConfigurationOverrideFile = ""
-                    DefineConstants = "TRACE"
-                    DocumentationFile = ""
-                    DebugSymbols = "false"
-                    FileAlignment = "4096"
-                    IncrementalBuild = "false"
-                    NoStdLib = "false"
-                    NoWarn = ""
-                    Optimize = "true"
-                    OutputPath = "bin\Release982000\"
+                    OutputPath = "bin\Release\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
@@ -136,15 +116,14 @@
                     Private = "True"
                 />
                 <Reference
-                    Name = "ByteFX.MySqlClient"
-                    AssemblyName = "ByteFX.MySqlClient"
-                    HintPath = "ByteFX.MySqlClient.dll"
-                    Private = "True"
+                    Name = "MySql.Data"
+                    AssemblyName = "MySql.Data"
+                    HintPath = "MySql.Data.dll"
                 />
                 <Reference
-                    Name = "Interop.WIALib"
-                    AssemblyName = "Interop.WIALib"
-                    HintPath = "Interop.WIALib.dll"
+                    Name = "RS232"
+                    AssemblyName = "RS232"
+                    HintPath = "RS232.dll"
                 />
             </References>
         </Build>
@@ -161,12 +140,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Bridges\Renaissance.cs"
+                    RelPath = "Bridges\Schick.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Bridges\Schick.cs"
+                    RelPath = "Bridges\Sirona.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -186,66 +165,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Adjustments.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Appointments.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ApptViewItems.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ApptViews.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\AutoCodeConds.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\AutoCodeItems.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\AutoCodes.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Batch.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Carriers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ClaimFormItems.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ClaimForms.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ClaimPayments.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataClasses\ClaimProc.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -256,57 +175,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Claims.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ClockEvents.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Commlogs.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Computers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Contacts.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Conversions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Counties.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\CovCats.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\CovPats.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\CovSpans.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\DataClass.cs"
+                    RelPath = "DataClasses\Clearinghouses.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -316,47 +185,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Defs.cs"
+                    RelPath = "DataClasses\Family.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\DocAttaches.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Documents.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\EmailMessages.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\EmailTemplates.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Employees.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Employers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Fees.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Graphic.cs"
+                    RelPath = "DataClasses\InsPlan.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -366,47 +200,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\InsTemplates.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Language.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\LanguageForeign.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Ledgers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Letters.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\MedicationPats.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Medications.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ODReportData.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\PatientNotes.cs"
+                    RelPath = "DataClasses\Patient.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -416,72 +210,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Payments.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\PayPlans.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\PaySplits.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\PerioExams.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\PerioMeasures.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\PerioSequences.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Permissions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\PIn.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\POut.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Prefs.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ProcButtonItems.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ProcButtons.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataClasses\Procedure.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\ProcedureCodes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -491,37 +220,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\ProgramProperties.cs"
+                    RelPath = "DataClasses\Recall.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Programs.cs"
+                    RelPath = "DataClasses\Recalls.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Providers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\Queries.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\QuickPasteCats.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\QuickPasteNotes.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClasses\RefAttaches.cs"
+                    RelPath = "DataClasses\Referral.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -531,82 +240,462 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\ReportObjects.cs"
+                    RelPath = "DataClassesOld\Adjustments.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\ReportParameters.cs"
+                    RelPath = "DataClassesOld\Appointments.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Reports.cs"
+                    RelPath = "DataClassesOld\ApptViewItems.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\RxDefs.cs"
+                    RelPath = "DataClassesOld\ApptViews.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\RxPats.cs"
+                    RelPath = "DataClassesOld\AutoCodeConds.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\SchedDefaults.cs"
+                    RelPath = "DataClassesOld\AutoCodeItems.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Schedules.cs"
+                    RelPath = "DataClassesOld\AutoCodes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Schools.cs"
+                    RelPath = "DataClassesOld\Batch.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\ScreenGroups.cs"
+                    RelPath = "DataClassesOld\Carriers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Screens.cs"
+                    RelPath = "DataClassesOld\ClaimFormItems.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\SecurityLogs.cs"
+                    RelPath = "DataClassesOld\ClaimForms.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\ToolButItems.cs"
+                    RelPath = "DataClassesOld\ClaimPayments.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\UserPermissions.cs"
+                    RelPath = "DataClassesOld\Claims.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\UserQueries.cs"
+                    RelPath = "DataClassesOld\ClockEvents.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\Users.cs"
+                    RelPath = "DataClassesOld\Commlogs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClasses\ZipCodes.cs"
+                    RelPath = "DataClassesOld\Computers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Contacts.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Conversions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Counties.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\CovCats.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\CovPats.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\CovSpans.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\DataClass.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Defs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\DocAttaches.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Documents.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ElectIDs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\EmailMessages.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\EmailTemplates.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Employees.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Employers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Fees.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Graphic.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\InsTemplates.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Language.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\LanguageForeign.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Ledgers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Letters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\MedicationPats.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Medications.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ODReportData.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\PatientNotes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Payments.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\PayPlans.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\PaySplits.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\PerioExams.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\PerioMeasures.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\PerioSequences.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Permissions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\PIn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\POut.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Prefs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ProcButtonItems.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ProcButtons.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ProcedureCodes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ProgramProperties.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Programs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ProviderIdents.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Providers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Queries.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\QuickPasteCats.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\QuickPasteNotes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\RefAttaches.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ReportObjects.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ReportParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Reports.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\RxDefs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\RxPats.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\SchedDefaults.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Schedules.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Schools.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ScreenGroups.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Screens.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\SecurityLogs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ToolButItems.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\UserPermissions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\UserQueries.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\Users.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataClassesOld\ZipCodes.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\BCBSGA.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\Eclaims.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\FormTerminal.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\FormTerminal.resx"
+                    DependentUpon = "FormTerminal.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Eclaims\RECS.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\Renaissance.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\Rs232.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\WebClaim.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\WebMD.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\X12.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\X12object.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\X277U.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Eclaims\X997.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -881,13 +970,13 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Forms\FormClaimProcEditOld.cs"
-                    SubType = "Code"
+                    RelPath = "Forms\FormClaimReports.cs"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Forms\FormClaimProcEditOld.resx"
-                    DependentUpon = "FormClaimProcEditOld.cs"
+                    RelPath = "Forms\FormClaimReports.resx"
+                    DependentUpon = "FormClaimReports.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -908,6 +997,26 @@
                 <File
                     RelPath = "Forms\FormClaimSupplemental.resx"
                     DependentUpon = "FormClaimSupplemental.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormClearinghouseEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormClearinghouseEdit.resx"
+                    DependentUpon = "FormClearinghouseEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormClearinghouses.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormClearinghouses.resx"
+                    DependentUpon = "FormClearinghouses.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -948,16 +1057,6 @@
                 <File
                     RelPath = "Forms\FormConfig.resx"
                     DependentUpon = "FormConfig.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Forms\FormConfigStatus.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormConfigStatus.resx"
-                    DependentUpon = "FormConfigStatus.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1038,6 +1137,16 @@
                 <File
                     RelPath = "Forms\FormEasy.resx"
                     DependentUpon = "FormEasy.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormElectIDs.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormElectIDs.resx"
+                    DependentUpon = "FormElectIDs.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1248,16 +1357,6 @@
                 <File
                     RelPath = "Forms\FormLetterEdit.resx"
                     DependentUpon = "FormLetterEdit.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Forms\FormLetterEditOld.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormLetterEditOld.resx"
-                    DependentUpon = "FormLetterEditOld.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1621,6 +1720,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormProviderIdentEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormProviderIdentEdit.resx"
+                    DependentUpon = "FormProviderIdentEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormProviderSelect.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1681,16 +1790,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Forms\FormRecall.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormRecall.resx"
-                    DependentUpon = "FormRecall.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Forms\FormRecallEdit.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1698,6 +1797,26 @@
                 <File
                     RelPath = "Forms\FormRecallEdit.resx"
                     DependentUpon = "FormRecallEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormRecallList.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormRecallList.resx"
+                    DependentUpon = "FormRecallList.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormRecallListEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormRecallListEdit.resx"
+                    DependentUpon = "FormRecallListEdit.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2339,6 +2458,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Misc\EZTwain.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Misc\Pop3.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2564,6 +2688,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Tables(grids)\TableClearinghouses.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables(grids)\TableClearinghouses.resx"
+                    DependentUpon = "TableClearinghouses.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Tables(grids)\TableCodeList.cs"
                     SubType = "UserControl"
                     BuildAction = "Compile"
@@ -2631,6 +2765,16 @@
                 <File
                     RelPath = "Tables(grids)\TableDefs.resx"
                     DependentUpon = "TableDefs.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Tables(grids)\TableElectID.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables(grids)\TableElectID.resx"
+                    DependentUpon = "TableElectID.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2764,6 +2908,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Tables(grids)\TableProvIdent.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables(grids)\TableProvIdent.resx"
+                    DependentUpon = "TableProvIdent.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Tables(grids)\TableQueue.cs"
                     SubType = "UserControl"
                     BuildAction = "Compile"
@@ -2781,6 +2935,16 @@
                 <File
                     RelPath = "Tables(grids)\TableRecall.resx"
                     DependentUpon = "TableRecall.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Tables(grids)\TableRecallList.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Tables(grids)\TableRecallList.resx"
+                    DependentUpon = "TableRecallList.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2904,6 +3068,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "UI\Button.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\Button.resx"
+                    DependentUpon = "Button.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "UI\ComboBoxMulti.cs"
                     SubType = "UserControl"
                     BuildAction = "Compile"
@@ -2924,6 +3098,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "UI\MsgBox.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UI\ODToolBar.cs"
                     SubType = "UserControl"
                     BuildAction = "Compile"
@@ -2942,6 +3121,16 @@
                     RelPath = "UI\ODToolBarButtonCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\PrintPreview.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\PrintPreview.resx"
+                    DependentUpon = "PrintPreview.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "User Controls\ContrApptSheet.cs"
@@ -3061,16 +3250,6 @@
                 <File
                     RelPath = "User Controls\ValidNumber.resx"
                     DependentUpon = "ValidNumber.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "User Controls\XPButton.cs"
-                    SubType = "Component"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "User Controls\XPButton.resx"
-                    DependentUpon = "XPButton.cs"
                     BuildAction = "EmbeddedResource"
                 />
             </Include>

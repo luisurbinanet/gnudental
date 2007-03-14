@@ -9,12 +9,12 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormRpProcSheet : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
+		private OpenDental.UI.Button butCancel;
+		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.MonthCalendar date2;
 		private System.Windows.Forms.MonthCalendar date1;
 		private System.Windows.Forms.Label labelTO;
-		private System.Windows.Forms.Button butAll;
+		private OpenDental.UI.Button butAll;
 		private System.Windows.Forms.ListBox listProv;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.RadioButton radioIndividual;
@@ -27,15 +27,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormRpProcSheet(){
 			InitializeComponent();
- 			Lan.C(this, new System.Windows.Forms.Control[] {
-				date2,
-				date1,
-				labelTO,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
-			});  
+ 			Lan.F(this);
 		}
 
 		///<summary></summary>
@@ -55,12 +47,12 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.date2 = new System.Windows.Forms.MonthCalendar();
 			this.date1 = new System.Windows.Forms.MonthCalendar();
 			this.labelTO = new System.Windows.Forms.Label();
-			this.butAll = new System.Windows.Forms.Button();
+			this.butAll = new OpenDental.UI.Button();
 			this.listProv = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.radioIndividual = new System.Windows.Forms.RadioButton();
@@ -71,8 +63,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(567, 372);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -81,7 +76,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(567, 336);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -111,7 +109,10 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
-			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.Autosize = true;
+			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAll.Location = new System.Drawing.Point(520, 274);
 			this.butAll.Name = "butAll";
 			this.butAll.Size = new System.Drawing.Size(75, 26);
@@ -141,7 +142,7 @@ namespace OpenDental{
 			this.radioIndividual.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioIndividual.Location = new System.Drawing.Point(11, 17);
 			this.radioIndividual.Name = "radioIndividual";
-			this.radioIndividual.Size = new System.Drawing.Size(155, 21);
+			this.radioIndividual.Size = new System.Drawing.Size(207, 21);
 			this.radioIndividual.TabIndex = 35;
 			this.radioIndividual.TabStop = true;
 			this.radioIndividual.Text = "Individual Procedures";

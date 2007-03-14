@@ -12,10 +12,10 @@ using System.Windows.Forms;
 namespace OpenDental{
 	///<summary></summary>
 	public class FormClaimPrint : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
+		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.PrintPreviewControl Preview2;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private System.Windows.Forms.Button butPrint;
+		private OpenDental.UI.Button butPrint;
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
 		public int ThisClaimNum;
@@ -33,27 +33,24 @@ namespace OpenDental{
 		///<summary>For batch generic e-claims, this just prints the data and not the background.</summary>
 		public bool HideBackground;
 		private System.Windows.Forms.Label labelTotPages;
-		private OpenDental.XPButton butBack;
-		private OpenDental.XPButton butFwd;
+		private OpenDental.UI.Button butBack;
+		private OpenDental.UI.Button butFwd;
 		private int pagesPrinted;
 		private int totalPages;
-		///<summary>Set to true if using this class just to generate strings for the Renaissance link.</summary>
-		private bool IsRenaissance;
+		//<summary>Set to true if using this class just to generate strings for the Renaissance link.</summary>
+		//private bool IsRenaissance;
 		private ClaimProc[] ClaimProcsForClaim;
 		private Procedure[] ProcList;
 		///<summary>This is set externally for Renaissance and generic e-claims.  If it was not set ahead of time, it will set in FillDisplayStrings according to the insPlan.</summary>
 		public ClaimForm ClaimFormCur;
+		private InsPlan[] PlanList;
 
 		///<summary></summary>
 		public FormClaimPrint(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] 
+			Lan.F(this,new Control[] 
 			{
-				this
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butClose,
-				butPrint,
+				this.labelTotPages//exclude
 			});
 		}
 
@@ -71,23 +68,27 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormClaimPrint));
-			this.butClose = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.Preview2 = new System.Windows.Forms.PrintPreviewControl();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
-			this.butPrint = new System.Windows.Forms.Button();
+			this.butPrint = new OpenDental.UI.Button();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.labelTotPages = new System.Windows.Forms.Label();
-			this.butBack = new OpenDental.XPButton();
-			this.butFwd = new OpenDental.XPButton();
+			this.butBack = new OpenDental.UI.Button();
+			this.butFwd = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(770, 768);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 25);
 			this.butClose.TabIndex = 0;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
@@ -103,10 +104,14 @@ namespace OpenDental{
 			// 
 			// butPrint
 			// 
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butPrint.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Location = new System.Drawing.Point(769, 728);
 			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(75, 25);
 			this.butPrint.TabIndex = 2;
 			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
@@ -126,8 +131,9 @@ namespace OpenDental{
 			// 
 			this.butBack.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butBack.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butBack.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butBack.Autosize = true;
+			this.butBack.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBack.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
 			this.butBack.Location = new System.Drawing.Point(752, 676);
 			this.butBack.Name = "butBack";
@@ -139,8 +145,9 @@ namespace OpenDental{
 			// 
 			this.butFwd.AdjustImageLocation = new System.Drawing.Point(1, 0);
 			this.butFwd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butFwd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butFwd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butFwd.Autosize = true;
+			this.butFwd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butFwd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
 			this.butFwd.Location = new System.Drawing.Point(830, 676);
 			this.butFwd.Name = "butFwd";
@@ -163,7 +170,7 @@ namespace OpenDental{
 			this.Name = "FormClaimPrint";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "FormClaimPrint";
+			this.Text = "Print Claim";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.FormClaimPrint_Load);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormClaimPrint_Layout);
@@ -317,7 +324,7 @@ namespace OpenDental{
 
 		///<summary>Called from Bridges.Renaissance, this takes the supplied ClaimFormItems.ListForForm, and generates an array of strings that will get saved into a text file.  First dimension of array is the pages. Second dimension is the lines in the page.</summary>
 		public string[][] FillRenaissance(){
-			IsRenaissance=true;
+			//IsRenaissance=true;
 			int procLimit=8;
 			FillDisplayStrings();//claimprocs is filled in FillDisplayStrings
 														//, so this is just a little extra work
@@ -341,49 +348,52 @@ namespace OpenDental{
 				claimprocs=new ArrayList();
 				return;
 			}
-			Patients.GetFamily(ThisPatNum);
-			Claims.Refresh();
+			Family FamCur=Patients.GetFamily(ThisPatNum);
+			Patient PatCur=FamCur.GetPatient(ThisPatNum);
+			Claims.Refresh(PatCur.PatNum);
 			Claims.Cur=(Claim)Claims.HList[ThisClaimNum];
-			InsPlans.Refresh();
-			//get other plan first to clear up Curs
-			InsPlans.GetCur(Claims.Cur.PlanNum2);
-			InsPlan otherPlan=InsPlans.Cur;
-			Carriers.GetCur(otherPlan.CarrierNum);
-			Carrier otherCarrier=Carriers.Cur;
+			PlanList=InsPlans.Refresh(FamCur);
+			InsPlan otherPlan=InsPlans.GetPlan(Claims.Cur.PlanNum2,PlanList);
+			if(otherPlan==null){
+				otherPlan=new InsPlan();//easier than leaving it null
+			}
+			Carrier otherCarrier=new Carrier();
+			if(otherPlan.PlanNum!=0){
+				otherCarrier=Carriers.GetCarrier(otherPlan.CarrierNum);
+			}
 			//Employers.GetEmployer(otherPlan.EmployerNum);
 			//Employer otherEmployer=Employers.Cur;//not actually used
 			//then get the main plan
-			InsPlans.GetCur(Claims.Cur.PlanNum);
-			Carriers.GetCur(InsPlans.Cur.CarrierNum);
+			InsPlan planCur=InsPlans.GetPlan(Claims.Cur.PlanNum,PlanList);
+			Carrier carrier=Carriers.GetCarrier(planCur.CarrierNum);
 			//Employers.GetEmployer(InsPlans.Cur.EmployerNum);
 			Patient subsc;
-			if(Patients.GetIndex(InsPlans.Cur.Subscriber)==-1){//from another family
-				Patients.GetFamily(InsPlans.Cur.Subscriber);
-				subsc=Patients.Cur;
-				Patients.GetFamily(ThisPatNum);//return to current family
+			if(FamCur.GetIndex(planCur.Subscriber)==-1){//from another family
+				subsc=Patients.GetPat(planCur.Subscriber);
+				//Patients.Cur;
+				//Patients.GetFamily(ThisPatNum);//return to current family
 			}
 			else{
-				subsc=Patients.FamilyList[Patients.GetIndex(InsPlans.Cur.Subscriber)];
+				subsc=FamCur.List[FamCur.GetIndex(planCur.Subscriber)];
 			}
 			Patient otherSubsc=new Patient();
 			if(otherPlan.PlanNum!=0){//if secondary insurance exists
-				if(Patients.GetIndex(otherPlan.Subscriber)==-1){//from another family
-					Patients.GetFamily(otherPlan.Subscriber);
-					otherSubsc=Patients.Cur;
-					Patients.GetFamily(ThisPatNum);//return to current family
+				if(FamCur.GetIndex(otherPlan.Subscriber)==-1){//from another family
+					otherSubsc=Patients.GetPat(otherPlan.Subscriber);
+					//Patients.Cur;
+					//Patients.GetFamily(ThisPatNum);//return to current family
 				}
 				else{
-					otherSubsc=Patients.FamilyList[Patients.GetIndex(otherPlan.Subscriber)];
+					otherSubsc=FamCur.List[FamCur.GetIndex(otherPlan.Subscriber)];
 				}				
 			}	
-			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
-      ClaimProc[] ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			ProcList=Procedures.Refresh(PatCur.PatNum);
+			ArrayList missingTeeth=Procedures.GetMissingTeeth(ProcList);
+      ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
       ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum); 
 			claimprocs=new ArrayList();
 			bool includeThis;
 			for(int i=0;i<ClaimProcsForClaim.Length;i++){//fill the arraylist
-				//Debug.WriteLine(i.ToString()+","+ClaimProcsForClaim[i].ProcNum.ToString()
-				//	+ClaimProcsForClaim[i].Status.ToString());
 				if(ClaimProcsForClaim[i].ProcNum==0){
 					continue;//skip payments
 				}
@@ -398,7 +408,7 @@ namespace OpenDental{
 			}
 			Provider treatDent=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvTreat)];
 			if(ClaimFormCur==null){
-				ClaimFormCur=ClaimForms.GetClaimForm(InsPlans.Cur.ClaimFormNum);
+				ClaimFormCur=ClaimForms.GetClaimForm(planCur.ClaimFormNum);
 			}
 			//else{//usually only for batch generic e-claims and Renaissance
 			//	ClaimFormCur=ClaimForms.GetClaimForm(ClaimFormNum);
@@ -431,32 +441,32 @@ namespace OpenDental{
 							displayStrings[i]="X";
 						break;
 					case "IsMedicaidClaim"://this should later be replaced with an insplan field.
-						if(Patients.Cur.MedicaidID!="")
+						if(PatCur.MedicaidID!="")
 							displayStrings[i]="X";
 						break;
 					case "PreAuthString":
 						displayStrings[i]=Claims.Cur.PreAuthString;
 						break;
 					case "PriInsCarrierName":
-						displayStrings[i]=Carriers.Cur.CarrierName;
+						displayStrings[i]=carrier.CarrierName;
 						break;
 					case "PriInsAddress":
-						displayStrings[i]=Carriers.Cur.Address;
+						displayStrings[i]=carrier.Address;
 						break;
 					case "PriInsAddress2":
-						displayStrings[i]=Carriers.Cur.Address2;
+						displayStrings[i]=carrier.Address2;
 						break;
 					case "PriInsAddressComplete":
-						displayStrings[i]=Carriers.Cur.Address+" "+Carriers.Cur.Address2;
+						displayStrings[i]=carrier.Address+" "+carrier.Address2;
 						break;
 					case "PriInsCity":
-						displayStrings[i]=Carriers.Cur.City;
+						displayStrings[i]=carrier.City;
 						break;
 					case "PriInsST":
-						displayStrings[i]=Carriers.Cur.State;
+						displayStrings[i]=carrier.State;
 						break;
 					case "PriInsZip":
-						displayStrings[i]=Carriers.Cur.Zip;
+						displayStrings[i]=carrier.Zip;
 						break;
 					case "OtherInsExists":
 						if(otherPlan.PlanNum!=0)
@@ -592,7 +602,7 @@ namespace OpenDental{
 							displayStrings[i]="X";
 						break;
 					case "SubscrID":
-						displayStrings[i]=InsPlans.Cur.SubscriberID;
+						displayStrings[i]=planCur.SubscriberID;
 						break;
 					case "SubscrIsFTStudent":
 						if(subsc.StudentStatus=="F")
@@ -603,10 +613,10 @@ namespace OpenDental{
 							displayStrings[i]="X";
 						break;
 					case "GroupNum":
-						displayStrings[i]=InsPlans.Cur.GroupNum;
+						displayStrings[i]=planCur.GroupNum;
 						break;
 					case "EmployerName":
-						displayStrings[i]=Employers.GetEmployer(InsPlans.Cur.EmployerNum).EmpName;;
+						displayStrings[i]=Employers.GetEmployer(planCur.EmployerNum).EmpName;;
 						break;
 					case "RelatIsSelf":
 						if(Claims.Cur.PatRelat==Relat.Self)
@@ -633,220 +643,235 @@ namespace OpenDental{
 						displayStrings[i]=Claims.Cur.PatRelat.ToString();
 						break;
 					case "IsFTStudent":
-						if(Patients.Cur.StudentStatus=="F")
+						if(PatCur.StudentStatus=="F")
 							displayStrings[i]="X";
 						break;
 					case "IsPTStudent":
-						if(Patients.Cur.StudentStatus=="P")
+						if(PatCur.StudentStatus=="P")
 							displayStrings[i]="X";
 						break;
 					case "IsStudent":
-						if(Patients.Cur.StudentStatus=="P" || Patients.Cur.StudentStatus=="F")
+						if(PatCur.StudentStatus=="P" || PatCur.StudentStatus=="F")
 							displayStrings[i]="X";
 						break;
 					case "PatientLastFirst":
-						displayStrings[i]=Patients.Cur.LName+", "+Patients.Cur.FName+", "+Patients.Cur.MiddleI;
+						displayStrings[i]=PatCur.LName+", "+PatCur.FName+", "+PatCur.MiddleI;
+						break;
+					case "PatientFirstName":
+						displayStrings[i] = PatCur.FName;
+						break;
+					case "PatientMiddleName":
+						displayStrings[i] = PatCur.MiddleI;
+						break;
+					case "PatientLastName":
+						displayStrings[i] = PatCur.LName;
 						break;
 					case "PatientAddress":
-						displayStrings[i]=Patients.Cur.Address;
+						displayStrings[i]=PatCur.Address;
 						break;
 					case "PatientAddress2":
-						displayStrings[i]=Patients.Cur.Address2;
+						displayStrings[i]=PatCur.Address2;
 						break;
 					case "PatientAddressComplete":
-						displayStrings[i]=Patients.Cur.Address+" "+Patients.Cur.Address2;
+						displayStrings[i]=PatCur.Address+" "+PatCur.Address2;
 						break;
 					case "PatientCity":
-						displayStrings[i]=Patients.Cur.City;
+						displayStrings[i]=PatCur.City;
 						break;
 					case "PatientST":
-						displayStrings[i]=Patients.Cur.State;
+						displayStrings[i]=PatCur.State;
 						break;
 					case "PatientZip":
-						displayStrings[i]=Patients.Cur.Zip;
+						displayStrings[i]=PatCur.Zip;
 						break;
 					case "PatientPhone":
-						displayStrings[i]=Patients.Cur.HmPhone;
+						displayStrings[i]=PatCur.HmPhone;
 						break;
 					case "PatientDOB":
 						if(ClaimFormCur.Items[i].FormatString=="")
-							displayStrings[i]=Patients.Cur.Birthdate.ToShortDateString();//MM/dd/yyyy
+							displayStrings[i]=PatCur.Birthdate.ToShortDateString();//MM/dd/yyyy
 						else
-							displayStrings[i]=Patients.Cur.Birthdate.ToString
+							displayStrings[i]=PatCur.Birthdate.ToString
 								(ClaimFormCur.Items[i].FormatString);
 						break;
 					case "PatientIsMale":
-						if(Patients.Cur.Gender==PatientGender.Male)
+						if(PatCur.Gender==PatientGender.Male)
 							displayStrings[i]="X";
 						break;
 					case "PatientIsFemale":
-						if(Patients.Cur.Gender==PatientGender.Female)
+						if(PatCur.Gender==PatientGender.Female)
 							displayStrings[i]="X";
 						break;
+					case "PatientGender":
+						if(PatCur.Gender==PatientGender.Male)
+							displayStrings[i]="Male";
+						else if(PatCur.Gender==PatientGender.Female)
+							displayStrings[i]="Female";
+						break;
 					case "PatientIsMarried":
-						if(Patients.Cur.Position==PatientPosition.Married)
+						if(PatCur.Position==PatientPosition.Married)
 							displayStrings[i]="X";
 						break;
 					case "PatientIsSingle":
-						if(Patients.Cur.Position==PatientPosition.Single
-							|| Patients.Cur.Position==PatientPosition.Child
-							|| Patients.Cur.Position==PatientPosition.Widowed)
+						if(PatCur.Position==PatientPosition.Single
+							|| PatCur.Position==PatientPosition.Child
+							|| PatCur.Position==PatientPosition.Widowed)
 							displayStrings[i]="X";
 						break;
 					case "PatientSSN":
-						if(Patients.Cur.SSN.Length==9){
-							displayStrings[i]=Patients.Cur.SSN.Substring(0,3)
-								+"-"+Patients.Cur.SSN.Substring(3,2)
-								+"-"+Patients.Cur.SSN.Substring(5);
+						if(PatCur.SSN.Length==9){
+							displayStrings[i]=PatCur.SSN.Substring(0,3)
+								+"-"+PatCur.SSN.Substring(3,2)
+								+"-"+PatCur.SSN.Substring(5);
 						}
 						break;
 					case "PatientMedicaidID":
-						displayStrings[i]=Patients.Cur.MedicaidID;
+						displayStrings[i]=PatCur.MedicaidID;
 						break;
 					case "PatientID-MedicaidOrSSN":
-						if(Patients.Cur.MedicaidID!="")
-							displayStrings[i]=Patients.Cur.MedicaidID;
+						if(PatCur.MedicaidID!="")
+							displayStrings[i]=PatCur.MedicaidID;
 						else
-							displayStrings[i]=Patients.Cur.SSN;
+							displayStrings[i]=PatCur.SSN;
 						break;
 			//this is where the procedures used to be
 					case "Miss1":
-						if(Procedures.MissingTeeth.Contains("1"))
+						if(missingTeeth.Contains("1"))
 							displayStrings[i]="X";
 						break;
 					case "Miss2":
-						if(Procedures.MissingTeeth.Contains("2"))
+						if(missingTeeth.Contains("2"))
 							displayStrings[i]="X";
 						break;
 					case "Miss3":
-						if(Procedures.MissingTeeth.Contains("3"))
+						if(missingTeeth.Contains("3"))
 							displayStrings[i]="X";
 						break;
 					case "Miss4":
-						if(Procedures.MissingTeeth.Contains("4"))
+						if(missingTeeth.Contains("4"))
 							displayStrings[i]="X";
 						break;
 					case "Miss5":
-						if(Procedures.MissingTeeth.Contains("5"))
+						if(missingTeeth.Contains("5"))
 							displayStrings[i]="X";
 						break;
 					case "Miss6":
-						if(Procedures.MissingTeeth.Contains("6"))
+						if(missingTeeth.Contains("6"))
 							displayStrings[i]="X";
 						break;
 					case "Miss7":
-						if(Procedures.MissingTeeth.Contains("7"))
+						if(missingTeeth.Contains("7"))
 							displayStrings[i]="X";
 						break;
 					case "Miss8":
-						if(Procedures.MissingTeeth.Contains("8"))
+						if(missingTeeth.Contains("8"))
 							displayStrings[i]="X";
 						break;
 					case "Miss9":
-						if(Procedures.MissingTeeth.Contains("9"))
+						if(missingTeeth.Contains("9"))
 							displayStrings[i]="X";
 						break;
 					case "Miss10":
-						if(Procedures.MissingTeeth.Contains("10"))
+						if(missingTeeth.Contains("10"))
 							displayStrings[i]="X";
 						break;
 					case "Miss11":
-						if(Procedures.MissingTeeth.Contains("11"))
+						if(missingTeeth.Contains("11"))
 							displayStrings[i]="X";
 						break;
 					case "Miss12":
-						if(Procedures.MissingTeeth.Contains("12"))
+						if(missingTeeth.Contains("12"))
 							displayStrings[i]="X";
 						break;
 					case "Miss13":
-						if(Procedures.MissingTeeth.Contains("13"))
+						if(missingTeeth.Contains("13"))
 							displayStrings[i]="X";
 						break;
 					case "Miss14":
-						if(Procedures.MissingTeeth.Contains("14"))
+						if(missingTeeth.Contains("14"))
 							displayStrings[i]="X";
 						break;
 					case "Miss15":
-						if(Procedures.MissingTeeth.Contains("15"))
+						if(missingTeeth.Contains("15"))
 							displayStrings[i]="X";
 						break;
 					case "Miss16":
-						if(Procedures.MissingTeeth.Contains("16"))
+						if(missingTeeth.Contains("16"))
 							displayStrings[i]="X";
 						break;
 					case "Miss17":
-						if(Procedures.MissingTeeth.Contains("17"))
+						if(missingTeeth.Contains("17"))
 							displayStrings[i]="X";
 						break;
 					case "Miss18":
-						if(Procedures.MissingTeeth.Contains("18"))
+						if(missingTeeth.Contains("18"))
 							displayStrings[i]="X";
 						break;
 					case "Miss19":
-						if(Procedures.MissingTeeth.Contains("19"))
+						if(missingTeeth.Contains("19"))
 							displayStrings[i]="X";
 						break;
 					case "Miss20":
-						if(Procedures.MissingTeeth.Contains("20"))
+						if(missingTeeth.Contains("20"))
 							displayStrings[i]="X";
 						break;
 					case "Miss21":
-						if(Procedures.MissingTeeth.Contains("21"))
+						if(missingTeeth.Contains("21"))
 							displayStrings[i]="X";
 						break;
 					case "Miss22":
-						if(Procedures.MissingTeeth.Contains("22"))
+						if(missingTeeth.Contains("22"))
 							displayStrings[i]="X";
 						break;
 					case "Miss23":
-						if(Procedures.MissingTeeth.Contains("23"))
+						if(missingTeeth.Contains("23"))
 							displayStrings[i]="X";
 						break;
 					case "Miss24":
-						if(Procedures.MissingTeeth.Contains("24"))
+						if(missingTeeth.Contains("24"))
 							displayStrings[i]="X";
 						break;
 					case "Miss25":
-						if(Procedures.MissingTeeth.Contains("25"))
+						if(missingTeeth.Contains("25"))
 							displayStrings[i]="X";
 						break;
 					case "Miss26":
-						if(Procedures.MissingTeeth.Contains("26"))
+						if(missingTeeth.Contains("26"))
 							displayStrings[i]="X";
 						break;
 					case "Miss27":
-						if(Procedures.MissingTeeth.Contains("27"))
+						if(missingTeeth.Contains("27"))
 							displayStrings[i]="X";
 						break;
 					case "Miss28":
-						if(Procedures.MissingTeeth.Contains("28"))
+						if(missingTeeth.Contains("28"))
 							displayStrings[i]="X";
 						break;
 					case "Miss29":
-						if(Procedures.MissingTeeth.Contains("29"))
+						if(missingTeeth.Contains("29"))
 							displayStrings[i]="X";
 						break;
 					case "Miss30":
-						if(Procedures.MissingTeeth.Contains("30"))
+						if(missingTeeth.Contains("30"))
 							displayStrings[i]="X";
 						break;
 					case "Miss31":
-						if(Procedures.MissingTeeth.Contains("31"))
+						if(missingTeeth.Contains("31"))
 							displayStrings[i]="X";
 						break;
 					case "Miss32":
-						if(Procedures.MissingTeeth.Contains("32"))
+						if(missingTeeth.Contains("32"))
 							displayStrings[i]="X";
 						break;
 					case "Remarks":
 						displayStrings[i]=Claims.Cur.ClaimNote;
 						break;
 					case "PatientRelease":
-						if(InsPlans.Cur.ReleaseInfo)
+						if(planCur.ReleaseInfo)
 							displayStrings[i]="Signature on File"; 
 						break;
 					case "PatientReleaseDate":
-						if(InsPlans.Cur.ReleaseInfo && Claims.Cur.DateSent.Year > 1860){
+						if(planCur.ReleaseInfo && Claims.Cur.DateSent.Year > 1860){
 							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
 							else
@@ -855,11 +880,11 @@ namespace OpenDental{
 						} 
 						break;
 					case "PatientAssignment":
-						if(InsPlans.Cur.AssignBen)
+						if(planCur.AssignBen)
 							displayStrings[i]="Signature on File"; 
 						break;
 					case "PatientAssignmentDate":
-						if(InsPlans.Cur.AssignBen && Claims.Cur.DateSent.Year > 1860){
+						if(planCur.AssignBen && Claims.Cur.DateSent.Year > 1860){
 							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
 							else
@@ -1128,21 +1153,8 @@ namespace OpenDental{
 						}
 						break;
 					case "TreatingProviderSpecialty":
-						string spec="";
-						switch(Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvTreat)].Specialty){
-							case DentalSpecialty.General:       spec="1223G0001X"; break;
-							case DentalSpecialty.PublicHealth:  spec="1223D0001X"; break;
-							case DentalSpecialty.Endodontics:   spec="1223E0200X"; break;
-							case DentalSpecialty.Pathology:     spec="1223P0106X"; break;
-							case DentalSpecialty.Radiology:     spec="1223D0008X"; break;
-							case DentalSpecialty.Surgery:       spec="1223S0112X"; break;
-							case DentalSpecialty.Ortho:         spec="1223X0400X"; break;
-							case DentalSpecialty.Pediatric:     spec="1223P0221X"; break;
-							case DentalSpecialty.Perio:         spec="1223P0300X"; break;
-							case DentalSpecialty.Prosth:        spec="1223P0700X"; break;
-							//non-dentist codes not permitted.
-						}
-						displayStrings[i]=spec;
+						displayStrings[i]=Eclaims.X12.GetTaxonomy
+							(Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvTreat)].Specialty);
 						break;
 				}//switch
 				if(CultureInfo.CurrentCulture.Name=="nl-BE"//Dutch Belgium

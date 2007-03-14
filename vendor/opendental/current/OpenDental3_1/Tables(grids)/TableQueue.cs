@@ -13,21 +13,23 @@ namespace OpenDental{
 		public TableQueue(){
 			InitializeComponent();
 			MaxRows=20;
-			MaxCols=4;
+			MaxCols=5;
 			ShowScroll=true;
 			FieldsArePresent=true;
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(0,19,14);
 			Fields[0]=Lan.g("TableQueue","Patient Name");
-			Fields[1]=Lan.g("TableQueue","NoE");
-			Fields[2]=Lan.g("TableQueue","Carrier Name");
+			Fields[1]=Lan.g("TableQueue","Carrier Name");
+			Fields[2]=Lan.g("TableQueue","Clearinghouse");
 			Fields[3]=Lan.g("TableQueue","Status");
+			Fields[4]=Lan.g("TableQueue","Missing Info");
 			ColWidth[0]=130;
-			ColWidth[1]=50;
-			ColWidth[2]=170;
+			ColWidth[1]=170;
+			ColWidth[2]=120;
 			ColWidth[3]=120;
-			ColAlign[1]=HorizontalAlignment.Center;
+			ColWidth[4]=300;
+			//ColAlign[1]=HorizontalAlignment.Center;
 			DefaultGridColor=Color.LightGray;
 			LayoutTables();
 		}

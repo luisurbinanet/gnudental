@@ -20,7 +20,7 @@ using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text; 
 using System.Windows.Forms;
-using WIALib;
+//using WIALib;
 using OpenDental.UI;
 
 namespace OpenDental{
@@ -37,7 +37,7 @@ namespace OpenDental{
 		private System.Windows.Forms.PrintDialog PrintDialog1;
 		private System.Drawing.Printing.PrintDocument PrintDocument2;
 		private System.Windows.Forms.TreeView TreeDocuments;
-		///<summary>When dragging on Picturebox, this is the starting point it PictureBox coordinates.</summary>
+		///<summary>When dragging on Picturebox, this is the starting point in PictureBox coordinates.</summary>
 		private Point MouseDownOrigin;
 		private bool MouseIsDown;
 		private System.Windows.Forms.PictureBox PictureBox1;
@@ -54,7 +54,7 @@ namespace OpenDental{
 		///<summary>The path to the patient folder, including the letter folder, and ending with \</summary>
 		private string patFolder;
 		private OpenDental.UI.ODToolBar ToolBarMain;
-		private string imageFileName;
+		//private string imageFileName;
 		///<summary>Starts out as false. It's only used when repainting the toolbar, not to test mode.</summary>
 		private bool IsCropMode;//
 		private bool MouseIsDownOnTree;
@@ -66,18 +66,27 @@ namespace OpenDental{
 		private System.Windows.Forms.ContextMenu menuPatient;
 		///<summary>Set when DisplayImage is run. It is false if no Documents.Cur.</summary>
 		private bool Enhanced;
+		///<summary></summary>
+		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
+		public event PatientSelectedEventHandler PatientSelected=null;
 		// declarations, spk 10/05/04
-		[System.Runtime.InteropServices.DllImport("EZTW32.DLL")] 
+		///<summary></summary>
+		[System.Runtime.InteropServices.DllImport("EZTW32.DLL")]
 		public static extern int TWAIN_AcquireToFilename(IntPtr hwndApp, string bmpFileName); 
+		///<summary></summary>
 		[System.Runtime.InteropServices.DllImport("EZTW32.DLL")] 
 		public static extern int TWAIN_SelectImageSource(IntPtr hwndApp); 
+		///<summary></summary>
 		[System.Runtime.InteropServices.DllImport("EZTW32.DLL")] 
 		public static extern int TWAIN_AcquireToClipboard(IntPtr hwndApp, long wPixTypes); 
+		///<summary></summary>
 		[System.Runtime.InteropServices.DllImport("EZTW32.DLL")] 
 		public static extern int TWAIN_IsAvailable(); 
+		///<summary></summary>
 		[System.Runtime.InteropServices.DllImport("EZTW32.DLL")] 
-		public static extern int TWAIN_EasyVersion();
-		// spk 10/05/04
+		public static extern int TWAIN_EasyVersion();// spk 10/05/04
+		private Patient PatCur;
+		private Family FamCur;
 
 		///<summary></summary>
 		public ContrDocs(){
@@ -321,42 +330,47 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public void ModuleSelected(){
-			RefreshModuleData();
+		public void ModuleSelected(int patNum){
+			RefreshModuleData(patNum);
 			RefreshModuleScreen();
 		}
 
 		///<summary></summary>
 		public void ModuleUnselected(){
-			Patients.FamilyList=null;
+			FamCur=null;
+			PatCur=null;
 			//from FillDocList:
 			DocAttaches.List=null;
 			Documents.List=null;
 		}
 
-  	private void RefreshModuleData(){
-			if(!Patients.PatIsLoaded)
+  	private void RefreshModuleData(int patNum){
+			if(patNum==0){
+				PatCur=null;
+				FamCur=null;
 				return;
-			Patients.GetFamily(Patients.Cur.PatNum);
-			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
-			if(Patients.Cur.ImageFolder==""){//creates new folder for patient if none present
-				string name=Patients.Cur.LName+Patients.Cur.FName;
+			}
+			FamCur=Patients.GetFamily(patNum);
+			PatCur=FamCur.GetPatient(patNum);
+			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+				+PatCur.GetNameLF();
+			if(PatCur.ImageFolder==""){//creates new folder for patient if none present
+				string name=PatCur.LName+PatCur.FName;
 				string folder="";
 				for(int i=0;i<name.Length;i++){
 					if(Char.IsLetter(name,i)){
 						folder+=name.Substring(i,1);
 					}
 				}
-				folder+=Patients.Cur.PatNum.ToString();//ensures unique name
+				folder+=PatCur.PatNum.ToString();//ensures unique name
 				try{
-					Patient PatCur=Patients.Cur;
+					Patient PatOld=PatCur.Copy();
 					PatCur.ImageFolder=folder;
-					Patients.Cur=PatCur;
 					patFolder=((Pref)Prefs.HList["DocPath"]).ValueString
-						+Patients.Cur.ImageFolder.Substring(0,1)+@"\"
-						+Patients.Cur.ImageFolder+@"\";
+						+PatCur.ImageFolder.Substring(0,1)+@"\"
+						+PatCur.ImageFolder+@"\";
 					Directory.CreateDirectory(patFolder);
-					Patients.UpdateCur();
+					PatCur.Update(PatOld);
 				}
 				catch{
 					MessageBox.Show(Lan.g(this,"Error.  Could not create folder for patient. "));
@@ -365,8 +379,8 @@ namespace OpenDental{
 			}
 			else{//patient folder already created once
 				patFolder=((Pref)Prefs.HList["DocPath"]).ValueString
-					+Patients.Cur.ImageFolder.Substring(0,1)+@"\"
-					+Patients.Cur.ImageFolder+@"\";
+					+PatCur.ImageFolder.Substring(0,1)+@"\"
+					+PatCur.ImageFolder+@"\";
 			}
 			if(!Directory.Exists(patFolder)){//this makes it more resiliant and allows copies
 					//of the opendentaldata folder to be used in read-only situations.
@@ -379,7 +393,7 @@ namespace OpenDental{
 				}
 			}
 			//now find all files in the patient folder that are not in the db and add them
-			DocAttaches.Refresh();
+			DocAttaches.Refresh(PatCur.PatNum);
 			Documents.Refresh();
 			DirectoryInfo di=new DirectoryInfo(patFolder);
 			FileInfo[] fiList=di.GetFiles();
@@ -394,8 +408,8 @@ namespace OpenDental{
 					Documents.Cur.Description=fiList[i].Name;
 					Documents.Cur.DocCategory=Defs.Short[(int)DefCat.ImageCats][0].DefNum;
 					Documents.Cur.FileName=fiList[i].Name;
-					Documents.Cur.WithPat=Patients.Cur.PatNum;
-					Documents.InsertCur();
+					Documents.Cur.WithPat=PatCur.PatNum;
+					Documents.InsertCur(PatCur);
 					countAdded++;
 				}
 			}
@@ -406,8 +420,9 @@ namespace OpenDental{
 		}
 
 		private void RefreshModuleScreen(){
-			if (Patients.PatIsLoaded){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
+			if(PatCur!=null){
+				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+					+PatCur.GetNameLF();
 				ToolBarMain.Buttons["Print"].Enabled=true;
 				ToolBarMain.Buttons["Delete"].Enabled=true;
 				ToolBarMain.Buttons["Info"].Enabled=true;
@@ -420,10 +435,13 @@ namespace OpenDental{
 				ToolBarMain.Buttons["Hand"].Enabled=true;
 				ToolBarMain.Buttons["ZoomIn"].Enabled=true;
 				ToolBarMain.Buttons["ZoomOut"].Enabled=true;
+				ToolBarMain.Buttons["Flip"].Enabled=true;
+				ToolBarMain.Buttons["RotateR"].Enabled=true;
+				ToolBarMain.Buttons["RotateL"].Enabled=true;
 			}
 			else{
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
-				Patients.Cur=new Patient();
+				//PatCur=new Patient();
 				ToolBarMain.Buttons["Print"].Enabled=false;
 				ToolBarMain.Buttons["Delete"].Enabled=false;
 				ToolBarMain.Buttons["Info"].Enabled=false;
@@ -436,6 +454,9 @@ namespace OpenDental{
 				ToolBarMain.Buttons["Hand"].Enabled=false;
 				ToolBarMain.Buttons["ZoomIn"].Enabled=false;
 				ToolBarMain.Buttons["ZoomOut"].Enabled=false;
+				ToolBarMain.Buttons["Flip"].Enabled=false;
+				ToolBarMain.Buttons["RotateR"].Enabled=false;
+				ToolBarMain.Buttons["RotateL"].Enabled=false;
 			}
 			FillPatientButton();
 			ToolBarMain.Invalidate();
@@ -443,14 +464,21 @@ namespace OpenDental{
 		}
 
 		private void FillPatientButton(){
-			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click));
+			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click),PatCur,FamCur);
 		}
 
 		private void menuPatient_Click(object sender,System.EventArgs e) {
-			Patients.ButtonSelect(menuPatient,sender);
-			ModuleSelected();
+			int newPatNum=Patients.ButtonSelect(menuPatient,sender,FamCur);
+			OnPatientSelected(newPatNum);
+			ModuleSelected(newPatNum);
 		}
 
+		///<summary></summary>
+		private void OnPatientSelected(int patNum){
+			PatientSelectedEventArgs eArgs=new OpenDental.PatientSelectedEventArgs(patNum);
+			if(PatientSelected!=null)
+				PatientSelected(this,eArgs);
+		}
 
 		private void ContrDocs_Load(object sender, System.EventArgs e){
 			//if (SystemInformation.PrimaryMonitorSize.Height<=768){
@@ -458,7 +486,7 @@ namespace OpenDental{
 
 		/// <summary>Refreshes list from db, then fills the treeview.  Set to true to keep the current doc displayed.</summary>
 		private void FillDocList(bool keepDoc){
-			if(!Patients.PatIsLoaded){
+			if(PatCur==null){
 				TreeDocuments.Nodes.Clear();
 			  ImageCurrent=null;
 				DisplayImage(true,false);
@@ -471,7 +499,7 @@ namespace OpenDental{
 				ImageCurrent=null;
 				mygraphics.FillRectangle(Brushes.White,0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height);
 			}
-			DocAttaches.Refresh();
+			DocAttaches.Refresh(PatCur.PatNum);
 			Documents.Refresh();
 			for(int i=0;i<TreeDocuments.Nodes.Count;i++) 
 				TreeDocuments.Nodes[i].Nodes.Clear();
@@ -582,17 +610,17 @@ namespace OpenDental{
 				}
 			}
 			else if(e.Button.Tag.GetType()==typeof(int)){
-				Programs.Execute((int)e.Button.Tag);
+				Programs.Execute((int)e.Button.Tag,PatCur);
 			}
 		}
 
 		private void OnPat_Click() {
-			FormPatientSelect formSelectPatient2=new FormPatientSelect();
-			formSelectPatient2.ShowDialog();
-			if(formSelectPatient2.DialogResult!=DialogResult.OK){
-				return;
+			FormPatientSelect formPS=new FormPatientSelect();
+			formPS.ShowDialog();
+			if(formPS.DialogResult==DialogResult.OK){
+				OnPatientSelected(formPS.SelectedPatNum);
+				ModuleSelected(formPS.SelectedPatNum);
 			}
-			ModuleSelected();
 			FillDocList(false);
 		}
 
@@ -635,7 +663,7 @@ namespace OpenDental{
 				if(TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i]))
 					return;
       }
-			FormDocInfo formDocInfo2=new FormDocInfo();
+			FormDocInfo formDocInfo2=new FormDocInfo(PatCur);
  			formDocInfo2.IsNew=false;
 			formDocInfo2.ShowDialog();
 			if(formDocInfo2.DialogResult!=DialogResult.OK){
@@ -646,11 +674,7 @@ namespace OpenDental{
 		}
 
 		private void OnScan_Click(string scanType) {
-			//#if(ISXP)
-				ScanImage(scanType);
-			//#else
-			//	MessageBox.Show(Lan.g(this,"Scanning only works on Windows XP."));
-			//#endif
+			ScanImage(scanType);
 		}
 
 		private void OnImport_Click() {
@@ -671,7 +695,9 @@ namespace OpenDental{
 			Documents.Cur=new Document();
 			//Documents.InsertCur will use this extension when naming:
 			Documents.Cur.FileName=Path.GetExtension(openFileDialog2.FileName);
-			formDocInfo2=new FormDocInfo();
+			formDocInfo2=new FormDocInfo(PatCur);
+			Documents.Cur.DateCreated=DateTime.Today;
+			Documents.Cur.WithPat=PatCur.PatNum;
 			formDocInfo2.IsNew=true;
 			//formDocInfo2.Extension=;
 			formDocInfo2.ShowDialog();//this saves data to db
@@ -712,7 +738,9 @@ namespace OpenDental{
 			DisplayImage(true,false);
 			Documents.Cur=new Document();
 			Documents.Cur.FileName=".jpg";
-			formDocInfo2=new FormDocInfo();
+			formDocInfo2=new FormDocInfo(PatCur);
+			Documents.Cur.DateCreated=DateTime.Today;
+			Documents.Cur.WithPat=PatCur.PatNum;
 			formDocInfo2.IsNew=true;
 			formDocInfo2.ShowDialog();
 			if(formDocInfo2.DialogResult!=DialogResult.OK){
@@ -1124,6 +1152,10 @@ namespace OpenDental{
 
 		///<summary>Valid values for scanType are "doc","xray",and "photo"</summary>
 		private void ScanImage(string scanType){
+			//EZTwain.SelectImageSource(IntPtr.Zero);
+			//return;
+
+
 			//A user may have more than one scanning device. 
 			//The code below will allow the user to select one.
 			long wPIXTypes; 
@@ -1158,7 +1190,9 @@ namespace OpenDental{
 				else if(scanType=="photo")
 					Documents.Cur.ImgType=ImageType.Photo;
 			Documents.Cur.FileName=".jpg";
-			formDocInfo2=new FormDocInfo();
+			formDocInfo2=new FormDocInfo(PatCur);
+			Documents.Cur.DateCreated=DateTime.Today;
+			Documents.Cur.WithPat=PatCur.PatNum;
 			formDocInfo2.IsNew=true;
 			formDocInfo2.ShowDialog();
 			if(formDocInfo2.DialogResult!=DialogResult.OK){
@@ -1202,114 +1236,6 @@ namespace OpenDental{
 			//}
 			//AutoCrop();??
 		}
-
-		/*[Conditional("ISXP")]
-		private void OldScanImage(string scanType){
-			//MessageBox.Show(Environment.OSVersion.Version.ToString());
-			//return;
-			ShowBlank();                   //sets screen to blank while waiting for image to scan
-			ImageCurrent=null;             // current image is null till receives value from scan 
-			WiaClass wiaManager=null;		   // WIA manager COM object
-			CollectionClass	wiaDevs=null;	 // WIA devices collection COM object
-			ItemClass	wiaRoot=null;		     // WIA root device COM object
-			CollectionClass	wiaPics=null;	 // WIA collection COM object
-			ItemClass	wiaItem=null;		     // WIA image COM object
-			ImageCodecInfo myImageCodecInfo;
-			ImageCodecInfo[] encoders;
-			encoders = ImageCodecInfo.GetImageEncoders();
-			myImageCodecInfo=null;
-			for(int j=0;j<encoders.Length;j++){
-				if(encoders[j].MimeType=="image/jpeg")
-					myImageCodecInfo=encoders[j];
-			}
-			System.Drawing.Imaging.Encoder myEncoder= System.Drawing.Imaging.Encoder.Quality;
-			EncoderParameters myEncoderParameters= new EncoderParameters(1);
-			long qualityL=0;
-			if(scanType=="doc"){
-				//Possible values 0-100?
-				qualityL=(long)Convert.ToInt32(((Pref)Prefs.HList["ScannerCompression"]).ValueString);
-			}
-			else if(scanType=="xray"){
-				qualityL=Convert.ToInt64(((Pref)Prefs.HList["ScannerCompressionRadiographs"]).ValueString);
-			}
-			else if(scanType=="photo"){
-				qualityL=Convert.ToInt64(((Pref)Prefs.HList["ScannerCompressionPhotos"]).ValueString);
-			}
-			EncoderParameter myEncoderParameter=new EncoderParameter(myEncoder,qualityL);
-			myEncoderParameters.Param[0]=myEncoderParameter;
-			//ImageCurrent.Save("ShapesLZW.tif", myImageCodecInfo, myEncoderParameters);
-			try {
-				wiaManager=new WiaClass();		// create COM instance of WIA manager
-				wiaDevs=wiaManager.Devices as CollectionClass;			// call Wia.Devices to get all devices
-				if((wiaDevs==null) || (wiaDevs.Count==0))  {
-					MessageBox.Show(Lan.g(this,"No scanners or cameras found!"));
-					return;
-				}
-				object selectUsingUI=System.Reflection.Missing.Value;			// = Nothing / Default
-				wiaRoot=(ItemClass)wiaManager.Create(ref selectUsingUI);	// let user select device
-				if(wiaRoot==null)											// nothing to do
-					return;
-				// this call shows the common WIA dialog to let the user select a picture:
-				wiaPics=wiaRoot.GetItemsFromUI(WiaFlag.SingleImage,WiaIntent.ImageTypeGrayscale) as CollectionClass;
-				if(wiaPics==null)
-					return;
-				bool takeFirst=true;						        // this sample uses only one single picture
-				foreach(object wiaObj in wiaPics){		// enumerate all the pictures the user selected
-					if(takeFirst){
-						wiaItem=(ItemClass)Marshal.CreateWrapperOfType(wiaObj,typeof(ItemClass));
-            imageFileName=Path.GetTempFileName();				    // create temporary file for image
-						Cursor.Current=Cursors.WaitCursor;				      // could take some time
-						this.Refresh();
-						wiaItem.Transfer(imageFileName,false);			    // transfer picture to our temporary file
-						ImageCurrent=(Bitmap)Bitmap.FromFile(imageFileName);	    // sets current image to temp file
-						RecZoom.Width=0;
-						DisplayImage(true,false);                             //shows image
-						Documents.Cur=new Document();
-						if(scanType=="doc")
-							Documents.Cur.ImgType=ImageType.Document;
-						else if(scanType=="xray")
-							Documents.Cur.ImgType=ImageType.Radiograph;
-						else if(scanType=="photo")
-							Documents.Cur.ImgType=ImageType.Photo;
-						Documents.Cur.FileName=".jpg";
-						formDocInfo2=new FormDocInfo();
-						formDocInfo2.IsNew=true;     
-						formDocInfo2.ShowDialog();    //opens dialog to set info and precursor to save
-						if (formDocInfo2.DialogResult != DialogResult.OK){   //return if Cancel is pushed
-              ShowBlank();   //sets screen to blank and loses image from scanner
-							ImageCurrent=null;
-							return;
-            }
-						ImageCurrent.Save(patFolder+Documents.Cur.FileName,myImageCodecInfo,myEncoderParameters);
-            //Documents.Cur.LastAltered=DateTime.Today;
-						//Documents.UpdateCur();
-						FillDocList(true);       //adds new doc to DocList and TreeDocument and saves path to image
-						DisplayImage(true,true);     //sets current image of Docs.Cur image path and displays that image
-						AutoCrop();
-  				}//end of if(takeFirst)
-					Marshal.ReleaseComObject(wiaObj);// release enumerated COM object
-				}//end of for each
-			}//end of try
-			catch(Exception ee)  {
-				MessageBox.Show(Lan.g(this,"Acquire from WIA Imaging failed\r\n" + ee.Message));
-				ShowBlank();
-				ImageCurrent=null;
-				return;
-			} // end of catch
-			finally {    
-				if(wiaItem!=null )
-					Marshal.ReleaseComObject(wiaItem);		// release WIA image COM object
-				if(wiaPics!=null)
-					Marshal.ReleaseComObject(wiaPics);		// release WIA collection COM object
-				if(wiaRoot!=null)
-					Marshal.ReleaseComObject(wiaRoot);		// release WIA root device COM object
-				if(wiaDevs!=null)
-					Marshal.ReleaseComObject(wiaDevs);		// release WIA devices collection COM object
-				if(wiaManager!=null)
-					Marshal.ReleaseComObject(wiaManager);		// release WIA manager COM object
-				Cursor.Current=Cursors.Default;				// restore cursor
-			}
-		}//end ScanImage*/
 
 		private void printDocument2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e){
 			RectangleF rectf=e.Graphics.VisibleClipBounds;

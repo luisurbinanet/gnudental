@@ -8,8 +8,8 @@ using System.Windows.Forms;
 namespace OpenDental{
 	/// <summary></summary>
 	public class FormTelephone : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butClose;
-		private System.Windows.Forms.Button butReformat;
+		private OpenDental.UI.Button butClose;
+		private OpenDental.UI.Button butReformat;
 		private System.Windows.Forms.Label label1;
 		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
@@ -21,10 +21,7 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
+			Lan.F(this);
 		}
 
 		/// <summary>
@@ -49,8 +46,8 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.butClose = new System.Windows.Forms.Button();
-			this.butReformat = new System.Windows.Forms.Button();
+			this.butClose = new OpenDental.UI.Button();
+			this.butReformat = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 

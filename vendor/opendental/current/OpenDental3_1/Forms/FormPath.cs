@@ -8,37 +8,26 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormPath : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;
+		private OpenDental.UI.Button butOK;
+		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.TextBox textExportPath;
 		private System.Windows.Forms.TextBox textBox3;
 		private System.Windows.Forms.TextBox textDocPath;
-		private System.Windows.Forms.Button butBrowseExport;
-		private System.Windows.Forms.Button buBrowseDoc;
+		private OpenDental.UI.Button butBrowseExport;
+		private OpenDental.UI.Button buBrowseDoc;
 		private System.Windows.Forms.FolderBrowserDialog fbExportPath;
 		private System.Windows.Forms.FolderBrowserDialog fbDocPath;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textPassword;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox textUserName;
-		private System.Windows.Forms.CheckBox checkIsWebsite;
-		private System.Windows.Forms.TextBox textWebFolder;
     private bool IsBackup=false;
 
 		///<summary></summary>
 		public FormPath(){
 			InitializeComponent();
+			Lan.F(this);
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				butBrowseExport,
-				buBrowseDoc,
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
-				butCancel,
+				this.textBox1,
+				this.textBox3
 			});
 		}
 
@@ -55,30 +44,25 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.butOK = new System.Windows.Forms.Button();
-			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
 			this.textDocPath = new System.Windows.Forms.TextBox();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.textExportPath = new System.Windows.Forms.TextBox();
 			this.textBox3 = new System.Windows.Forms.TextBox();
-			this.butBrowseExport = new System.Windows.Forms.Button();
-			this.buBrowseDoc = new System.Windows.Forms.Button();
+			this.butBrowseExport = new OpenDental.UI.Button();
+			this.buBrowseDoc = new OpenDental.UI.Button();
 			this.fbExportPath = new System.Windows.Forms.FolderBrowserDialog();
 			this.fbDocPath = new System.Windows.Forms.FolderBrowserDialog();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.textPassword = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.textUserName = new System.Windows.Forms.TextBox();
-			this.checkIsWebsite = new System.Windows.Forms.CheckBox();
-			this.textWebFolder = new System.Windows.Forms.TextBox();
-			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(629, 267);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -88,8 +72,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(629, 301);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -139,20 +127,26 @@ namespace OpenDental{
 			// 
 			// butBrowseExport
 			// 
-			this.butBrowseExport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butBrowseExport.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBrowseExport.Autosize = true;
+			this.butBrowseExport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBrowseExport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBrowseExport.Location = new System.Drawing.Point(530, 206);
 			this.butBrowseExport.Name = "butBrowseExport";
-			this.butBrowseExport.Size = new System.Drawing.Size(100, 26);
+			this.butBrowseExport.Size = new System.Drawing.Size(76, 25);
 			this.butBrowseExport.TabIndex = 91;
 			this.butBrowseExport.Text = "Browse";
 			this.butBrowseExport.Click += new System.EventHandler(this.butBrowseExport_Click);
 			// 
 			// buBrowseDoc
 			// 
-			this.buBrowseDoc.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.buBrowseDoc.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.buBrowseDoc.Autosize = true;
+			this.buBrowseDoc.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.buBrowseDoc.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.buBrowseDoc.Location = new System.Drawing.Point(531, 82);
 			this.buBrowseDoc.Name = "buBrowseDoc";
-			this.buBrowseDoc.Size = new System.Drawing.Size(100, 26);
+			this.buBrowseDoc.Size = new System.Drawing.Size(76, 25);
 			this.buBrowseDoc.TabIndex = 90;
 			this.buBrowseDoc.Text = "&Browse";
 			this.buBrowseDoc.Click += new System.EventHandler(this.buBrowseDoc_Click);
@@ -165,88 +159,12 @@ namespace OpenDental{
 			// 
 			this.fbDocPath.SelectedPath = "C:\\";
 			// 
-			// groupBox1
-			// 
-			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.textPassword);
-			this.groupBox1.Controls.Add(this.label1);
-			this.groupBox1.Controls.Add(this.textUserName);
-			this.groupBox1.Controls.Add(this.checkIsWebsite);
-			this.groupBox1.Controls.Add(this.textWebFolder);
-			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(719, 51);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(238, 159);
-			this.groupBox1.TabIndex = 93;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Web Folder";
-			this.groupBox1.Visible = false;
-			// 
-			// label3
-			// 
-			this.label3.Location = new System.Drawing.Point(7, 107);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(501, 16);
-			this.label3.TabIndex = 7;
-			this.label3.Text = "Location: for instance http://www.open-dent.com/OpenDentalData/";
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(8, 79);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(100, 16);
-			this.label2.TabIndex = 6;
-			this.label2.Text = "Password";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textPassword
-			// 
-			this.textPassword.Location = new System.Drawing.Point(111, 77);
-			this.textPassword.Name = "textPassword";
-			this.textPassword.TabIndex = 5;
-			this.textPassword.Text = "";
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(8, 53);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(100, 16);
-			this.label1.TabIndex = 4;
-			this.label1.Text = "UserName";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textUserName
-			// 
-			this.textUserName.Location = new System.Drawing.Point(111, 51);
-			this.textUserName.Name = "textUserName";
-			this.textUserName.TabIndex = 3;
-			this.textUserName.Text = "";
-			// 
-			// checkIsWebsite
-			// 
-			this.checkIsWebsite.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkIsWebsite.Location = new System.Drawing.Point(11, 23);
-			this.checkIsWebsite.Name = "checkIsWebsite";
-			this.checkIsWebsite.Size = new System.Drawing.Size(498, 16);
-			this.checkIsWebsite.TabIndex = 2;
-			this.checkIsWebsite.Text = "Documents are stored on a website";
-			// 
-			// textWebFolder
-			// 
-			this.textWebFolder.Location = new System.Drawing.Point(9, 124);
-			this.textWebFolder.Name = "textWebFolder";
-			this.textWebFolder.Size = new System.Drawing.Size(518, 20);
-			this.textWebFolder.TabIndex = 1;
-			this.textWebFolder.Text = "";
-			// 
 			// FormPath
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(742, 342);
-			this.Controls.Add(this.groupBox1);
+			this.ClientSize = new System.Drawing.Size(727, 342);
 			this.Controls.Add(this.butBrowseExport);
 			this.Controls.Add(this.buBrowseDoc);
 			this.Controls.Add(this.textDocPath);
@@ -263,7 +181,6 @@ namespace OpenDental{
 			this.Text = "Edit Paths";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormPath_Closing);
 			this.Load += new System.EventHandler(this.FormPath_Load);
-			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
