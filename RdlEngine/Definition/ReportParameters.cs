@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -37,12 +37,12 @@ namespace fyiReporting.RDL
 	{
 		IDictionary _Items;			// list of report items
 
-		internal ReportParameters(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal ReportParameters(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			if (xNode.ChildNodes.Count < 10)
 				_Items = new ListDictionary();	// Hashtable is overkill for small lists
 			else
-				_Items = new Hashtable();
+				_Items = new Hashtable(xNode.ChildNodes.Count);
 
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -52,14 +52,15 @@ namespace fyiReporting.RDL
 				if (xNodeLoop.Name == "ReportParameter")
 				{
 					ReportParameter rp = new ReportParameter(r, this, xNodeLoop);
-					_Items.Add(rp.Name.Nm, rp);
+                    if (rp.Name != null)
+					    _Items.Add(rp.Name.Nm, rp);
 				}
 				else
 					OwnerReport.rl.LogError(4, "Unknown ReportParameters element '" + xNodeLoop.Name + "' ignored.");
 			}
 		}
 		
-		internal void SetRuntimeValues(IDictionary parms)
+		internal void SetRuntimeValues(Report rpt, IDictionary parms)
 		{
 			// Fill the values to use in the report parameters
 			foreach (string pname in parms.Keys)	// Loop thru the passed parameters
@@ -68,11 +69,11 @@ namespace fyiReporting.RDL
 				if (rp == null)
 				{	// When not found treat it as a warning message
 					if (!pname.StartsWith("rs:"))	// don't care about report server parameters
-						OwnerReport.rl.LogError(4, "Unknown ReportParameter passed '" + pname + "' ignored.");
+						rpt.rl.LogError(4, "Unknown ReportParameter passed '" + pname + "' ignored.");
 					continue;
 				}
 
-				rp.RuntimeValue = parms[pname];
+				rp.SetRuntimeValue(rpt, parms[pname]);
 			}
 
 			return;

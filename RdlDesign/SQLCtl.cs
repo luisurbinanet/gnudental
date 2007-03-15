@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -72,27 +73,29 @@ namespace fyiReporting.RdlDesign
 			tvTablesColumns.BeginUpdate();
 			
 			// Get the schema information
-			ArrayList si = DesignerUtility.GetSchemaInfo(_Draw, _DataSource);
-			TreeNode ndRoot = new TreeNode("Tables");
-			tvTablesColumns.Nodes.Add(ndRoot);
-			if (si == null)		// Nothing to initialize
-				return;
-			bool bView = false;
-			foreach (SqlSchemaInfo ssi in si)
+			List<SqlSchemaInfo> si = DesignerUtility.GetSchemaInfo(_Draw, _DataSource);
+			if (si != null && si.Count > 0)
 			{
-				if (!bView && ssi.Type == "VIEW")
-				{	// Switch over to views
-					ndRoot = new TreeNode("Views");
-					tvTablesColumns.Nodes.Add(ndRoot);
-					bView=true;
+				TreeNode ndRoot = new TreeNode("Tables");
+				tvTablesColumns.Nodes.Add(ndRoot);
+				if (si == null)		// Nothing to initialize
+					return;
+				bool bView = false;
+				foreach (SqlSchemaInfo ssi in si)
+				{
+					if (!bView && ssi.Type == "VIEW")
+					{	// Switch over to views
+						ndRoot = new TreeNode("Views");
+						tvTablesColumns.Nodes.Add(ndRoot);
+						bView=true;
+					}
+
+					// Add the node to the tree
+					TreeNode aRoot = new TreeNode(ssi.Name);
+					ndRoot.Nodes.Add(aRoot);
+					aRoot.Nodes.Add("");
 				}
-
-				// Add the node to the tree
-				TreeNode aRoot = new TreeNode(ssi.Name);
-				ndRoot.Nodes.Add(aRoot);
-				aRoot.Nodes.Add("");
 			}
-
 			// Now do parameters
 			TreeNode qpRoot = null;
 			foreach (DataRow dr in _QueryParameters.Rows)
@@ -263,7 +266,7 @@ namespace fyiReporting.RdlDesign
 			tvTablesColumns.BeginUpdate();
 			
 			string sql = "SELECT * FROM " + NormalizeName(tNode.Text);
-			ArrayList tColumns = DesignerUtility.GetSqlColumns(_Draw, _DataSource, sql);
+			List<SqlColumn> tColumns = DesignerUtility.GetSqlColumns(_Draw, _DataSource, sql);
 			bool bFirstTime=true;
 			foreach (SqlColumn sc in tColumns)
 			{
@@ -284,7 +287,9 @@ namespace fyiReporting.RdlDesign
 			bool bLetterOrDigit = true;
 			for (int i=0; i < name.Length && bLetterOrDigit; i++)
 			{
-				if (!Char.IsLetterOrDigit(name, i))
+				if (name[i] == '.')
+				{}						// allow names to have a "." for owner qualified tables
+				else if (!Char.IsLetterOrDigit(name, i))
 					bLetterOrDigit = false;
 			}
 			if (bLetterOrDigit)

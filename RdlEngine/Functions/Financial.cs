@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -112,7 +112,6 @@ namespace fyiReporting.RDL
 		/// <param name="rate">Interest rate per period</param>
 		/// <param name="period">Period for which you want the interest payment.</param>
 		/// <param name="periods">Total number of payment periods</param>
-		/// <param name="pmt">Amount of payment each period</param>
 		/// <param name="presentValue">Lump sum amount that a series of payments is worth now</param>
 		/// <param name="futureValue">Cash balance you want to attain after last payment</param>
 		/// <param name="endOfPeriod">Specify true if payments are due at end of period, otherwise false</param>
@@ -121,7 +120,7 @@ namespace fyiReporting.RDL
 		{
 			// TODO -- routine needs more work.   off when endOfPeriod is false; must be more direct way to solve
 			if (!endOfPeriod)
-				throw new Exception("IPmt doesn't current support payments due at beginning of period.");
+				throw new Exception("IPmt doesn't support payments due at beginning of period.");
 
 			if (period < 0 || period > periods)
 				return double.NaN;
@@ -175,7 +174,6 @@ namespace fyiReporting.RDL
 		/// </summary>
 		/// <param name="rate">Interest rate per period</param>
 		/// <param name="periods">Total number of payment periods</param>
-		/// <param name="pmt">Amount of payment each period</param>
 		/// <param name="presentValue">Lump sum amount that a series of payments is worth now</param>
 		/// <param name="futureValue">Cash balance you want to attain after last payment</param>
 		/// <param name="endOfPeriod">Specify true if payments are due at end of period, otherwise false</param>

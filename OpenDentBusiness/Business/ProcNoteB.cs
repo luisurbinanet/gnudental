@@ -20,8 +20,14 @@ namespace OpenDentBusiness {
 			}
 			command+=
 				 "'"+POut.PInt   (procNote.PatNum)+"', "
-				+"'"+POut.PInt   (procNote.ProcNum)+"', "
-				+"NOW(), "//EntryDateTime
+				+"'"+POut.PInt   (procNote.ProcNum)+"', ";
+			if(DataConnection.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscDataB.GetNowDateTime());
+			}
+			else {//Assume MySQL
+				command+="NOW()";
+			}
+			command+=", "//EntryDateTime
 				+"'"+POut.PInt   (procNote.UserNum)+"', "
 				+"'"+POut.PString(procNote.Note)+"', "
 				+"'"+POut.PBool  (procNote.SigIsTopaz)+"', "

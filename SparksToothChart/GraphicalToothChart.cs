@@ -24,12 +24,13 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using CodeBase;
 using Tao.OpenGl;
 using Tao.Platform.Windows;
-//using Tao.FreeGlut;
+using OpenDentBusiness;
 
 namespace SparksToothChart {
-	public partial class GraphicalToothChart:Tao.Platform.Windows.Controls.OpenGLWinFormsControl{//.SimpleOpenGlControl {
+	public partial class GraphicalToothChart:CodeBase.OpenGLWinFormsControl{//.SimpleOpenGlControl {
 		///<summary>A strongly typed collection of ToothGraphics.  This includes all 32 perm and all 20 primary teeth, whether they will be drawn or not.  If a tooth is missing, it gets marked as visible false.  If it's set to primary, then the permanent tooth gets repositioned under the primary, and a primary gets set to visible true.  If a tooth is impacted, it gets repositioned.  Supernumerary graphics are not yet supported, but they might be handled by adding to this list.  "implant" is also stored as another tooth in this collection.  It is just used to store the graphics for any implant.</summary>
 		private ToothGraphicCollection ListToothGraphics;
 		float[] specular_color_normal;//white
@@ -55,6 +56,7 @@ namespace SparksToothChart {
 		private int hotToothOld;
 		private bool useInternational;
 		private int fontOffset;
+		private int displayListOffset;
 		private string[][] numbers;
 		private string[][] letters;
 		///<summary>This gets set to true during certain operations where we do not need to redraw all the teeth.  Specifically, during tooth selection where only the color of the tooth number text needs to change.  In this case, the rest of the scene will not be rendered again.</summary>
@@ -64,7 +66,6 @@ namespace SparksToothChart {
 			InitializeComponent();
 			this.TaoSetupContext += new System.EventHandler(ToothChart_TaoSetupContext);
 			this.TaoRenderScene += new System.EventHandler(ToothChart_TaoRenderScene);
-			//js. I thought the next two lines were supposed to be done in the parent form.
 			TaoInitializeContexts();
 			TaoRenderEnabled=true;
 			WidthProjection=130;
@@ -75,7 +76,7 @@ namespace SparksToothChart {
 			ColorText=Color.Green;
 			ColorTextHighlight=Color.Purple;
 			ColorBackHighlight=Color.Orange;
-			Tao.OpenGl.Gl.glDisable(Tao.OpenGl.Gl.GL_TEXTURE);//Disable texturing, since we don't use it.
+			Gl.glDisable(Gl.GL_TEXTURE);//Disable texturing, since we don't use it.
 																												//This should prevent a glCopyPixels() problem in
 																												//Gdi.SwapBuffersFast() on ATI graphics cards.
 			ResetTeeth();
@@ -89,6 +90,8 @@ namespace SparksToothChart {
 		protected override void OnResize(EventArgs e) {
 			base.OnResize(e);
 			//Initialize();
+	//the line above used to reset the teeth.  We'll try this:
+			//ResetTeeth();
 		}
 
 		/*protected override void OnVisibleChanged(EventArgs e) {
@@ -199,6 +202,7 @@ namespace SparksToothChart {
 				}
 				tooth=new ToothGraphic("implant");
 				ListToothGraphics.Add(tooth);
+				MakeDisplayLists();
 			}
 			else {//list was already initially filled, but now user needs to reset it.
 				for(int i=0;i<ListToothGraphics.Count;i++) {//loop through all perm and pri teeth.
@@ -843,10 +847,10 @@ namespace SparksToothChart {
 				}*/
 			for(int i=1;i<=32;i++){
 				if(ALSelectedTeeth.Contains(i)) {
-					DrawNumber(i,true);
+					DrawNumber(i,true,true);
 				}
 				else {
-					DrawNumber(i,false);
+					DrawNumber(i,false,true);
 				}
 				
 			}
@@ -891,7 +895,7 @@ namespace SparksToothChart {
 		}
 
 		///<summary>Draws the number and the rectangle behind it.  Draws in the appropriate color</summary>
-		private void DrawNumber(int intTooth,bool isSelected) {
+		private void DrawNumber(int intTooth, bool isSelected, bool isFullRedraw) {
 			Gl.glDisable(Gl.GL_LIGHTING);
 			Gl.glDisable(Gl.GL_BLEND);
 			Gl.glDisable(Gl.GL_DEPTH_TEST);
@@ -900,6 +904,9 @@ namespace SparksToothChart {
 				&& ListToothGraphics[ToothGraphic.PermToPri(intTooth.ToString())].Visible)//and pri visible
 			{
 				tooth_id=ToothGraphic.PermToPri(intTooth.ToString());
+			}
+			if(isFullRedraw && ListToothGraphics[tooth_id].HideNumber){//if redrawing all numbers, and this is a "hidden" number
+				return;//skip
 			}
 			string displayNum=tooth_id;
 			if(useInternational) {
@@ -1067,14 +1074,14 @@ namespace SparksToothChart {
 			//Gl.glPushMatrix();
 			Gl.glListBase(fontOffset);
 			byte[] textbytes = new byte[text.Length];
-			for(int i=0;i<text.Length;i++){
-				textbytes[i]=(byte)text[i];
+			for(int i = 0;i < text.Length;i++){
+				textbytes[i] = (byte)text[i];
 			}
 			try{
 				Gl.glCallLists(text.Length,Gl.GL_UNSIGNED_BYTE,textbytes);
 			}
 			catch{
-				//do nothing.
+				//Do nothing
 			}
 			//Gl.glPopMatrix();
 			//Gl.glPopAttrib();
@@ -1171,15 +1178,61 @@ namespace SparksToothChart {
 				//Gl.glBlendFunc(Gl.GL_SRC_ALPHA,Gl.GL_ONE_MINUS_SRC_ALPHA);
 				//Gl.glBlendFunc(Gl.GL_SRC_ALPHA_SATURATE,Gl.GL_ONE);
 				Gl.glHint(Gl.GL_POLYGON_SMOOTH_HINT,Gl.GL_NICEST);
-				for(int i=0;i<group.Faces.GetLength(0);i++) {//loop through each face
-					Gl.glBegin(Gl.GL_POLYGON);
-					for(int j=0;j<group.Faces[i].Length;j++) {//loop through each vertex
-						Gl.glNormal3fv(toothGraphic.Normals[group.Faces[i][j][1]]);
-						Gl.glVertex3fv(toothGraphic.Vertices[group.Faces[i][j][0]]);
+				Gl.glListBase(displayListOffset);
+				//draw the group
+				Gl.glCallList(displayListOffset+toothGraphic.GetIndexForDisplayList(group));
+			}
+		}
+
+		///<summary></summary>
+		private void MakeDisplayLists(){
+			//total number of display lists will be: (52 teeth) x (10 group types)=520. But 1-9 not used, and 521-529 are used. 
+			displayListOffset=Gl.glGenLists(530);//not sure if I did this right
+			ToothGraphic toothGraphic;
+			ToothGroup group;
+			for(int t=1;t<=52;t++) {
+				if(t>32 && t<=42){//33-42:  A-J = 4-13
+					toothGraphic=ListToothGraphics[Tooth.PermToPri(t-29)];
+				}
+				else if(t>42 && t<=52) {//43-52:  K-T = 20-29
+					toothGraphic=ListToothGraphics[Tooth.PermToPri(t-23)];
+				}
+				else{//perm
+					toothGraphic=ListToothGraphics[t.ToString()];
+				}
+				for(int g=0;g<10;g++){//groups 0-9
+					group=toothGraphic.GetGroupForDisplayList(g);
+					Gl.glNewList(displayListOffset+(t*10)+g,Gl.GL_COMPILE);
+						//ToothGraphic.GetDisplayListNum(i.ToString())
+					if(group!=null){
+						for(int f=0;f<group.Faces.GetLength(0);f++) {//loop through each face
+							Gl.glBegin(Gl.GL_POLYGON);
+							for(int v=0;v<group.Faces[f].Length;v++) {//loop through each vertex
+								Gl.glNormal3fv(toothGraphic.Normals[group.Faces[f][v][1]]);
+								Gl.glVertex3fv(toothGraphic.Vertices[group.Faces[f][v][0]]);
+							}
+							Gl.glEnd();
+						}
 					}
-					Gl.glEnd();
+					Gl.glEndList();
 				}
 			}
+
+			/*
+			ToothGraphic tooth;
+			for(int i=1;i<=32;i++) {
+				tooth=new ToothGraphic(i.ToString());
+				tooth.Visible=true;
+				ListToothGraphics.Add(tooth);
+				//primary
+				if(ToothGraphic.PermToPri(i.ToString())!="") {
+					tooth=new ToothGraphic(ToothGraphic.PermToPri(i.ToString()));
+					tooth.Visible=false;
+					ListToothGraphics.Add(tooth);
+				}
+			}
+			tooth=new ToothGraphic("implant");
+			ListToothGraphics.Add(tooth);*/
 		}
 
 		///<summary>Pri or perm tooth numbers are valid.  Only locations of perm teeth are stored.</summary>
@@ -1333,11 +1386,11 @@ namespace SparksToothChart {
 			suspendRendering=true;
 			if(setValue) {
 				ALSelectedTeeth.Add(intTooth);
-				DrawNumber(intTooth,true);
+				DrawNumber(intTooth,true,false);
 			}
 			else {
 				ALSelectedTeeth.Remove(intTooth);
-				DrawNumber(intTooth,false);
+				DrawNumber(intTooth,false,false);
 			}
 			RectangleF recMm=GetNumberRecMm(intTooth.ToString());
 			Rectangle rec=ConvertRecToPix(recMm);

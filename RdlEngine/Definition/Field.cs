@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -43,16 +43,10 @@ namespace fyiReporting.RDL
 		TypeCode _Type;	// The data type of the field
 		QueryColumn qc;		// Query column: resolved from the query SQL
 		Expression _Value;	// (Variant) An expression that evaluates to the value of
-		//  this field.
-		// For example,
-		// =Fields!Price.Value+Fields!Tax.Value
-		// The expression cannot contain aggregates or
-		// references to report items.	
-		// runtime variables
-		[NonSerialized] int _QueryColumnNumber;	// Determined at runtime query
+		//  this field.  For example, =Fields!Price.Value+Fields!Tax.Value
+		// The expression cannot contain aggregates or references to report items.	
 
-
-		internal Field(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Field(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Name=null;
 			_DataField=null;
@@ -108,7 +102,7 @@ namespace fyiReporting.RDL
 			if (_DataField != null)
 			{
 				Fields f = (Fields) this.Parent;
-				DataSet ds = (DataSet) f.Parent;
+				DataSetDefn ds = (DataSetDefn) f.Parent;
 				Query q = ds.Query;
 				if (q != null && q.Columns != null)
 				{
@@ -145,12 +139,6 @@ namespace fyiReporting.RDL
 		{
 			get { return  _ColumnNumber; }
 			set {  _ColumnNumber = value; }
-		}
-
-		internal int QueryColumnNumber
-		{
-			get { return  _QueryColumnNumber; }
-			set {  _QueryColumnNumber = value; }
 		}
 
 		internal QueryColumn qColumn

@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -56,6 +56,8 @@ namespace fyiReporting.RDL
 		// prompted for a value for this parameter.
 		ValidValues _ValidValues; // Possible values for the parameter (for an
 		//	end-user prompting interface)
+		bool _Hidden=false;					// indicates parameter should not be showed to user
+		bool _MultiValue=false;				// indicates parameter is a collection - expressed as 0 based arrays Parameters!p1.Value(0)
 		TrueFalseAutoEnum _UsedInQuery; // Enum True | False | Auto (default)
 		//	Indicates whether or not the parameter is
 		//	used in a query in the report. This is
@@ -66,9 +68,8 @@ namespace fyiReporting.RDL
 		//	autodetected as follows: True if the
 		//	parameter is referenced in any query
 		//	value expression.		
-		[NonSerialized] object _RuntimeValue;		// runtime value
 	
-		internal ReportParameter(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal ReportParameter(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Name=null;
 			_dt = TypeCode.Object;
@@ -78,7 +79,6 @@ namespace fyiReporting.RDL
 			_Prompt=null;
 			_ValidValues=null;
 			_UsedInQuery = TrueFalseAutoEnum.Auto;
-			_RuntimeValue = null;
 			// Run thru the attributes
 			foreach(XmlAttribute xAttr in xNode.Attributes)
 			{
@@ -111,6 +111,13 @@ namespace fyiReporting.RDL
 						break;
 					case "Prompt":
 						_Prompt = xNodeLoop.InnerText;
+						break;
+					case "Hidden":
+						_Hidden = XmlUtil.Boolean(xNodeLoop.InnerText, OwnerReport.rl);
+						OwnerReport.rl.LogError(4, "ReportParameter element Hidden is currently ignored.");	// TODO
+						break;
+					case "MultiValue":
+						_MultiValue = XmlUtil.Boolean(xNodeLoop.InnerText, OwnerReport.rl);
 						break;
 					case "ValidValues":
 						_ValidValues = new ValidValues(r, this, xNodeLoop);
@@ -146,45 +153,125 @@ namespace fyiReporting.RDL
 			set {  _Name = value; }
 		}
 
-		internal object RuntimeValue
+		internal object GetRuntimeValue(Report rpt)
 		{
-			get 
-			{ 
-				if (_RuntimeValue != null)
-					return _RuntimeValue; 
-				if (_DefaultValue == null)
-					return null;
+			object rtv = rpt == null? null:
+				rpt.Cache.Get(this, "runtimevalue");
+
+			if (rtv != null)
+				return rtv; 
+			if (_DefaultValue == null)
+				return null;
 				
-				object[] result = _DefaultValue.Value;
-				if (result == null)
-					return null;
-				object v = result[0];
+			object[] result = _DefaultValue.GetValue(rpt);
+			if (result == null)
+				return null;
+			object v = result[0];
+			if (v is String && _NumericType)
+				v = ConvertStringToNumber((string) v);
+
+			rtv = Convert.ChangeType(v, _dt);
+			if (rpt != null)
+				rpt.Cache.Add(this, "runtimevalue", rtv);
+
+			return rtv;
+		}
+
+        internal ArrayList GetRuntimeValues(Report rpt)
+        {
+            ArrayList rtv = rpt == null ? null :
+                (ArrayList) rpt.Cache.Get(this, "rtvs");
+
+            if (rtv != null)
+                return rtv;
+
+            if (_DefaultValue == null)
+                return null;
+
+            object[] result = _DefaultValue.GetValue(rpt);
+            if (result == null)
+                return null;
+
+            ArrayList ar = new ArrayList(result.Length);
+            foreach (object v in result)
+            {
+                object nv = v;
+                if (nv is String && _NumericType)
+                    nv = ConvertStringToNumber((string)nv);
+
+                ar.Add( Convert.ChangeType(nv, _dt));
+            }
+
+            if (rpt != null)
+                rpt.Cache.Add(this, "rtvs", ar);
+
+            return ar;
+        }
+
+		internal void SetRuntimeValue(Report rpt, object v)
+		{
+            if (this.MultiValue)
+            {   // ok to only set one parameter of multiValue;  but we still save as MultiValue
+                ArrayList ar = new ArrayList(1);
+                ar.Add(v);
+                SetRuntimeValues(rpt, ar);
+                return;
+            }
+
+			object rtv;
+			if (!AllowBlank && _dt == TypeCode.String && (string) v == "")
+				throw new ArgumentException(string.Format("Empty string isn't allowed for {0}.", Name.Nm));
+			try 
+			{
 				if (v is String && _NumericType)
 					v = ConvertStringToNumber((string) v);
-
-				_RuntimeValue = Convert.ChangeType(v, _dt);
-
-				return _RuntimeValue;
+				rtv = Convert.ChangeType(v, _dt); 
 			}
-			set 
-			{ 
-				if (!AllowBlank && _dt == TypeCode.String && (string) value == "")
-					throw new ArgumentException(string.Format("Empty string isn't allowed for {0}.", Name.Nm));
-				try 
-				{
-					object v = value;
-					if (v is String && _NumericType)
-						v = ConvertStringToNumber((string) v);
-					_RuntimeValue = Convert.ChangeType(v, _dt); 
-				}
-				catch (Exception e)
-				{
-					// illegal parameter passed
-					OwnerReport.rl.LogError(4, "Illegal parameter value for '" + Name.Nm + "' provided.  Value =" + value.ToString());
-					throw new ArgumentException(string.Format("Unable to convert '{0}' to {1} for {2}", value, _dt, Name.Nm),e);
-				}
+			catch (Exception e)
+			{
+				// illegal parameter passed
+                string err = "Illegal parameter value for '" + Name.Nm + "' provided.  Value =" + v.ToString();
+                if (rpt == null)
+                    OwnerReport.rl.LogError(4, err);
+                else
+                    rpt.rl.LogError(4, err);
+				throw new ArgumentException(string.Format("Unable to convert '{0}' to {1} for {2}", v, _dt, Name.Nm),e);
 			}
+			rpt.Cache.AddReplace(this, "runtimevalue", rtv);
 		}
+
+        internal void SetRuntimeValues(Report rpt, ArrayList vs)
+        {
+            if (!this.MultiValue)
+                throw new ArgumentException(string.Format("{0} is not a MultiValue parameter. SetRuntimeValues only valid for MultiValue parameters", this.Name.Nm));
+
+            ArrayList ar = new ArrayList(vs.Count);
+            foreach (object v in vs)
+            {
+                object rtv;
+                if (!AllowBlank && _dt == TypeCode.String && (string)v == "")
+                    throw new ArgumentException(string.Format("Empty string isn't allowed for {0}.", Name.Nm));
+                try
+                {
+                    object nv = v;
+                    if (nv is String && _NumericType)
+                        nv = ConvertStringToNumber((string)nv);
+                    rtv = Convert.ChangeType(nv, _dt);
+                    ar.Add(rtv);
+                }
+                catch (Exception e)
+                {
+                    // illegal parameter passed
+                    string err = "Illegal parameter value for '" + Name.Nm + "' provided.  Value =" + v.ToString();
+                    if (rpt == null)
+                        OwnerReport.rl.LogError(4, err);
+                    else
+                        rpt.rl.LogError(4, err);
+                    throw new ArgumentException(string.Format("Unable to convert '{0}' to {1} for {2}", v, _dt, Name.Nm), e);
+                }
+            }
+            rpt.Cache.AddReplace(this, "rtvs", ar);
+        }
 
 		private object ConvertStringToNumber(string newv)
 		{
@@ -205,6 +292,18 @@ namespace fyiReporting.RDL
 		{
 			get { return  _Nullable; }
 			set {  _Nullable = value; }
+		}
+		
+		internal bool Hidden
+		{
+			get { return  _Hidden; }
+			set {  _Hidden = value; }
+		}
+
+		internal bool MultiValue
+		{
+			get { return  _MultiValue; }
+			set {  _MultiValue = value; }
 		}
 
 		internal DefaultValue DefaultValue
@@ -243,31 +342,44 @@ namespace fyiReporting.RDL
 /// </summary>
 	public class UserReportParameter
 	{
+		Report _rpt;
 		ReportParameter _rp;
 		object[] _DefaultValue;
 		string[] _DisplayValues;
 		object[] _DataValues;
 
-		internal UserReportParameter(ReportParameter rp)
+		internal UserReportParameter(Report rpt, ReportParameter rp)
 		{
+			_rpt = rpt;
 			_rp = rp;
 		}
-
+		/// <summary>
+		/// Name of the report paramenter.
+		/// </summary>
 		public string Name
 		{
 			get { return  _rp.Name.Nm; }
 		}
 
+		/// <summary>
+		/// Type of the report parameter.
+		/// </summary>
 		public TypeCode dt
 		{
 			get { return  _rp.dt; }
 		}
 
+		/// <summary>
+		/// Is parameter allowed to be null.
+		/// </summary>
 		public bool Nullable
 		{
 			get { return  _rp.Nullable; }
 		}
 
+		/// <summary>
+		/// Default value(s) of the parameter.
+		/// </summary>
 		public object[] DefaultValue
 		{
 			get 
@@ -275,22 +387,38 @@ namespace fyiReporting.RDL
 				if (_DefaultValue == null)
 				{
 					if (_rp.DefaultValue != null)
-						_DefaultValue = _rp.DefaultValue.ValuesCalc();
+						_DefaultValue = _rp.DefaultValue.ValuesCalc(null);
 				}
 				return _DefaultValue;
 			}
 		}
 
+		/// <summary>
+		/// Is parameter allowed to be the empty string?
+		/// </summary>
 		public bool AllowBlank
 		{
 			get { return  _rp.AllowBlank; }
 		}
+        /// <summary>
+        /// Does parameters accept multiple values?
+        /// </summary>
+        public bool MultiValue
+        {
+            get { return _rp.MultiValue; }
+        }
 
+		/// <summary>
+		/// Text used to prompt for the parameter.
+		/// </summary>
 		public string Prompt
 		{
 			get { return  _rp.Prompt; }
 		}
 
+		/// <summary>
+		/// The display values for the parameter.  These may differ from the data values.
+		/// </summary>
 		public string[] DisplayValues
 		{
 			get 
@@ -298,12 +426,15 @@ namespace fyiReporting.RDL
 				if (_DisplayValues == null)
 				{
 					if (_rp.ValidValues != null)
-						_DisplayValues = _rp.ValidValues.DisplayValues();
+						_DisplayValues = _rp.ValidValues.DisplayValues(_rpt);
 				}
 				return  _DisplayValues;		 
 			}
 		}
 
+		/// <summary>
+		/// The data values of the parameter.
+		/// </summary>
 		public object[] DataValues
 		{
 			get 
@@ -311,36 +442,87 @@ namespace fyiReporting.RDL
 				if (_DataValues == null)
 				{
 					if (_rp.ValidValues != null)
-						_DataValues = _rp.ValidValues.DataValues();
+						_DataValues = _rp.ValidValues.DataValues(this._rpt);
 				}
 				return  _DataValues;		 
 			}
 		}
 
+        /// <summary>
+        /// Obtain the data value from a (potentially) display value
+        /// </summary>
+        /// <param name="dvalue">Display value</param>
+        /// <returns>The data value cooresponding to the display value.</returns>
+        private object GetDataValueFromDisplay(object dvalue)
+        {
+            object val = dvalue;
+
+            if (dvalue != null &&
+                DisplayValues != null &&
+                DataValues != null &&
+                DisplayValues.Length == DataValues.Length)		// this should always be true
+            {	// if display values are provided then we may need to 
+                //  use the provided value with a display value and use
+                //  the cooresponding data value
+                string sval = dvalue.ToString();
+                for (int index = 0; index < DisplayValues.Length; index++)
+                {
+                    if (DisplayValues[index].CompareTo(sval) == 0)
+                    {
+                        val = DataValues[index];
+                        break;
+                    }
+                }
+            }
+            return val;
+        }
+
+		/// <summary>
+		/// The runtime value of the parameter.
+		/// </summary>
 		public object Value
 		{
-			get { return _rp.RuntimeValue; }
+			get { return _rp.GetRuntimeValue(this._rpt); }
 			set 
 			{
-				object dvalue = value;
-				if (DisplayValues != null && 
-					DataValues != null && 
-					DisplayValues.Length == DataValues.Length)		// this should always be true
-				{	// if display values are provided then we may need to 
-					//  may the provided value with a display value and use
-					//  the cooresponding data value
-					for (int index=0; index < DisplayValues.Length; index++)
-					{
-						if (DisplayValues[index].CompareTo(value.ToString()) == 0)
-						{
-							dvalue = DataValues[index];
-							break;
-						}
-					}
-				}
+                if (this.MultiValue && value is string)
+                {   // treat this as a multiValue request
+                    Values = ParseValue(value as string);
+                    return;
+                }
 
-				_rp.RuntimeValue = dvalue; 
+                object dvalue = GetDataValueFromDisplay(value);
+
+                _rp.SetRuntimeValue(_rpt, dvalue); 
 			}
 		}
-	}
+
+        /// <summary>
+        /// Take a string and parse it into multiple values
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        private ArrayList ParseValue(string v)
+        {
+            ParameterLexer pl = new ParameterLexer(v);
+            return pl.Lex();
+        }
+
+        /// <summary>
+        /// The runtime values of the parameter when MultiValue.
+        /// </summary>
+        public ArrayList Values
+        {
+            get { return _rp.GetRuntimeValues(this._rpt); }
+            set
+            {
+                ArrayList ar = new ArrayList(value.Count);
+                foreach (object v in value)
+                {
+                    ar.Add(GetDataValueFromDisplay(v));
+                }
+                _rp.SetRuntimeValues(_rpt, ar);
+            }
+        }
+    }
 }

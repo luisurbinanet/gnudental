@@ -6,72 +6,37 @@ using System.Text;
 namespace OpenDentBusiness {
 	public class ProcedureB{
 		///<summary></summary>
-		public static DataSet Refresh(int patNum,bool includeDeletedAndNotes){
+		public static DataSet Refresh(int patNum){
 			string command="SELECT * FROM procedurelog WHERE PatNum="+POut.PInt(patNum);
-			if(!includeDeletedAndNotes){
+			//if(!includeDeletedAndNotes){
 				command+=" AND ProcStatus !=6";//don't include deleted
-			}
-			command+=" ORDER BY ProcDate,ADACode;"
+			//}
+			command+=" ORDER BY ProcDate,ADACode";
 				//notes:
-				+"SELECT * FROM procnote WHERE PatNum="+POut.PInt(patNum)
-				+" ORDER BY EntryDateTime";
+			/*	+";SELECT * FROM procnote WHERE PatNum="+POut.PInt(patNum)
+				+" ORDER BY EntryDateTime";*/
 			DataConnection dcon=new DataConnection();
 			DataSet ds=dcon.GetDs(command);
 			//add a note column to the proc table.
-			ds.Tables[0].Columns.Add("UserNum");
-			ds.Tables[0].Columns.Add("Note");//,,typeof(string));
-			ds.Tables[0].Columns.Add("SigIsTopaz");//,typeof(string));
-			ds.Tables[0].Columns.Add("Signature");//,typeof(string));
-			int userNum;
-			if(includeDeletedAndNotes){
-				//we will include all notes for each proc.  We will concat and make readable.
-				for(int i=0;i<ds.Tables[0].Rows.Count;i++){//loop through each proc
-					for(int n=0;n<ds.Tables[1].Rows.Count;n++){//loop through each note
-						if(ds.Tables[0].Rows[i]["ProcNum"].ToString() != ds.Tables[1].Rows[n]["ProcNum"].ToString()){
-							continue;
-						}
-						if(ds.Tables[0].Rows[i]["Note"].ToString()!=""){//if there is an existing note
-							ds.Tables[0].Rows[i]["Note"]+="\r\n------------------------------------------------------\r\n";//start a new line
-						}
-						ds.Tables[0].Rows[i]["Note"]+=
-							PIn.PDateT(ds.Tables[1].Rows[n]["EntryDateTime"].ToString()).ToString();
-						userNum=PIn.PInt(ds.Tables[1].Rows[n]["UserNum"].ToString());
-						if(userNum!=0){
-							ds.Tables[0].Rows[i]["Note"]+="  "+UserB.GetUser(userNum).UserName;
-						}
-						if(ds.Tables[1].Rows[n]["Signature"].ToString()!=""){
-							ds.Tables[0].Rows[i]["Note"]+="  "+Lan.g("Procedures","(signed)");
-						}
-						ds.Tables[0].Rows[i]["Note"]+="\r\n"
-							+ds.Tables[1].Rows[n]["Note"].ToString();
+			//ds.Tables[0].Columns.Add("UserNum");
+			//ds.Tables[0].Columns.Add("Note");//,,typeof(string));
+			//ds.Tables[0].Columns.Add("SigIsTopaz");//,typeof(string));
+			//ds.Tables[0].Columns.Add("Signature");//,typeof(string));
+			/*
+			for(int i=0;i<ds.Tables[0].Rows.Count;i++){//loop through each proc
+				for(int n=ds.Tables[1].Rows.Count-1;n>=0;n--){//loop through each note, backwards.
+					if(ds.Tables[0].Rows[i]["ProcNum"].ToString() != ds.Tables[1].Rows[n]["ProcNum"].ToString()) {
+						continue;
 					}
+					//userNum=PIn.PInt(ds.Tables[1].Rows[n]["UserNum"].ToString());
+					ds.Tables[0].Rows[i]["UserNum"]   =ds.Tables[1].Rows[n]["UserNum"].ToString();
+					ds.Tables[0].Rows[i]["Note"]      =ds.Tables[1].Rows[n]["Note"].ToString();
+					ds.Tables[0].Rows[i]["SigIsTopaz"]=ds.Tables[1].Rows[n]["SigIsTopaz"].ToString();
+					ds.Tables[0].Rows[i]["Signature"] =ds.Tables[1].Rows[n]["Signature"].ToString();
+					break;//out of note loop.
 				}
-			}
-			else{//we just want the most recent note
-				for(int i=0;i<ds.Tables[0].Rows.Count;i++){//loop through each proc
-					for(int n=ds.Tables[1].Rows.Count-1;n>=0;n--){//loop through each note, backwards.
-						if(ds.Tables[0].Rows[i]["ProcNum"].ToString() != ds.Tables[1].Rows[n]["ProcNum"].ToString()) {
-							continue;
-						}
-						userNum=PIn.PInt(ds.Tables[1].Rows[n]["UserNum"].ToString());
-						//if(userNum!=0) {
-						//	ds.Tables[0].Rows[i]["Note"]+="  "+UserB.GetUser(userNum).UserName;
-						//}
-						//if(ds.Tables[1].Rows[n]["Signature"].ToString()!="") {
-						//	ds.Tables[0].Rows[i]["Note"]+="  "+Lan.g("Procedures","(signed)");
-						//}
-						//if(ds.Tables[0].Rows[i]["Note"].ToString()!=""){
-						//	ds.Tables[0].Rows[i]["Note"]+="\r\n";
-						//}
-						ds.Tables[0].Rows[i]["UserNum"]   =ds.Tables[1].Rows[n]["UserNum"].ToString();
-						ds.Tables[0].Rows[i]["Note"]      =ds.Tables[1].Rows[n]["Note"].ToString();
-						ds.Tables[0].Rows[i]["SigIsTopaz"]=ds.Tables[1].Rows[n]["SigIsTopaz"].ToString();
-						ds.Tables[0].Rows[i]["Signature"] =ds.Tables[1].Rows[n]["Signature"].ToString();
-						break;//out of note loop.
-					}
-				}
-			}
-			ds.Tables.RemoveAt(1);
+			}*/
+			//ds.Tables.RemoveAt(1);
 			return ds;
 		}
 
@@ -86,7 +51,7 @@ namespace OpenDentBusiness {
 			command+="PatNum, AptNum, ADACode, ProcDate,ProcFee,Surf,"
 				+"ToothNum,ToothRange,Priority,ProcStatus,ProvNum,"
 				+"Dx,PlannedAptNum,PlaceService,Prosthesis,DateOriginalProsth,ClaimNote,"
-				+"DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,LabFee) VALUES(";
+				+"DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,ProcNumLab) VALUES(";
 			if(PrefB.RandomKeys) {
 				command+="'"+POut.PInt(proc.ProcNum)+"', ";
 			}
@@ -94,7 +59,7 @@ namespace OpenDentBusiness {
 				 "'"+POut.PInt   (proc.PatNum)+"', "
 				+"'"+POut.PInt   (proc.AptNum)+"', "
 				+"'"+POut.PString(proc.ADACode)+"', "
-				+"'"+POut.PDate  (proc.ProcDate)+"', "
+				+POut.PDate  (proc.ProcDate)+", "
 				+"'"+POut.PDouble(proc.ProcFee)+"', "
 				+"'"+POut.PString(proc.Surf)+"', "
 				+"'"+POut.PString(proc.ToothNum)+"', "
@@ -106,14 +71,19 @@ namespace OpenDentBusiness {
 				+"'"+POut.PInt   (proc.PlannedAptNum)+"', "
 				+"'"+POut.PInt   ((int)proc.PlaceService)+"', "
 				+"'"+POut.PString(proc.Prosthesis)+"', "
-				+"'"+POut.PDate  (proc.DateOriginalProsth)+"', "
-				+"'"+POut.PString(proc.ClaimNote)+"', "
-				+"NOW(), "//DateEntryC
+				+POut.PDate  (proc.DateOriginalProsth)+", "
+				+"'"+POut.PString(proc.ClaimNote)+"', ";
+			if(DataConnection.DBtype==DatabaseType.Oracle){
+				command+=POut.PDateT(MiscDataB.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="NOW()";
+			}
+			command+=", "//DateEntryC
 				+"'"+POut.PInt   (proc.ClinicNum)+"', "
 				+"'"+POut.PString(proc.MedicalCode)+"', "
 				+"'"+POut.PString(proc.DiagnosticCode)+"', "
 				+"'"+POut.PBool  (proc.IsPrincDiag)+"', "
-				+"'"+POut.PDouble(proc.LabFee)+"')";
+				+"'"+POut.PInt   (proc.ProcNumLab)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			if(PrefB.RandomKeys) {
@@ -154,7 +124,7 @@ namespace OpenDentBusiness {
 			}
 			if(proc.ProcDate!=oldProc.ProcDate){
 				if(comma) c+=",";
-				c+="ProcDate = '"	+POut.PDate  (proc.ProcDate)+"'";
+				c+="ProcDate = "	+POut.PDate  (proc.ProcDate);
 				comma=true;
 			}
 			if(proc.ProcFee!=oldProc.ProcFee){
@@ -214,7 +184,7 @@ namespace OpenDentBusiness {
 			}
 			if(proc.DateOriginalProsth!=oldProc.DateOriginalProsth){
 				if(comma) c+=",";
-				c+="DateOriginalProsth = '"+POut.PDate  (proc.DateOriginalProsth)+"'";
+				c+="DateOriginalProsth = "+POut.PDate  (proc.DateOriginalProsth);
 				comma=true;
 			}
 			if(proc.ClaimNote!=oldProc.ClaimNote){
@@ -224,7 +194,13 @@ namespace OpenDentBusiness {
 			}
 			if(proc.DateEntryC!=oldProc.DateEntryC){
 				if(comma) c+=",";
-				c+="DateEntryC = NOW()";
+				c+="DateEntryC = ";
+				if(DataConnection.DBtype==DatabaseType.Oracle) {
+					c+=POut.PDateT(MiscDataB.GetNowDateTime());
+				}
+				else {//Assume MySQL
+					c+="NOW()";
+				}
 				comma=true;
 			}
 			if(proc.ClinicNum!=oldProc.ClinicNum){
@@ -247,9 +223,9 @@ namespace OpenDentBusiness {
 				c+="IsPrincDiag = '"+POut.PBool(proc.IsPrincDiag)+"'";
 				comma=true;
 			}
-			if(proc.LabFee!=oldProc.LabFee) {
+			if(proc.ProcNumLab!=oldProc.ProcNumLab) {
 				if(comma) c+=",";
-				c+="LabFee = '"+POut.PDouble(proc.LabFee)+"'";
+				c+="ProcNumLab = '"+POut.PInt(proc.ProcNumLab)+"'";
 				comma=true;
 			}
 			int rowsChanged=0;
@@ -339,7 +315,33 @@ namespace OpenDentBusiness {
 			return rowsChanged;
 		}
 
-		
+		///<summary>The supplied DataRows must include the following columns: Priority,ToothRange,ToothNum,ADACode.  This sorts procedures based on priority, then tooth number, then adaCode.  It does not care about dates or status.  Currently used in TP module and Chart module sorting.</summary>
+		public static int CompareProcedures(DataRow x,DataRow y) {
+			//first, by priority
+			if(x["Priority"].ToString()!=y["Priority"].ToString()) {//if priorities are different
+				if(x["Priority"].ToString()=="0") {
+					return 1;//x is greater than y. Priorities always come first.
+				}
+				if(y["Priority"].ToString()=="0") {
+					return -1;//x is less than y. Priorities always come first.
+				}
+				return DefB.GetOrder(DefCat.TxPriorities,PIn.PInt(x["Priority"].ToString())).CompareTo
+					(DefB.GetOrder(DefCat.TxPriorities,PIn.PInt(y["Priority"].ToString())));
+			}
+			//priorities are the same, so sort by toothrange
+			if(x["ToothRange"].ToString()!=y["ToothRange"].ToString()) {
+				//empty toothranges come before filled toothrange values
+				return x["ToothRange"].ToString().CompareTo(y["ToothRange"].ToString());
+			}
+			//toothranges are the same (usually empty), so compare toothnumbers
+			if(x["ToothNum"].ToString()!=y["ToothNum"].ToString()) {
+				//this also puts invalid or empty toothnumbers before the others.
+				return Tooth.ToInt(x["ToothNum"].ToString()).CompareTo(Tooth.ToInt(y["ToothNum"].ToString()));
+			}
+			//priority and toothnums are the same, so sort by adacode.
+			return x["ADACode"].ToString().CompareTo(y["ADACode"].ToString());
+			//return 0;//priority, tooth number, and adacode are all the same
+		}
 
 
 
@@ -348,7 +350,6 @@ namespace OpenDentBusiness {
 
 
 	}
-
 
 
 }

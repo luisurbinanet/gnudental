@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -40,7 +40,7 @@ namespace fyiReporting.RDL
 		Visibility _Visibility;	// Indicates if the details should be hidden	
 		Textbox _ToggleTextbox;	//  resolved TextBox for toggling visibility
 	
-		internal Details(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Details(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_TableRows=null;
 			_Grouping=null;
@@ -105,7 +105,7 @@ namespace fyiReporting.RDL
 
 			for (int r=start; r <= end; r++)
 			{
-				_TableRows.Run(ip, (Row) (rs.Data[r]));
+				_TableRows.Run(ip, rs.Data[r]);
 			}
 			return;
 		}
@@ -122,8 +122,9 @@ namespace fyiReporting.RDL
 			for (int r=start; r <= end; r++)
 			{
 				p = pgs.CurrentPage;			// this can change after running a row
-				row = (Row) (rs.Data[r]);
-				float height = p.YOffset + HeightOfRows(pgs, row);
+				row = rs.Data[r];
+				float hrows = HeightOfRows(pgs, row);	// height of all the rows in the details
+				float height = p.YOffset + hrows;
 				if (r == end)
 					height += footerHeight;		// on last row; may need additional room for footer
 				if (height > pgs.BottomOfPage)
@@ -131,7 +132,7 @@ namespace fyiReporting.RDL
 					p = OwnerTable.RunPageNew(pgs, p);
 					OwnerTable.RunPageHeader(pgs, row, false, null);
 				}
-				_TableRows.RunPage(pgs, row);
+				_TableRows.RunPage(pgs, row, hrows > pgs.BottomOfPage);
 			}
 			return;
 		}

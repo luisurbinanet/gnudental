@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -25,6 +25,7 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace fyiReporting.RDL
 {
@@ -38,10 +39,9 @@ namespace fyiReporting.RDL
 		RSize _Height;				// Height of the row
 		Visibility _Visibility;		// Indicates if the row should be hidden		
 		bool _CanGrow;			// indicates that row height can increase in size
-		ArrayList _GrowList;	// list of TextBox's that need to be checked for growth
-		float _CalcHeight;		// dynamic when CanGrow true
+		List<Textbox> _GrowList;	// list of TextBox's that need to be checked for growth
 
-		internal TableRow(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal TableRow(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_TableCells=null;
 			_Height=null;
@@ -83,8 +83,6 @@ namespace fyiReporting.RDL
 			if (_Visibility != null)
 				_Visibility.FinalPass();
 
-			_CalcHeight = this.Height.Points;
-
 			foreach (TableCell tc in _TableCells.Items)
 			{
 				ReportItem ri = tc.ReportItems.Items[0] as ReportItem;
@@ -94,21 +92,21 @@ namespace fyiReporting.RDL
 				if (tb.CanGrow)
 				{
 					if (this._GrowList == null)
-						_GrowList = new ArrayList();
+						_GrowList = new List<Textbox>();
 					_GrowList.Add(tb);
 					_CanGrow = true;
 				}
 			}
 
 			if (_CanGrow)				// shrink down the resulting list
-				_GrowList.TrimToSize();
+                _GrowList.TrimExcess();
 
 			return;
 		}
 
 		internal void Run(IPresent ip, Row row)
 		{
-			if (this.Visibility != null && Visibility.IsHidden(row))
+			if (this.Visibility != null && Visibility.IsHidden(ip.Report(), row))
 				return;
 
 			ip.TableRowStart(this, row);
@@ -119,12 +117,13 @@ namespace fyiReporting.RDL
  
 		internal void RunPage(Pages pgs, Row row)
 		{
-			if (this.Visibility != null && Visibility.IsHidden(row))
+			if (this.Visibility != null && Visibility.IsHidden(pgs.Report, row))
 				return;
 
 			_TableCells.RunPage(pgs, row);
 
-			pgs.CurrentPage.YOffset += _CalcHeight;
+			WorkClass wc = GetWC(pgs.Report);
+			pgs.CurrentPage.YOffset += wc.CalcHeight;
 			return ;
 		}
 
@@ -142,34 +141,55 @@ namespace fyiReporting.RDL
 
 		internal float HeightOfRow(Pages pgs, Row r)
 		{
-			if (this.Visibility != null && Visibility.IsHidden(r))
+			WorkClass wc = GetWC(pgs.Report);
+			if (this.Visibility != null && Visibility.IsHidden(pgs.Report, r))
 			{
-				_CalcHeight = 0;
+				wc.CalcHeight = 0;
 				return 0;
 			}
 
 			float defnHeight = _Height.Points;
 			if (!_CanGrow)
 			{
-				_CalcHeight = defnHeight;
+				wc.CalcHeight = defnHeight;
 				return defnHeight;
 			}
 
+            TableColumns tcs= this.Table.TableColumns;
 			float height=0;
 			foreach (Textbox tb in this._GrowList)
 			{
-				height = Math.Max(height, tb.RunTextCalcHeight(pgs.G, r));
+                int ci = tb.TC.ColIndex;
+                if (tcs[ci].IsHidden(pgs.Report, r))    // if column is hidden don't use in calculation
+                    continue;
+				height = Math.Max(height, tb.RunTextCalcHeight(pgs.Report, pgs.G, r));
 			}
-			_CalcHeight = Math.Max(height, defnHeight);
-			return _CalcHeight;
+			wc.CalcHeight = Math.Max(height, defnHeight);
+			return wc.CalcHeight;
 		}
 
-		internal float HeightCalc
+		internal float HeightCalc(Report rpt)
 		{
-			get {return _CalcHeight;}
+			WorkClass wc = GetWC(rpt);
+			return wc.CalcHeight;
 		}
 
-		internal Visibility Visibility
+        private Table Table
+        {
+            get
+            {
+                ReportLink p= this.Parent;
+                while (p != null)
+                {
+                    if (p is Table)
+                        return p as Table;
+                    p = p.Parent;
+                }
+                throw new Exception("Internal error: TableRow not related to a Table");
+            }
+        }
+
+            internal Visibility Visibility
 		{
 			get { return  _Visibility; }
 			set {  _Visibility = value; }
@@ -180,9 +200,34 @@ namespace fyiReporting.RDL
 			get { return _CanGrow; }
 		}
 
-		internal ArrayList GrowList
+		internal List<Textbox> GrowList
 		{
 			get { return _GrowList; }
+		}
+
+		private WorkClass GetWC(Report rpt)
+		{
+			WorkClass wc = rpt.Cache.Get(this, "wc") as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass(this);
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
+
+		private void RemoveWC(Report rpt)
+		{
+			rpt.Cache.Remove(this, "wc");
+		}
+
+		class WorkClass
+		{
+			internal float CalcHeight;		// dynamic when CanGrow true
+			internal WorkClass(TableRow tr)
+			{
+				CalcHeight = tr.Height.Points;
+			}
 		}
 	}
 }

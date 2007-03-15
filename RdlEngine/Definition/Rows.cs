@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -24,79 +24,84 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace fyiReporting.RDL
 {
 	///<summary>
 	/// A collection of rows.
 	///</summary>
-	[Serializable]
-	internal class Rows : IComparer
+    internal class Rows : System.Collections.Generic.IComparer<Row>  
 	{
-		ArrayList _Data;	// array of Row object;
-		ArrayList _SortBy;	// array of expressions used to sort the data
+		List<Row> _Data;	// array of Row object;
+        List<RowsSortExpression> _SortBy;	// array of expressions used to sort the data
 		GroupEntry[] _CurrentGroups;	// group
+		Report _Rpt;
 
-		internal Rows()
+		internal Rows(Report rpt)
 		{
+			_Rpt = rpt;
 			_SortBy = null;
 			_CurrentGroups = null;
 		}
 
 		// Constructor that takes existing Rows; a start, end and bitArray with the rows wanted
-		internal Rows(Rows r, int start, int end, BitArray ba)
+		internal Rows(Report rpt, Rows r, int start, int end, BitArray ba)
 		{
+			_Rpt = rpt;
 			_SortBy = null;
 			_CurrentGroups = null;
 			if (end - start < 0)			// null set?
 			{
-				_Data = new ArrayList(1);
-				_Data.TrimToSize();
+				_Data = new List<Row>(1);
+                _Data.TrimExcess();
 				return;
 			}
-			_Data = new ArrayList(end - start + 1);
+			_Data = new List<Row>(end - start + 1);
 
 			for (int iRow = start; iRow <= end; iRow++)
 			{
 				if (ba == null || ba.Get(iRow))
 				{
-					Row or = (Row) (r.Data[iRow]); 
+					Row or = r.Data[iRow]; 
 					Row nr = new Row(this, or);
 					nr.RowNumber = or.RowNumber;
 					_Data.Add(nr);
 				}
 			}
 
-			_Data.TrimToSize();
+            _Data.TrimExcess();
 		}
 
 		// Constructor that takes existing Rows
-		internal Rows(Rows r)
+		internal Rows(Report rpt, Rows r)
 		{
+			_Rpt = rpt;
 			_SortBy = null;
 			_CurrentGroups = null;
-			if (r.Data.Count <= 0)			// null set?
+			if (r.Data == null || r.Data.Count <= 0)			// null set?
 			{
-				_Data = new ArrayList(1);
-				_Data.TrimToSize();
+				_Data = new List<Row>(1);
+                _Data.TrimExcess();
 				return;
 			}
-			_Data = new ArrayList(r.Data.Count);
+			_Data = new List<Row>(r.Data.Count);
 
 			for (int iRow = 0; iRow < r.Data.Count; iRow++)
 			{
-				Row or = (Row) (r.Data[iRow]); 
+				Row or = r.Data[iRow]; 
 				Row nr = new Row(this, or);
 				nr.RowNumber = or.RowNumber;
 				_Data.Add(nr);
 			}
 
-			_Data.TrimToSize();
+            _Data.TrimExcess();
 		}
 
-		internal Rows(TableGroups tg, Grouping g, Sorting s)
+		internal Rows(Report rpt, TableGroups tg, Grouping g, Sorting s)
 		{
-			_SortBy = new ArrayList();
+			_Rpt = rpt;
+            _SortBy = new List<RowsSortExpression>();
 			// Pull all the sort expression together
 			if (tg != null)
 			{
@@ -129,9 +134,14 @@ namespace fyiReporting.RDL
 				}
 			}
 			if (_SortBy.Count > 0)
-				_SortBy.TrimToSize();
+                _SortBy.TrimExcess();
 			else
 				_SortBy = null;
+		}
+
+		internal Report Report
+		{
+			get {return this._Rpt;}
 		}
 
 		internal void Sort()
@@ -140,7 +150,7 @@ namespace fyiReporting.RDL
 			_Data.Sort(this);
 		}
 
-		internal ArrayList Data
+		internal List<Row> Data
 		{
 			get { return  _Data; }
 			set 
@@ -154,7 +164,7 @@ namespace fyiReporting.RDL
 			}
 		}
 
-		internal ArrayList SortBy
+        internal List<RowsSortExpression> SortBy
 		{
 			get { return  _SortBy; }
 			set { _SortBy = value; }
@@ -168,13 +178,10 @@ namespace fyiReporting.RDL
 
 		#region IComparer Members
 
-		public int Compare(object x, object y)
+		public int Compare(Row r1, Row r2)
 		{
-			if (x == y)				// why does the sort routine do this??
+			if (r1 == r2)				// why does the sort routine do this??
 				return 0;
-
-			Row r1 = (Row) x;
-			Row r2 = (Row) y;
 
 			object o1=null,o2=null;
 			TypeCode tc = TypeCode.Object;
@@ -183,8 +190,8 @@ namespace fyiReporting.RDL
 			{
 				foreach (RowsSortExpression se in _SortBy)
 				{
-					o1 = se.expr.Evaluate(r1);
-					o2 = se.expr.Evaluate(r2);
+					o1 = se.expr.Evaluate(this._Rpt, r1);
+					o2 = se.expr.Evaluate(this._Rpt, r2);
 					tc = se.expr.GetTypeCode();
 					rc = Filter.ApplyCompare(tc, o1, o2);
 					if (rc != 0)
@@ -193,7 +200,9 @@ namespace fyiReporting.RDL
 			}
 			catch (Exception e)		// this really shouldn't happen
 			{
-				Console.WriteLine("Sort rows exception\r\nArguments: {0} {1}\r\nTypecode: {2}\r\n{3}\r\n{4}", o1, o2, tc.ToString(), e.Message, e.StackTrace);
+				_Rpt.rl.LogError(8, 
+                    string.Format("Sort rows exception\r\nArguments: {0} {1}\r\nTypecode: {2}\r\n{3}\r\n{4}", 
+                    o1, o2, tc.ToString(), e.Message, e.StackTrace));
 			}
 			return r1.RowNumber - r2.RowNumber;		// in case of tie use original row number
 		}

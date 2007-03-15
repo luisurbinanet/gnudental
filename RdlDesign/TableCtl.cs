@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -35,7 +36,7 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class TableCtl : System.Windows.Forms.UserControl, IProperty
 	{
-		private ArrayList _ReportItems;
+        private List<XmlNode> _ReportItems;
 		private DesignXmlDraw _Draw;
 		bool fDataSet, fPBBefore, fPBAfter, fNoRows;
 		bool fDetailElementName, fDetailCollectionName, fRenderDetails;
@@ -62,7 +63,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal TableCtl(DesignXmlDraw dxDraw, ArrayList ris)
+        internal TableCtl(DesignXmlDraw dxDraw, List<XmlNode> ris)
 		{
 			_ReportItems = ris;
 			_Draw = dxDraw;
@@ -75,15 +76,15 @@ namespace fyiReporting.RdlDesign
 
 		private void InitValues()
 		{
-			XmlNode riNode = (XmlNode) _ReportItems[0];
+			XmlNode riNode = _ReportItems[0];
 
 			tbNoRows.Text = _Draw.GetElementValue(riNode, "NoRows", "");
 			cbDataSet.Items.AddRange(_Draw.DataSetNames);
 			cbDataSet.Text = _Draw.GetDataSetNameValue(riNode);
 			if (_Draw.GetReportItemDataRegionContainer(riNode) != null)
 				cbDataSet.Enabled = false;
-			chkPBBefore.Checked = _Draw.GetElementValue(riNode, "PageBreakAtStart", "False").ToLower()=="true"? true:false;
-			chkPBAfter.Checked = _Draw.GetElementValue(riNode, "PageBreakAtEnd", "False").ToLower()=="true"? true:false;
+			chkPBBefore.Checked = _Draw.GetElementValue(riNode, "PageBreakAtStart", "false").ToLower()=="true"? true:false;
+			chkPBAfter.Checked = _Draw.GetElementValue(riNode, "PageBreakAtEnd", "false").ToLower()=="true"? true:false;
 
 			this.chkRenderDetails.Checked = _Draw.GetElementValue(riNode, "DetailDataElementOutput", "output").ToLower() == "output";
 			this.tbDetailElementName.Text = _Draw.GetElementValue(riNode, "DetailDataElementName", "Details");
@@ -350,9 +351,9 @@ namespace fyiReporting.RdlDesign
 			if (fDataSet)
 				_Draw.SetElement(node, "DataSetName", this.cbDataSet.Text);
 			if (fPBBefore)
-				_Draw.SetElement(node, "PageBreakAtStart", this.chkPBBefore.Checked? "True":"False");
+				_Draw.SetElement(node, "PageBreakAtStart", this.chkPBBefore.Checked? "true":"false");
 			if (fPBAfter)
-				_Draw.SetElement(node, "PageBreakAtEnd", this.chkPBAfter.Checked? "True":"False");
+				_Draw.SetElement(node, "PageBreakAtEnd", this.chkPBAfter.Checked? "true":"false");
 			if (fCheckRows)
 			{
 				if (this.chkDetails.Checked)

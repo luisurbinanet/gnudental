@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -36,8 +37,9 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class StyleTextCtl : System.Windows.Forms.UserControl, IProperty
 	{
-		private ArrayList _ReportItems;
+        private List<XmlNode> _ReportItems;
 		private DesignXmlDraw _Draw;
+		private string _DataSetName;
 		private bool fHorzAlign, fFormat, fDirection, fWritingMode, fTextDecoration;
 		private bool fColor, fVerticalAlign, fFontStyle, fFontWeight, fFontSize, fFontFamily;
 		private bool fValue;
@@ -68,12 +70,24 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label lblValue;
 		private System.Windows.Forms.ComboBox cbValue;
+		private System.Windows.Forms.Button bValueExpr;
+		private System.Windows.Forms.Button bFamily;
+		private System.Windows.Forms.Button bStyle;
+		private System.Windows.Forms.Button bColorEx;
+		private System.Windows.Forms.Button bSize;
+		private System.Windows.Forms.Button bWeight;
+		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.Button bAlignment;
+		private System.Windows.Forms.Button bDirection;
+		private System.Windows.Forms.Button bVertical;
+		private System.Windows.Forms.Button bWrtMode;
+		private System.Windows.Forms.Button bFormat;
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal StyleTextCtl(DesignXmlDraw dxDraw, ArrayList styles)
+        internal StyleTextCtl(DesignXmlDraw dxDraw, List<XmlNode> styles)
 		{
 			_ReportItems = styles;
 			_Draw = dxDraw;
@@ -86,7 +100,9 @@ namespace fyiReporting.RdlDesign
 
 		private void InitTextStyles()
 		{
-			XmlNode sNode = (XmlNode) _ReportItems[0];
+            cbColor.Items.AddRange(StaticLists.ColorList);
+
+			XmlNode sNode = _ReportItems[0];
 			if (_ReportItems.Count > 1)
 			{
 				cbValue.Text = "Group Selected";
@@ -107,10 +123,10 @@ namespace fyiReporting.RdlDesign
 						pNode.Name == "Matrix" ||
 						pNode.Name == "Chart")
 					{
-						string dsname = _Draw.GetDataSetNameValue(pNode);
-						if (dsname != null)	// found it
+						_DataSetName = _Draw.GetDataSetNameValue(pNode);
+						if (_DataSetName != null)	// found it
 						{
-							string[] f = _Draw.GetFields(dsname, true);
+							string[] f = _Draw.GetFields(_DataSetName, true);
 							cbValue.Items.AddRange(f);
 						}
 					}
@@ -237,515 +253,543 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.label4 = new System.Windows.Forms.Label();
-			this.label5 = new System.Windows.Forms.Label();
-			this.label6 = new System.Windows.Forms.Label();
-			this.label7 = new System.Windows.Forms.Label();
-			this.label8 = new System.Windows.Forms.Label();
-			this.lFont = new System.Windows.Forms.Label();
-			this.bFont = new System.Windows.Forms.Button();
-			this.cbVerticalAlign = new System.Windows.Forms.ComboBox();
-			this.cbHorzAlign = new System.Windows.Forms.ComboBox();
-			this.cbFormat = new System.Windows.Forms.ComboBox();
-			this.cbDirection = new System.Windows.Forms.ComboBox();
-			this.cbWritingMode = new System.Windows.Forms.ComboBox();
-			this.label2 = new System.Windows.Forms.Label();
-			this.cbTextDecoration = new System.Windows.Forms.ComboBox();
-			this.bColor = new System.Windows.Forms.Button();
-			this.label9 = new System.Windows.Forms.Label();
-			this.cbColor = new System.Windows.Forms.ComboBox();
-			this.label3 = new System.Windows.Forms.Label();
-			this.cbFontStyle = new System.Windows.Forms.ComboBox();
-			this.cbFontWeight = new System.Windows.Forms.ComboBox();
-			this.label10 = new System.Windows.Forms.Label();
-			this.cbFontSize = new System.Windows.Forms.ComboBox();
-			this.label11 = new System.Windows.Forms.Label();
-			this.cbFontFamily = new System.Windows.Forms.ComboBox();
-			this.lblValue = new System.Windows.Forms.Label();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.cbValue = new System.Windows.Forms.ComboBox();
-			this.groupBox1.SuspendLayout();
-			this.SuspendLayout();
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(16, 232);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(48, 16);
-			this.label4.TabIndex = 3;
-			this.label4.Text = "Format";
-			// 
-			// label5
-			// 
-			this.label5.Location = new System.Drawing.Point(208, 168);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(48, 16);
-			this.label5.TabIndex = 4;
-			this.label5.Text = "Vertical";
-			// 
-			// label6
-			// 
-			this.label6.Location = new System.Drawing.Point(16, 168);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(56, 16);
-			this.label6.TabIndex = 5;
-			this.label6.Text = "Alignment";
-			// 
-			// label7
-			// 
-			this.label7.Location = new System.Drawing.Point(16, 200);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(56, 16);
-			this.label7.TabIndex = 6;
-			this.label7.Text = "Direction";
-			// 
-			// label8
-			// 
-			this.label8.Location = new System.Drawing.Point(208, 200);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(80, 16);
-			this.label8.TabIndex = 7;
-			this.label8.Text = "Writing Mode";
-			// 
-			// lFont
-			// 
-			this.lFont.Location = new System.Drawing.Point(16, 16);
-			this.lFont.Name = "lFont";
-			this.lFont.Size = new System.Drawing.Size(40, 16);
-			this.lFont.TabIndex = 8;
-			this.lFont.Text = "Family";
-			// 
-			// bFont
-			// 
-			this.bFont.Location = new System.Drawing.Point(376, 16);
-			this.bFont.Name = "bFont";
-			this.bFont.Size = new System.Drawing.Size(24, 23);
-			this.bFont.TabIndex = 2;
-			this.bFont.Text = "...";
-			this.bFont.Click += new System.EventHandler(this.bFont_Click);
-			// 
-			// cbVerticalAlign
-			// 
-			this.cbVerticalAlign.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbVerticalAlign.Items.AddRange(new object[] {
-																 "Top",
-																 "Middle",
-																 "Bottom"});
-			this.cbVerticalAlign.Location = new System.Drawing.Point(296, 168);
-			this.cbVerticalAlign.Name = "cbVerticalAlign";
-			this.cbVerticalAlign.Size = new System.Drawing.Size(72, 21);
-			this.cbVerticalAlign.TabIndex = 3;
-			this.cbVerticalAlign.TextChanged += new System.EventHandler(this.cbVerticalAlign_TextChanged);
-			this.cbVerticalAlign.SelectedIndexChanged += new System.EventHandler(this.cbVerticalAlign_TextChanged);
-			// 
-			// cbHorzAlign
-			// 
-			this.cbHorzAlign.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbHorzAlign.Items.AddRange(new object[] {
-															 "Left",
-															 "Center",
-															 "Right",
-															 "General"});
-			this.cbHorzAlign.Location = new System.Drawing.Point(80, 168);
-			this.cbHorzAlign.Name = "cbHorzAlign";
-			this.cbHorzAlign.Size = new System.Drawing.Size(64, 21);
-			this.cbHorzAlign.TabIndex = 2;
-			this.cbHorzAlign.TextChanged += new System.EventHandler(this.cbHorzAlign_TextChanged);
-			this.cbHorzAlign.SelectedIndexChanged += new System.EventHandler(this.cbHorzAlign_TextChanged);
-			// 
-			// cbFormat
-			// 
-			this.cbFormat.Items.AddRange(new object[] {
-														  "None",
-														  "",
-														  "#,##0",
-														  "#,##0.00",
-														  "0",
-														  "0.00",
-														  "",
-														  "MM/dd/yyyy",
-														  "dddd, MMMM dd, yyyy",
-														  "dddd, MMMM dd, yyyy HH:mm",
-														  "dddd, MMMM dd, yyyy HH:mm:ss",
-														  "MM/dd/yyyy HH:mm",
-														  "MM/dd/yyyy HH:mm:ss",
-														  "MMMM dd",
-														  "Ddd, dd MMM yyyy HH\':\'mm\'\"ss \'GMT\'",
-														  "yyyy-MM-dd HH:mm:ss",
-														  "yyyy-MM-dd HH:mm:ss GMT",
-														  "HH:mm",
-														  "HH:mm:ss",
-														  "yyyy-MM-dd HH:mm:ss"});
-			this.cbFormat.Location = new System.Drawing.Point(80, 232);
-			this.cbFormat.Name = "cbFormat";
-			this.cbFormat.Size = new System.Drawing.Size(288, 21);
-			this.cbFormat.TabIndex = 6;
-			this.cbFormat.TextChanged += new System.EventHandler(this.cbFormat_TextChanged);
-			// 
-			// cbDirection
-			// 
-			this.cbDirection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbDirection.Items.AddRange(new object[] {
-															 "LTR",
-															 "RTL"});
-			this.cbDirection.Location = new System.Drawing.Point(80, 200);
-			this.cbDirection.Name = "cbDirection";
-			this.cbDirection.Size = new System.Drawing.Size(64, 21);
-			this.cbDirection.TabIndex = 4;
-			this.cbDirection.TextChanged += new System.EventHandler(this.cbDirection_TextChanged);
-			this.cbDirection.SelectedIndexChanged += new System.EventHandler(this.cbDirection_TextChanged);
-			// 
-			// cbWritingMode
-			// 
-			this.cbWritingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbWritingMode.Items.AddRange(new object[] {
-															   "lr-tb",
-															   "tb-rl"});
-			this.cbWritingMode.Location = new System.Drawing.Point(296, 200);
-			this.cbWritingMode.Name = "cbWritingMode";
-			this.cbWritingMode.Size = new System.Drawing.Size(72, 21);
-			this.cbWritingMode.TabIndex = 5;
-			this.cbWritingMode.TextChanged += new System.EventHandler(this.cbWritingMode_TextChanged);
-			this.cbWritingMode.SelectedIndexChanged += new System.EventHandler(this.cbWritingMode_TextChanged);
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(208, 80);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(64, 23);
-			this.label2.TabIndex = 19;
-			this.label2.Text = "Decoration";
-			// 
-			// cbTextDecoration
-			// 
-			this.cbTextDecoration.Items.AddRange(new object[] {
-																  "None",
-																  "Underline",
-																  "Overline",
-																  "LineThrough"});
-			this.cbTextDecoration.Location = new System.Drawing.Point(280, 80);
-			this.cbTextDecoration.Name = "cbTextDecoration";
-			this.cbTextDecoration.Size = new System.Drawing.Size(80, 21);
-			this.cbTextDecoration.TabIndex = 7;
-			this.cbTextDecoration.TextChanged += new System.EventHandler(this.cbTextDecoration_TextChanged);
-			this.cbTextDecoration.SelectedIndexChanged += new System.EventHandler(this.cbTextDecoration_TextChanged);
-			// 
-			// bColor
-			// 
-			this.bColor.Location = new System.Drawing.Point(176, 80);
-			this.bColor.Name = "bColor";
-			this.bColor.Size = new System.Drawing.Size(24, 24);
-			this.bColor.TabIndex = 6;
-			this.bColor.Text = "...";
-			this.bColor.Click += new System.EventHandler(this.bColor_Click);
-			// 
-			// label9
-			// 
-			this.label9.Location = new System.Drawing.Point(16, 80);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(48, 16);
-			this.label9.TabIndex = 22;
-			this.label9.Text = "Color";
-			// 
-			// cbColor
-			// 
-			this.cbColor.Items.AddRange(new object[] {
-														 "Aliceblue",
-														 "Antiquewhite",
-														 "Aqua",
-														 "Aquamarine",
-														 "Azure",
-														 "Beige",
-														 "Bisque",
-														 "Black",
-														 "Blanchedalmond",
-														 "Blue",
-														 "Blueviolet",
-														 "Brown",
-														 "Burlywood",
-														 "Cadetblue",
-														 "Chartreuse",
-														 "Chocolate",
-														 "Coral",
-														 "Cornflowerblue",
-														 "Cornsilk",
-														 "Crimson",
-														 "Cyan",
-														 "Darkblue",
-														 "Darkcyan",
-														 "Darkgoldenrod",
-														 "Darkgray",
-														 "Darkgreen",
-														 "Darkkhaki",
-														 "Darkmagenta",
-														 "Darkolivegreen",
-														 "Darkorange",
-														 "Darkorchid",
-														 "Darkred",
-														 "Darksalmon",
-														 "Darkseagreen",
-														 "Darkslateblue",
-														 "Darkslategray",
-														 "Darkturquoise",
-														 "Darkviolet",
-														 "Deeppink",
-														 "Deepskyblue",
-														 "Dimgray",
-														 "Dodgerblue",
-														 "Firebrick",
-														 "Floralwhite",
-														 "Forestgreen",
-														 "Fuchsia",
-														 "Gainsboro",
-														 "Ghostwhite",
-														 "Gold",
-														 "Goldenrod",
-														 "Gray",
-														 "Green",
-														 "Greenyellow",
-														 "Honeydew",
-														 "Hotpink",
-														 "Indianred Indigo",
-														 "Ivory",
-														 "Khaki",
-														 "Lavender",
-														 "Lavenderblush",
-														 "Lawngreen",
-														 "Lemonchiffon",
-														 "Lightblue",
-														 "Lightcoral",
-														 "Lightcyan",
-														 "Lightgoldenrodyellow",
-														 "Lightgreen",
-														 "Lightgrey",
-														 "Lightpink",
-														 "Lightsalmon",
-														 "Lightseagreen",
-														 "Lightskyblue",
-														 "Lightslategrey",
-														 "Lightsteelblue",
-														 "Lightyellow",
-														 "Lime",
-														 "Limegreen",
-														 "Linen",
-														 "Magenta",
-														 "Maroon",
-														 "Mediumaquamarine",
-														 "Mediumblue",
-														 "Mediumorchid",
-														 "Mediumpurple",
-														 "Mediumseagreen",
-														 "Mediumslateblue",
-														 "Mediumspringgreen",
-														 "Mediumturquoise",
-														 "Mediumvioletred",
-														 "Midnightblue",
-														 "Mintcream",
-														 "Mistyrose",
-														 "Moccasin",
-														 "Navajowhite",
-														 "Navy",
-														 "Oldlace",
-														 "Olive",
-														 "Olivedrab",
-														 "Orange",
-														 "Orangered",
-														 "Orchid",
-														 "Palegoldenrod",
-														 "Palegreen",
-														 "Paleturquoise",
-														 "Palevioletred",
-														 "Papayawhip",
-														 "Peachpuff",
-														 "Peru",
-														 "Pink",
-														 "Plum",
-														 "Powderblue",
-														 "Purple",
-														 "Red",
-														 "Rosybrown",
-														 "Royalblue",
-														 "Saddlebrown",
-														 "Salmon",
-														 "Sandybrown",
-														 "Seagreen",
-														 "Seashell",
-														 "Sienna",
-														 "Silver",
-														 "Skyblue",
-														 "Slateblue",
-														 "Slategray",
-														 "Snow",
-														 "Springgreen",
-														 "Steelblue",
-														 "Tan",
-														 "Teal",
-														 "Thistle",
-														 "Tomato",
-														 "Turquoise",
-														 "Violet",
-														 "Wheat",
-														 "White",
-														 "Whitesmoke",
-														 "Yellow",
-														 "Yellowgreen"});
-			this.cbColor.Location = new System.Drawing.Point(72, 80);
-			this.cbColor.Name = "cbColor";
-			this.cbColor.Size = new System.Drawing.Size(96, 21);
-			this.cbColor.TabIndex = 5;
-			this.cbColor.TextChanged += new System.EventHandler(this.cbColor_TextChanged);
-			// 
-			// label3
-			// 
-			this.label3.Location = new System.Drawing.Point(16, 48);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(40, 16);
-			this.label3.TabIndex = 25;
-			this.label3.Text = "Style";
-			// 
-			// cbFontStyle
-			// 
-			this.cbFontStyle.Items.AddRange(new object[] {
-															 "Normal",
-															 "Italic"});
-			this.cbFontStyle.Location = new System.Drawing.Point(72, 48);
-			this.cbFontStyle.Name = "cbFontStyle";
-			this.cbFontStyle.Size = new System.Drawing.Size(96, 21);
-			this.cbFontStyle.TabIndex = 3;
-			this.cbFontStyle.TextChanged += new System.EventHandler(this.cbFontStyle_TextChanged);
-			// 
-			// cbFontWeight
-			// 
-			this.cbFontWeight.Items.AddRange(new object[] {
-															  "Lighter",
-															  "Normal",
-															  "Bold",
-															  "Bolder",
-															  "100",
-															  "200",
-															  "300",
-															  "400",
-															  "500",
-															  "600",
-															  "700",
-															  "800",
-															  "900"});
-			this.cbFontWeight.Location = new System.Drawing.Point(256, 48);
-			this.cbFontWeight.Name = "cbFontWeight";
-			this.cbFontWeight.Size = new System.Drawing.Size(104, 21);
-			this.cbFontWeight.TabIndex = 4;
-			this.cbFontWeight.TextChanged += new System.EventHandler(this.cbFontWeight_TextChanged);
-			// 
-			// label10
-			// 
-			this.label10.Location = new System.Drawing.Point(208, 48);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(40, 16);
-			this.label10.TabIndex = 27;
-			this.label10.Text = "Weight";
-			// 
-			// cbFontSize
-			// 
-			this.cbFontSize.Items.AddRange(new object[] {
-															"8pt",
-															"9pt",
-															"10pt",
-															"11pt",
-															"12pt",
-															"14pt",
-															"16pt",
-															"18pt",
-															"20pt",
-															"22pt",
-															"24pt",
-															"26pt",
-															"28pt",
-															"36pt",
-															"48pt",
-															"72pt"});
-			this.cbFontSize.Location = new System.Drawing.Point(256, 16);
-			this.cbFontSize.Name = "cbFontSize";
-			this.cbFontSize.Size = new System.Drawing.Size(104, 21);
-			this.cbFontSize.TabIndex = 1;
-			this.cbFontSize.TextChanged += new System.EventHandler(this.cbFontSize_TextChanged);
-			// 
-			// label11
-			// 
-			this.label11.Location = new System.Drawing.Point(208, 16);
-			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(40, 16);
-			this.label11.TabIndex = 29;
-			this.label11.Text = "Size";
-			// 
-			// cbFontFamily
-			// 
-			this.cbFontFamily.Items.AddRange(new object[] {
-															  "Arial"});
-			this.cbFontFamily.Location = new System.Drawing.Point(72, 16);
-			this.cbFontFamily.Name = "cbFontFamily";
-			this.cbFontFamily.Size = new System.Drawing.Size(96, 21);
-			this.cbFontFamily.TabIndex = 0;
-			this.cbFontFamily.TextChanged += new System.EventHandler(this.cbFontFamily_TextChanged);
-			// 
-			// lblValue
-			// 
-			this.lblValue.Location = new System.Drawing.Point(8, 16);
-			this.lblValue.Name = "lblValue";
-			this.lblValue.Size = new System.Drawing.Size(56, 23);
-			this.lblValue.TabIndex = 30;
-			this.lblValue.Text = "Value";
-			// 
-			// groupBox1
-			// 
-			this.groupBox1.Controls.Add(this.lFont);
-			this.groupBox1.Controls.Add(this.bFont);
-			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.cbTextDecoration);
-			this.groupBox1.Controls.Add(this.bColor);
-			this.groupBox1.Controls.Add(this.label9);
-			this.groupBox1.Controls.Add(this.cbColor);
-			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Controls.Add(this.cbFontStyle);
-			this.groupBox1.Controls.Add(this.cbFontWeight);
-			this.groupBox1.Controls.Add(this.label10);
-			this.groupBox1.Controls.Add(this.cbFontSize);
-			this.groupBox1.Controls.Add(this.label11);
-			this.groupBox1.Controls.Add(this.cbFontFamily);
-			this.groupBox1.Location = new System.Drawing.Point(8, 40);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(424, 112);
-			this.groupBox1.TabIndex = 1;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Font";
-			// 
-			// cbValue
-			// 
-			this.cbValue.Location = new System.Drawing.Point(64, 16);
-			this.cbValue.Name = "cbValue";
-			this.cbValue.Size = new System.Drawing.Size(368, 21);
-			this.cbValue.TabIndex = 31;
-			this.cbValue.Text = "comboBox1";
-			this.cbValue.TextChanged += new System.EventHandler(this.cbValue_TextChanged);
-			// 
-			// StyleTextCtl
-			// 
-			this.Controls.Add(this.cbValue);
-			this.Controls.Add(this.groupBox1);
-			this.Controls.Add(this.lblValue);
-			this.Controls.Add(this.cbWritingMode);
-			this.Controls.Add(this.cbDirection);
-			this.Controls.Add(this.cbFormat);
-			this.Controls.Add(this.cbHorzAlign);
-			this.Controls.Add(this.cbVerticalAlign);
-			this.Controls.Add(this.label8);
-			this.Controls.Add(this.label7);
-			this.Controls.Add(this.label6);
-			this.Controls.Add(this.label5);
-			this.Controls.Add(this.label4);
-			this.Name = "StyleTextCtl";
-			this.Size = new System.Drawing.Size(456, 280);
-			this.groupBox1.ResumeLayout(false);
-			this.ResumeLayout(false);
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.lFont = new System.Windows.Forms.Label();
+            this.bFont = new System.Windows.Forms.Button();
+            this.cbVerticalAlign = new System.Windows.Forms.ComboBox();
+            this.cbHorzAlign = new System.Windows.Forms.ComboBox();
+            this.cbFormat = new System.Windows.Forms.ComboBox();
+            this.cbDirection = new System.Windows.Forms.ComboBox();
+            this.cbWritingMode = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cbTextDecoration = new System.Windows.Forms.ComboBox();
+            this.bColor = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.cbColor = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cbFontStyle = new System.Windows.Forms.ComboBox();
+            this.cbFontWeight = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cbFontSize = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.cbFontFamily = new System.Windows.Forms.ComboBox();
+            this.lblValue = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.bWeight = new System.Windows.Forms.Button();
+            this.bSize = new System.Windows.Forms.Button();
+            this.bColorEx = new System.Windows.Forms.Button();
+            this.bStyle = new System.Windows.Forms.Button();
+            this.bFamily = new System.Windows.Forms.Button();
+            this.cbValue = new System.Windows.Forms.ComboBox();
+            this.bValueExpr = new System.Windows.Forms.Button();
+            this.bAlignment = new System.Windows.Forms.Button();
+            this.bDirection = new System.Windows.Forms.Button();
+            this.bVertical = new System.Windows.Forms.Button();
+            this.bWrtMode = new System.Windows.Forms.Button();
+            this.bFormat = new System.Windows.Forms.Button();
+            this.groupBox1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // label4
+            // 
+            this.label4.Location = new System.Drawing.Point(16, 232);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(48, 16);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Format";
+            // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(216, 168);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(48, 16);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Vertical";
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(16, 168);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(56, 16);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Alignment";
+            // 
+            // label7
+            // 
+            this.label7.Location = new System.Drawing.Point(16, 200);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(56, 16);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Direction";
+            // 
+            // label8
+            // 
+            this.label8.Location = new System.Drawing.Point(216, 200);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(80, 16);
+            this.label8.TabIndex = 7;
+            this.label8.Text = "Writing Mode";
+            // 
+            // lFont
+            // 
+            this.lFont.Location = new System.Drawing.Point(16, 16);
+            this.lFont.Name = "lFont";
+            this.lFont.Size = new System.Drawing.Size(40, 16);
+            this.lFont.TabIndex = 8;
+            this.lFont.Text = "Family";
+            // 
+            // bFont
+            // 
+            this.bFont.Location = new System.Drawing.Point(401, 20);
+            this.bFont.Name = "bFont";
+            this.bFont.Size = new System.Drawing.Size(22, 16);
+            this.bFont.TabIndex = 4;
+            this.bFont.Text = "...";
+            this.bFont.Click += new System.EventHandler(this.bFont_Click);
+            // 
+            // cbVerticalAlign
+            // 
+            this.cbVerticalAlign.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbVerticalAlign.Items.AddRange(new object[] {
+            "Top",
+            "Middle",
+            "Bottom"});
+            this.cbVerticalAlign.Location = new System.Drawing.Point(304, 168);
+            this.cbVerticalAlign.Name = "cbVerticalAlign";
+            this.cbVerticalAlign.Size = new System.Drawing.Size(72, 21);
+            this.cbVerticalAlign.TabIndex = 5;
+            this.cbVerticalAlign.SelectedIndexChanged += new System.EventHandler(this.cbVerticalAlign_TextChanged);
+            this.cbVerticalAlign.TextChanged += new System.EventHandler(this.cbVerticalAlign_TextChanged);
+            // 
+            // cbHorzAlign
+            // 
+            this.cbHorzAlign.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbHorzAlign.Items.AddRange(new object[] {
+            "Left",
+            "Center",
+            "Right",
+            "General"});
+            this.cbHorzAlign.Location = new System.Drawing.Point(80, 168);
+            this.cbHorzAlign.Name = "cbHorzAlign";
+            this.cbHorzAlign.Size = new System.Drawing.Size(64, 21);
+            this.cbHorzAlign.TabIndex = 3;
+            this.cbHorzAlign.SelectedIndexChanged += new System.EventHandler(this.cbHorzAlign_TextChanged);
+            this.cbHorzAlign.TextChanged += new System.EventHandler(this.cbHorzAlign_TextChanged);
+            // 
+            // cbFormat
+            // 
+            this.cbFormat.Items.AddRange(new object[] {
+            "None",
+            "",
+            "#,##0",
+            "#,##0.00",
+            "0",
+            "0.00",
+            "",
+            "MM/dd/yyyy",
+            "dddd, MMMM dd, yyyy",
+            "dddd, MMMM dd, yyyy HH:mm",
+            "dddd, MMMM dd, yyyy HH:mm:ss",
+            "MM/dd/yyyy HH:mm",
+            "MM/dd/yyyy HH:mm:ss",
+            "MMMM dd",
+            "Ddd, dd MMM yyyy HH\':\'mm\'\"ss \'GMT\'",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss GMT",
+            "HH:mm",
+            "HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss"});
+            this.cbFormat.Location = new System.Drawing.Point(80, 232);
+            this.cbFormat.Name = "cbFormat";
+            this.cbFormat.Size = new System.Drawing.Size(296, 21);
+            this.cbFormat.TabIndex = 11;
+            this.cbFormat.TextChanged += new System.EventHandler(this.cbFormat_TextChanged);
+            // 
+            // cbDirection
+            // 
+            this.cbDirection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbDirection.Items.AddRange(new object[] {
+            "LTR",
+            "RTL"});
+            this.cbDirection.Location = new System.Drawing.Point(80, 200);
+            this.cbDirection.Name = "cbDirection";
+            this.cbDirection.Size = new System.Drawing.Size(64, 21);
+            this.cbDirection.TabIndex = 7;
+            this.cbDirection.SelectedIndexChanged += new System.EventHandler(this.cbDirection_TextChanged);
+            this.cbDirection.TextChanged += new System.EventHandler(this.cbDirection_TextChanged);
+            // 
+            // cbWritingMode
+            // 
+            this.cbWritingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbWritingMode.Items.AddRange(new object[] {
+            "lr-tb",
+            "tb-rl"});
+            this.cbWritingMode.Location = new System.Drawing.Point(304, 200);
+            this.cbWritingMode.Name = "cbWritingMode";
+            this.cbWritingMode.Size = new System.Drawing.Size(72, 21);
+            this.cbWritingMode.TabIndex = 9;
+            this.cbWritingMode.SelectedIndexChanged += new System.EventHandler(this.cbWritingMode_TextChanged);
+            this.cbWritingMode.TextChanged += new System.EventHandler(this.cbWritingMode_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(224, 80);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(64, 23);
+            this.label2.TabIndex = 19;
+            this.label2.Text = "Decoration";
+            // 
+            // cbTextDecoration
+            // 
+            this.cbTextDecoration.Items.AddRange(new object[] {
+            "None",
+            "Underline",
+            "Overline",
+            "LineThrough"});
+            this.cbTextDecoration.Location = new System.Drawing.Point(288, 80);
+            this.cbTextDecoration.Name = "cbTextDecoration";
+            this.cbTextDecoration.Size = new System.Drawing.Size(80, 21);
+            this.cbTextDecoration.TabIndex = 12;
+            this.cbTextDecoration.SelectedIndexChanged += new System.EventHandler(this.cbTextDecoration_TextChanged);
+            this.cbTextDecoration.TextChanged += new System.EventHandler(this.cbTextDecoration_TextChanged);
+            // 
+            // bColor
+            // 
+            this.bColor.Location = new System.Drawing.Point(200, 82);
+            this.bColor.Name = "bColor";
+            this.bColor.Size = new System.Drawing.Size(22, 16);
+            this.bColor.TabIndex = 11;
+            this.bColor.Text = "...";
+            this.bColor.Click += new System.EventHandler(this.bColor_Click);
+            // 
+            // label9
+            // 
+            this.label9.Location = new System.Drawing.Point(16, 80);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(48, 16);
+            this.label9.TabIndex = 22;
+            this.label9.Text = "Color";
+            // 
+            // cbColor
+            // 
+            this.cbColor.Location = new System.Drawing.Point(72, 80);
+            this.cbColor.Name = "cbColor";
+            this.cbColor.Size = new System.Drawing.Size(96, 21);
+            this.cbColor.TabIndex = 9;
+            this.cbColor.TextChanged += new System.EventHandler(this.cbColor_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.Location = new System.Drawing.Point(16, 48);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(40, 16);
+            this.label3.TabIndex = 25;
+            this.label3.Text = "Style";
+            // 
+            // cbFontStyle
+            // 
+            this.cbFontStyle.Items.AddRange(new object[] {
+            "Normal",
+            "Italic"});
+            this.cbFontStyle.Location = new System.Drawing.Point(72, 48);
+            this.cbFontStyle.Name = "cbFontStyle";
+            this.cbFontStyle.Size = new System.Drawing.Size(96, 21);
+            this.cbFontStyle.TabIndex = 5;
+            this.cbFontStyle.TextChanged += new System.EventHandler(this.cbFontStyle_TextChanged);
+            // 
+            // cbFontWeight
+            // 
+            this.cbFontWeight.Items.AddRange(new object[] {
+            "Lighter",
+            "Normal",
+            "Bold",
+            "Bolder",
+            "100",
+            "200",
+            "300",
+            "400",
+            "500",
+            "600",
+            "700",
+            "800",
+            "900"});
+            this.cbFontWeight.Location = new System.Drawing.Point(264, 48);
+            this.cbFontWeight.Name = "cbFontWeight";
+            this.cbFontWeight.Size = new System.Drawing.Size(104, 21);
+            this.cbFontWeight.TabIndex = 7;
+            this.cbFontWeight.TextChanged += new System.EventHandler(this.cbFontWeight_TextChanged);
+            // 
+            // label10
+            // 
+            this.label10.Location = new System.Drawing.Point(224, 48);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(40, 16);
+            this.label10.TabIndex = 27;
+            this.label10.Text = "Weight";
+            // 
+            // cbFontSize
+            // 
+            this.cbFontSize.Items.AddRange(new object[] {
+            "8pt",
+            "9pt",
+            "10pt",
+            "11pt",
+            "12pt",
+            "14pt",
+            "16pt",
+            "18pt",
+            "20pt",
+            "22pt",
+            "24pt",
+            "26pt",
+            "28pt",
+            "36pt",
+            "48pt",
+            "72pt"});
+            this.cbFontSize.Location = new System.Drawing.Point(264, 16);
+            this.cbFontSize.Name = "cbFontSize";
+            this.cbFontSize.Size = new System.Drawing.Size(104, 21);
+            this.cbFontSize.TabIndex = 2;
+            this.cbFontSize.TextChanged += new System.EventHandler(this.cbFontSize_TextChanged);
+            // 
+            // label11
+            // 
+            this.label11.Location = new System.Drawing.Point(224, 16);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(40, 16);
+            this.label11.TabIndex = 29;
+            this.label11.Text = "Size";
+            // 
+            // cbFontFamily
+            // 
+            this.cbFontFamily.Items.AddRange(new object[] {
+            "Arial"});
+            this.cbFontFamily.Location = new System.Drawing.Point(72, 16);
+            this.cbFontFamily.Name = "cbFontFamily";
+            this.cbFontFamily.Size = new System.Drawing.Size(96, 21);
+            this.cbFontFamily.TabIndex = 0;
+            this.cbFontFamily.TextChanged += new System.EventHandler(this.cbFontFamily_TextChanged);
+            // 
+            // lblValue
+            // 
+            this.lblValue.Location = new System.Drawing.Point(8, 16);
+            this.lblValue.Name = "lblValue";
+            this.lblValue.Size = new System.Drawing.Size(56, 23);
+            this.lblValue.TabIndex = 30;
+            this.lblValue.Text = "Value";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.bWeight);
+            this.groupBox1.Controls.Add(this.bSize);
+            this.groupBox1.Controls.Add(this.bColorEx);
+            this.groupBox1.Controls.Add(this.bStyle);
+            this.groupBox1.Controls.Add(this.bFamily);
+            this.groupBox1.Controls.Add(this.lFont);
+            this.groupBox1.Controls.Add(this.bFont);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.cbTextDecoration);
+            this.groupBox1.Controls.Add(this.bColor);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.cbColor);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.cbFontStyle);
+            this.groupBox1.Controls.Add(this.cbFontWeight);
+            this.groupBox1.Controls.Add(this.label10);
+            this.groupBox1.Controls.Add(this.cbFontSize);
+            this.groupBox1.Controls.Add(this.label11);
+            this.groupBox1.Controls.Add(this.cbFontFamily);
+            this.groupBox1.Location = new System.Drawing.Point(8, 40);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(432, 112);
+            this.groupBox1.TabIndex = 2;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Font";
+            // 
+            // button2
+            // 
+            this.button2.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.Location = new System.Drawing.Point(376, 82);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(22, 16);
+            this.button2.TabIndex = 13;
+            this.button2.Tag = "decoration";
+            this.button2.Text = "fx";
+            this.button2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button2.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bWeight
+            // 
+            this.bWeight.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bWeight.Location = new System.Drawing.Point(376, 52);
+            this.bWeight.Name = "bWeight";
+            this.bWeight.Size = new System.Drawing.Size(22, 16);
+            this.bWeight.TabIndex = 8;
+            this.bWeight.Tag = "weight";
+            this.bWeight.Text = "fx";
+            this.bWeight.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bWeight.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bSize
+            // 
+            this.bSize.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bSize.Location = new System.Drawing.Point(376, 20);
+            this.bSize.Name = "bSize";
+            this.bSize.Size = new System.Drawing.Size(22, 16);
+            this.bSize.TabIndex = 3;
+            this.bSize.Tag = "size";
+            this.bSize.Text = "fx";
+            this.bSize.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bSize.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bColorEx
+            // 
+            this.bColorEx.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bColorEx.Location = new System.Drawing.Point(176, 82);
+            this.bColorEx.Name = "bColorEx";
+            this.bColorEx.Size = new System.Drawing.Size(22, 16);
+            this.bColorEx.TabIndex = 10;
+            this.bColorEx.Tag = "color";
+            this.bColorEx.Text = "fx";
+            this.bColorEx.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bColorEx.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bStyle
+            // 
+            this.bStyle.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bStyle.Location = new System.Drawing.Point(176, 52);
+            this.bStyle.Name = "bStyle";
+            this.bStyle.Size = new System.Drawing.Size(22, 16);
+            this.bStyle.TabIndex = 6;
+            this.bStyle.Tag = "style";
+            this.bStyle.Text = "fx";
+            this.bStyle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bStyle.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bFamily
+            // 
+            this.bFamily.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bFamily.Location = new System.Drawing.Point(176, 20);
+            this.bFamily.Name = "bFamily";
+            this.bFamily.Size = new System.Drawing.Size(22, 16);
+            this.bFamily.TabIndex = 1;
+            this.bFamily.Tag = "family";
+            this.bFamily.Text = "fx";
+            this.bFamily.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bFamily.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // cbValue
+            // 
+            this.cbValue.Location = new System.Drawing.Point(64, 16);
+            this.cbValue.Name = "cbValue";
+            this.cbValue.Size = new System.Drawing.Size(344, 21);
+            this.cbValue.TabIndex = 0;
+            this.cbValue.Text = "comboBox1";
+            this.cbValue.TextChanged += new System.EventHandler(this.cbValue_TextChanged);
+            // 
+            // bValueExpr
+            // 
+            this.bValueExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bValueExpr.Location = new System.Drawing.Point(414, 19);
+            this.bValueExpr.Name = "bValueExpr";
+            this.bValueExpr.Size = new System.Drawing.Size(22, 16);
+            this.bValueExpr.TabIndex = 1;
+            this.bValueExpr.Tag = "value";
+            this.bValueExpr.Text = "fx";
+            this.bValueExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bValueExpr.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bAlignment
+            // 
+            this.bAlignment.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bAlignment.Location = new System.Drawing.Point(152, 170);
+            this.bAlignment.Name = "bAlignment";
+            this.bAlignment.Size = new System.Drawing.Size(22, 16);
+            this.bAlignment.TabIndex = 4;
+            this.bAlignment.Tag = "halign";
+            this.bAlignment.Text = "fx";
+            this.bAlignment.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bAlignment.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bDirection
+            // 
+            this.bDirection.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bDirection.Location = new System.Drawing.Point(152, 202);
+            this.bDirection.Name = "bDirection";
+            this.bDirection.Size = new System.Drawing.Size(22, 16);
+            this.bDirection.TabIndex = 8;
+            this.bDirection.Tag = "direction";
+            this.bDirection.Text = "fx";
+            this.bDirection.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bDirection.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bVertical
+            // 
+            this.bVertical.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bVertical.Location = new System.Drawing.Point(384, 170);
+            this.bVertical.Name = "bVertical";
+            this.bVertical.Size = new System.Drawing.Size(22, 16);
+            this.bVertical.TabIndex = 6;
+            this.bVertical.Tag = "valign";
+            this.bVertical.Text = "fx";
+            this.bVertical.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bVertical.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bWrtMode
+            // 
+            this.bWrtMode.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bWrtMode.Location = new System.Drawing.Point(384, 202);
+            this.bWrtMode.Name = "bWrtMode";
+            this.bWrtMode.Size = new System.Drawing.Size(22, 16);
+            this.bWrtMode.TabIndex = 10;
+            this.bWrtMode.Tag = "writing";
+            this.bWrtMode.Text = "fx";
+            this.bWrtMode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bWrtMode.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // bFormat
+            // 
+            this.bFormat.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bFormat.Location = new System.Drawing.Point(384, 234);
+            this.bFormat.Name = "bFormat";
+            this.bFormat.Size = new System.Drawing.Size(22, 16);
+            this.bFormat.TabIndex = 12;
+            this.bFormat.Tag = "format";
+            this.bFormat.Text = "fx";
+            this.bFormat.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bFormat.Click += new System.EventHandler(this.bExpr_Click);
+            // 
+            // StyleTextCtl
+            // 
+            this.Controls.Add(this.bFormat);
+            this.Controls.Add(this.bWrtMode);
+            this.Controls.Add(this.bVertical);
+            this.Controls.Add(this.bDirection);
+            this.Controls.Add(this.bAlignment);
+            this.Controls.Add(this.bValueExpr);
+            this.Controls.Add(this.cbValue);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.lblValue);
+            this.Controls.Add(this.cbWritingMode);
+            this.Controls.Add(this.cbDirection);
+            this.Controls.Add(this.cbFormat);
+            this.Controls.Add(this.cbHorzAlign);
+            this.Controls.Add(this.cbVerticalAlign);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Name = "StyleTextCtl";
+            this.Size = new System.Drawing.Size(456, 280);
+            this.groupBox1.ResumeLayout(false);
+            this.ResumeLayout(false);
 
 		}
 		#endregion
@@ -984,6 +1028,66 @@ namespace fyiReporting.RdlDesign
 		private void cbFormat_TextChanged(object sender, System.EventArgs e)
 		{
 			fFormat = true;
+		}
+
+		private void bExpr_Click(object sender, System.EventArgs e)
+		{
+			Button b = sender as Button;
+			if (b == null)
+				return;
+			Control c = null;
+			bool bColor=false;
+			switch (b.Tag as string)
+			{
+				case "value":
+					c = cbValue;
+					break;
+				case "family":
+					c = cbFontFamily;
+					break;
+				case "style":
+					c = cbFontStyle;
+					break;
+				case "color":
+					c = cbColor;
+					bColor = true;
+					break;
+				case "size":
+					c = cbFontSize;
+					break;
+				case "weight":
+					c = cbFontWeight;
+					break;
+				case "decoration":
+					c = cbTextDecoration;
+					break;
+				case "halign":
+					c = cbHorzAlign;
+					break;
+				case "valign":
+					c = cbVerticalAlign;
+					break;
+				case "direction":
+					c = cbDirection;
+					break;
+				case "writing":
+					c = cbWritingMode;
+					break;
+				case "format":
+					c = cbFormat;
+					break;
+			}
+
+			if (c == null)
+				return;
+
+			XmlNode sNode = _ReportItems[0];
+
+			DialogExprEditor ee = new DialogExprEditor(_Draw, c.Text, sNode, bColor);
+			DialogResult dr = ee.ShowDialog();
+			if (dr == DialogResult.OK)
+				c.Text = ee.Expression;
+			return;
 		}
 
 	}

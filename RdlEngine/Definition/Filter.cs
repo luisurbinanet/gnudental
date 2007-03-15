@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -25,6 +25,7 @@ using System;
 using System.Xml;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace fyiReporting.RDL
@@ -75,7 +76,7 @@ namespace fyiReporting.RDL
 						//represent any series of characers). See
 						//http://msdn.microsoft.com/library/enus/vblr7/html/vaoprlike.asp.	
 			bool _FilterOperatorSingleRow;	// false for Top/Bottom N and Percent; otherwise true
-		internal Filter(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Filter(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_FilterExpression=null;
 			_FilterOperator=FilterOperatorEnum.Unknown;
@@ -154,11 +155,11 @@ namespace fyiReporting.RDL
 		}
 
 		// Apply the filters to a row to determine if row is valid
-		internal bool Apply(Row datarow)
+		internal bool Apply(Report rpt, Row datarow)
 		{
-			object left = _FilterExpression.Evaluate(datarow);
+			object left = _FilterExpression.Evaluate(rpt, datarow);
 			TypeCode tc = _FilterExpression.GetTypeCode();
-			object right = ((FilterValue)(_FilterValues.Items[0])).Expression.Evaluate(datarow);
+			object right = ((FilterValue)(_FilterValues.Items[0])).Expression.Evaluate(rpt, datarow);
 			switch (_FilterOperator)
 			{
 				case FilterOperatorEnum.Equal:
@@ -183,43 +184,51 @@ namespace fyiReporting.RDL
 				case FilterOperatorEnum.BottomN:
 				case FilterOperatorEnum.TopPercent:
 				case FilterOperatorEnum.BottomPercent:
-					return true;		// TODO
+					return true;		// This is handled elsewhere
 				case FilterOperatorEnum.In:
 					foreach (FilterValue fv in _FilterValues.Items)
 					{
-						right = fv.Expression.Evaluate(datarow);
-						if (ApplyCompare(tc, left, right) == 0)
+						right = fv.Expression.Evaluate(rpt, datarow);
+                        if (right is ArrayList)         // this can only happen with MultiValue parameters
+                        {   // check each object in the array
+                            foreach (object v in right as ArrayList)
+                            {
+                                if (ApplyCompare(tc, left, v) == 0)
+                                    return true;
+                            }
+                        }
+						else if (ApplyCompare(tc, left, right) == 0)
 							return true;
 					}
 					return false;
 				case FilterOperatorEnum.Between:
 					if (ApplyCompare(tc, left, right) < 0)
 						return false;
-					right = ((FilterValue)(_FilterValues.Items[1])).Expression.Evaluate(datarow);
+					right = ((FilterValue)(_FilterValues.Items[1])).Expression.Evaluate(rpt, datarow);
 					return ApplyCompare(tc, left, right) <= 0? true: false;
 				default:
 					return true;
 			}
 		}
 
-		internal void Apply(Rows data)
+		internal void Apply(Report rpt, Rows data)
 		{
 			if (this._FilterOperatorSingleRow)
-				ApplySingleRowFilter(data);
+				ApplySingleRowFilter(rpt, data);
 			else
-				ApplyTopBottomFilter(data);
+				ApplyTopBottomFilter(rpt, data);
 		}
 
-		private void ApplySingleRowFilter(Rows data)
+		private void ApplySingleRowFilter(Report rpt, Rows data)
 		{
-			ArrayList ar = data.Data;
+			List<Row> ar = data.Data;
 			// handle a single row operator; by looping thru the rows and applying
 			//   the filter
 			int iRow = 0;
 			while (iRow < ar.Count)
 			{
-				Row datarow = (Row) ar[iRow];
-				if (Apply(datarow))
+				Row datarow = ar[iRow];
+				if (Apply(rpt, datarow))
 					iRow++;
 				else
 					ar.RemoveAt(iRow);
@@ -227,14 +236,14 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		private void ApplyTopBottomFilter(Rows data)
+		private void ApplyTopBottomFilter(Report rpt, Rows data)
 		{
 			if (data.Data.Count <= 0)		// No data; nothing to do
 				return;
 
 			// Get the filter value and validate it 
-			FilterValue fv = (FilterValue) this._FilterValues.Items[0];
-			double val = fv.Expression.EvaluateDouble((Row) (data.Data[0]));
+			FilterValue fv = this._FilterValues.Items[0];
+			double val = fv.Expression.EvaluateDouble(rpt, data.Data[0]);
 			if (val <= 0)			// if less than equal 0; then request results in no data
 			{
 				data.Data.Clear();
@@ -269,8 +278,8 @@ namespace fyiReporting.RDL
 			}
 
 			// Sort the data by the FilterExpression
-			ArrayList sl = new ArrayList();
-			sl.Add(this._FilterExpression);
+            List<RowsSortExpression> sl = new List<RowsSortExpression>();
+			sl.Add(new RowsSortExpression(this._FilterExpression));
 			data.SortBy = sl;					// update the sort by
 			data.Sort();						// sort the data
 			
@@ -279,15 +288,15 @@ namespace fyiReporting.RDL
 				_FilterOperator == FilterOperatorEnum.TopPercent)
 				data.Data.Reverse();
 
-			ArrayList ar = data.Data;
+			List<Row> ar = data.Data;
 			TypeCode tc = _FilterExpression.GetTypeCode();
-			object o = this._FilterExpression.Evaluate((Row) (data.Data[ival]));
+			object o = this._FilterExpression.Evaluate(rpt, data.Data[ival]);
 
 			// adjust the ival based on duplicate values
 			ival++;
 			while (ival < ar.Count)
 			{
-				object n = this._FilterExpression.Evaluate((Row)(data.Data[ival]));
+				object n = this._FilterExpression.Evaluate(rpt, data.Data[ival]);
 				if (ApplyCompare(tc, o, n) != 0)
 					break;
 				ival++;
@@ -308,47 +317,96 @@ namespace fyiReporting.RDL
 			if (right == null)
 				return 1;
 
-			switch (tc)
+			try
 			{
-				case TypeCode.DateTime:
-					return ((DateTime) left).CompareTo(Convert.ToDateTime(right));
-				case TypeCode.Int16:
-					return ((short) left).CompareTo(Convert.ToInt16(right));
-				case TypeCode.UInt16:
-					return ((ushort) left).CompareTo(Convert.ToUInt16(right));
-				case TypeCode.Int32:
-					return ((int) left).CompareTo(Convert.ToInt32(right));
-				case TypeCode.UInt32:
-					return ((uint) left).CompareTo(Convert.ToUInt32(right));
-				case TypeCode.Int64:
-					return ((long) left).CompareTo(Convert.ToInt64(right));
-				case TypeCode.UInt64:
-					return ((ulong) left).CompareTo(Convert.ToUInt64(right));
-				case TypeCode.String:
-					return ((string) left).CompareTo(Convert.ToString(right));
-				case TypeCode.Decimal:
-					return ((Decimal) left).CompareTo(Convert.ToDecimal(right, NumberFormatInfo.InvariantInfo));
-				case TypeCode.Single:
-					return ((float) left).CompareTo(Convert.ToSingle(right, NumberFormatInfo.InvariantInfo));
-				case TypeCode.Double:
-					return ((double) left).CompareTo(Convert.ToDouble(right, NumberFormatInfo.InvariantInfo));
-				case TypeCode.Boolean:
-					return ((bool) left).CompareTo(Convert.ToBoolean(right));
-				case TypeCode.Char:
-					return ((char) left).CompareTo(Convert.ToChar(right));
-				case TypeCode.SByte:
-					return ((sbyte) left).CompareTo(Convert.ToSByte(right));
-				case TypeCode.Byte:
-					return ((byte) left).CompareTo(Convert.ToByte(right));
-				case TypeCode.Empty:
-				case TypeCode.DBNull:
-					if (right == null)
-						return 0;
-					else
-						return -1;
-				default:
-					return 0;
+				switch (tc)
+				{
+					case TypeCode.DateTime:
+						return ((DateTime) left).CompareTo(Convert.ToDateTime(right));
+					case TypeCode.Int16:
+						return ((short) left).CompareTo(Convert.ToInt16(right));
+					case TypeCode.UInt16:
+						return ((ushort) left).CompareTo(Convert.ToUInt16(right));
+					case TypeCode.Int32:
+						return ((int) left).CompareTo(Convert.ToInt32(right));
+					case TypeCode.UInt32:
+						return ((uint) left).CompareTo(Convert.ToUInt32(right));
+					case TypeCode.Int64:
+						return ((long) left).CompareTo(Convert.ToInt64(right));
+					case TypeCode.UInt64:
+						return ((ulong) left).CompareTo(Convert.ToUInt64(right));
+					case TypeCode.String:
+						return ((string) left).CompareTo(Convert.ToString(right));
+					case TypeCode.Decimal:
+						return ((Decimal) left).CompareTo(Convert.ToDecimal(right, NumberFormatInfo.InvariantInfo));
+					case TypeCode.Single:
+						return ((float) left).CompareTo(Convert.ToSingle(right, NumberFormatInfo.InvariantInfo));
+					case TypeCode.Double:
+						return ((double) left).CompareTo(Convert.ToDouble(right, NumberFormatInfo.InvariantInfo));
+					case TypeCode.Boolean:
+						return ((bool) left).CompareTo(Convert.ToBoolean(right));
+					case TypeCode.Char:
+						return ((char) left).CompareTo(Convert.ToChar(right));
+					case TypeCode.SByte:
+						return ((sbyte) left).CompareTo(Convert.ToSByte(right));
+					case TypeCode.Byte:
+						return ((byte) left).CompareTo(Convert.ToByte(right));
+					case TypeCode.Empty:
+					case TypeCode.DBNull:
+						if (right == null)
+							return 0;
+						else
+							return -1;
+					default:	// ok we do this based on the actual type of the arguments
+						return ApplyCompare(left, right);
+				}
 			}
+			catch
+			{	// do based on actual type of arguments
+				return ApplyCompare(left, right);
+			}
+		}
+
+		static internal int ApplyCompare(object left, object right) 
+		{
+			if (left is string)
+				return ((string) left).CompareTo(Convert.ToString(right));
+			if (left is decimal)
+				return ((Decimal) left).CompareTo(Convert.ToDecimal(right, NumberFormatInfo.InvariantInfo));
+			if (left is Single)
+				return ((float) left).CompareTo(Convert.ToSingle(right, NumberFormatInfo.InvariantInfo));
+			if (left is double)
+				return ((double) left).CompareTo(Convert.ToDouble(right, NumberFormatInfo.InvariantInfo));
+			if (left is DateTime)
+				return ((DateTime) left).CompareTo(Convert.ToDateTime(right));
+			if (left is short)
+				return ((short) left).CompareTo(Convert.ToInt16(right));
+			if (left is ushort)
+				return ((ushort) left).CompareTo(Convert.ToUInt16(right));
+			if (left is int)
+				return ((int) left).CompareTo(Convert.ToInt32(right));
+			if (left is uint)
+				return ((uint) left).CompareTo(Convert.ToUInt32(right));
+			if (left is long)
+				return ((long) left).CompareTo(Convert.ToInt64(right));
+			if (left is ulong)
+				return ((ulong) left).CompareTo(Convert.ToUInt64(right));
+			if (left is bool)
+				return ((bool) left).CompareTo(Convert.ToBoolean(right));
+			if (left is char)
+				return ((char) left).CompareTo(Convert.ToChar(right));
+			if (left is sbyte)
+				return ((sbyte) left).CompareTo(Convert.ToSByte(right));
+			if (left is byte)
+				return ((byte) left).CompareTo(Convert.ToByte(right));
+			if (left is DBNull)
+			{
+				if (right == null)
+					return 0;
+				else
+					return -1;
+			}
+			return 0;
 		}
 
 		internal Expression FilterExpression

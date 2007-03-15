@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -31,17 +31,33 @@ namespace fyiReporting.RDL
 	///</summary>
 	public enum ImageSizingEnum
 	{
-		AutoSize,	// The borders should grow/shrink
-					// to accommodate the image (Default).
-		Fit,		// The image is resized to exactly match
-					// the height and width of the image element.
-		FitProportional,	//The image should be
-					// resized to fit, preserving aspect ratio.1
-		Clip		// The image should be clipped to fit.1		
+		/// <summary>
+		/// The borders should grow/shrink to accommodate the image (Default).
+		/// </summary>
+		AutoSize,	
+		/// <summary>
+		/// The image is resized to exactly match the height and width of the image element.
+		/// </summary>
+		Fit,		
+		/// <summary>
+		/// The image should be resized to fit, preserving aspect ratio.
+		/// </summary>
+		FitProportional,	
+		/// <summary>
+		/// The image should be clipped to fit.		
+		/// </summary>
+		Clip		
 	}
-
+	/// <summary>
+	/// Use ImageSizing when you want to take a string and map it to the ImageSizingEnum. 
+	/// </summary>
 	public class ImageSizing
 	{
+		/// <summary>
+		/// Given a string return the cooresponding enumeration.
+		/// </summary>
+		/// <param name="s"></param>
+		/// <returns>The enumerated value corresponding to the string.</returns>
 		static public ImageSizingEnum GetStyle(string s)
 		{
 			return GetStyle(s, null);

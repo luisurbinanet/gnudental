@@ -101,10 +101,11 @@
     <Compile Include="ComboBoxMulti.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Aggregate.cs" />
+    <Compile Include="GetData.cs" />
+    <Compile Include="Format.cs" />
+    <Compile Include="TestValue.cs" />
     <Compile Include="DataConnection.cs" />
-    <Compile Include="Enumerations.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="FormParameterInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,12 +119,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ParameterCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PIn.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POut.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Query.cs">
@@ -161,6 +156,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenDentBusiness\OpenDentBusiness.csproj">
+      <Project>{3D0FC76E-803C-4DE2-BDB1-47D63A4E2357}</Project>
+      <Name>OpenDentBusiness</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

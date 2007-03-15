@@ -52,6 +52,8 @@
                 <include name="RequiredDlls/Tao.FreeGlut.dll"/>
                 <include name="RequiredDlls/Tao.OpenGl.dll"/>
                 <include name="RequiredDlls/Tao.Platform.Windows.dll"/>
+                <include name="${build.dir}/bin/CodeBase.dll"/>
+                <include name="${build.dir}/bin/OpenDentBusiness.dll"/>
 			</references>
 		</csc>
         <copy todir="${build.dir}/bin/" verbose="true">

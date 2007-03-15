@@ -22,7 +22,7 @@ namespace OpenDentBusiness {
 			}
 			command+=
 				 "'"+POut.PString(doc.Description)+"', "
-				+"'"+POut.PDate  (doc.DateCreated)+"', "
+				+POut.PDate  (doc.DateCreated)+", "
 				+"'"+POut.PInt    (doc.DocCategory)+"', "
 				+"'"+POut.PInt    (doc.WithPat)+"', "
 				+"'"+POut.PString(doc.FileName)+"', "//this may simply be the extension at this point, or it may be the full filename.
@@ -91,7 +91,7 @@ namespace OpenDentBusiness {
 		public static int Update(Document doc) {
 			string command="UPDATE document SET " 
 				+ "Description = '"      +POut.PString(doc.Description)+"'"
-				+ ",DateCreated = '"     +POut.PDate  (doc.DateCreated)+"'"
+				+ ",DateCreated = "     +POut.PDate  (doc.DateCreated)
 				+ ",DocCategory = '"     +POut.PInt    (doc.DocCategory)+"'"
 				+ ",WithPat = '"         +POut.PInt    (doc.WithPat)+"'"
 				+ ",FileName    = '"     +POut.PString(doc.FileName)+"'"

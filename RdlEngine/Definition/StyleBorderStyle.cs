@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -40,7 +40,7 @@ namespace fyiReporting.RDL
 		Expression _Top;		// (Enum BorderStyle) Style of the top border
 		Expression _Bottom;		// (Enum BorderStyle) Style of the bottom border
 	
-		internal StyleBorderStyle(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal StyleBorderStyle(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Default=null;
 			_Left=null;
@@ -95,26 +95,26 @@ namespace fyiReporting.RDL
 		}
 
 		// Generate a CSS string from the specified styles
-		internal string GetCSS(Row row, bool bDefaults)
+		internal string GetCSS(Report rpt, Row row, bool bDefaults)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			if (_Default != null)
-				sb.AppendFormat("border-style:{0};",_Default.EvaluateString(row));
+				sb.AppendFormat("border-style:{0};",_Default.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("border-style:none;");
 
 			if (_Left != null)
-				sb.AppendFormat("border-left-style:{0};",_Left.EvaluateString(row));
+				sb.AppendFormat("border-left-style:{0};",_Left.EvaluateString(rpt, row));
 
 			if (_Right != null)
-				sb.AppendFormat("border-right-style:{0};",_Right.EvaluateString(row));
+				sb.AppendFormat("border-right-style:{0};",_Right.EvaluateString(rpt, row));
 
 			if (_Top != null)
-				sb.AppendFormat("border-top-style:{0};",_Top.EvaluateString(row));
+				sb.AppendFormat("border-top-style:{0};",_Top.EvaluateString(rpt, row));
 
 			if (_Bottom != null)
-				sb.AppendFormat("border-bottom-style:{0};",_Bottom.EvaluateString(row));
+				sb.AppendFormat("border-bottom-style:{0};",_Bottom.EvaluateString(rpt, row));
 
 			return sb.ToString();
 		}
@@ -164,12 +164,12 @@ namespace fyiReporting.RDL
 			set {  _Default = value; }
 		}
  
-		internal BorderStyleEnum EvalDefault(Row r)
+		internal BorderStyleEnum EvalDefault(Report rpt, Row r)
 		{
 			if (_Default == null)
 				return BorderStyleEnum.None;
 
-			string bs = _Default.EvaluateString(r);
+			string bs = _Default.EvaluateString(rpt, r);
 			return GetBorderStyle(bs, BorderStyleEnum.Solid);
 		}
 
@@ -179,12 +179,12 @@ namespace fyiReporting.RDL
 			set {  _Left = value; }
 		}
 
-		internal BorderStyleEnum EvalLeft(Row r)
+		internal BorderStyleEnum EvalLeft(Report rpt, Row r)
 		{
 			if (_Left == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 
-			string bs = _Left.EvaluateString(r);
+			string bs = _Left.EvaluateString(rpt, r);
 			return GetBorderStyle(bs, BorderStyleEnum.Solid);
 		}
 
@@ -194,12 +194,12 @@ namespace fyiReporting.RDL
 			set {  _Right = value; }
 		}
 
-		internal BorderStyleEnum EvalRight(Row r)
+		internal BorderStyleEnum EvalRight(Report rpt, Row r)
 		{
 			if (_Right == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 
-			string bs = _Right.EvaluateString(r);
+			string bs = _Right.EvaluateString(rpt, r);
 			return GetBorderStyle(bs, BorderStyleEnum.Solid);
 		}
 
@@ -209,12 +209,12 @@ namespace fyiReporting.RDL
 			set {  _Top = value; }
 		}
 
-		internal BorderStyleEnum EvalTop(Row r)
+		internal BorderStyleEnum EvalTop(Report rpt, Row r)
 		{
 			if (_Top == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 
-			string bs = _Top.EvaluateString(r);
+			string bs = _Top.EvaluateString(rpt, r);
 			return GetBorderStyle(bs, BorderStyleEnum.Solid);
 		}
 
@@ -224,12 +224,12 @@ namespace fyiReporting.RDL
 			set {  _Bottom = value; }
 		}
 
-		internal BorderStyleEnum EvalBottom(Row r)
+		internal BorderStyleEnum EvalBottom(Report rpt, Row r)
 		{
 			if (_Bottom == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 
-			string bs = _Bottom.EvaluateString(r);
+			string bs = _Bottom.EvaluateString(rpt, r);
 			return GetBorderStyle(bs, BorderStyleEnum.Solid);
 		}
 
@@ -276,18 +276,51 @@ namespace fyiReporting.RDL
 			return bs;
 		}
 	}
-
+	/// <summary>
+	/// Allowed values for border styles.  Note: these may not be actually supported depending
+	/// on the renderer used.
+	/// </summary>
 	public enum BorderStyleEnum
 	{
+		/// <summary>
+		/// No border
+		/// </summary>
 		None,
+		/// <summary>
+		/// Dotted line border
+		/// </summary>
 		Dotted,
+		/// <summary>
+		/// Dashed lin border
+		/// </summary>
 		Dashed,
+		/// <summary>
+		/// Solid line border
+		/// </summary>
 		Solid,
+		/// <summary>
+		/// Double line border
+		/// </summary>
 		Double,
+		/// <summary>
+		/// Grooved border
+		/// </summary>
 		Groove,
+		/// <summary>
+		/// Ridge border
+		/// </summary>
 		Ridge,
+		/// <summary>
+		/// Inset border
+		/// </summary>
 		Inset,
+		/// <summary>
+		/// Windows Inset border
+		/// </summary>
 		WindowInset,
+		/// <summary>
+		/// Outset border
+		/// </summary>
 		Outset
 	}
 }

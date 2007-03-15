@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -36,9 +37,9 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class InteractivityCtl : System.Windows.Forms.UserControl, IProperty
 	{
-		private ArrayList _ReportItems;
+        private List<XmlNode> _ReportItems;
 		private DesignXmlDraw _Draw;
-		private ArrayList _DrillParameters;
+        private List<DrillParameter> _DrillParameters;
 		// flags for controlling whether syntax changed for a particular property
 		private bool fBookmark, fAction, fHidden, fToggle;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -58,12 +59,16 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.ComboBox cbToggle;
 		private System.Windows.Forms.RadioButton rbNoAction;
 		private System.Windows.Forms.Button bDrillthrough;
+		private System.Windows.Forms.Button bHidden;
+		private System.Windows.Forms.Button bBookmarkLink;
+		private System.Windows.Forms.Button bHyperlink;
+		private System.Windows.Forms.Button bBookmark;
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal InteractivityCtl(DesignXmlDraw dxDraw, ArrayList reportItems)
+        internal InteractivityCtl(DesignXmlDraw dxDraw, List<XmlNode> reportItems)
 		{
 			_ReportItems = reportItems;
 			_Draw = dxDraw;
@@ -71,7 +76,7 @@ namespace fyiReporting.RdlDesign
 			InitializeComponent();
 
 			// Initialize form using the style node values
-			InitValues((XmlNode) _ReportItems[0]);			
+			InitValues(_ReportItems[0]);			
 		}
 
 		private void InitValues(XmlNode node)
@@ -97,7 +102,7 @@ namespace fyiReporting.RdlDesign
 					{	// Drillthrough specified
 						rbDrillthrough.Checked = true;
 						tbDrillthrough.Text =  _Draw.GetElementValue(vLink, "ReportName", "");
-						_DrillParameters = new ArrayList();
+                        _DrillParameters = new List<DrillParameter>();
 						XmlNode pNodes = _Draw.GetNamedChildNode(vLink, "Parameters");
 						if (pNodes != null)
 						{
@@ -107,7 +112,7 @@ namespace fyiReporting.RdlDesign
 									continue;
 								string name = _Draw.GetElementAttribute(pNode, "Name", "");
 								string pvalue = _Draw.GetElementValue(pNode, "Value", "");
-								string omit = _Draw.GetElementValue(pNode, "Omit", "False");
+								string omit = _Draw.GetElementValue(pNode, "Omit", "false");
 								DrillParameter dp = new DrillParameter(name, pvalue, omit);
 								_DrillParameters.Add(dp);
 							}
@@ -170,11 +175,14 @@ namespace fyiReporting.RdlDesign
 		private void InitializeComponent()
 		{
 			this.grpBoxVisibility = new System.Windows.Forms.GroupBox();
+			this.bHidden = new System.Windows.Forms.Button();
 			this.cbToggle = new System.Windows.Forms.ComboBox();
 			this.tbHidden = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.bBookmarkLink = new System.Windows.Forms.Button();
+			this.bHyperlink = new System.Windows.Forms.Button();
 			this.rbNoAction = new System.Windows.Forms.RadioButton();
 			this.bParameters = new System.Windows.Forms.Button();
 			this.bDrillthrough = new System.Windows.Forms.Button();
@@ -186,12 +194,14 @@ namespace fyiReporting.RdlDesign
 			this.rbHyperlink = new System.Windows.Forms.RadioButton();
 			this.label1 = new System.Windows.Forms.Label();
 			this.tbBookmark = new System.Windows.Forms.TextBox();
+			this.bBookmark = new System.Windows.Forms.Button();
 			this.grpBoxVisibility.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// grpBoxVisibility
 			// 
+			this.grpBoxVisibility.Controls.Add(this.bHidden);
 			this.grpBoxVisibility.Controls.Add(this.cbToggle);
 			this.grpBoxVisibility.Controls.Add(this.tbHidden);
 			this.grpBoxVisibility.Controls.Add(this.label3);
@@ -203,12 +213,24 @@ namespace fyiReporting.RdlDesign
 			this.grpBoxVisibility.TabStop = false;
 			this.grpBoxVisibility.Text = "Visibility";
 			// 
+			// bHidden
+			// 
+			this.bHidden.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bHidden.Location = new System.Drawing.Point(400, 26);
+			this.bHidden.Name = "bHidden";
+			this.bHidden.Size = new System.Drawing.Size(22, 16);
+			this.bHidden.TabIndex = 1;
+			this.bHidden.Tag = "visibility";
+			this.bHidden.Text = "fx";
+			this.bHidden.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bHidden.Click += new System.EventHandler(this.bExpr_Click);
+			// 
 			// cbToggle
 			// 
 			this.cbToggle.Location = new System.Drawing.Point(168, 48);
 			this.cbToggle.Name = "cbToggle";
 			this.cbToggle.Size = new System.Drawing.Size(152, 21);
-			this.cbToggle.TabIndex = 1;
+			this.cbToggle.TabIndex = 2;
 			this.cbToggle.TextChanged += new System.EventHandler(this.cbToggle_SelectedIndexChanged);
 			this.cbToggle.SelectedIndexChanged += new System.EventHandler(this.cbToggle_SelectedIndexChanged);
 			// 
@@ -216,7 +238,7 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.tbHidden.Location = new System.Drawing.Point(168, 24);
 			this.tbHidden.Name = "tbHidden";
-			this.tbHidden.Size = new System.Drawing.Size(248, 20);
+			this.tbHidden.Size = new System.Drawing.Size(224, 20);
 			this.tbHidden.TabIndex = 0;
 			this.tbHidden.Text = "";
 			this.tbHidden.TextChanged += new System.EventHandler(this.tbHidden_TextChanged);
@@ -239,6 +261,8 @@ namespace fyiReporting.RdlDesign
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.bBookmarkLink);
+			this.groupBox1.Controls.Add(this.bHyperlink);
 			this.groupBox1.Controls.Add(this.rbNoAction);
 			this.groupBox1.Controls.Add(this.bParameters);
 			this.groupBox1.Controls.Add(this.bDrillthrough);
@@ -255,6 +279,30 @@ namespace fyiReporting.RdlDesign
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Action";
 			// 
+			// bBookmarkLink
+			// 
+			this.bBookmarkLink.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bBookmarkLink.Location = new System.Drawing.Point(400, 80);
+			this.bBookmarkLink.Name = "bBookmarkLink";
+			this.bBookmarkLink.Size = new System.Drawing.Size(22, 16);
+			this.bBookmarkLink.TabIndex = 3;
+			this.bBookmarkLink.Tag = "bookmarklink";
+			this.bBookmarkLink.Text = "fx";
+			this.bBookmarkLink.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bBookmarkLink.Click += new System.EventHandler(this.bExpr_Click);
+			// 
+			// bHyperlink
+			// 
+			this.bHyperlink.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bHyperlink.Location = new System.Drawing.Point(400, 50);
+			this.bHyperlink.Name = "bHyperlink";
+			this.bHyperlink.Size = new System.Drawing.Size(22, 16);
+			this.bHyperlink.TabIndex = 1;
+			this.bHyperlink.Tag = "hyperlink";
+			this.bHyperlink.Text = "fx";
+			this.bHyperlink.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bHyperlink.Click += new System.EventHandler(this.bExpr_Click);
+			// 
 			// rbNoAction
 			// 
 			this.rbNoAction.Location = new System.Drawing.Point(16, 16);
@@ -268,7 +316,7 @@ namespace fyiReporting.RdlDesign
 			this.bParameters.Location = new System.Drawing.Point(344, 104);
 			this.bParameters.Name = "bParameters";
 			this.bParameters.Size = new System.Drawing.Size(80, 23);
-			this.bParameters.TabIndex = 3;
+			this.bParameters.TabIndex = 6;
 			this.bParameters.Text = "Parameters...";
 			this.bParameters.Click += new System.EventHandler(this.bParameters_Click);
 			// 
@@ -277,7 +325,7 @@ namespace fyiReporting.RdlDesign
 			this.bDrillthrough.Location = new System.Drawing.Point(312, 104);
 			this.bDrillthrough.Name = "bDrillthrough";
 			this.bDrillthrough.Size = new System.Drawing.Size(24, 23);
-			this.bDrillthrough.TabIndex = 2;
+			this.bDrillthrough.TabIndex = 5;
 			this.bDrillthrough.Text = "...";
 			this.bDrillthrough.Click += new System.EventHandler(this.bDrillthrough_Click);
 			// 
@@ -294,8 +342,8 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.tbBookmarkLink.Location = new System.Drawing.Point(128, 76);
 			this.tbBookmarkLink.Name = "tbBookmarkLink";
-			this.tbBookmarkLink.Size = new System.Drawing.Size(288, 20);
-			this.tbBookmarkLink.TabIndex = 1;
+			this.tbBookmarkLink.Size = new System.Drawing.Size(264, 20);
+			this.tbBookmarkLink.TabIndex = 2;
 			this.tbBookmarkLink.Text = "";
 			this.tbBookmarkLink.TextChanged += new System.EventHandler(this.tbAction_TextChanged);
 			// 
@@ -303,7 +351,7 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.tbHyperlink.Location = new System.Drawing.Point(128, 47);
 			this.tbHyperlink.Name = "tbHyperlink";
-			this.tbHyperlink.Size = new System.Drawing.Size(288, 20);
+			this.tbHyperlink.Size = new System.Drawing.Size(264, 20);
 			this.tbHyperlink.TabIndex = 0;
 			this.tbHyperlink.Text = "";
 			this.tbHyperlink.TextChanged += new System.EventHandler(this.tbAction_TextChanged);
@@ -344,12 +392,25 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.tbBookmark.Location = new System.Drawing.Point(88, 254);
 			this.tbBookmark.Name = "tbBookmark";
-			this.tbBookmark.Size = new System.Drawing.Size(336, 20);
+			this.tbBookmark.Size = new System.Drawing.Size(312, 20);
 			this.tbBookmark.TabIndex = 3;
 			this.tbBookmark.Text = "";
 			// 
+			// bBookmark
+			// 
+			this.bBookmark.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bBookmark.Location = new System.Drawing.Point(408, 258);
+			this.bBookmark.Name = "bBookmark";
+			this.bBookmark.Size = new System.Drawing.Size(22, 16);
+			this.bBookmark.TabIndex = 4;
+			this.bBookmark.Tag = "bookmark";
+			this.bBookmark.Text = "fx";
+			this.bBookmark.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bBookmark.Click += new System.EventHandler(this.bExpr_Click);
+			// 
 			// InteractivityCtl
 			// 
+			this.Controls.Add(this.bBookmark);
 			this.Controls.Add(this.tbBookmark);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.groupBox1);
@@ -452,8 +513,8 @@ namespace fyiReporting.RdlDesign
 		{
 			if (this.rbHyperlink.Checked)
 			{
-				tbHyperlink.Enabled = true;
-				tbBookmarkLink.Enabled = false;
+				tbHyperlink.Enabled = bHyperlink.Enabled = true;
+				tbBookmarkLink.Enabled = bBookmarkLink.Enabled = false;
 				tbDrillthrough.Enabled = false;
 				bDrillthrough.Enabled = false;
 				bParameters.Enabled = false;
@@ -461,24 +522,24 @@ namespace fyiReporting.RdlDesign
 			}
 			else if (this.rbDrillthrough.Checked)
 			{
-				tbHyperlink.Enabled = false;
-				tbBookmarkLink.Enabled = false;
+				tbHyperlink.Enabled = bHyperlink.Enabled = false;
+				tbBookmarkLink.Enabled = bBookmarkLink.Enabled = false;
 				tbDrillthrough.Enabled = true;
 				bDrillthrough.Enabled = true;
 				bParameters.Enabled = true;
 			}
 			else if (this.rbBookmarkLink.Checked)
 			{
-				tbHyperlink.Enabled = false;
-				tbBookmarkLink.Enabled = true;
+				tbHyperlink.Enabled = bHyperlink.Enabled = false;
+				tbBookmarkLink.Enabled = bBookmarkLink.Enabled = true;
 				tbDrillthrough.Enabled = false;
 				bDrillthrough.Enabled = false;
 				bParameters.Enabled = false;
 			}
 			else	// assume no action
 			{
-				tbHyperlink.Enabled = false;
-				tbBookmarkLink.Enabled = false;
+				tbHyperlink.Enabled = bHyperlink.Enabled = false;
+				tbBookmarkLink.Enabled = bBookmarkLink.Enabled = false;
 				tbDrillthrough.Enabled = false;
 				bDrillthrough.Enabled = false;
 				bParameters.Enabled = false;
@@ -530,5 +591,40 @@ namespace fyiReporting.RdlDesign
 			_DrillParameters = dpd.DrillParameters;
 			fAction = true;
 		}
+
+		private void bExpr_Click(object sender, System.EventArgs e)
+		{
+			Button b = sender as Button;
+			if (b == null)
+				return;
+			Control c = null;
+			switch (b.Tag as string)
+			{
+				case "bookmark":
+					c = tbBookmark;
+					break;
+				case "bookmarklink":
+					c = tbBookmarkLink;
+					break;
+				case "hyperlink":
+					c = tbHyperlink;
+					break;
+				case "visibility":
+					c = tbHidden;
+					break;
+			}
+
+			if (c == null)
+				return;
+
+			XmlNode sNode = _ReportItems[0];
+
+			DialogExprEditor ee = new DialogExprEditor(_Draw, c.Text, sNode);
+			DialogResult dr = ee.ShowDialog();
+			if (dr == DialogResult.OK)
+				c.Text = ee.Expression;
+			return;
+		}
+
 	}
 }

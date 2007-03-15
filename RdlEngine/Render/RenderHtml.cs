@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -48,6 +48,12 @@ namespace fyiReporting.RDL
 		bool bScriptTableSort=false; // need to generate table sort javascript in header
 		Bitmap _bm=null;			// bm and
 		Graphics _g=null;			//		  g are needed when calculating string heights
+		bool _Asp=false;			// denotes ASP.NET compatible HTML; e.g. no <html>, <body>
+									//    separate JavaScript and CSS
+		string _Prefix="";			// prefix to generating all HTML names (e.g. css, ...
+		string _CSS;				// when ASP we put the CSS into a string
+		string _JavaScript;			//     as well as any required javascript
+		int _SkipMatrixCols=0;		// # of matrix columns to skip
 
 		public RenderHtml(Report rep, IStreamGen sg)
 		{
@@ -68,6 +74,39 @@ namespace fyiReporting.RDL
 				_g.Dispose();
 		}
 
+		public Report Report()
+		{
+			return r;
+		}
+
+		public bool Asp
+		{
+			get {return _Asp;}
+			set {_Asp = value;}
+		}
+
+		public string JavaScript
+		{
+			get {return _JavaScript;}
+		}
+
+		public string CSS
+		{
+			get {return _CSS;}
+		}
+
+		public string Prefix
+		{
+			get {return _Prefix;}
+			set 
+			{
+				_Prefix = value==null? "": value;
+				if (_Prefix.Length > 0 &&
+					_Prefix[0] == '_')
+					_Prefix = "a" + _Prefix;	// not perfect but underscores as first letter don't work
+			}
+		}
+
 		public bool IsPagingNeeded()
 		{
 			return false;
@@ -78,6 +117,18 @@ namespace fyiReporting.RDL
 			return;
 		}
 
+		string FixupRelativeName(string relativeName)
+		{
+			if (_sg is OneFileStreamGen)
+			{
+				if (relativeName[0] == Path.DirectorySeparatorChar || relativeName[0] == Path.AltDirectorySeparatorChar)
+					relativeName = relativeName.Substring(1);
+			}
+			else if (relativeName[0] != Path.DirectorySeparatorChar)
+				relativeName = Path.DirectorySeparatorChar + relativeName;
+
+			return relativeName;
+		}
 		// puts the JavaScript into the header
 		private void ScriptGenerate(TextWriter ftw)
 		{
@@ -303,7 +354,7 @@ function findObject(id) {
 			string result = t;
 			if (a.Hyperlink != null)
 			{	// Handle a hyperlink
-				string url = a.HyperLinkValue(r);
+				string url = a.HyperLinkValue(this.r, r);
 				if (tooltip == null)
 					result = String.Format("<a target=\"_top\" href=\"{0}\">{1}</a>", url, t);
 				else
@@ -312,14 +363,16 @@ function findObject(id) {
 			else if (a.Drill != null)
 			{	// Handle a drill through
 				StringBuilder args= new StringBuilder("<a target=\"_top\" href=\"");
+				if (_Asp)	// for ASP we go thru the default page and pass it as an argument
+					args.Append("Default.aspx?rs:url=");
 				args.Append(a.Drill.ReportName);
 				args.Append(".rdl");
 				if (a.Drill.DrillthroughParameters != null)
 				{
-					bool bFirst = true;
+					bool bFirst = !_Asp;		// ASP already have an argument
 					foreach (DrillthroughParameter dtp in a.Drill.DrillthroughParameters.Items)
 					{
-						if (!dtp.OmitValue(r))
+						if (!dtp.OmitValue(this.r, r))
 						{
 							if (bFirst)
 							{	// First parameter - prefixed by '?'
@@ -332,7 +385,7 @@ function findObject(id) {
 							}
 							args.Append(dtp.Name.Nm);
 							args.Append('=');
-							args.Append(dtp.ValueValue(r));
+							args.Append(dtp.ValueValue(this.r, r));
 						}
 					}
 				}
@@ -346,7 +399,7 @@ function findObject(id) {
 			}
 			else if (a.BookmarkLink != null)
 			{	// Handle a bookmark
-				string bm = a.BookmarkLinkValue(r);
+				string bm = a.BookmarkLinkValue(this.r, r);
 				if (tooltip == null)
 					result = String.Format("<a href=\"#{0}\">{1}</a>", bm, t);
 				else
@@ -370,7 +423,8 @@ function findObject(id) {
 			if (_styles.Count <= 0)
 				return;
 
-			ftw.WriteLine("<style type='text/css'>");
+			if (!_Asp)
+				ftw.WriteLine("<style type='text/css'>");
 
 			foreach (CssCacheEntry cce in _styles.Values)
 			{
@@ -381,30 +435,37 @@ function findObject(id) {
 					ftw.WriteLine(".{0} {1}", cce.Name, cce.Css.Substring(i));
 			}
 
-			ftw.WriteLine("</style>");
+			if (!_Asp)
+				ftw.WriteLine("</style>");
 		}
 
 		private string CssAdd(Style s, ReportLink rl, Row row)
 		{
-			return CssAdd(s, rl, row, false);
+			return CssAdd(s, rl, row, false, float.MinValue, float.MinValue);
 		}
-
+		
 		private string CssAdd(Style s, ReportLink rl, Row row, bool bForceRelative)
+		{
+			return CssAdd(s, rl, row, bForceRelative, float.MinValue, float.MinValue);
+		}
+		private string CssAdd(Style s, ReportLink rl, Row row, bool bForceRelative, float h, float w)
 		{
 			string css;
 			string prefix = CssPrefix(s, rl);
+			if (_Asp && prefix == "table#")
+				bForceRelative = true;
 
 			if (s != null)
-				css = prefix + "{" + CssPosition(rl, row, bForceRelative) + s.GetCSS(row, true) + "}";
+				css = prefix + "{" + CssPosition(rl, row, bForceRelative, h, w) + s.GetCSS(this.r, row, true) + "}";
 			else if (rl is Table || rl is Matrix)
-				css = prefix + "{" + CssPosition(rl, row, bForceRelative) + "border-collapse:collapse;)";
+				css = prefix + "{" + CssPosition(rl, row, bForceRelative, h, w) + "border-collapse:collapse;)";
 			else
-				css = prefix + "{" + CssPosition(rl, row, bForceRelative) + "}";
+				css = prefix + "{" + CssPosition(rl, row, bForceRelative, h, w) + "}";
 
 			CssCacheEntry cce = (CssCacheEntry) _styles[css];
 			if (cce == null)
 			{
-				string name = prefix + "css" + cssId++.ToString();
+				string name = prefix + this.Prefix + "css" + cssId++.ToString();
 				cce = new CssCacheEntry(css, name);
 				_styles.Add(cce.Css, cce);
 			}
@@ -416,7 +477,7 @@ function findObject(id) {
 				return cce.Name;
 		}
 
-		private string CssPosition(ReportLink rl,Row row, bool bForceRelative)
+		private string CssPosition(ReportLink rl,Row row, bool bForceRelative, float h, float w)
 		{
 			if (!(rl is ReportItem))		// if not a report item then no position
 				return "";
@@ -424,12 +485,20 @@ function findObject(id) {
 			// no positioning within a table
 			for (ReportLink p=rl.Parent; p != null; p=p.Parent)
 			{
-				if (p is TableCell ||			
-					p is RowGrouping ||
+				if (p is TableCell)
+					return "";
+				if (p is RowGrouping ||
 					p is MatrixCell ||
 					p is ColumnGrouping ||
 					p is Corner)
-					return "";
+				{
+					StringBuilder sb2 = new StringBuilder();
+					if (h != float.MinValue)
+						sb2.AppendFormat(NumberFormatInfo.InvariantInfo, "height: {0}pt; ", h);
+					if (w != float.MinValue)
+						sb2.AppendFormat(NumberFormatInfo.InvariantInfo, "width: {0}pt; ", w);
+					return sb2.ToString();
+				}
 			}
 
 			// TODO: optimize by putting this into ReportItem and caching result???
@@ -441,24 +510,30 @@ function findObject(id) {
 			{
 				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "left: {0}; ", ri.Left.Original);
 			}
-			if (ri.Width != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "width: {0}; ", ri.Width.Original);
+            if (ri is Matrix || ri is Image)
+            { }
+            else 
+            {
+				if (ri.Width != null)
+					sb.AppendFormat(NumberFormatInfo.InvariantInfo, "width: {0}; ", ri.Width.Original);
+			}
 			if (ri.Top != null)
 			{
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "top: {0}pt; ", ri.Gap);
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "top: {0}pt; ", ri.Gap(this.r));
 			}
 			if (ri is List)
 			{
 				List l = ri as List;
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "height: {0}pt; ", l.HeightOfList(GetGraphics,row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "height: {0}pt; ", l.HeightOfList(this.r, GetGraphics,row));
 			}
+			else if (ri is Matrix || ri is Table || ri is Image)
+			{}
 			else if (ri.Height != null)
 				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "height: {0}; ", ri.Height.Original);
 
 			if (sb.Length > 0)
 			{
 				if (bForceRelative || ri.YParents != null)
-					//				if (bForceRelative)
 					sb.Insert(0, "position: relative; ");
 				else
 					sb.Insert(0, "position: absolute; ");
@@ -551,35 +626,58 @@ function findObject(id) {
 		public void End()
 		{
 			string bodyCssId;
-			if (r.Body != null)
-				bodyCssId = CssAdd(r.Body.Style, r.Body, null);		// add the style for the body
+			if (r.ReportDefinition.Body != null)
+				bodyCssId = CssAdd(r.ReportDefinition.Body.Style, r.ReportDefinition.Body, null);		// add the style for the body
 			else
 				bodyCssId = null;
 
 			TextWriter ftw = _sg.GetTextWriter();	// the final text writer location
 
-			ftw.WriteLine(@"<html>");
+			if (_Asp)
+			{
+				// do any required JavaScript
+				StringWriter sw = new StringWriter();
+				ScriptGenerate(sw);
+				_JavaScript = sw.ToString();
+				sw.Close();
+				// do any required CSS
+				sw = new StringWriter();
+				CssGenerate(sw);
+				_CSS = sw.ToString();
+				sw.Close();
+			}
+			else
+			{
+				ftw.WriteLine(@"<html>");
 
-			// handle the <head>: description, javascript and CSS goes here
-			ftw.WriteLine("<head>");
+				// handle the <head>: description, javascript and CSS goes here
+				ftw.WriteLine("<head>");
 
-			ScriptGenerate(ftw);
-			CssGenerate(ftw);
+				ScriptGenerate(ftw);
+				CssGenerate(ftw);
 
-			if (r.Description != null)	// Use description as title if provided
-				ftw.WriteLine(string.Format(@"<title>{0}</title>", XmlUtil.XmlAnsi(r.Description)));
+				if (r.Description != null)	// Use description as title if provided
+					ftw.WriteLine(string.Format(@"<title>{0}</title>", XmlUtil.XmlAnsi(r.Description)));
 
-			ftw.WriteLine(@"</head>");
+				ftw.WriteLine(@"</head>");
+			}
 
 			// Always want an HTML body - even if report doesn't have a body stmt
-			if (bodyCssId != null)
+			if (this._Asp)
+			{
+				ftw.WriteLine("<table style=\"position: relative;\">");
+			}
+			else if (bodyCssId != null)
 				ftw.WriteLine(@"<body id='{0}'><table>", bodyCssId);
 			else
 				ftw.WriteLine("<body><table>");
 
 			ftw.Write(tw.ToString());
 
-			ftw.WriteLine(@"</table></body></html>");
+			if (this._Asp)
+				ftw.WriteLine(@"</table>");
+			else
+				ftw.WriteLine(@"</table></body></html>");
 
 			if (_g != null)
 			{
@@ -622,7 +720,7 @@ function findObject(id) {
 		public void PageFooterStart(PageFooter pf)
 		{
 			if (pf.ReportItems != null && pf.ReportItems.Items.Count > 0)
-				tw.WriteLine("<tr><td><div style=\"overflow: clip; POSITION: static; HEIGHT: {0};\">", pf.Height.Original);
+				tw.WriteLine("<tr><td><div style=\"overflow: clip; POSITION: relative; HEIGHT: {0};\">", pf.Height.Original);
 		}
 
 		public void PageFooterEnd(PageFooter pf)
@@ -633,15 +731,17 @@ function findObject(id) {
 
 		public void Textbox(Textbox tb, string t, Row row)
 		{
-			// make all the characters browser readable
-			t = XmlUtil.XmlAnsi(t);
+			if (!tb.IsHtml(this.r, row))		// we leave the text as is when request is to treat as html
+			{									//   this can screw up the generated HTML if not properly formed HTML
+				// make all the characters browser readable
+				t = XmlUtil.XmlAnsi(t);
 
-			// handle any specified bookmark
-			t = Bookmark(tb.BookmarkValue(row), t);
+				// handle any specified bookmark
+				t = Bookmark(tb.BookmarkValue(this.r, row), t);
 
-			// handle any specified actions
-			t = Action(tb.Action, row, t, tb.ToolTipValue(row));
-			
+				// handle any specified actions
+				t = Action(tb.Action, row, t, tb.ToolTipValue(this.r, row));
+			}
 			// determine if we're in a tablecell
 			Type tp = tb.Parent.Parent.GetType();
 			bool bCell;
@@ -650,6 +750,7 @@ function findObject(id) {
 				tp == typeof(DynamicColumns) ||
 				tp == typeof(DynamicRows) ||
 				tp == typeof(StaticRow) ||
+				tp == typeof(StaticColumn) ||
 				tp == typeof(Subtotal) ||
 				tp == typeof(MatrixCell))
 				bCell = true;
@@ -702,7 +803,7 @@ function findObject(id) {
 		public bool ListStart(List l, Row r)
 		{
 			// identifiy reportitem it if necessary
-			string bookmark = l.BookmarkValue(r);
+			string bookmark = l.BookmarkValue(this.r, r);
 			if (bookmark != null)	// 
 				tw.WriteLine("<div id=\"{0}\">", bookmark);		// can't use the table id since we're using for css style
 			return true;
@@ -710,7 +811,7 @@ function findObject(id) {
 
 		public void ListEnd(List l, Row r)
 		{
-			string bookmark = l.BookmarkValue(r);
+			string bookmark = l.BookmarkValue(this.r, r);
 			if (bookmark != null)
 				tw.WriteLine("</div>"); 
 		}
@@ -739,13 +840,13 @@ function findObject(id) {
 				this.bScriptTableSort = true;
 			}
 
-			string bookmark = t.BookmarkValue(row);
+			string bookmark = t.BookmarkValue(this.r, row);
 			if (bookmark != null)
 				tw.WriteLine("<div id=\"{0}\">", bookmark);		// can't use the table id since we're using for css style
 
 			// Calculate the width of all the columns
-			int width = t.WidthInPixels;
-			if (width < 0)
+			int width = t.WidthInPixels(this.r, row);
+			if (width <= 0)
 				tw.WriteLine("<table id='{0}'>", cssName);
 			else
 				tw.WriteLine("<table id='{0}' width={1}>", cssName, width);
@@ -781,7 +882,7 @@ function findObject(id) {
 
 		public void TableEnd(Table t, Row row)
 		{
-			string bookmark = t.BookmarkValue(row);
+			string bookmark = t.BookmarkValue(this.r, row);
 			if (bookmark != null)
 				tw.WriteLine("</div>"); 
 			tw.WriteLine("</table>");
@@ -840,14 +941,14 @@ function findObject(id) {
 			if (v != null &&
 				v.Hidden != null)
 			{
-				bool bHide = v.Hidden.EvaluateBoolean(row);
+				bool bHide = v.Hidden.EvaluateBoolean(this.r, row);
 				if (bHide)
 					tw.Write(" style=\"display:none;\"");
 			}
 
 			if (togText != null && togText.Name != null)
 			{
-				string name = togText.Name.Nm + "_" + togText.RunCount.ToString();
+				string name = togText.Name.Nm + "_" + togText.RunCount(this.r).ToString();
 				tw.Write(" id='{0}'", name);
 			}
 
@@ -863,7 +964,7 @@ function findObject(id) {
 		{
 			string cellType = t.InTableHeader? "th": "td";
 
-			ReportItem r = (ReportItem) t.ReportItems.Items[0];
+			ReportItem r = t.ReportItems.Items[0];
 
 			string cssName = CssAdd(r.Style, r, row);	// get the style name for this item
 
@@ -872,9 +973,16 @@ function findObject(id) {
 			// calculate width of column
 			if (t.InTableHeader && t.OwnerTable.TableColumns != null)
 			{
-				TableColumn tc = t.OwnerTable.TableColumns.Items[t.ColIndex] as TableColumn;
-				if (tc != null && tc.Width != null)
-					tw.Write(" width={0}", tc.Width.PixelsX);
+				// Calculate the width across all the spanned columns
+				int width = 0;
+				for (int ci=t.ColIndex; ci < t.ColIndex + t.ColSpan; ci++)
+				{
+					TableColumn tc = t.OwnerTable.TableColumns.Items[ci] as TableColumn;
+					if (tc != null && tc.Width != null)
+						width += tc.Width.PixelsX;
+				}
+				if (width > 0)
+					tw.Write(" width={0}", width);
 			}
 
 			if (t.ColSpan > 1)
@@ -885,13 +993,14 @@ function findObject(id) {
 				tb.IsToggle &&				//   and its a toggle
 				tb.Name != null)			//   and need name as well
 			{
-				if (t.OwnerTable.GroupNestCount > 0) // anything to toggle?
+				int groupNestCount = t.OwnerTable.GetGroupNestCount(this.r);
+				if (groupNestCount > 0) // anything to toggle?
 				{
-					string name = tb.Name.Nm + "_" + (tb.RunCount+1).ToString();
+					string name = tb.Name.Nm + "_" + (tb.RunCount(this.r)+1).ToString();
 					bScriptToggle = true;
 
 					// need both hand and pointer because IE and Firefox use different names
-					tw.Write(" onClick=\"hideShow(this, {0}, '{1}')\" onMouseOver=\"style.cursor ='hand';style.cursor ='pointer'\">", t.OwnerTable.GroupNestCount, name);
+					tw.Write(" onClick=\"hideShow(this, {0}, '{1}')\" onMouseOver=\"style.cursor ='hand';style.cursor ='pointer'\">", groupNestCount, name);
 					tw.Write("<img class='toggle' src=\"plus.gif\" align=top/>");
 				}
 				else
@@ -1007,7 +1116,7 @@ function findObject(id) {
 
 		public bool MatrixStart(Matrix m, Row r)				// called first
 		{
-			string bookmark = m.BookmarkValue(r);
+			string bookmark = m.BookmarkValue(this.r, r);
 			if (bookmark != null)
 				tw.WriteLine("<div id=\"{0}\">", bookmark);		// can't use the table id since we're using for css style
 
@@ -1022,24 +1131,31 @@ function findObject(id) {
 		{
 		}
 
-		public void MatrixCellStart(Matrix m, ReportItem ri, int row, int column, Row r)
+		public void MatrixCellStart(Matrix m, ReportItem ri, int row, int column, Row r, float h, float w, int colSpan)
 		{
 			if (ri == null)			// Empty cell?
 			{
-				tw.Write("<td>");
+				if (_SkipMatrixCols == 0)
+					tw.Write("<td>");
 				return;
 			}
 
-			string cssName = CssAdd(ri.Style, ri, r);	// get the style name for this item
+			string cssName = CssAdd(ri.Style, ri, r, false, h, w);	// get the style name for this item
 
 			tw.Write("<td id='{0}'", cssName);
-
+			if (colSpan != 1)
+			{
+				tw.Write(" colspan={0}", colSpan);
+				_SkipMatrixCols=-(colSpan-1);	// start it as negative as indicator that we need this </td>
+			}
+			else
+				_SkipMatrixCols=0;
 			if (ri is Textbox)
 			{
 				Textbox tb = (Textbox) ri;
 				if (tb.IsToggle && tb.Name != null)		// name is required for this
 				{
-					string name = tb.Name.Nm + "_" + (tb.RunCount+1).ToString();
+					string name = tb.Name.Nm + "_" + (tb.RunCount(this.r)+1).ToString();
 
 					bScriptToggle = true;	// we need to generate JavaScript in header
 					// TODO -- need to calculate the hide count correctly
@@ -1052,7 +1168,15 @@ function findObject(id) {
 
 		public void MatrixCellEnd(Matrix m, ReportItem ri, int row, int column, Row r)
 		{
-			tw.Write("</td>");
+			if (_SkipMatrixCols == 0)
+				tw.Write("</td>");
+			else if (_SkipMatrixCols < 0)
+			{
+				tw.Write("</td>");
+				_SkipMatrixCols = -_SkipMatrixCols;
+			}
+			else
+				_SkipMatrixCols--;
 			return;
 		}
 
@@ -1072,7 +1196,7 @@ function findObject(id) {
 		{
 			tw.Write("</table>");
 
-			string bookmark = m.BookmarkValue(r);
+			string bookmark = m.BookmarkValue(this.r, r);
 			if (bookmark != null)
 				tw.WriteLine("</div>");		
 			return;
@@ -1085,28 +1209,27 @@ function findObject(id) {
 			Stream io = _sg.GetIOStream(out relativeName, "png");
 			try
 			{
-				cb.Save(io, ImageFormat.Png);
+				cb.Save(this.r, io, ImageFormat.Png);
 			}
 			finally
 			{
 				io.Flush();
 				io.Close();
 			}
-		
-			if (relativeName[0] != Path.DirectorySeparatorChar)
-				relativeName = Path.DirectorySeparatorChar + relativeName;
+			
+			relativeName = FixupRelativeName(relativeName);
 
 			// Create syntax in a string buffer
 			StringWriter sw = new StringWriter();
 
-			string bookmark = c.BookmarkValue(r);
+			string bookmark = c.BookmarkValue(this.r, r);
 			if (bookmark != null)
 				sw.WriteLine("<div id=\"{0}\">", bookmark);		// can't use the table id since we're using for css style
 
 			string cssName = CssAdd(c.Style, c, null);	// get the style name for this item
 
 			sw.Write("<img src=\"{0}\" class='{1}'", relativeName, cssName);
-			string tooltip = c.ToolTipValue(r);
+			string tooltip = c.ToolTipValue(this.r, r);
 			if (tooltip != null)
 				sw.Write(" alt=\"{0}\"", tooltip);
 			if (c.Height != null)
@@ -1148,23 +1271,37 @@ function findObject(id) {
 			}
 			Stream io = _sg.GetIOStream(out relativeName, suffix);
 			try
-			{
-				byte[] ba = new byte[ioin.Length];
-				ioin.Read(ba, 0, ba.Length);
-				io.Write(ba, 0, ba.Length);
+			{   
+				if (ioin.CanSeek)		// ioin.Length requires Seek support
+				{
+					byte[] ba = new byte[ioin.Length];
+					ioin.Read(ba, 0, ba.Length);
+					io.Write(ba, 0, ba.Length);
+				}
+				else
+				{
+					byte[] ba = new byte[1000];		// read a 1000 bytes at a time
+					while (true)
+					{
+						int length = ioin.Read(ba, 0, ba.Length);
+						if (length <= 0)
+							break;
+						io.Write(ba, 0, length);
+					}
+				}
 			}
 			finally
 			{
 				io.Flush();
 				io.Close();
 			}
-			if (relativeName[0] != Path.DirectorySeparatorChar)
-				relativeName = Path.DirectorySeparatorChar + relativeName;
-			
+
+			relativeName = FixupRelativeName(relativeName);
+
 			// Create syntax in a string buffer
 			StringWriter sw = new StringWriter();
 
-			string bookmark = i.BookmarkValue(r);
+			string bookmark = i.BookmarkValue(this.r, r);
 			if (bookmark != null)
 				sw.WriteLine("<div id=\"{0}\">", bookmark);		// we're using for css style
 
@@ -1172,13 +1309,27 @@ function findObject(id) {
 
 			sw.Write("<img src=\"{0}\" class='{1}'", relativeName, cssName);
 
-			string tooltip = i.ToolTipValue(r);
+			string tooltip = i.ToolTipValue(this.r, r);
 			if (tooltip != null)
 				sw.Write(" alt=\"{0}\"", tooltip);
-			if (i.Height != null)
-				sw.Write(" height=\"{0}\"", i.Height.PixelsY.ToString());
-			if (i.Width != null)
-				sw.Write(" width=\"{0}\"", i.Width.PixelsX.ToString());
+            int h = i.Height == null? -1: i.Height.PixelsY;
+            int w = i.Width == null ? -1 : i.Width.PixelsX;
+            switch (i.Sizing)
+            {
+                case ImageSizingEnum.AutoSize:
+                    break;          // this is right
+                case ImageSizingEnum.Clip:
+                    break;          // not sure how to clip it    
+                case ImageSizingEnum.Fit:
+                    if (h > 0)
+                        sw.Write(" height=\"{0}\"", h.ToString());
+                    if (w > 0)
+                        sw.Write(" width=\"{0}\"", w.ToString());
+                    break;
+                case ImageSizingEnum.FitProportional:
+                    break;          // would have to create an image to handle this
+            }
+            
 			sw.Write("/>");
 
 			if (bookmark != null)
@@ -1216,7 +1367,7 @@ function findObject(id) {
 				height = l.Height == null? "0px": l.Height.Original;
 				// width comes from the BorderWidth
 				if (s != null && s.BorderWidth != null && s.BorderWidth.Default != null)
-					width = s.BorderWidth.Default.EvaluateString(r);
+					width = s.BorderWidth.Default.EvaluateString(this.r, r);
 				else
 					width = "1px";
 			}
@@ -1225,13 +1376,13 @@ function findObject(id) {
 				width = l.Width == null? "0px": l.Width.Original;
 				// height comes from the BorderWidth
 				if (s != null && s.BorderWidth != null && s.BorderWidth.Default != null)
-					height = s.BorderWidth.Default.EvaluateString(r);
+					height = s.BorderWidth.Default.EvaluateString(this.r, r);
 				else
 					height = "1px";
 			}
 
 			if (s != null && s.BorderColor != null && s.BorderColor.Default != null)
-				color = s.BorderColor.Default.EvaluateString(r);
+				color = s.BorderColor.Default.EvaluateString(this.r, r);
 			else
 				color = "black";
 			
@@ -1243,7 +1394,7 @@ function findObject(id) {
 		{
 			string cssName = CssAdd(rect.Style, rect, r);	// get the style name for this item
 
-			string bookmark = rect.BookmarkValue(r);
+			string bookmark = rect.BookmarkValue(this.r, r);
 			if (bookmark != null)
 				tw.WriteLine("<div id=\"{0}\">", bookmark);		// can't use the table id since we're using for css style
 
@@ -1260,7 +1411,7 @@ function findObject(id) {
 		public void RectangleEnd(RDL.Rectangle rect, Row r)
 		{
 			tw.WriteLine("</tr></table>");
-			string bookmark = rect.BookmarkValue(r);
+			string bookmark = rect.BookmarkValue(this.r, r);
 			if (bookmark != null)
 				tw.WriteLine("</div>"); 
 			return;
@@ -1273,15 +1424,7 @@ function findObject(id) {
 
 			tw.WriteLine("<div class='{0}'>", cssName);
 
-			if (s.ReportErrors == null)
-				s.Report.Run(this);
-			else
-			{
-				foreach (string err in s.ReportErrors)
-				{	// Just put the errors out into the string
-					tw.Write("<p>"+ err);
-				}
-			}
+			s.ReportDefn.Run(this);
 			
 			tw.WriteLine("</div>");
 		}

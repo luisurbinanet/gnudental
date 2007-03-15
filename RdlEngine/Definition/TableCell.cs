@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -50,7 +50,7 @@ namespace fyiReporting.RDL
 		bool _InTableHeader;		// true if tablecell is part of header; simplifies HTML processing
 		bool _InTableFooter;		// true if tablecell is part of footer; simplifies HTML processing
 	
-		internal TableCell(Report r, ReportLink p, XmlNode xNode, int colIndex) : base(r, p)
+		internal TableCell(ReportDefn r, ReportLink p, XmlNode xNode, int colIndex) : base(r, p)
 		{
 			_ColIndex = colIndex;
 			_ReportItems=null;
@@ -118,12 +118,12 @@ namespace fyiReporting.RDL
 			//   of the table processing;  also this doesn't account for the affect of colspan correctly
 			//   where if any of the spanned columns are visible the value would show??
 			TableColumn tc = _OwnerTable.TableColumns[_ColIndex];
-			if (tc.Visibility != null && tc.Visibility.IsHidden(row))	// column visible?
+			if (tc.Visibility != null && tc.Visibility.IsHidden(ip.Report(), row))	// column visible?
 				return;													//  no nothing to do
 
 			ip.TableCellStart(this, row);
 			
-			((ReportItem)(_ReportItems.Items[0])).Run(ip, row);
+			_ReportItems.Items[0].Run(ip, row);
 
 			ip.TableCellEnd(this, row);
 			return;
@@ -135,10 +135,10 @@ namespace fyiReporting.RDL
 			//   of the table processing;  also this doesn't account for the affect of colspan correctly
 			//   where if any of the spanned columns are visible the value would show??
 			TableColumn tc = _OwnerTable.TableColumns[_ColIndex];
-			if (tc.Visibility != null && tc.Visibility.IsHidden(row))	// column visible?
+			if (tc.Visibility != null && tc.Visibility.IsHidden(pgs.Report, row))	// column visible?
 				return;													//  no nothing to do
 
-			((ReportItem)(_ReportItems.Items[0])).RunPage(pgs, row);
+			_ReportItems.Items[0].RunPage(pgs, row);
 			return;
 		}
 

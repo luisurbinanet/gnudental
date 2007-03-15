@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -32,9 +32,7 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Unary minus operator
-	/// <p>
-	///	
+	/// Obtain the the Field's value from a row.
 	/// </summary>
 	[Serializable]
 	internal class FunctionField : IExpr
@@ -85,13 +83,13 @@ namespace fyiReporting.RDL
 		}
 
 		// 
-		public virtual object Evaluate(Row row)
+		public virtual object Evaluate(Report rpt, Row row)
 		{
 			if (row == null)
 				return null;
 			object o;
 			if (f.Value != null)
-				o = f.Value.Evaluate(row);
+				o = f.Value.Evaluate(rpt, row);
 			else
 				o = row.Data[f.ColumnNumber];
 
@@ -104,39 +102,39 @@ namespace fyiReporting.RDL
 			return o;
 		}
 		
-		public virtual double EvaluateDouble(Row row)
+		public virtual double EvaluateDouble(Report rpt, Row row)
 		{
 			if (row == null)
 				return Double.NaN;
-			return Convert.ToDouble(Evaluate(row), NumberFormatInfo.InvariantInfo);
+			return Convert.ToDouble(Evaluate(rpt, row), NumberFormatInfo.InvariantInfo);
 		}
 		
-		public virtual decimal EvaluateDecimal(Row row)
+		public virtual decimal EvaluateDecimal(Report rpt, Row row)
 		{
 			if (row == null)
 				return decimal.MinValue;
-			return Convert.ToDecimal(Evaluate(row), NumberFormatInfo.InvariantInfo);
+			return Convert.ToDecimal(Evaluate(rpt, row), NumberFormatInfo.InvariantInfo);
 		}
 
-		public virtual string EvaluateString(Row row)
+		public virtual string EvaluateString(Report rpt, Row row)
 		{
 			if (row == null)
 				return null;
-			return Convert.ToString(Evaluate(row));
+			return Convert.ToString(Evaluate(rpt, row));
 		}
 
-		public virtual DateTime EvaluateDateTime(Row row)
+		public virtual DateTime EvaluateDateTime(Report rpt, Row row)
 		{
 			if (row == null)
 				return DateTime.MinValue;
-			return Convert.ToDateTime(Evaluate(row));
+			return Convert.ToDateTime(Evaluate(rpt, row));
 		}
 
-		public virtual bool EvaluateBoolean(Row row)
+		public virtual bool EvaluateBoolean(Report rpt, Row row)
 		{
 			if (row == null)
 				return false;
-			return Convert.ToBoolean(Evaluate(row));
+			return Convert.ToBoolean(Evaluate(rpt, row));
 		}
 	}
 }

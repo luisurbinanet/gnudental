@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -40,10 +40,8 @@ namespace fyiReporting.RDL
 		RSize _ColumnSpacing; // Size Spacing between each column in multi-column
 							// output 	Default: 0.5 in
 		Style _Style;		// Default style information for the body	
-	
-		[NonSerialized] int _CurrentColumn;	// used at runtime to control columns
 		
-		internal Body(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Body(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_ReportItems = null;
 			_Height = null;
@@ -110,7 +108,7 @@ namespace fyiReporting.RDL
 				pgs.BottomOfPage = OwnerReport.BottomOfPage;
 				pgs.CurrentPage.YOffset = OwnerReport.TopOfPage;
 			}
-			_CurrentColumn = 0;
+			this.SetCurrentColumn(pgs.Report, 0);
 
 			if (_ReportItems != null)
 				_ReportItems.RunPage(pgs, null, OwnerReport.LeftMargin.Points);
@@ -135,10 +133,31 @@ namespace fyiReporting.RDL
 			set {  _Columns = value; }
 		}
 
-		internal int CurrentColumn
+		internal int GetCurrentColumn(Report rpt)
 		{
-			get { return  _CurrentColumn; }
-			set {  _CurrentColumn = value; }
+			OInt cc = rpt.Cache.Get(this, "currentcolumn") as OInt;
+			return cc == null? 0: cc.i;
+		}
+
+		internal int IncrCurrentColumn(Report rpt)
+		{
+			OInt cc = rpt.Cache.Get(this, "currentcolumn") as OInt;
+			if (cc == null)
+			{
+				SetCurrentColumn(rpt, 0);
+				cc = rpt.Cache.Get(this, "currentcolumn") as OInt;
+			}
+			cc.i++;
+			return cc.i;
+		}
+
+		internal void SetCurrentColumn(Report rpt, int col)
+		{
+			OInt cc = rpt.Cache.Get(this, "currentcolumn") as OInt;
+			if (cc == null)
+				rpt.Cache.AddReplace(this, "currentcolumn", new OInt(col));
+			else
+				cc.i = col;
 		}
 
 		internal RSize ColumnSpacing

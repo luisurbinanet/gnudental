@@ -36,12 +36,13 @@
 	<property name="build.number" value="${math::abs(math::floor(timespan::get-total-days(datetime::now() - datetime::parse('01/01/2000'))))}" />
 
 	<fileset id="ext.core">
+        <include name="CodeBase/CodeBase.build"/>
 		<include name="OpenDentBusiness/OpenDentBusiness.build" />
 		<include name="OpenDentServer/OpenDentServer.build" />
         <include name="RdlEngine/RdlEngine.build"/>
         <include name="RdlViewer/RdlViewer.build"/>
         <include name="SparksToothChart/SparksToothChart.build"/>
-        <include name="OpenDental4_5/OpenDental4_5.build"/>
+        <include name="OpenDental/OpenDental.build"/>
 	</fileset>
 
 	<target name="debug" description="Perform a 'debug' build">

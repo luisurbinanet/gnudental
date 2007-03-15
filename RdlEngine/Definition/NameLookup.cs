@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -29,7 +29,6 @@ namespace fyiReporting.RDL
 	///<summary>
 	/// Parsing name lookup.  Fields, parameters, report items, globals, user, aggregate scopes, grouping,...
 	///</summary>
-	[Serializable]
 	internal class NameLookup
 	{
 		IDictionary fields;
@@ -44,11 +43,14 @@ namespace fyiReporting.RDL
 									//   used to default aggregate to the right matrix
 		Classes instances;
 		CodeModules cms;
-		DataSets dsets;
+		Type codeType;
+		DataSetsDefn dsets;
+		ReportLink _PageFooterHeader;	// when expression is in page header or footer this is set
+		string _ExprName;			// name of the expression; this isn't always set
 
 		internal NameLookup(IDictionary f, IDictionary p, IDictionary r, 
 			IDictionary gbl, IDictionary u, IDictionary ascope, 
-			Grouping ag, Matrix mt, CodeModules cm, Classes i, DataSets ds)
+			Grouping ag, Matrix mt, CodeModules cm, Classes i, DataSetsDefn ds, Type ct)
 		{
 			fields=f;
 			parameters=p;
@@ -61,6 +63,45 @@ namespace fyiReporting.RDL
 			cms = cm;
 			instances = i;
 			dsets = ds;
+			codeType = ct;
+		}
+
+		internal ReportLink PageFooterHeader
+		{
+			get {return _PageFooterHeader;}
+			set {_PageFooterHeader = value;}
+		}
+		
+		internal bool IsPageScope
+		{
+			get {return _PageFooterHeader != null;}
+		}
+
+		internal string ExpressionName
+		{
+			get {return _ExprName;}
+			set {_ExprName = value;}
+		}
+
+		internal IDictionary Fields
+		{
+			get { return fields; }
+		}
+		internal IDictionary Parameters
+		{
+			get { return parameters; }
+		}
+		internal IDictionary ReportItems
+		{
+			get { return reportitems; }
+		}
+		internal IDictionary User
+		{
+			get { return user; }
+		}
+		internal IDictionary Globals
+		{
+			get { return globals; }
 		}
 
 		internal ReportClass LookupInstance(string name)
@@ -111,6 +152,11 @@ namespace fyiReporting.RDL
 			get{return cms;}
 		}
 
+		internal Type CodeClassType
+		{
+			get{return codeType;}
+		}
+
 		internal IExpr LookupUser(string name)
 		{	
 			if (user == null)
@@ -135,13 +181,13 @@ namespace fyiReporting.RDL
 			return aggrScope[name];
 		}
 
-		internal DataSet ScopeDataSet(string name)
+		internal DataSetDefn ScopeDataSet(string name)
 		{
 			if (name == null)
 			{	// Only allowed when there is only one dataset
 				if (dsets.Items.Count != 1)
 					return null;
-				foreach (DataSet ds in dsets.Items.Values)	// No easy way to get the item by index
+				foreach (DataSetDefn ds in dsets.Items.Values)	// No easy way to get the item by index
 					return ds;
 				return null;
 			}

@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -29,21 +29,16 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Report name
-	/// <p>
-	///	
+	/// Report name
 	/// </summary>
 	[Serializable]
 	internal class FunctionReportName : IExpr
 	{
-		internal string Name;
-
 		/// <summary>
 		/// Current page number
 		/// </summary>
 		public FunctionReportName() 
 		{
-			Name="";
 		}
 
 		public TypeCode GetTypeCode()
@@ -62,32 +57,32 @@ namespace fyiReporting.RDL
 		}
 
 		// Evaluate is for interpretation  
-		public object Evaluate(Row row)
+		public object Evaluate(Report rpt, Row row)
 		{
-			return EvaluateString(row);
+			return EvaluateString(rpt, row);
 		}
 		
-		public double EvaluateDouble(Row row)
+		public double EvaluateDouble(Report rpt, Row row)
 		{	
 			return double.NaN;
 		}
 		
-		public decimal EvaluateDecimal(Row row)
+		public decimal EvaluateDecimal(Report rpt, Row row)
 		{
 			return decimal.MinValue;
 		}
 
-		public string EvaluateString(Row row)
+		public string EvaluateString(Report rpt, Row row)
 		{
-			return Name;
+			return rpt == null? "": rpt.Name;
 		}
 
-		public DateTime EvaluateDateTime(Row row)
+		public DateTime EvaluateDateTime(Report rpt, Row row)
 		{
 			return DateTime.MinValue;
 		}
 
-		public bool EvaluateBoolean(Row row)
+		public bool EvaluateBoolean(Report rpt, Row row)
 		{
 			return false;
 		}

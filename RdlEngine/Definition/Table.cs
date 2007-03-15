@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -24,7 +24,9 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace fyiReporting.RDL
 {
@@ -53,15 +55,7 @@ namespace fyiReporting.RDL
 											// Default: “Details_Collection”
 		DataElementOutputEnum _DetailDataElementOutput;	// Indicates whether the details should appear in a data rendering.
 	
-		// Runtime variables
-		[NonSerialized] Rows _Data;	// Runtime data; either original query if no groups
-									// or sorting or a copied version that is grouped/sorted
-		[NonSerialized] ArrayList _Groups;		// Runtime groups; array of GroupEntry
-		[NonSerialized] int _GroupNestCount;	// Runtime: calculated on fly for # of table rows that are part of a group
-												//    used to handle toggling of a group 
-		[NonSerialized] Grouping _RecursiveGroup;	// Runtime: set with a recursive; currently on support a single recursive group
-		
-		internal Table(Report r, ReportLink p, XmlNode xNode):base(r,p,xNode)
+		internal Table(ReportDefn r, ReportLink p, XmlNode xNode):base(r,p,xNode)
 		{
 			_TableColumns=null;
 			_Header=null;
@@ -72,9 +66,6 @@ namespace fyiReporting.RDL
 			_DetailDataElementName="Details";
 			_DetailDataCollectionName="Details_Collection";
 			_DetailDataElementOutput=DataElementOutputEnum.Output;
-			_Data = null;
-			_Groups = null;
-			_RecursiveGroup = null;
 
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -207,14 +198,15 @@ namespace fyiReporting.RDL
 
 		override internal void Run(IPresent ip, Row row)
 		{
-			RunReset();
+			Report r = ip.Report();
+			TableWorkClass wc = GetValue(r);
 
-			_Data = GetFilteredData(row);
+			wc.Data = GetFilteredData(r, row);
 
-			if (!AnyRows(ip, _Data))		// if no rows return
+			if (!AnyRows(ip, wc.Data))		// if no rows return
 				return;					//   nothing left to do
 
-			RunPrep(row);
+			RunPrep(r, row, wc);
 
 			if (!ip.TableStart(this, row))
 				return;						// render doesn't want to continue
@@ -226,65 +218,67 @@ namespace fyiReporting.RDL
 			if (_Header != null)
 			{
 				ip.TableHeaderStart(_Header, row);
-				Row frow = _Data.Data.Count > 0?  (Row) (_Data.Data[0]): null;
+				Row frow = wc.Data.Data.Count > 0?  wc.Data.Data[0]: null;
 				_Header.Run(ip, frow);
 				ip.TableHeaderEnd(_Header, row);
 			}
 						   
 			// Body
 			ip.TableBodyStart(this, row);
-			if (this._RecursiveGroup != null)
-				RunRecursiveGroups(ip);
+			if (wc.RecursiveGroup != null)
+				RunRecursiveGroups(ip, wc);
 			else
-				RunGroups(ip, _Groups);
+				RunGroups(ip, wc.Groups, wc);
 			ip.TableBodyEnd(this, row);
 
 			// Footer
 			if (_Footer != null)
 			{
 				ip.TableFooterStart(_Footer, row);
-				Row lrow = _Data.Data.Count > 0?  (Row) (_Data.Data[_Data.Data.Count-1]): null;
-				_Footer.Run(ip, (Row) lrow);
+				Row lrow = wc.Data.Data.Count > 0?  wc.Data.Data[wc.Data.Data.Count-1]: null;
+				_Footer.Run(ip, lrow);
 				ip.TableFooterEnd(_Footer, row);
 			}
 
 			ip.TableEnd(this, row);
+			RemoveValue(r);
 		}
 
 		override internal void RunPage(Pages pgs, Row row)
-		{
-			if (IsHidden(row))
+		{	
+			Report r = pgs.Report;
+			if (IsHidden(r, row))
 				return;
 
-			RunReset();
-			_Data = GetFilteredData(row);
+			TableWorkClass wc = GetValue(r);
+			wc.Data = GetFilteredData(r, row);
 
 			SetPagePositionBegin(pgs);
 
-			if (!AnyRowsPage(pgs, _Data))		// if no rows return
+			if (!AnyRowsPage(pgs, wc.Data))		// if no rows return
 				return;						//   nothing left to do
 
-			RunPrep(row);
+			RunPrep(r, row, wc);
 
 			RunPageRegionBegin(pgs);
 
 			Page p = pgs.CurrentPage;
-			p.YOffset += this.RelativeY;
+			p.YOffset += this.RelativeY(r);
 
 			// Calculate the xpositions of the columns
-			TableColumns.CalculateXPositions(OffsetCalc + LeftCalc, row);
+			TableColumns.CalculateXPositions(r, GetOffsetCalc(r) + LeftCalc(r), row);
 
-			RunPageHeader(pgs, (Row) (_Data.Data[0]), true, null);
+			RunPageHeader(pgs, wc.Data.Data[0], true, null);
 
-			if (this._RecursiveGroup != null)
-				RunRecursiveGroupsPage(pgs);
+			if (wc.RecursiveGroup != null)
+				RunRecursiveGroupsPage(pgs, wc);
 			else
-				RunGroupsPage(pgs, _Groups, _Data.Data.Count-1, 0);
+				RunGroupsPage(pgs, wc, wc.Groups, wc.Data.Data.Count-1, 0);
 
 			// Footer
 			if (_Footer != null)
 			{
-				Row lrow = _Data.Data.Count > 0?  (Row) (_Data.Data[_Data.Data.Count-1]): null;
+				Row lrow = wc.Data.Data.Count > 0?  wc.Data.Data[wc.Data.Data.Count-1]: null;
 				p = pgs.CurrentPage;
 				// make sure the footer fits on the page
 				if (p.YOffset + _Footer.HeightOfRows(pgs, lrow) > pgs.BottomOfPage)
@@ -292,12 +286,13 @@ namespace fyiReporting.RDL
 					p = RunPageNew(pgs, p);
 					RunPageHeader(pgs, row, false, null);
 				}
-				_Footer.RunPage(pgs, (Row) lrow);
+				_Footer.RunPage(pgs, lrow);
 			}
 
 			RunPageRegionEnd(pgs);
 
 			SetPagePositionEnd(pgs, pgs.CurrentPage.YOffset);
+			RemoveValue(r);
 		}
 
 		internal void RunPageHeader(Pages pgs, Row frow, bool bFirst, TableGroup stoptg)
@@ -340,7 +335,7 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		void RunPrep(Row row)
+		void RunPrep(Report rpt, Row row, TableWorkClass wc)
 		{
 			GroupEntry[] currentGroups; 
 
@@ -350,7 +345,7 @@ namespace fyiReporting.RDL
 				 (_Details.Sorting != null ||
 				 _Details.Grouping != null)))		// fix up the data
 			{
-				ArrayList saveData = _Data.Data;
+				List<Row> saveData = wc.Data.Data;
 				Grouping gr;
 				Sorting srt; 
 				if (_Details == null)
@@ -363,22 +358,22 @@ namespace fyiReporting.RDL
 					srt = _Details.Sorting;
 				}
 
-				_Data = new Rows(_TableGroups, gr, srt);
-				_Data.Data = saveData;
-				_Data.Sort();
-				PrepGroups();
+				wc.Data = new Rows(rpt, _TableGroups, gr, srt);
+				wc.Data.Data = saveData;
+				wc.Data.Sort();
+				PrepGroups(rpt, wc);
 			}
 
 			// If we haven't formed any groups then form one with all rows
-			if (_Groups == null)
+			if (wc.Groups == null)
 			{
-				_Groups = new ArrayList();
-				GroupEntry ge = new GroupEntry(null, 0);
-				if (_Data.Data != null)		// Do we have any data?
-					ge.EndRow = _Data.Data.Count-1;	// yes
+				wc.Groups = new List<GroupEntry>();
+				GroupEntry ge = new GroupEntry(null, null, 0);
+				if (wc.Data.Data != null)		// Do we have any data?
+					ge.EndRow = wc.Data.Data.Count-1;	// yes
 				else
 					ge.EndRow = -1;					// no
-				_Groups.Add(ge);			// top group
+				wc.Groups.Add(ge);			// top group
 				currentGroups = new GroupEntry[1];
 			}
 			else if (_TableGroups != null)
@@ -392,12 +387,32 @@ namespace fyiReporting.RDL
 			else
 				currentGroups = new GroupEntry[1];
 
-			_Data.CurrentGroups = currentGroups;
+			wc.Data.CurrentGroups = currentGroups;
+
+			SortGroups(rpt, wc.Groups, wc);
 		}
 
-		private void PrepGroups()
+		private void SortGroups(Report rpt, List<GroupEntry> groupEntries, TableWorkClass wc)
 		{
-			_RecursiveGroup = null;		
+			GroupEntry fge = (GroupEntry) (groupEntries[0]);
+			if (fge.Sort != null)
+			{
+				GroupEntryCompare gec = new GroupEntryCompare(rpt, wc);
+				RunGroupsSetGroups(rpt, wc, groupEntries);
+				groupEntries.Sort(gec);
+			}
+
+			// drill down into nested groups
+			foreach (GroupEntry ge in groupEntries)
+			{
+				if (ge.NestedGroup.Count > 0)
+					SortGroups(rpt, ge.NestedGroup, wc);
+			}
+		}
+
+		private void PrepGroups(Report rpt, TableWorkClass wc)
+		{
+			wc.RecursiveGroup = null;		
 			if (_TableGroups == null)
 			{	// no tablegroups; check to ensure details is grouped
 				if (_Details == null || _Details.Grouping == null)
@@ -406,16 +421,18 @@ namespace fyiReporting.RDL
 
 			int i=0;
 			// 1) Build array of all GroupExpression objects
-			ArrayList gea = new ArrayList();
+            List<GroupExpression> gea = new List<GroupExpression>();
 			//    count the number of groups
 			int countG=0;
 			if (_TableGroups != null)
 				countG = _TableGroups.Items.Count;
 			
 			Grouping dg=null;
+			Sorting ds=null;
 			if (_Details != null && _Details.Grouping != null)
 			{
 				dg = _Details.Grouping;
+				ds = _Details.Sorting;
 				countG++;
 			}
 			GroupEntry[] currentGroups = new GroupEntry[countG++];
@@ -424,9 +441,9 @@ namespace fyiReporting.RDL
 				foreach (TableGroup tg in _TableGroups.Items)
 				{
 					if (tg.Grouping.ParentGroup != null)
-						_RecursiveGroup = tg.Grouping;
-					tg.Grouping.Index = i;		// set the index of this group (so we can find the GroupEntry)
-					currentGroups[i++] = new GroupEntry(tg.Grouping, 0);
+						wc.RecursiveGroup = tg.Grouping;
+					tg.Grouping.SetIndex(rpt, i);		// set the index of this group (so we can find the GroupEntry)
+					currentGroups[i++] = new GroupEntry(tg.Grouping, tg.Sorting, 0);
 					foreach (GroupExpression ge in tg.Grouping.GroupExpressions.Items)
 					{
 						gea.Add(ge);
@@ -436,21 +453,21 @@ namespace fyiReporting.RDL
 			if (dg != null)
 			{	// add in the groups for the details grouping
 				if (dg.ParentGroup != null)
-					_RecursiveGroup = dg;
-				dg.Index = i;		// set the index of this group (so we can find the GroupEntry)
-				currentGroups[i++] = new GroupEntry(dg, 0);
+					wc.RecursiveGroup = dg;
+				dg.SetIndex(rpt, i);		// set the index of this group (so we can find the GroupEntry)
+				currentGroups[i++] = new GroupEntry(dg, ds, 0);
 				foreach (GroupExpression ge in dg.GroupExpressions.Items)
 				{
 					gea.Add(ge);
 				}
 			}
 
-			if (_RecursiveGroup != null)
+			if (wc.RecursiveGroup != null)
 			{
 				if (gea.Count != 1)		// Limitiation of implementation
 					throw new Exception("Error: Recursive groups must be the only group definition.");
 
-				PrepRecursiveGroup();	// only one group and it's recursive: optimization 
+				PrepRecursiveGroup(rpt, wc);	// only one group and it's recursive: optimization 
 				return;
 			}
 
@@ -465,12 +482,12 @@ namespace fyiReporting.RDL
 			}
 
 			// 2) Loop thru the data, then loop thru the GroupExpression list
-			_Groups = new ArrayList();
+			wc.Groups = new List<GroupEntry>();
 			object[] savValues=null;
 			object[] grpValues=null;
 			int rowCurrent = 0;
 
-			foreach (Row row in _Data.Data)
+			foreach (Row row in wc.Data.Data)
 			{
 				// Get the values for all the group expressions
 				if (grpValues == null)
@@ -480,7 +497,7 @@ namespace fyiReporting.RDL
 				foreach (GroupExpression ge in gea)
 				{
 					if (((Grouping)(ge.Parent.Parent)).ParentGroup == null)	
-						grpValues[i++] = ge.Expression.Evaluate(row);
+						grpValues[i++] = ge.Expression.Evaluate(rpt, row);
 					else
 						grpValues[i++] = null;	// Want all the parentGroup to evaluate equal
 				}
@@ -501,18 +518,18 @@ namespace fyiReporting.RDL
 					{
 						// start a new group; and force a break on every subgroup
 						GroupEntry saveGe=null;	
-						for (int j = grp[i].Index; j < currentGroups.Length; j++)
+						for (int j = grp[i].GetIndex(rpt); j < currentGroups.Length; j++)
 						{
 							currentGroups[j].EndRow = rowCurrent-1;
 							if (j == 0)
-								_Groups.Add(currentGroups[j]);		// top group
+								wc.Groups.Add(currentGroups[j]);		// top group
 							else if (saveGe == null)
 								currentGroups[j-1].NestedGroup.Add(currentGroups[j]);
 							else 
 								saveGe.NestedGroup.Add(currentGroups[j]);
 
 							saveGe = currentGroups[j];	// retain this GroupEntry
-							currentGroups[j] = new GroupEntry(currentGroups[j].Group, rowCurrent);
+							currentGroups[j] = new GroupEntry(currentGroups[j].Group,currentGroups[j].Sort, rowCurrent);
 						}
 						savValues = grpValues;
 						grpValues = null;
@@ -527,7 +544,7 @@ namespace fyiReporting.RDL
 			{
 				currentGroups[i].EndRow = rowCurrent-1;
 				if (i == 0)
-					_Groups.Add(currentGroups[i]);		// top group
+					wc.Groups.Add(currentGroups[i]);		// top group
 				else
 					currentGroups[i-1].NestedGroup.Add(currentGroups[i]);
 			}
@@ -535,25 +552,16 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		private void RunReset()
-		{
-			_Data = null;
-			_Groups = null;
-			_GroupNestCount=0;
-			_RecursiveGroup=null;
-			return;
-		}
-
-		private void PrepRecursiveGroup()
+		private void PrepRecursiveGroup(Report rpt, TableWorkClass wc)
 		{
 			// Prepare for processing recursive group
-			Grouping g = this._RecursiveGroup;
+			Grouping g = wc.RecursiveGroup;
 			IExpr parentExpr = g.ParentGroup;
 			GroupExpression gexpr = g.GroupExpressions.Items[0] as GroupExpression;
 			IExpr groupExpr = gexpr.Expression;
 			TypeCode tc = groupExpr.GetTypeCode();
-			ArrayList odata = new ArrayList(_Data.Data);			// this is the old data that we'll recreate using the recursive hierarchy
-			ArrayList newrows = new ArrayList(odata.Count);
+            List<Row> odata = new List<Row>(wc.Data.Data);			// this is the old data that we'll recreate using the recursive hierarchy
+            List<Row> newrows = new List<Row>(odata.Count);
 
 			// For now we assume on a single top of tree (and it must sort first as null)
 			//   spec is incomplete: should have ability to specify starting value of tree
@@ -563,35 +571,34 @@ namespace fyiReporting.RDL
 
 			// we need to build the group entry stack
 			// Build the initial one
-			_Groups = new ArrayList();
-			GroupEntry ge = new GroupEntry(null, 0);
+			wc.Groups = new List<GroupEntry>();
+			GroupEntry ge = new GroupEntry(null,null, 0);
 			ge.EndRow = odata.Count-1;
-			_Groups.Add(ge);				// top group
+			wc.Groups.Add(ge);				// top group
 
-			ArrayList ges = new ArrayList();
+            List<GroupEntry> ges = new List<GroupEntry>();
 			ges.Add(ge);
 
 			// loop thru the rows and find their children
 			//   we place the children right after the parent
 			//   this reorders the rows in the form of the hierarchy
 			Row r;
-			RecursiveCompare rc = new RecursiveCompare(parentExpr, tc);
+			RecursiveCompare rc = new RecursiveCompare(rpt, parentExpr, tc, groupExpr);
 			for (int iRow=0; iRow < newrows.Count; iRow++)	// go thru the temp rows
 			{
-				r = (Row) newrows[iRow];
+				r = newrows[iRow];
 				
-				r.GroupEntry = ge = new GroupEntry(g, iRow);
+				r.GroupEntry = ge = new GroupEntry(g, null, iRow);	// TODO: sort for this group??
 				r.GroupEntry.EndRow = iRow;
 
-				object cmpvalue = groupExpr.Evaluate(r);
 				// pull out all the rows that match this value
-				int iMainRow=odata.BinarySearch(cmpvalue, rc);
+				int iMainRow=odata.BinarySearch(r, rc);
 				if (iMainRow < 0)
 				{
 					for (int i=0; i <= r.Level+1 && i < ges.Count; i++)
 					{
 						ge = ges[i] as GroupEntry;
-						Row rr = (Row) newrows[ge.StartRow];	// start row has the base level of group	
+						Row rr = newrows[ge.StartRow];	// start row has the base level of group	
 						if (rr.Level < r.Level)					
 							ge.EndRow = iRow;
 					}
@@ -600,10 +607,12 @@ namespace fyiReporting.RDL
 
 				// look backward for starting row; 
 				//   in case of duplicates, BinarySearch can land on any of the rows
+                object cmpvalue = groupExpr.Evaluate(rpt, r);
+
 				int sRow = iMainRow-1;
 				while (sRow >= 0)
 				{
-					object v = parentExpr.Evaluate((Row) odata[sRow]);
+					object v = parentExpr.Evaluate(rpt, odata[sRow]);
 					if (Filter.ApplyCompare(tc, cmpvalue, v) != 0)
 						break;
 					sRow--;
@@ -613,7 +622,7 @@ namespace fyiReporting.RDL
 				int eRow = iMainRow+1;
 				while (eRow < odata.Count)
 				{
-					object v = parentExpr.Evaluate((Row) odata[eRow]);
+					object v = parentExpr.Evaluate(rpt, odata[eRow]);
 					if (Filter.ApplyCompare(tc, cmpvalue, v) != 0)
 						break;
 					eRow++;
@@ -632,7 +641,7 @@ namespace fyiReporting.RDL
 				int offset=1;
 				for (int tRow=sRow ; tRow < eRow; tRow++)
 				{
-					Row tr = (Row) odata[tRow];
+					Row tr = odata[tRow];
 					tr.Level = r.Level+1;
 					newrows.Insert(iRow+offset, tr);
 					offset++;	
@@ -643,19 +652,20 @@ namespace fyiReporting.RDL
 
 			// update the groupentries for the very last row
 			int lastrow = newrows.Count-1;
-			r = (Row) newrows[lastrow];
+			r = newrows[lastrow];
 			for (int i=0; i < r.Level+1 && i < ges.Count; i++)
 			{
 				ge = ges[i] as GroupEntry;
 				ge.EndRow = lastrow;
 			}
 
-			_Data.Data = newrows;		// we've completely replaced the rows
+			wc.Data.Data = newrows;		// we've completely replaced the rows
 			return;
 		}
 
-		private void RunGroups(IPresent ip, ArrayList groupEntries)
+		private void RunGroups(IPresent ip, List<GroupEntry> groupEntries, TableWorkClass wc)
 		{
+			Report rpt = ip.Report();
 			GroupEntry fge = (GroupEntry) (groupEntries[0]);
 			if (fge.Group != null)
 				ip.GroupingStart(fge.Group);
@@ -667,15 +677,15 @@ namespace fyiReporting.RDL
 				if (ge.Group != null)	// groups?
 				{
 					ip.GroupingInstanceStart(ge.Group);
-					ge.Group.ResetHideDuplicates();	// reset duplicate checking
-					index = ge.Group.Index;	// yes
+					ge.Group.ResetHideDuplicates(rpt);	// reset duplicate checking
+					index = ge.Group.GetIndex(rpt);	// yes
 				}
 				else					// no; must be main dataset
 					index = 0;
-				_Data.CurrentGroups[index] = ge;
+				wc.Data.CurrentGroups[index] = ge;
 
 				if (ge.NestedGroup.Count > 0)
-					RunGroupsSetGroups(ge.NestedGroup);
+					RunGroupsSetGroups(rpt, wc, ge.NestedGroup);
 
 				// Handle the group header
 				if (ge.Group != null && ge.Group.Parent != null)
@@ -685,26 +695,26 @@ namespace fyiReporting.RDL
 					{
 						// Calculate the number of table rows below this group; header, footer, details count
 						if (ge.NestedGroup.Count > 0)
-							_GroupNestCount = RunGroupsCount(ge.NestedGroup, 0);
+							wc.GroupNestCount = RunGroupsCount(ge.NestedGroup, 0);
 						else
-							_GroupNestCount = (ge.EndRow - ge.StartRow + 1) * DetailsCount;
-						tg.Header.Run(ip, (Row) (_Data.Data[ge.StartRow]));
-						_GroupNestCount = 0;
+							wc.GroupNestCount = (ge.EndRow - ge.StartRow + 1) * DetailsCount;
+						tg.Header.Run(ip, wc.Data.Data[ge.StartRow]);
+						wc.GroupNestCount = 0;
 					}
 				}
 				// Handle the nested groups if any
 				if (ge.NestedGroup.Count > 0)
-					RunGroups(ip, ge.NestedGroup);
+					RunGroups(ip, ge.NestedGroup, wc);
 				// If no nested groups then handle the detail rows for the group
 				else if (_Details != null)
 				{
 					if (ge.Group != null &&
 						ge.Group.Parent as TableGroup == null)
 					{	// Group defined on table; means that Detail rows only put out once per group
-						_Details.Run(ip, _Data, ge.StartRow, ge.StartRow);
+						_Details.Run(ip, wc.Data, ge.StartRow, ge.StartRow);
 					}
 					else
-						_Details.Run(ip, _Data, ge.StartRow, ge.EndRow);
+						_Details.Run(ip, wc.Data, ge.StartRow, ge.EndRow);
 				}
 
 				// Do the group footer
@@ -714,7 +724,7 @@ namespace fyiReporting.RDL
 					{
 						TableGroup tg = ge.Group.Parent as TableGroup;	// detail groups will result in null
 						if (tg != null && tg.Footer != null)
-							tg.Footer.Run(ip, (Row) (_Data.Data[ge.EndRow]));
+							tg.Footer.Run(ip, wc.Data.Data[ge.EndRow]);
 					}
 					ip.GroupingInstanceEnd(ge.Group);
 				}
@@ -723,23 +733,24 @@ namespace fyiReporting.RDL
 				ip.GroupingEnd(fge.Group);
 		}
 
-		private void RunGroupsPage(Pages pgs, ArrayList groupEntries, int endRow, float groupHeight)
+        private void RunGroupsPage(Pages pgs, TableWorkClass wc, List<GroupEntry> groupEntries, int endRow, float groupHeight)
 		{
+			Report rpt = pgs.Report;
 			foreach (GroupEntry ge in groupEntries)
 			{
 				// set the group entry value
 				int index;
 				if (ge.Group != null)	// groups?
 				{
-					ge.Group.ResetHideDuplicates();	// reset duplicate checking
-					index = ge.Group.Index;	// yes
+					ge.Group.ResetHideDuplicates(rpt);	// reset duplicate checking
+					index = ge.Group.GetIndex(rpt);	// yes
 				}
 				else					// no; must be main dataset
 					index = 0;
-				_Data.CurrentGroups[index] = ge;
+				wc.Data.CurrentGroups[index] = ge;
 
 				if (ge.NestedGroup.Count > 0)
-					RunGroupsSetGroups(ge.NestedGroup);
+					RunGroupsSetGroups(rpt, wc, ge.NestedGroup);
 
 				// Handle the group header
 				if (ge.Group != null)
@@ -748,38 +759,38 @@ namespace fyiReporting.RDL
 					if (ge.Group.PageBreakAtStart && !pgs.CurrentPage.IsEmpty())
 					{
 						RunPageNew(pgs, pgs.CurrentPage);
-						RunPageHeader(pgs, (Row) (_Data.Data[ge.StartRow]), false, tg);
+						RunPageHeader(pgs, wc.Data.Data[ge.StartRow], false, tg);
 					}
 
 					if (tg != null && tg.Header != null)
 					{
 						// Calculate the number of table rows below this group; header, footer, details count
 						if (ge.NestedGroup.Count > 0)
-							_GroupNestCount = RunGroupsCount(ge.NestedGroup, 0);
+							wc.GroupNestCount = RunGroupsCount(ge.NestedGroup, 0);
 						else
-							_GroupNestCount = (ge.EndRow - ge.StartRow + 1) * DetailsCount;
+							wc.GroupNestCount = (ge.EndRow - ge.StartRow + 1) * DetailsCount;
 
-						tg.Header.RunPage(pgs, (Row) (_Data.Data[ge.StartRow]));
-						_GroupNestCount = 0;
+						tg.Header.RunPage(pgs, wc.Data.Data[ge.StartRow]);
+						wc.GroupNestCount = 0;
 					}
 				}
-				float footerHeight = RunGroupsFooterHeight(pgs, ge);
+				float footerHeight = RunGroupsFooterHeight(pgs, wc, ge);
 				if (ge.EndRow == endRow)
 					footerHeight += groupHeight;
 				// Handle the nested groups if any
 				if (ge.NestedGroup.Count > 0)
-					RunGroupsPage(pgs, ge.NestedGroup, ge.EndRow, footerHeight);
+					RunGroupsPage(pgs, wc, ge.NestedGroup, ge.EndRow, footerHeight);
 				// If no nested groups then handle the detail rows for the group
 				else if (_Details != null)
 				{
 					if (ge.Group != null &&
 						ge.Group.Parent as TableGroup == null)
 					{	// Group defined on table; means that Detail rows only put out once per group
-						_Details.RunPage(pgs, _Data, ge.StartRow, ge.StartRow, footerHeight);
+						_Details.RunPage(pgs, wc.Data, ge.StartRow, ge.StartRow, footerHeight);
 					}
 					else
 					{
-						_Details.RunPage(pgs, _Data, ge.StartRow, ge.EndRow, footerHeight);
+						_Details.RunPage(pgs, wc.Data, ge.StartRow, ge.EndRow, footerHeight);
 					}
 				}
 				else	// When no details we need to figure out whether any more fits on a page
@@ -788,7 +799,7 @@ namespace fyiReporting.RDL
 					if (p.YOffset + footerHeight > pgs.BottomOfPage) //	Do we need new page to fit footer?
 					{
 						p = RunPageNew(pgs, p);
-						RunPageHeader(pgs, (Row) (_Data.Data[ge.EndRow]), false, null);
+						RunPageHeader(pgs, wc.Data.Data[ge.EndRow], false, null);
 					}
 				}
 
@@ -797,19 +808,19 @@ namespace fyiReporting.RDL
 				{
 					TableGroup tg = ge.Group.Parent as TableGroup;	// detail groups will result in null
 					if (tg != null && tg.Footer != null)
-						tg.Footer.RunPage(pgs, (Row) (_Data.Data[ge.EndRow]));
+						tg.Footer.RunPage(pgs, wc.Data.Data[ge.EndRow]);
 
 					if (ge.Group.PageBreakAtEnd && !pgs.CurrentPage.IsEmpty())
 					{
 						RunPageNew(pgs, pgs.CurrentPage);
-						RunPageHeader(pgs, (Row) (_Data.Data[ge.StartRow]), false, tg);
+						RunPageHeader(pgs, wc.Data.Data[ge.StartRow], false, tg);
 					}
 				}
 
 			}
 		}
 
-		private float RunGroupsFooterHeight(Pages pgs, GroupEntry ge)
+		private float RunGroupsFooterHeight(Pages pgs, TableWorkClass wc, GroupEntry ge)
 		{
 			Grouping g = ge.Group;
 			if (g == null)
@@ -819,10 +830,10 @@ namespace fyiReporting.RDL
 			if (tg == null || tg.Footer == null)
 				return 0;
 
-			return tg.Footer.HeightOfRows(pgs, (Row) (_Data.Data[ge.EndRow]));
+			return tg.Footer.HeightOfRows(pgs, wc.Data.Data[ge.EndRow]);
 		}
 
-		private int RunGroupsCount(ArrayList groupEntries, int count)
+        private int RunGroupsCount(List<GroupEntry> groupEntries, int count)
 		{
 			foreach (GroupEntry ge in groupEntries)
 			{
@@ -841,25 +852,25 @@ namespace fyiReporting.RDL
 			return count;
 		}
 
-		private void RunGroupsSetGroups(ArrayList groupEntries)
+        internal void RunGroupsSetGroups(Report rpt, TableWorkClass wc, List<GroupEntry> groupEntries)
 		{
 			// set the group entry value
-			GroupEntry ge = (GroupEntry) (groupEntries[0]);
-			_Data.CurrentGroups[ge.Group.Index] = ge;
+			GroupEntry ge = groupEntries[0];
+			wc.Data.CurrentGroups[ge.Group.GetIndex(rpt)] = ge;
 
 			if (ge.NestedGroup.Count > 0)
-				RunGroupsSetGroups(ge.NestedGroup);
+				RunGroupsSetGroups(rpt, wc, ge.NestedGroup);
 		}
 
-		private void RunRecursiveGroups(IPresent ip)
+		private void RunRecursiveGroups(IPresent ip, TableWorkClass wc)
 		{
-			ArrayList rows=_Data.Data;
+			List<Row> rows=wc.Data.Data;
 			Row r;
 
 			// Get any header/footer information for use in loop
 			Header header=null;
 			Footer footer=null;
-			TableGroup tg = _RecursiveGroup.Parent as TableGroup;
+			TableGroup tg = wc.RecursiveGroup.Parent as TableGroup;
 			if (tg != null)
 			{
 				header = tg.Header;
@@ -869,9 +880,9 @@ namespace fyiReporting.RDL
 			bool bHeader = true;
 			for (int iRow=0; iRow < rows.Count; iRow++)
 			{
-				r = (Row) rows[iRow];
-				_Data.CurrentGroups[0] = r.GroupEntry;
-				_GroupNestCount = r.GroupEntry.EndRow - r.GroupEntry.StartRow;
+				r = rows[iRow];
+				wc.Data.CurrentGroups[0] = r.GroupEntry;
+				wc.GroupNestCount = r.GroupEntry.EndRow - r.GroupEntry.StartRow;
 				if (bHeader)
 				{
 					bHeader = false;
@@ -881,13 +892,13 @@ namespace fyiReporting.RDL
 
 				if (_Details != null)
 				{
-					_Details.Run(ip, _Data, iRow, iRow);
+					_Details.Run(ip, wc.Data, iRow, iRow);
 				}
 
 				// determine need for group headers and/or footers
 				if (iRow < rows.Count - 1)
 				{
-					Row r2 = (Row) rows[iRow+1];
+					Row r2 = rows[iRow+1];
 					if (r.Level > r2.Level)
 					{
 						if (footer != null)
@@ -901,15 +912,15 @@ namespace fyiReporting.RDL
 				footer.Run(ip, rows[rows.Count-1] as Row);
 		}
 
-		private void RunRecursiveGroupsPage(Pages pgs)
+		private void RunRecursiveGroupsPage(Pages pgs, TableWorkClass wc)
 		{
-			ArrayList rows=_Data.Data;
+			List<Row> rows=wc.Data.Data;
 			Row r;
 
 			// Get any header/footer information for use in loop
 			Header header=null;
 			Footer footer=null;
-			TableGroup tg = _RecursiveGroup.Parent as TableGroup;
+			TableGroup tg = wc.RecursiveGroup.Parent as TableGroup;
 			if (tg != null)
 			{
 				header = tg.Header;
@@ -919,9 +930,9 @@ namespace fyiReporting.RDL
 			bool bHeader = true;
 			for (int iRow=0; iRow < rows.Count; iRow++)
 			{
-				r = (Row) rows[iRow];
-				_Data.CurrentGroups[0] = r.GroupEntry;
-				_GroupNestCount = r.GroupEntry.EndRow - r.GroupEntry.StartRow;
+				r = rows[iRow];
+				wc.Data.CurrentGroups[0] = r.GroupEntry;
+				wc.GroupNestCount = r.GroupEntry.EndRow - r.GroupEntry.StartRow;
 				if (bHeader)
 				{
 					bHeader = false;
@@ -947,7 +958,7 @@ namespace fyiReporting.RDL
  
 				if (iRow < rows.Count - 1)
 				{
-					Row r2 = (Row) rows[iRow+1];
+					Row r2 = rows[iRow+1];
 					if (r.Level > r2.Level)
 					{
 						if (footer != null)
@@ -962,7 +973,7 @@ namespace fyiReporting.RDL
 
 				if (_Details != null)
 				{
-					_Details.RunPage(pgs, _Data, iRow, iRow, footerHeight);
+					_Details.RunPage(pgs, wc.Data, iRow, iRow, footerHeight);
 				}
 
 				// and output the footer if needed
@@ -1043,26 +1054,22 @@ namespace fyiReporting.RDL
 			set {  _DetailDataElementOutput = value; }
 		}
 
-		internal int GroupNestCount
+		internal int GetGroupNestCount(Report rpt)
 		{
-			get { return _GroupNestCount; }
+			TableWorkClass wc = GetValue(rpt);
+			return wc.GroupNestCount;
 		}
 
-		internal int WidthInPixels
+		internal int WidthInPixels(Report rpt, Row row)
 		{
-			get 
-			{	// -1 indicates no width is available	
-//				if (this.Width != null)		// Use width if specified
-//					return this.Width.PixelsX;
-
-				// Otherwise, calculate this based on the sum of TableColumns
-				int width=0;
-				foreach (TableColumn tc in this.TableColumns.Items)
-				{
+			// Calculate this based on the sum of TableColumns
+			int width=0;
+			foreach (TableColumn tc in this.TableColumns.Items)
+			{
+                if (tc.Visibility == null || !tc.Visibility.Hidden.EvaluateBoolean(rpt, row))
 					width += tc.Width.PixelsX;
-				}
-				return width;
 			}
+			return width;
 		}
 
 		internal int WidthInUnits
@@ -1079,36 +1086,108 @@ namespace fyiReporting.RDL
 				return width;
 			}
 		}
+
+		private TableWorkClass GetValue(Report rpt)
+		{
+			TableWorkClass wc = rpt.Cache.Get(this, "wc") as TableWorkClass;
+			if (wc == null)
+			{
+				wc = new TableWorkClass();
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
+
+		private void RemoveValue(Report rpt)
+		{
+			rpt.Cache.Remove(this, "wc");
+		}
+
 	}
 
-	class RecursiveCompare: IComparer
+	class TableWorkClass
 	{
+		internal Rows Data;	// Runtime data; either original query if no groups
+		// or sorting or a copied version that is grouped/sorted
+		internal List<GroupEntry> Groups;		// Runtime groups; array of GroupEntry
+		internal int GroupNestCount;	// Runtime: calculated on fly for # of table rows that are part of a group
+		//    used to handle toggling of a group 
+		internal Grouping RecursiveGroup;	// Runtime: set with a recursive; currently on support a single recursive group
+		internal TableWorkClass()
+		{
+			Data = null;
+			Groups = null;
+			GroupNestCount = 0;
+			RecursiveGroup = null;
+		}
+	}
+
+	class RecursiveCompare: IComparer<Row>
+	{
+        Report rpt;
 		TypeCode _Type;
 		IExpr parentExpr;
+        IExpr groupExpr;
 
-		internal RecursiveCompare(IExpr pExpr, TypeCode tc)
+        internal RecursiveCompare(Report r, IExpr pExpr, TypeCode tc, IExpr gExpr)
 		{
+            rpt = r;
 			_Type = tc;
 			parentExpr = pExpr;
+            groupExpr = gExpr;
 		}
 
 		#region IComparer Members
 
-		public int Compare(object x, object y)
+		public int Compare(Row x, Row y)
 		{
-			// .Net is consistent where x is always the Row but Mono is not
-			if (x is Row)
+            object xv = parentExpr.Evaluate(rpt, x);
+            object yv = groupExpr.Evaluate(rpt, y);
+
+			return -Filter.ApplyCompare(_Type, yv, xv);
+		}
+
+		#endregion
+	}
+	class GroupEntryCompare: IComparer<GroupEntry>
+	{
+		Report rpt;
+		TableWorkClass wc;
+
+		internal GroupEntryCompare(Report r, TableWorkClass w )
+		{
+			rpt = r;
+			wc = w;
+		}
+
+		#region IComparer<GroupEntry> Members
+
+        public int Compare(GroupEntry x1, GroupEntry y1)
+		{
+			Debug.Assert(x1 != null && y1 != null && x1.Sort != null, "Illegal arguments to GroupEntryCompare", 
+				"Compare requires object to be of type GroupEntry and that sort be defined.");
+
+			int rc = 0;
+			foreach (SortBy sb in x1.Sort.Items)
 			{
-				object v = parentExpr.Evaluate((Row) x);
-			
-				return -Filter.ApplyCompare(_Type, y, v);
+				TypeCode tc = sb.SortExpression.Type;
+				
+				int index = x1.Group.GetIndex(rpt);
+				wc.Data.CurrentGroups[index] = x1;
+				object o1 = sb.SortExpression.Evaluate(rpt, wc.Data.Data[x1.StartRow]);
+				index = y1.Group.GetIndex(rpt);	
+				wc.Data.CurrentGroups[index] = y1;
+				object o2 = sb.SortExpression.Evaluate(rpt, wc.Data.Data[y1.StartRow]);
+
+				rc = Filter.ApplyCompare(tc, o1, o2);
+				if (rc != 0)
+				{
+					if (sb.Direction == SortDirectionEnum.Descending)
+						rc = -rc;
+					break;
+				}
 			}
-			else
-			{
-				object v = parentExpr.Evaluate((Row) y);
-			
-				return -Filter.ApplyCompare(_Type, x, v);
-			}
+			return rc;
 		}
 
 		#endregion

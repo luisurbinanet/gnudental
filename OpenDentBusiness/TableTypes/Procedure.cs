@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace OpenDentBusiness {
-	///<summary>A procedure for a patient.  Can be treatment planned or completed.  Once it's completed, it gets tracked more closely be the security portion of the program.  A procedure can NEVER be deleted.  Status can just be changed to "deleted".</summary>
+	///<summary>Database table is procedurelog.  A procedure for a patient.  Can be treatment planned or completed.  Once it's completed, it gets tracked more closely be the security portion of the program.  A procedure can NEVER be deleted.  Status can just be changed to "deleted".</summary>
 	public class Procedure{
 		///<summary>Primary key.</summary>
 		public int ProcNum;
@@ -13,7 +13,7 @@ namespace OpenDentBusiness {
 		public int AptNum;
 		///<summary>FK to procedurecode.ADACode</summary>
 		public string ADACode;
-		///<summary>Procedure date that will show in the account as the date performed.  If just treatment planned, the date can be the date it was tp'd, or the date can be min val if we don't care.</summary>
+		///<summary>Procedure date/time that will show in the account as the date performed.  If just treatment planned, the date can be the date it was tp'd, or the date can be min val if we don't care.</summary>
 		public DateTime ProcDate;
 		///<summary>Procedure fee.</summary>
 		public double ProcFee;
@@ -45,14 +45,18 @@ namespace OpenDentBusiness {
 		public DateTime DateEntryC;
 		///<summary>FK to clinic.ClinicNum.  0 if no clinic.</summary>
 		public int ClinicNum;
-		///<summary>Optional. Foreign key to procedureCode.ADACode.</summary>
+		///<summary>FK to procedurecode.ADACode. Optional.</summary>
 		public string MedicalCode;
 		///<summary>Simple text for ICD-9 code. Gets sent with medical claims.</summary>
 		public string DiagnosticCode;
 		///<summary>Set true if this medical diagnostic code is the principal diagnosis for the visit.  If no principal diagnosis is marked for any procedures on a medical e-claim, then it won't be allowed to be sent.  If more than one is marked, then it will just use one at random.</summary>
 		public bool IsPrincDiag;
-		///<summary>This is only used in Canada because their insurance companies require this number.</summary>
-		public double LabFee;
+		//<summary>This is only used in Canada because their insurance companies require this number.</summary>
+		//public double LabFee;//need to delete.
+		//<summary>FK to procedurecode.ADACode.  Only used in Canada.</summary>
+		//public string LabProcCode;//need to delete.
+		///<summary>FK to procedurelog.ProcNum. Only used in Canada. If not zero, then this proc is a lab fee and this indicates to which actual procedure the lab fee is attached.  For ordinary use, they are treated like two separate procedures.  It's only for insurance claims that we need to know which lab fee belongs to which procedure.  For now, we limit one fee attached to one procedure.</summary>
+		public int ProcNumLab;
 
 		///<summary>Not a database column.  Saved in database in the procnote table.  This note is only the most recent note from that table.  If user changes it, then the business layer handles adding another procnote to that table.</summary>
 		public string Note;
@@ -89,7 +93,7 @@ namespace OpenDentBusiness {
 			proc.MedicalCode=MedicalCode;
 			proc.DiagnosticCode=DiagnosticCode;
 			proc.IsPrincDiag=IsPrincDiag;
-			proc.LabFee=LabFee;
+			proc.ProcNumLab=ProcNumLab;
 			proc.Note=Note;
 			proc.UserNum=UserNum;
 			proc.Signature=Signature;
@@ -100,7 +104,7 @@ namespace OpenDentBusiness {
 
 	public class DtoProcedureRefresh:DtoQueryBase {
 		public int PatNum;
-		public bool IncludeDeletedAndNotes;
+		//public bool IncludeDeletedAndNotes;
 	}
 
 	public class DtoProcedureInsert:DtoCommandBase {

@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -26,6 +26,7 @@ using System.Xml;
 using System.IO;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 
 
 namespace fyiReporting.RDL
@@ -103,13 +104,9 @@ namespace fyiReporting.RDL
 		DataElementOutputEnum _DataElementOutput;	// should item appear in data rendering?
 
 		TableCell _TC;		// TableCell- if part of a Table
-		ArrayList _YParents;	// calculated: when calculating the y position these are the items above it
-		// runtime
-		[NonSerialized] MatrixCellEntry _MC;	// matrix cell entry
-		[NonSerialized] float _BottomPosition=float.NaN;	// used when calculating position of objects below this one.
-												// this must be initialized by the inheriting class.
-		[NonSerialized]	Page _CurrentPage;		// the page this reportitem was last put on; 
-		internal ReportItem(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		List<ReportItem> _YParents;	// calculated: when calculating the y position these are the items above it
+		bool _InMatrix;		// true if reportitem is in a matrix
+		internal ReportItem(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Name=null;
 			_Style=null;
@@ -224,49 +221,97 @@ namespace fyiReporting.RDL
 			{
 				_TC = null;
 			}
+
+			// Determine if ReportItem is defined inside of a Matrix
+			_InMatrix = false;
+			for (ReportLink rl = this.Parent; rl != null; rl = rl.Parent)
+			{
+				if (rl is Matrix)
+				{
+					_InMatrix = true;
+					break;
+				}
+				if (rl is Table || rl is List || rl is Chart)
+					break;
+			}
+
 			return;
 		}
 
-		internal void PositioningFinalPass(ArrayList items)
+		internal void PositioningFinalPass(int i, List<ReportItem> items)
 		{
-			if (items.Count == 1)		// Nothing to do if only one item in list
+			if (items.Count == 1 || i==0)		// Nothing to do if only one item in list or 1st item in list
 				return;
 
-			int x = this.Left == null? 0: this.Left.Size;
+		    int x = this.Left == null? 0: this.Left.Size;
 			int w = PositioningWidth(this);
 			int right = x + w;
 			int y = (this.Top == null? 0: this.Top.Size);
+            if (this is Line)
+            {   // normalize the width
+                if (w < 0)
+                {
+                    x -= w;
+                    w = -w;
+                }
+            }
 
-			this._YParents = new ArrayList();
-			foreach (ReportItem ri in items)
+            this._YParents = new List<ReportItem>();
+            int maxParents = 100;               // heuristic to limit size of parents; otherwise processing in
+                                                //   extreme cases can blow up
+            for (int ti = i-1; ti >= 0 && maxParents > 0; ti--)
 			{
-				if (ri == this)
-					break;
-				// if ReportItem is fixed in height then we can ignore it
-				if (ri is Textbox)
-				{
-					Textbox tb = ri as Textbox;
-					if (!(tb.CanGrow || tb.CanShrink))
-						continue;
-				}
-				else if (ri is Rectangle || ri is CustomReportItem ||
-					ri is Line || ri is Image || ri is Chart)
-					continue;
+                ReportItem ri = items[ti];
 
-				int x2 = ri.Left == null? 0: ri.Left.Size;
+				int xw = ri.Left == null? 0: ri.Left.Size;
 				int w2 = PositioningWidth(ri);
-				if (x2 > right || x > x2 + w2)
-					continue;
-				if (y < (ri.Top == null? 0: ri.Top.Size) + (ri.Height == null? 0: ri.Height.Size))
-					continue;
-				_YParents.Add(ri);		// X coordinate overlap
-			}
+                if (ri is Line)
+                {   // normalize the width
+                    if (w2 < 0)
+                    {
+                        xw -= w2;
+                        w2 = -w2;
+                    }
+                }
+                if (ri.Height == null || ri.Top == null) // if position/height not specified don't use to reposition
+                    continue;
+                if (y < ri.Top.Size + ri.Height.Size)
+                    continue;
+                _YParents.Add(ri);		// X coordinate overlap
+                maxParents--;
+                if (xw <= x && xw + w2 >= x + w &&       // if item above completely covers the report item then it will be pushed down first
+                    maxParents > 30)                      //   and we haven't already set the maxParents.   
+                    maxParents=30;                        //   just add a few more if necessary 
+            }
+            //foreach (ReportItem ri in items)
+            //{
+            //    if (ri == this)
+            //        break;
+
+            //    int xw = ri.Left == null ? 0 : ri.Left.Size;
+            //    int w2 = PositioningWidth(ri);
+            //    if (ri is Line)
+            //    {   // normalize the width
+            //        if (w2 < 0)
+            //        {
+            //            xw -= w2;
+            //            w2 = -w2;
+            //        }
+            //    }
+            //    //if (xw > right || x > xw + w2)                    // this allows items to be repositioned only based on what's above them
+            //    //    continue;
+            //    if (ri.Height == null || ri.Top == null)          // if position/height not specified don't use to reposition
+            //        continue;
+            //    if (y < ri.Top.Size + ri.Height.Size)
+            //        continue;
+            //    _YParents.Add(ri);		// X coordinate overlap
+            //}
 
 			// Reduce the overhead
 			if (this._YParents.Count == 0)
 				this._YParents = null;
 			else
-				this._YParents.TrimToSize();
+                this._YParents.TrimExcess();
 
 			return;
 		}
@@ -300,15 +345,10 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		internal bool IsTableOrMatrixCell
+		internal bool IsTableOrMatrixCell(Report rpt)
 		{
-			get 
-			{
-				if (_TC != null || _MC != null) 
-					return true;
-				else
-					return false;
-			}
+			WorkClass wc = GetWC(rpt);
+			return (_TC != null || wc.MC != null || this._InMatrix);
 		}
 
 		internal Name Name
@@ -341,43 +381,39 @@ namespace fyiReporting.RDL
 			set {  _Left = value; }
 		}
 
-		internal float LeftCalc
+		internal float LeftCalc(Report rpt)
 		{
-			get 
-			{ 
-				if (_TC != null || _MC != null || _Left == null)
-					return 0;
-				else
-					return _Left.Points;
-			}
+			WorkClass wc = GetWC(rpt);
+			if (_TC != null || wc.MC != null || _Left == null)
+				return 0;
+			else
+				return _Left.Points;
 		}
 
-		internal float OffsetCalc
+		internal float GetOffsetCalc(Report rpt)
 		{
-			get 
-			{
-				float x;
-				if (this._TC != null)		
-				{	// must be part of a table
-					Table t = _TC.OwnerTable;
-					int colindex = _TC.ColIndex;
+			WorkClass wc = GetWC(rpt);
+			float x;
+			if (this._TC != null)		
+			{	// must be part of a table
+				Table t = _TC.OwnerTable;
+				int colindex = _TC.ColIndex;
 
-					TableColumn tc;
-					tc = (TableColumn) (t.TableColumns.Items[colindex]);
-					x = tc.XPosition;
-				}
-				else if (this._MC != null)
-				{	// must be part of a matrix
-					x = _MC.XPosition;
-				}
-				else
-				{
-					ReportItems ris = this.Parent as ReportItems;
-					x = ris.XOffset;
-				}
-				
-				return x;
+				TableColumn tc;
+				tc = (TableColumn) (t.TableColumns.Items[colindex]);
+				x = tc.GetXPosition(rpt);
 			}
+			else if (wc.MC != null)
+			{	// must be part of a matrix
+				x = wc.MC.XPosition;
+			}
+			else
+			{
+				ReportItems ris = this.Parent as ReportItems;
+				x = ris.GetXOffset(rpt);
+			}
+			
+			return x;
 		}
 
 		internal RSize Height
@@ -427,6 +463,13 @@ namespace fyiReporting.RDL
 							return tr.Height.Points - yloc;
 						continue;
 					}
+					if (rl is MatrixRow)
+					{
+						MatrixRow mr = rl as MatrixRow;
+						if (mr.Height != null)
+							return mr.Height.Points - yloc;
+						continue;
+					}
 					if (rl is Body)
 					{
 						Body b = rl as Body;
@@ -439,29 +482,30 @@ namespace fyiReporting.RDL
 			}
 		}
 		
-		internal bool IsHidden(Row r)
+		internal bool IsHidden(Report rpt, Row r)
 		{
 			if (this._Visibility == null)
 				return false;
-			return _Visibility.IsHidden(r);
+			return _Visibility.IsHidden(rpt, r);
 		}
 
-		internal void SetPageLeft()
+		internal void SetPageLeft(Report rpt)
 		{
 			if (this._TC != null)		
 			{	// must be part of a table
 				Table t = _TC.OwnerTable;
 				int colindex = _TC.ColIndex;
 				TableColumn tc = (TableColumn) (t.TableColumns.Items[colindex]);
-				Left = new RSize(OwnerReport, tc.XPosition.ToString() + "pt");
+				Left = new RSize(OwnerReport, tc.GetXPosition(rpt).ToString() + "pt");
 			}
 			else if (Left == null)
 				Left = new RSize(OwnerReport, "0pt");
 		}
 
-		internal void SetPagePositionAndStyle(PageItem pi, Row row)
+		internal void SetPagePositionAndStyle(Report rpt, PageItem pi, Row row)
 		{
-			pi.X = this.OffsetCalc + LeftCalc;
+			WorkClass wc = GetWC(rpt);
+			pi.X = GetOffsetCalc(rpt) + LeftCalc(rpt);
 			if (this._TC != null)		
 			{	// must be part of a table
 				Table t = _TC.OwnerTable;
@@ -479,37 +523,68 @@ namespace fyiReporting.RDL
 				pi.Y = 0;
 
 				TableRow tr = (TableRow) (_TC.Parent.Parent);
-				pi.H = tr.HeightCalc;	// this is a cached item; note tr.HeightOfRow must already be called on row
+				pi.H = tr.HeightCalc(rpt);	// this is a cached item; note tr.HeightOfRow must already be called on row
 			}
-			else if (this._MC != null)
+			else if (wc.MC != null)
 			{	// must be part of a matrix
-				pi.W = _MC.Width;
+				pi.W = wc.MC.Width;
 				pi.Y = 0;
-				pi.H = _MC.Height;
+				pi.H = wc.MC.Height;
 			}
-			else
-			{	// not part of a table or matrix
-				if (Top != null)
-					pi.Y = this.Gap;		 //  y will get adjusted when pageitem added to page
-				if (Height != null)
-					pi.H = Height.Points;
-				else
-					pi.H = this.HeightOrOwnerHeight;
-				if (Width != null)
-					pi.W = Width.Points;
-				else
-					pi.W = this.WidthOrOwnerWidth;
-			}
+            else if (pi is PageLine)
+            {   // don't really handle if line is part of table???  TODO
+                PageLine pl = (PageLine) pi;
+                if (Top != null)
+                    pl.Y = this.Gap(rpt);		 //  y will get adjusted when pageitem added to page
+                float y2 = pl.Y;
+                if (Height != null)
+                    y2 += Height.Points;
+                pl.Y2 = y2;
+                pl.X2 = pl.X;
+                if (Width != null)
+                    pl.X2 += Width.Points;
+            }
+            else
+            {	// not part of a table or matrix
+                if (Top != null)
+                    pi.Y = this.Gap(rpt);		 //  y will get adjusted when pageitem added to page
+                if (Height != null)
+                    pi.H = Height.Points;
+                else
+                    pi.H = this.HeightOrOwnerHeight;
+                if (Width != null)
+                    pi.W = Width.Points;
+                else
+                    pi.W = this.WidthOrOwnerWidth(rpt);
+            }
 			if (Style != null)
-				pi.SI = Style.GetStyleInfo(row);
+				pi.SI = Style.GetStyleInfo(rpt, row);
 			else
 				pi.SI = new StyleInfo();	// this will just default everything
+
+            pi.ZIndex = this.ZIndex;        // retain the zindex of the object
+
+			// Catch any action needed
+			if (this._Action != null)
+			{
+				pi.BookmarkLink = _Action.BookmarkLinkValue(rpt, row);
+				pi.HyperLink = _Action.HyperLinkValue(rpt, row);
+			}
+
+			if (this._ToolTip != null)
+				pi.Tooltip = _ToolTip.EvaluateString(rpt, row);
 		}
 
-		internal MatrixCellEntry MC
+		internal MatrixCellEntry GetMC(Report rpt)
 		{
-			get { return _MC; }
-			set { _MC = value; }
+			WorkClass wc = GetWC(rpt);
+			return wc.MC;
+		}
+
+		internal void SetMC(Report rpt, MatrixCellEntry mce)
+		{
+			WorkClass wc = GetWC(rpt);
+			wc.MC = mce;
 		}
 
 		internal RSize Width
@@ -518,37 +593,35 @@ namespace fyiReporting.RDL
 			set {  _Width = value; }
 		}
 
-		internal float WidthOrOwnerWidth
+		internal float WidthOrOwnerWidth(Report rpt)
 		{
-			get 
+			if (_Width != null)
+				return _Width.Points;
+			float xloc = this.LeftCalc(rpt);
+
+			for (ReportLink rl = this.Parent; rl != null; rl = rl.Parent)
 			{
-				if (_Width != null)
-					return _Width.Points;
-				float xloc = this.LeftCalc;
-
-				for (ReportLink rl = this.Parent; rl != null; rl = rl.Parent)
+				if (rl is ReportItem)
 				{
-					if (rl is ReportItem)
-					{
-						ReportItem ri = rl as ReportItem;
-						if (ri.Width != null)
-							return ri.Width.Points - xloc;
-						continue;
-					}
-					if (rl is PageHeader ||
-						rl is PageFooter ||
-						rl is Body)
-					{
-						return OwnerReport.Width.Points - xloc;
-					}
+					ReportItem ri = rl as ReportItem;
+					if (ri.Width != null)
+						return ri.Width.Points - xloc;
+					continue;
 				}
-
-				return OwnerReport.Width.Points - xloc;
+				if (rl is PageHeader ||
+					rl is PageFooter ||
+					rl is Body)
+				{
+					return OwnerReport.Width.Points - xloc;
+				}
 			}
+
+			return OwnerReport.Width.Points - xloc;
 		}
 
-		internal int WidthCalc(Graphics g)
+		internal int WidthCalc(Report rpt, Graphics g)
 		{
+			WorkClass wc = GetWC(rpt);
 			int width;
 			if (this._TC != null)
 			{	// must be part of a table
@@ -564,38 +637,41 @@ namespace fyiReporting.RDL
 					width += tc.Width.PixelsX;
 				}
 			}
-			else if (this._MC != null)
+			else if (wc.MC != null)
 			{	// must be part of a matrix
-				width = g==null? RSize.PixelsFromPoints(_MC.Width): RSize.PixelsFromPoints(g, _MC.Width);
+				width = g==null? RSize.PixelsFromPoints(wc.MC.Width): RSize.PixelsFromPoints(g, wc.MC.Width);
 			}
 			else
 			{	// not part of a table or matrix
 				if (Width != null)
 					width = Width.PixelsX;
 				else
-					width = 0;					// Not defined? assume 0
+					width = RSize.PixelsFromPoints(WidthOrOwnerWidth(rpt));
 			}
 			return width;
 		}
 
 		internal Page RunPageNew(Pages pgs, Page p)
 		{
+			if (p.IsEmpty())			// if the page is empty it won't help to create another one
+				return p;
+
 			// Do we need a new page or have should we fill out more body columns
 			Body b = OwnerReport.Body;
-			b.CurrentColumn++;		// bump to next column
+			int ccol = b.IncrCurrentColumn(pgs.Report);	// bump to next column
 
 			float top = OwnerReport.TopOfPage;	// calc top of page
 
-			if (b.CurrentColumn < b.Columns)
+			if (ccol < b.Columns)
 			{		// Stay on same page but move to new column
 				p.XOffset = 
-					((OwnerReport.Width.Points + b.ColumnSpacing.Points) * b.CurrentColumn);
+					((OwnerReport.Width.Points + b.ColumnSpacing.Points) * ccol);
 				p.YOffset = top;
 				p.SetEmpty();			// consider this page empty
 			}
 			else
 			{		// Go to new page
-				b.CurrentColumn=0;
+				b.SetCurrentColumn(pgs.Report, 0);
 				pgs.NextOrNew();
 				p = pgs.CurrentPage;
 				p.YOffset = top;
@@ -615,11 +691,12 @@ namespace fyiReporting.RDL
 			// Update the current page
 			if (this._YParents != null)
 			{	
-				ReportItem saveri=GetReportItemAbove();
+				ReportItem saveri=GetReportItemAbove(pgs.Report);
 				if (saveri != null)
 				{
-					pgs.CurrentPage = saveri._CurrentPage;
-					pgs.CurrentPage.YOffset = saveri._BottomPosition;
+					WorkClass wc = saveri.GetWC(pgs.Report);
+					pgs.CurrentPage = wc.CurrentPage;
+					pgs.CurrentPage.YOffset = wc.BottomPosition;
 				}
 			}
 			else if (this.Parent.Parent is PageHeader)
@@ -652,63 +729,58 @@ namespace fyiReporting.RDL
 
 		internal void SetPagePositionEnd(Pages pgs, float pos)
 		{
-			if (_TC != null)			// don't mess with page if part of a table
+			if (_TC != null || _InMatrix)			// don't mess with page if part of a table or in a matrix
 				return;
-			this._CurrentPage = pgs.CurrentPage;
-			_BottomPosition = pos;
+			WorkClass wc = GetWC(pgs.Report);
+			wc.CurrentPage = pgs.CurrentPage;
+			wc.BottomPosition = pos;
 		}
 
 		/// <summary>
 		/// Calculates the runtime y position of the object based on the height of objects 
 		/// above it vertically.
 		/// </summary>
-		internal float Gap
+		internal float Gap(Report rpt)
 		{
-			get 
-			{
-				float top = _Top == null? 0: _Top.Points;
-				ReportItem saveri=GetReportItemAbove();
-				if (saveri == null)
-					return top;
+			float top = _Top == null? 0: _Top.Points;
+			ReportItem saveri=GetReportItemAbove(rpt);
+			if (saveri == null)
+				return top;
 
-				float gap = top;
-				if (saveri.Top != null)
-					gap -= saveri.Top.Points;
-				if (saveri.Height != null)
-					gap -= saveri.Height.Points;
+			float gap = top;
+            float s_top = saveri.Top == null ? 0 : saveri.Top.Points;
+            float s_h = saveri.Height == null ? 0 : saveri.Height.Points;
 
-				return gap;
-			}
+            gap -= saveri.Top.Points;
+            if (top < s_top + s_h)          // do we have an overlap;
+                gap = top - (s_top + s_h);    // yes; force overlap even when moving report item down
+            else
+                gap -= saveri.Height.Points;  // no; move report item down just the gap between the items  
+
+			return gap;
 		}
 
 		/// <summary>
 		/// Calculates the runtime y position of the object based on the height of objects 
 		/// above it vertically.
 		/// </summary>
-		internal float RelativeY
+		internal float RelativeY(Report rpt)
 		{
-			get 
-			{
-				float top = _Top == null? 0: _Top.Points;
-				ReportItem saveri=GetReportItemAbove();
-				if (saveri == null)
-					return top;
+			float top = _Top == null? 0: _Top.Points;
+			ReportItem saveri=GetReportItemAbove(rpt);
+			if (saveri == null)
+				return top;
 
-				float gap = top;
-				if (saveri.Top != null)
-					gap -= saveri.Top.Points;
-				if (saveri.Height != null)
-					gap -= saveri.Height.Points;
+			float gap = top;
+			if (saveri.Top != null)
+				gap -= saveri.Top.Points;
+			if (saveri.Height != null)
+				gap -= saveri.Height.Points;
 
-				return gap;
-//				float y = (saveri.Top == null? 0: saveri.Top.Points) + 
-//					(saveri.Height == null? 0: saveri.Height.Points) + gap;
-//
-//				return y;
-			}
+			return gap;
 		}
 
-		private ReportItem GetReportItemAbove()
+		private ReportItem GetReportItemAbove(Report rpt)
 		{
 			if (this._YParents == null)
 				return null;
@@ -719,14 +791,15 @@ namespace fyiReporting.RDL
 
 			foreach (ReportItem ri in this._YParents)
 			{
-				if (ri._BottomPosition.CompareTo(float.NaN) == 0 ||
-					ri._CurrentPage == null ||
-					pgno > ri._CurrentPage.PageNumber)
+				WorkClass wc = ri.GetWC(rpt);
+				if (wc.BottomPosition.CompareTo(float.NaN) == 0 ||
+					wc.CurrentPage == null ||
+					pgno > wc.CurrentPage.PageNumber)
 					continue;
-				if (maxy < ri._BottomPosition || pgno < ri._CurrentPage.PageNumber)
+				if (maxy < wc.BottomPosition || pgno < wc.CurrentPage.PageNumber)
 				{
-					pgno = ri._CurrentPage.PageNumber;
-					maxy = ri._BottomPosition;
+					pgno = wc.CurrentPage.PageNumber;
+					maxy = wc.BottomPosition;
 					saveri = ri;
 				}
 			}
@@ -751,12 +824,12 @@ namespace fyiReporting.RDL
 			set {  _ToolTip = value; }
 		}
 
-		internal string ToolTipValue(Row r)
+		internal string ToolTipValue(Report rpt, Row r)
 		{
 			if (_ToolTip == null)
 				return null;
 
-			return _ToolTip.EvaluateString(r);
+			return _ToolTip.EvaluateString(rpt, r);
 		}
 
 		internal Expression Label
@@ -777,12 +850,12 @@ namespace fyiReporting.RDL
 			set {  _Bookmark = value; }
 		}
 
-		internal string BookmarkValue(Row r)
+		internal string BookmarkValue(Report rpt, Row r)
 		{
 			if (_Bookmark == null)
 				return null;
 
-			return _Bookmark.EvaluateString(r);
+			return _Bookmark.EvaluateString(rpt, r);
 		}
 
 		internal TableCell TC
@@ -816,7 +889,7 @@ namespace fyiReporting.RDL
 			set {  _DataElementName = value; }
 		}
 
-		internal ArrayList YParents
+        internal List<ReportItem> YParents
 		{
 			get { return this._YParents; }
 		}
@@ -845,21 +918,55 @@ namespace fyiReporting.RDL
 			}
 			set {  _DataElementOutput = value; }
 		}
+
+        internal bool IsInBody
+        {
+            get { return this.Parent.Parent is Body; }
+        }
+
+		private WorkClass GetWC(Report rpt)
+		{
+			if (rpt == null)	
+				return new WorkClass();
+
+			WorkClass wc = rpt.Cache.Get(this, "riwc") as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass();
+				rpt.Cache.Add(this, "riwc", wc);
+			}
+			return wc;
+		}
+
+		private void RemoveWC(Report rpt)
+		{
+			rpt.Cache.Remove(this, "riwc");
+		}
+
+		class WorkClass
+		{
+			internal MatrixCellEntry MC;	// matrix cell entry
+			internal float BottomPosition;	// used when calculating position of objects below this one.
+											// this must be initialized by the inheriting class.
+			internal Page CurrentPage;		// the page this reportitem was last put on; 
+			internal WorkClass()
+			{
+				MC=null;
+				BottomPosition=float.NaN;
+				CurrentPage=null;
+			}
+		}
 		#region IComparable Members
 
-		// Sort report items based on the ZIndex, top down, left to right
+		// Sort report items based on top down, left to right
 		public int CompareTo(object obj)
 		{
 			ReportItem ri = obj as ReportItem;
 
-			int rc = this.ZIndex - ri.ZIndex;
-			if (rc != 0)
-				return rc;
-
 			int t1 = this.Top == null? 0: this.Top.Size;
 			int t2 = ri.Top == null? 0: ri.Top.Size;
 
-			rc = t1 - t2;
+			int rc = t1 - t2;
 			if (rc != 0)
 				return rc;
 

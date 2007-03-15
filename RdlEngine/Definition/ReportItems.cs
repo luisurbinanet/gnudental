@@ -1,27 +1,28 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 
@@ -33,14 +34,12 @@ namespace fyiReporting.RDL
 	[Serializable]
 	internal class ReportItems : ReportLink
 	{
-		ArrayList _Items;				// list of report items
+		List<ReportItem> _Items;				// list of report items
 
-		[NonSerialized] float _XOffset;	// X offset of all items in list; reflects parent position
-
-		internal ReportItems(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal ReportItems(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			ReportItem ri;
-			_Items = new ArrayList();
+            _Items = new List<ReportItem>();
 
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -80,6 +79,9 @@ namespace fyiReporting.RDL
 					case "ChartExpression":		// For internal use only 
 						ri = new ChartExpression(r, this, xNodeLoop);
 						break;
+                    case "CustomReportItem":
+                        ri = new CustomReportItem(r, this, xNodeLoop);
+                        break;
 					default:
 						ri=null;		// don't know what this is
 						// don't know this element - log it
@@ -93,6 +95,8 @@ namespace fyiReporting.RDL
 			}
 			if (_Items.Count == 0)
 				OwnerReport.rl.LogError(8, "At least one item must be in the ReportItems.");
+			else
+                _Items.TrimExcess();
 		}
 		
 		override internal void FinalPass()
@@ -103,8 +107,13 @@ namespace fyiReporting.RDL
 			}
 			_Items.Sort();				// sort on ZIndex; y, x (see ReportItem compare routine)
 
-			foreach (ReportItem ri in _Items)	
-				ri.PositioningFinalPass(_Items);
+            for (int i = 0; i < _Items.Count; i++)
+            {
+                ReportItem ri = _Items[i];
+                ri.PositioningFinalPass(i, _Items);
+            }
+            //foreach (ReportItem ri in _Items)	
+            //    ri.PositioningFinalPass(_Items);
 
 			return;
 		}
@@ -120,7 +129,7 @@ namespace fyiReporting.RDL
 
 		internal void RunPage(Pages pgs, Row row, float xOffset)
 		{
-			_XOffset = xOffset;
+			SetXOffset(pgs.Report, xOffset);
 			foreach (ReportItem ri in _Items)
 			{
 				ri.RunPage(pgs, row);
@@ -128,15 +137,24 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		internal ArrayList Items
+        internal List<ReportItem> Items
 		{
 			get { return  _Items; }
 		}
 
-		internal float XOffset
+		internal float GetXOffset(Report rpt)
 		{
-			get { return _XOffset; }
-			set { _XOffset = value; }
+			OFloat of = rpt.Cache.Get(this, "xoffset") as OFloat;
+			return of == null? 0: of.f;
+		}
+
+		internal void SetXOffset(Report rpt, float f)
+		{
+			OFloat of = rpt.Cache.Get(this, "xoffset") as OFloat;
+			if (of == null)
+				rpt.Cache.Add(this, "xoffset", new OFloat(f));
+			else
+				of.f = f;
 		}
 
 	}

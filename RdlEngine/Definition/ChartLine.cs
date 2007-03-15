@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -34,73 +34,73 @@ namespace fyiReporting.RDL
 	internal class ChartLine: ChartColumn
 	{
 
-		internal ChartLine(Chart c, MatrixCellEntry[,] m) : base(c, m)
+		internal ChartLine(Report r, Row row, Chart c, MatrixCellEntry[,] m) : base(r, row, c, m)
 		{
 		}
 
-		override internal void Draw()
+		override internal void Draw(Report rpt)
 		{
 			CreateSizedBitmap();
 
 			using (Graphics g = Graphics.FromImage(_bm))
 			{
 				// Adjust the top margin to depend on the title height
-				Size titleSize = DrawTitleMeasure(g, ChartDefn.Title);
+				Size titleSize = DrawTitleMeasure(rpt, g, ChartDefn.Title);
 				Layout.TopMargin = titleSize.Height;
 
 				double max=0,min=0;	// Get the max and min values
-				GetValueMaxMin(ref max, ref min);
+				GetValueMaxMin(rpt, ref max, ref min);
 
-				DrawChartStyle(g);
+				DrawChartStyle(rpt, g);
 				
 				// Draw title; routine determines if necessary
-				DrawTitle(g, ChartDefn.Title, new System.Drawing.Rectangle(0, 0, Layout.Width, Layout.TopMargin));
+				DrawTitle(rpt, g, ChartDefn.Title, new System.Drawing.Rectangle(0, 0, Layout.Width, Layout.TopMargin));
 
 				// Adjust the left margin to depend on the Value Axis
-				Size vaSize = ValueAxisSize(g, min, max);
+				Size vaSize = ValueAxisSize(rpt, g, min, max);
 				Layout.LeftMargin = vaSize.Width;
 
 				// Draw legend
-				System.Drawing.Rectangle lRect = DrawLegend(g, ChartDefn.Type == ChartTypeEnum.Area? false: true, true);
+				System.Drawing.Rectangle lRect = DrawLegend(rpt,g, ChartDefn.Type == ChartTypeEnum.Area? false: true, true);
 
 				// Adjust the bottom margin to depend on the Category Axis
-				Size caSize = CategoryAxisSize(g);
+				Size caSize = CategoryAxisSize(rpt, g);
 				Layout.BottomMargin = caSize.Height;
 
 				AdjustMargins(lRect);		// Adjust margins based on legend.
 
 				// Draw Plot area
-				DrawPlotAreaStyle(g, lRect);
+				DrawPlotAreaStyle(rpt, g, lRect);
 
 				// Draw Value Axis
 				if (vaSize.Width > 0)	// If we made room for the axis - we need to draw it
-					DrawValueAxis(g, min, max, 
+					DrawValueAxis(rpt, g, min, max, 
 						new System.Drawing.Rectangle(Layout.LeftMargin - vaSize.Width, Layout.TopMargin, vaSize.Width, Layout.PlotArea.Height), Layout.LeftMargin, _bm.Width - Layout.RightMargin);
 
 				// Draw Category Axis
 				if (caSize.Height > 0)
-					DrawCategoryAxis(g,  
+					DrawCategoryAxis(rpt, g,  
 						new System.Drawing.Rectangle(Layout.LeftMargin, _bm.Height-Layout.BottomMargin, Layout.PlotArea.Width, caSize.Height));
 
 				// Draw Plot area data 
 				if (ChartDefn.Type == ChartTypeEnum.Area)
 				{
 					if (ChartDefn.Subtype == ChartSubTypeEnum.Stacked)
-						DrawPlotAreaAreaStacked(g, max);
+						DrawPlotAreaAreaStacked(rpt, g, max);
 					else if (ChartDefn.Subtype == ChartSubTypeEnum.PercentStacked)
-						DrawPlotAreaAreaPercentStacked(g);
+						DrawPlotAreaAreaPercentStacked(rpt, g);
 					else
-						DrawPlotAreaArea(g, max);
+						DrawPlotAreaArea(rpt, g, max);
 				}
 				else
 				{
-					DrawPlotAreaLine(g, max);
+					DrawPlotAreaLine(rpt, g, max);
 				}
-				DrawLegend(g, ChartDefn.Type == ChartTypeEnum.Area? false: true, false);
+				DrawLegend(rpt, g, ChartDefn.Type == ChartTypeEnum.Area? false: true, false);
 			}
 		}
 
-		void DrawPlotAreaArea(Graphics g, double max)
+		void DrawPlotAreaArea(Report rpt, Graphics g, double max)
 		{
 			// Draw Plot area data 
 			int maxPointHeight = (int) Layout.PlotArea.Height;	
@@ -110,20 +110,20 @@ namespace fyiReporting.RDL
 			{
 				for (int iRow=1; iRow <= CategoryCount; iRow++)
 				{
-					double v = this.GetDataValue(iRow, iCol);
+					double v = this.GetDataValue(rpt, iRow, iCol);
 
 					int x = (int) (Layout.PlotArea.Left + (iRow-1) * widthCat);
 					int y = (int) ((Math.Min(v,max) / max) * maxPointHeight);
 					Point p = new Point(x, Layout.PlotArea.Top + (maxPointHeight -  y));
 					saveP[iRow-1] = p;
-					DrawLinePoint(g, SeriesBrush[iCol-1], ChartMarkerEnum.None, p, iRow, iCol );
+					DrawLinePoint(rpt, g, SeriesBrush[iCol-1], ChartMarkerEnum.None, p, iRow, iCol );
 				}
 				DrawAreaBetweenPoints(g, SeriesBrush[iCol-1], saveP, null);
 			}
 			return;
 		}
 
-		void DrawPlotAreaAreaPercentStacked(Graphics g)
+		void DrawPlotAreaAreaPercentStacked(Report rpt, Graphics g)
 		{
 			double max = 1;				// 100% is the max
 			// Draw Plot area data 
@@ -138,12 +138,12 @@ namespace fyiReporting.RDL
 				double sum=0;
 				for (int iCol = 1; iCol <= SeriesCount; iCol++)
 				{
-					sum += GetDataValue(iRow, iCol);
+					sum += GetDataValue(rpt, iRow, iCol);
 				}
 				double v=0;
 				for (int iCol = 1; iCol <= SeriesCount; iCol++)
 				{
-					v += GetDataValue(iRow, iCol);
+					v += GetDataValue(rpt, iRow, iCol);
 
 					int y = (int) ((Math.Min(v/sum,max) / max) * maxPointHeight);
 					Point p = new Point(x, Layout.PlotArea.Top + (maxPointHeight -  y));
@@ -158,13 +158,13 @@ namespace fyiReporting.RDL
 			{
 				for (int iRow=1; iRow <= CategoryCount; iRow++)
 				{
-					double v = this.GetDataValue(iRow, iCol);
+					double v = this.GetDataValue(rpt, iRow, iCol);
 
 					int x = (int) (Layout.PlotArea.Left + (iRow-1) * widthCat);
 					int y = (int) ((Math.Min(v,max) / max) * maxPointHeight);
 					Point p = new Point(x, Layout.PlotArea.Top + (maxPointHeight -  y));
 					saveP[iRow-1] = saveAllP[iRow-1, iCol-1];
-					DrawLinePoint(g, SeriesBrush[iCol-1], ChartMarkerEnum.None, p, iRow, iCol );
+					DrawLinePoint(rpt, g, SeriesBrush[iCol-1], ChartMarkerEnum.None, p, iRow, iCol );
 				}
 				DrawAreaBetweenPoints(g, SeriesBrush[iCol-1], saveP, iCol==1?null:priorSaveP);
 				// Save prior point values
@@ -174,7 +174,7 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		void DrawPlotAreaAreaStacked(Graphics g, double max)
+		void DrawPlotAreaAreaStacked(Report rpt, Graphics g, double max)
 		{
 			// Draw Plot area data 
 			int maxPointHeight = (int) Layout.PlotArea.Height;	
@@ -188,7 +188,7 @@ namespace fyiReporting.RDL
 				double v=0;
 				for (int iCol = 1; iCol <= SeriesCount; iCol++)
 				{
-					v += GetDataValue(iRow, iCol);
+					v += GetDataValue(rpt, iRow, iCol);
 					int y = (int) ((Math.Min(v,max) / max) * maxPointHeight);
 					Point p = new Point(x, Layout.PlotArea.Top + (maxPointHeight -  y));
 					saveAllP[iRow-1, iCol-1] = p;
@@ -202,13 +202,13 @@ namespace fyiReporting.RDL
 			{
 				for (int iRow=1; iRow <= CategoryCount; iRow++)
 				{
-					double v = this.GetDataValue(iRow, iCol);
+					double v = this.GetDataValue(rpt, iRow, iCol);
 
 					int x = (int) (Layout.PlotArea.Left + (iRow-1) * widthCat);
 					int y = (int) ((Math.Min(v,max) / max) * maxPointHeight);
 					Point p = new Point(x, Layout.PlotArea.Top + (maxPointHeight -  y));
 					saveP[iRow-1] = saveAllP[iRow-1, iCol-1];
-					DrawLinePoint(g, SeriesBrush[iCol-1], ChartMarkerEnum.None, p, iRow, iCol );
+					DrawLinePoint(rpt, g, SeriesBrush[iCol-1], ChartMarkerEnum.None, p, iRow, iCol );
 				}
 				DrawAreaBetweenPoints(g, SeriesBrush[iCol-1], saveP, iCol==1?null:priorSaveP);
 				// Save prior point values
@@ -218,7 +218,7 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		void DrawPlotAreaLine(Graphics g, double max)
+		void DrawPlotAreaLine(Report rpt, Graphics g, double max)
 		{
 			// Draw Plot area data 
 			int maxPointHeight = (int) Layout.PlotArea.Height;	
@@ -228,13 +228,13 @@ namespace fyiReporting.RDL
 			{
 				for (int iRow=1; iRow <= CategoryCount; iRow++)
 				{
-					double v = this.GetDataValue(iRow, iCol);
+					double v = this.GetDataValue(rpt, iRow, iCol);
 
 					int x = (int) (Layout.PlotArea.Left + (iRow-1) * widthCat + widthCat/2 );
 					int y = (int) ((Math.Min(v,max) / max) * maxPointHeight);
 					Point p = new Point(x, Layout.PlotArea.Top + (maxPointHeight -  y));
 					saveP[iRow-1] = p;
-					DrawLinePoint(g, SeriesBrush[iCol-1], SeriesMarker[iCol-1], p, iRow, iCol );
+					DrawLinePoint(rpt, g, SeriesBrush[iCol-1], SeriesMarker[iCol-1], p, iRow, iCol );
 				}
 				DrawLineBetweenPoints(g, SeriesBrush[iCol-1], saveP);
 			}
@@ -308,14 +308,14 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		void DrawLinePoint(Graphics g, Brush brush, ChartMarkerEnum marker, Point p, int iRow, int iCol)
+		void DrawLinePoint(Report rpt, Graphics g, Brush brush, ChartMarkerEnum marker, Point p, int iRow, int iCol)
 		{
 			Pen pen=null;
 			try
 			{
 				pen = new Pen(brush);
 				DrawLegendMarker(g, brush, pen, marker, p.X-3, p.Y-3, 7);
-				DrawDataPoint(g, new Point(p.X-3, p.Y+3), iRow, iCol);
+				DrawDataPoint(rpt, g, new Point(p.X-3, p.Y+3), iRow, iCol);
 			}
 			finally
 			{

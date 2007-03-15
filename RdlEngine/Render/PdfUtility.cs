@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -45,8 +45,6 @@ namespace fyiReporting.RDL
 		/// <summary>
 		/// Creates the xref table using the byte offsets in the array.
 		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="size"></param>
 		/// <returns></returns>
 		internal byte[] CreateXrefTable(long fileOffset,out int size)
 		{
@@ -61,7 +59,7 @@ namespace fyiReporting.RDL
 				table=string.Format("\r\nxref {0} {1}\r\n0000000000 65535 f\r\n",0,numTableEntries);
 				for(int entries=1; entries<numTableEntries; entries++)
 				{
-					ObjectList obj=(ObjectList)pa.offsets[entries];
+					ObjectList obj=pa.offsets[entries];
 					table+=obj.offset.ToString().PadLeft(10,'0');
 					table+=" 00000 n\r\n";
 				}
@@ -87,7 +85,6 @@ namespace fyiReporting.RDL
 		/// <summary>
 		/// Creates the trailer and return the bytes array
 		/// </summary>
-		/// <param name="size"></param>
 		/// <returns></returns>
 		internal byte[] GetTrailer(int refRoot,int refInfo,out int size)
 		{
@@ -102,7 +99,7 @@ namespace fyiReporting.RDL
 				else 
 					infoDict="";
 				//The sorted array will be already sorted to contain the file offset at the zeroth position
-				ObjectList objList=(ObjectList)pa.offsets[0];
+				ObjectList objList=pa.offsets[0];
 				trailer=string.Format("trailer\n<</Size {0}/Root {1} 0 R {2}"+
 					">>\r\nstartxref\r\n{3}\r\n%%EOF\r\n"
 					,numTableEntries,refRoot,infoDict,objList.offset);

@@ -1,30 +1,31 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
+using System.Threading;
 
 using fyiReporting.RDL;
 
@@ -32,43 +33,40 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Aggregate function: RunningValue count
-	/// <p>
-	///	
+	/// Aggregate function: RunningValue count
 	/// </summary>
 	[Serializable]
-	internal class FunctionAggrRvCount : FunctionAggr, IExpr
+	internal class FunctionAggrRvCount : FunctionAggr, IExpr, ICacheData
 	{
-		private TypeCode _tc;		// type of result: decimal or double
-		private int _count;			//
+		string _key;			// key to cached between invocations
 		/// <summary>
 		/// Aggregate function: RunningValue Sum returns the sum of all values of the
 		///		expression within the scope up to that row
 		///	Return type is decimal for decimal expressions and double for all
 		///	other expressions.	
 		/// </summary>
-		public FunctionAggrRvCount(IExpr e, object scp):base(e, scp) 
+        public FunctionAggrRvCount(List<ICacheData> dataCache, IExpr e, object scp)
+            : base(e, scp) 
 		{
-			_count = -1;
-
-			_tc = TypeCode.Double;		// force result to double
+			_key = "aggrcount" + Interlocked.Increment(ref Parser.Counter).ToString();
+			dataCache.Add(this);
 		}
 
 		public TypeCode GetTypeCode()
 		{
-			return _tc;
+			return TypeCode.Double;
 		}
 
 		// Evaluate is for interpretation  (and is relatively slow)
-		public object Evaluate(Row row)
+		public object Evaluate(Report rpt, Row row)
 		{
-			return _tc==TypeCode.Decimal? (object) EvaluateDecimal(row): (object) EvaluateDouble(row);
+			return (object) EvaluateDouble(rpt, row);
 		}
 		
-		public double EvaluateDouble(Row row)
+		public double EvaluateDouble(Report rpt, Row row)
 		{
 			bool bSave=true;
-			IEnumerable re = this.GetDataScope(row, out bSave);
+			IEnumerable re = this.GetDataScope(rpt, row, out bSave);
 			if (re == null)
 				return double.NaN;
 
@@ -79,36 +77,58 @@ namespace fyiReporting.RDL
 				break;
 			}
 
-			object currentValue = _Expr.Evaluate(row);
+			int count;
+
+			object currentValue = _Expr.Evaluate(rpt, row);
 			int incr = currentValue == null? 0: 1;
 			if (row == startrow)
 			{
 				// must be the start of a new group
-				_count = incr;
+				count = incr;
 			}
 			else
 			{
-				_count += incr;
+				count = GetValue(rpt) + incr;
 			}
 
-			return (double) _count;
+			SetValue(rpt, count);
+			return (double) count;
 		}
 		
-		public decimal EvaluateDecimal(Row row)
+		public decimal EvaluateDecimal(Report rpt, Row row)
 		{
-			return (decimal) EvaluateDouble(row);
+			return (decimal) EvaluateDouble(rpt, row);
 		}
 
-		public string EvaluateString(Row row)
+		public string EvaluateString(Report rpt, Row row)
 		{
-			object result = Evaluate(row);
+			object result = EvaluateDouble(rpt, row);
 			return Convert.ToString(result);
 		}
 
-		public DateTime EvaluateDateTime(Row row)
+		public DateTime EvaluateDateTime(Report rpt, Row row)
 		{
-			object result = Evaluate(row);
+			object result = Evaluate(rpt, row);
 			return Convert.ToDateTime(result);
 		}
+		private int GetValue(Report rpt)
+		{
+			OInt oi = rpt.Cache.Get(_key) as OInt;
+			return oi == null? 0: oi.i;
+		}
+
+		private void SetValue(Report rpt, int i)
+		{
+			rpt.Cache.AddReplace(_key, new OInt(i));
+		}
+
+		#region ICacheData Members
+
+		public void ClearCache(Report rpt)
+		{
+			rpt.Cache.Remove(_key);
+		}
+
+		#endregion
 	}
 }

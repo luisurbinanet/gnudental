@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -56,14 +56,17 @@ namespace fyiReporting.RdlDesign
 	
 		public delegate void RdlChangeHandler(object sender, EventArgs e);
 		public event RdlChangeHandler OnRdlChanged;
-		public event RdlChangeHandler OnSelectionChanged;
-		public event RdlChangeHandler OnSelectionMoved;
+		public event DesignCtl.HeightEventHandler OnHeightChanged;
+        public event RdlChangeHandler OnSelectionChanged;
+        public event RdlChangeHandler OnSelectionMoved;
 		public event RdlChangeHandler OnReportItemInserted;
 		public event RdlChangeHandler OnDesignTabChanged;
+		public event DesignCtl.OpenSubreportEventHandler OnOpenSubreport; 
 
 		// When toggling between the items we need to track who has latest changes
 		string _DesignChanged;			// last designer that triggered change
 		string _CurrentTab="design";
+        private DesignEditLines pbLines;
 
 		int filePosition=0;				// file position; for use with search
 
@@ -83,9 +86,18 @@ namespace fyiReporting.RdlDesign
 			dcDesign.Size = new System.Drawing.Size(480, 350);
 			dcDesign.TabIndex = 0;
 			dcDesign.ReportChanged += new System.EventHandler(dcDesign_ReportChanged);
-			dcDesign.SelectionChanged += new System.EventHandler(dcDesign_SelectionChanged);
+            dcDesign.HeightChanged += new DesignCtl.HeightEventHandler(dcDesign_HeightChanged);
+            dcDesign.SelectionChanged += new System.EventHandler(dcDesign_SelectionChanged);
 			dcDesign.SelectionMoved += new System.EventHandler(dcDesign_SelectionMoved);
 			dcDesign.ReportItemInserted += new System.EventHandler(dcDesign_ReportItemInserted);
+			dcDesign.OpenSubreport += new DesignCtl.OpenSubreportEventHandler(dcDesign_OpenSubreport);
+
+			tbEditor.SelectionChanged +=new EventHandler(tbEditor_SelectionChanged);
+            // adjust size of line box by measuring a large #
+            using (Graphics g = this.CreateGraphics())
+            {
+                this.pbLines.Width = (int) (g.MeasureString("99999", tbEditor.Font).Width);
+            }
 		}
  
 		internal DesignCtl DesignCtl
@@ -106,6 +118,21 @@ namespace fyiReporting.RdlDesign
 		internal string DesignTab
 		{
 			get {return _CurrentTab;}
+			set 
+			{
+				switch (value)
+				{
+					case "design":
+						tcEHP.SelectedIndex = 0;
+						break;						
+					case "edit":
+						tcEHP.SelectedIndex = 1;
+						break;
+					case "preview":
+						tcEHP.SelectedIndex = 2;
+						break;
+				}
+			}
 		}
  		
 		internal void SetFocus()
@@ -123,6 +150,17 @@ namespace fyiReporting.RdlDesign
 					break;
 			}
 		}
+
+        internal void ShowEditLines(bool bShow)
+        {
+            pbLines.Visible = bShow;
+        }
+
+        internal bool ShowReportItemOutline
+        {
+            get {return dcDesign.ShowReportItemOutline;}
+            set {dcDesign.ShowReportItemOutline = value;}
+        }
 
 		override public string Text
 		{
@@ -163,11 +201,22 @@ namespace fyiReporting.RdlDesign
 		{
 			get {return dcDesign.SelectionPosition;}
 		}
+		
+		public SizeF SelectionSize
+		{
+			get {return dcDesign.SelectionSize;}
+		}
 
 		public void ApplyStyleToSelected(string name, string v)
 		{
 			if (_CurrentTab == "design")
 				dcDesign.ApplyStyleToSelected(name, v);
+		}
+
+		public void SetSelectedText(string v)
+		{
+			if (_CurrentTab == "design")
+				dcDesign.SetSelectedText(v);
 		}
 
 		public bool CanEdit
@@ -189,6 +238,26 @@ namespace fyiReporting.RdlDesign
 				_DesignChanged = _CurrentTab;
 				tbEditor.Modified = value;
 			}
+		}
+
+		public string UndoDescription
+		{
+			get 
+			{ 
+				return _CurrentTab == "design"? dcDesign.UndoDescription: "";
+			}
+		}
+
+		public void StartUndoGroup(string description)
+		{
+			if (_CurrentTab == "design")
+				dcDesign.StartUndoGroup(description);
+		}
+
+		public void EndUndoGroup(bool keepChanges)
+		{
+			if (_CurrentTab == "design")
+				dcDesign.EndUndoGroup(keepChanges);
 		}
 
 		public bool CanUndo
@@ -409,6 +478,31 @@ namespace fyiReporting.RdlDesign
 			}
 		}
 
+		public int CurrentLine
+		{
+			get 
+			{
+				int v = tbEditor.SelectionStart;
+				return this.tbEditor.GetLineFromCharIndex(v)+1;
+			}
+		}
+
+		public int CurrentCh
+		{
+			get 
+			{
+				int v = tbEditor.SelectionStart;
+				int line = tbEditor.GetLineFromCharIndex(v);
+
+				// Go back a character at a time until you hit previous line
+				int c=0;
+				while (--v >= 0 && line == tbEditor.GetLineFromCharIndex(v))
+					c++;
+
+				return c+1;
+			}
+		}
+
 		/// <summary>
 		/// Zoom 
 		/// </summary>
@@ -500,15 +594,18 @@ namespace fyiReporting.RdlDesign
 			if (_CurrentTab != "edit")
 				return;
 
-			int offset = 0; 
-			nLine = Math.Min(nLine, tbEditor.Lines.Length);		// don't go off the end
+			int offset = 0;
+            nLine = Math.Min(Math.Max(0, nLine - 1), tbEditor.Lines.Length - 1);	// don't go off the ends
 
-			for ( int i = 0; i < nLine - 1 && i < tbEditor.Lines.Length; ++i ) 
-				offset += this.tbEditor.Lines[i].Length + 1; 
+            offset = tbEditor.GetFirstCharIndexFromLine(nLine);    
+
+//   Before .Net 2
+//			for ( int i = 0; i < nLine - 1 && i < tbEditor.Lines.Length; ++i ) 
+//				offset += this.tbEditor.Lines[i].Length + 1; 
 
 			Control savectl = this.ActiveControl;
 			tbEditor.Focus(); 
-			tbEditor.Select( offset, this.tbEditor.Lines[nLine > 0? nLine-1: 0].Length);
+			tbEditor.Select( offset, this.tbEditor.Lines[nLine].Length);
 			this.ActiveControl = savectl;
 		}
 
@@ -534,102 +631,118 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.tcEHP = new System.Windows.Forms.TabControl();
-			this.tpDesign = new System.Windows.Forms.TabPage();
-			this.tpEditor = new System.Windows.Forms.TabPage();
-			this.tbEditor = new System.Windows.Forms.RichTextBox();
-			this.tpBrowser = new System.Windows.Forms.TabPage();
-			this.rdlPreview = new fyiReporting.RdlViewer.RdlViewer();
-			this.tcEHP.SuspendLayout();
-			this.tpEditor.SuspendLayout();
-			this.tpBrowser.SuspendLayout();
-			this.SuspendLayout();
-			// 
-			// tcEHP
-			// 
-			this.tcEHP.Alignment = System.Windows.Forms.TabAlignment.Bottom;
-			this.tcEHP.Controls.Add(this.tpDesign);
-			this.tcEHP.Controls.Add(this.tpEditor);
-			this.tcEHP.Controls.Add(this.tpBrowser);
-			this.tcEHP.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tcEHP.Location = new System.Drawing.Point(0, 0);
-			this.tcEHP.Name = "tcEHP";
-			this.tcEHP.SelectedIndex = 0;
-			this.tcEHP.ShowToolTips = true;
-			this.tcEHP.Size = new System.Drawing.Size(488, 376);
-			this.tcEHP.TabIndex = 0;
-			this.tcEHP.SelectedIndexChanged += new System.EventHandler(this.tcEHP_SelectedIndexChanged);
-			// 
-			// tpDesign
-			// 
-			this.tpDesign.Location = new System.Drawing.Point(4, 4);
-			this.tpDesign.Name = "tpDesign";
-			this.tpDesign.Size = new System.Drawing.Size(480, 350);
-			this.tpDesign.TabIndex = 3;
-			this.tpDesign.Tag = "design";
-			this.tpDesign.Text = "Designer";
-			// 
-			// tpEditor
-			// 
-			this.tpEditor.Controls.Add(this.tbEditor);
-			this.tpEditor.Location = new System.Drawing.Point(4, 4);
-			this.tpEditor.Name = "tpEditor";
-			this.tpEditor.Size = new System.Drawing.Size(480, 350);
-			this.tpEditor.TabIndex = 0;
-			this.tpEditor.Tag = "edit";
-			this.tpEditor.Text = "RDL Text";
-			this.tpEditor.ToolTipText = "Edit Report Syntax";
-			// 
-			// tbEditor
-			// 
-			this.tbEditor.AcceptsTab = true;
-			this.tbEditor.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.tbEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tbEditor.HideSelection = false;
-			this.tbEditor.Location = new System.Drawing.Point(0, 0);
-			this.tbEditor.Name = "tbEditor";
-			this.tbEditor.Size = new System.Drawing.Size(480, 350);
-			this.tbEditor.TabIndex = 0;
-			this.tbEditor.Text = "";
-			this.tbEditor.WordWrap = false;
-			this.tbEditor.TextChanged += new System.EventHandler(this.tbEditor_TextChanged);
-			// 
-			// tpBrowser
-			// 
-			this.tpBrowser.Controls.Add(this.rdlPreview);
-			this.tpBrowser.Location = new System.Drawing.Point(4, 4);
-			this.tpBrowser.Name = "tpBrowser";
-			this.tpBrowser.Size = new System.Drawing.Size(480, 350);
-			this.tpBrowser.TabIndex = 2;
-			this.tpBrowser.Tag = "preview";
-			this.tpBrowser.Text = "Preview";
-			// 
-			// rdlPreview
-			// 
-			this.rdlPreview.Cursor = System.Windows.Forms.Cursors.Default;
-			this.rdlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.rdlPreview.Folder = null;
-			this.rdlPreview.Location = new System.Drawing.Point(0, 0);
-			this.rdlPreview.Name = "rdlPreview";
-			this.rdlPreview.Parameters = null;
-			this.rdlPreview.ScrollMode = fyiReporting.RdlViewer.ScrollModeEnum.Continuous;
-			this.rdlPreview.Size = new System.Drawing.Size(480, 350);
-			this.rdlPreview.SourceFile = null;
-			this.rdlPreview.SourceRdl = null;
-			this.rdlPreview.TabIndex = 0;
-			this.rdlPreview.Text = "rdlViewer1";
-			this.rdlPreview.Zoom = 0.5494462F;
-			this.rdlPreview.ZoomMode = fyiReporting.RdlViewer.ZoomEnum.FitWidth;
-			// 
-			// RdlEditPreview
-			// 
-			this.Controls.Add(this.tcEHP);
-			this.Name = "RdlEditPreview";
-			this.Size = new System.Drawing.Size(488, 376);
-			this.tcEHP.ResumeLayout(false);
-			this.tpEditor.ResumeLayout(false);
-			this.tpBrowser.ResumeLayout(false);
-			this.ResumeLayout(false);
+            this.tcEHP = new System.Windows.Forms.TabControl();
+            this.tpDesign = new System.Windows.Forms.TabPage();
+            this.tpEditor = new System.Windows.Forms.TabPage();
+            this.tbEditor = new System.Windows.Forms.RichTextBox();
+            this.pbLines = new DesignEditLines(this.tbEditor);
+            this.tpBrowser = new System.Windows.Forms.TabPage();
+            this.rdlPreview = new fyiReporting.RdlViewer.RdlViewer();
+            this.tcEHP.SuspendLayout();
+            this.tpEditor.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbLines)).BeginInit();
+            this.tpBrowser.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // tcEHP
+            // 
+            this.tcEHP.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.tcEHP.Controls.Add(this.tpDesign);
+            this.tcEHP.Controls.Add(this.tpEditor);
+            this.tcEHP.Controls.Add(this.tpBrowser);
+            this.tcEHP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcEHP.Location = new System.Drawing.Point(0, 0);
+            this.tcEHP.Name = "tcEHP";
+            this.tcEHP.SelectedIndex = 0;
+            this.tcEHP.ShowToolTips = true;
+            this.tcEHP.Size = new System.Drawing.Size(488, 376);
+            this.tcEHP.TabIndex = 0;
+            this.tcEHP.SelectedIndexChanged += new System.EventHandler(this.tcEHP_SelectedIndexChanged);
+            // 
+            // tpDesign
+            // 
+            this.tpDesign.Location = new System.Drawing.Point(4, 4);
+            this.tpDesign.Name = "tpDesign";
+            this.tpDesign.Size = new System.Drawing.Size(480, 350);
+            this.tpDesign.TabIndex = 3;
+            this.tpDesign.Tag = "design";
+            this.tpDesign.Text = "Designer";
+            // 
+            // tpEditor
+            // 
+            this.tpEditor.Controls.Add(this.tbEditor);
+            this.tpEditor.Controls.Add(this.pbLines);
+            this.tpEditor.Location = new System.Drawing.Point(4, 4);
+            this.tpEditor.Name = "tpEditor";
+            this.tpEditor.Size = new System.Drawing.Size(480, 350);
+            this.tpEditor.TabIndex = 0;
+            this.tpEditor.Tag = "edit";
+            this.tpEditor.Text = "RDL Text";
+            this.tpEditor.ToolTipText = "Edit Report Syntax";
+            // 
+            // tbEditor
+            // 
+            this.tbEditor.AcceptsTab = true;
+            this.tbEditor.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tbEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbEditor.HideSelection = false;
+            this.tbEditor.Location = new System.Drawing.Point(32, 0);
+            this.tbEditor.Name = "tbEditor";
+            this.tbEditor.Size = new System.Drawing.Size(448, 350);
+            this.tbEditor.TabIndex = 0;
+            this.tbEditor.Text = "";
+            this.tbEditor.WordWrap = false;
+            this.tbEditor.TextChanged += new System.EventHandler(this.tbEditor_TextChanged);
+            // 
+            // pbLines
+            // 
+            this.pbLines.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pbLines.Location = new System.Drawing.Point(0, 0);
+            this.pbLines.Name = "pbLines";
+            this.pbLines.Size = new System.Drawing.Size(32, 350);
+            this.pbLines.TabIndex = 1;
+            this.pbLines.TabStop = false;
+            // 
+            // tpBrowser
+            // 
+            this.tpBrowser.Controls.Add(this.rdlPreview);
+            this.tpBrowser.Location = new System.Drawing.Point(4, 4);
+            this.tpBrowser.Name = "tpBrowser";
+            this.tpBrowser.Size = new System.Drawing.Size(480, 350);
+            this.tpBrowser.TabIndex = 2;
+            this.tpBrowser.Tag = "preview";
+            this.tpBrowser.Text = "Preview";
+            // 
+            // rdlPreview
+            // 
+            this.rdlPreview.Cursor = System.Windows.Forms.Cursors.Default;
+            this.rdlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rdlPreview.Folder = null;
+            this.rdlPreview.Location = new System.Drawing.Point(0, 0);
+            this.rdlPreview.Name = "rdlPreview";
+            this.rdlPreview.PageCurrent = 1;
+            this.rdlPreview.Parameters = null;
+            this.rdlPreview.ReportName = null;
+            this.rdlPreview.ScrollMode = fyiReporting.RdlViewer.ScrollModeEnum.Continuous;
+            this.rdlPreview.ShowParameterPanel = true;
+            this.rdlPreview.Size = new System.Drawing.Size(480, 350);
+            this.rdlPreview.SourceFile = null;
+            this.rdlPreview.SourceRdl = null;
+            this.rdlPreview.TabIndex = 0;
+            this.rdlPreview.Text = "rdlViewer1";
+            this.rdlPreview.Zoom = 0.5474582F;
+            this.rdlPreview.ZoomMode = fyiReporting.RdlViewer.ZoomEnum.FitWidth;
+            // 
+            // RdlEditPreview
+            // 
+            this.Controls.Add(this.tcEHP);
+            this.Name = "RdlEditPreview";
+            this.Size = new System.Drawing.Size(488, 376);
+            this.tcEHP.ResumeLayout(false);
+            this.tpEditor.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pbLines)).EndInit();
+            this.tpBrowser.ResumeLayout(false);
+            this.ResumeLayout(false);
 
 		}
 		#endregion
@@ -654,12 +767,28 @@ namespace fyiReporting.RdlDesign
 				OnRdlChanged(this, e);
 			}
 		}
+
+        private void dcDesign_HeightChanged(object sender, HeightEventArgs e)
+        {
+            if (OnHeightChanged != null)
+            {
+                OnHeightChanged(this, e);
+            }
+        }
 		
 		private void dcDesign_ReportItemInserted(object sender, System.EventArgs e)
 		{
 			if (OnReportItemInserted != null)
 			{
 				OnReportItemInserted(this, e);
+			}
+		}
+
+		private void dcDesign_OpenSubreport(object sender, SubReportEventArgs e)
+		{
+			if (OnOpenSubreport != null)
+			{
+				OnOpenSubreport(this, e);
 			}
 		}
 		
@@ -806,5 +935,53 @@ namespace fyiReporting.RdlDesign
 		{
 			get {return this.rdlPreview;}
 		}
+
+		private void tbEditor_SelectionChanged(object sender, EventArgs e)
+		{
+			if (OnSelectionChanged != null)
+			{
+				OnSelectionChanged(this, e);
+			}
+		}
+
+        private void pbLines_Draw(Graphics g)
+        {
+            if (!pbLines.Visible)
+                return;
+            int lineHeight =0;
+            try
+            {  // its possible that there are less than 2 lines; so trap the error
+                lineHeight = tbEditor.GetPositionFromCharIndex(tbEditor.GetFirstCharIndexFromLine(2)).Y -
+                          tbEditor.GetPositionFromCharIndex(tbEditor.GetFirstCharIndexFromLine(1)).Y;
+            }
+            catch { return; }
+            if (lineHeight <= 0)
+                return;
+            
+            // Get the first line index and location
+            int first_index;
+            int first_line;
+            int first_line_y;
+            first_index = tbEditor.GetCharIndexFromPosition(new
+                     Point(0, (int)(g.VisibleClipBounds.Y + lineHeight / 3)));
+            first_line = tbEditor.GetLineFromCharIndex(first_index);
+            first_line_y = tbEditor.GetPositionFromCharIndex(first_index).Y;
+
+            //  Draw on the PictureBox the visible line numbers of the RichTextBox
+            g.Clear(Control.DefaultBackColor);
+            int i = first_line;
+            float y = first_line_y + 0 + lineHeight * (i - first_line - 1);
+            while (y < g.VisibleClipBounds.Y + g.VisibleClipBounds.Height)
+            {
+                string l = i.ToString();
+                g.DrawString(l, tbEditor.Font, Brushes.DarkBlue, 
+                    pbLines.Width - (g.MeasureString(l, tbEditor.Font).Width+4), y);
+                i += 1;
+                if (i > tbEditor.Lines.Length)
+                    break;
+                y = first_line_y + 0 + lineHeight * (i - first_line - 1);
+            }
+        }
+
 	}
 }

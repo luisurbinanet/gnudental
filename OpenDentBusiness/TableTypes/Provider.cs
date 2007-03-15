@@ -48,8 +48,10 @@ namespace OpenDentBusiness{
 		public Color OutlineColor;
 		///<summary>FK to schoolclass.SchoolClassNum Used in dental schools.  Each student is a provider.  This keeps track of which class they are in.</summary>
 		public int SchoolClassNum;
-		///<summary>Used for Canadian claims right now, and will be required in US within a year or two.  Goes out on e-claims if avaialable.</summary>
+		///<summary>Used for Canadian claims right now as CDA number.  Will be required in US within a year.  Goes out on e-claims if available.</summary>
 		public string NationalProvID;
+		///<summary>Canadian field required for e-claims.  Assigned by CDA.  It's OK to have multiple providers with the same OfficeNum.  Max length should be 4.</summary>
+		public string CanadianOfficeNum;
 
 		///<summary>Returns a copy of this Provider.</summary>
 		public Provider Copy(){
@@ -76,6 +78,7 @@ namespace OpenDentBusiness{
 			p.OutlineColor=OutlineColor;
 			p.SchoolClassNum=SchoolClassNum;
 			p.NationalProvID=NationalProvID;
+			p.CanadianOfficeNum=CanadianOfficeNum;
 			return p;
 		}
 

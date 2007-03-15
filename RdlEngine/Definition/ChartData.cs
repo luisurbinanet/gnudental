@@ -1,27 +1,28 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace fyiReporting.RDL
@@ -32,12 +33,12 @@ namespace fyiReporting.RDL
 	[Serializable]
 	internal class ChartData : ReportLink
 	{
-		ArrayList _Items;			// list of report items
+        List<ChartSeries> _Items;			// list of chart series
 
-		internal ChartData(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal ChartData(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			ChartSeries cs;
-			_Items = new ArrayList();
+            _Items = new List<ChartSeries>();
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
 			{
@@ -59,6 +60,8 @@ namespace fyiReporting.RDL
 			}
 			if (_Items.Count == 0)
 				OwnerReport.rl.LogError(8, "For ChartCata at least one ChartSeries is required.");
+			else
+                _Items.TrimExcess();
 		}
 		
 		override internal void FinalPass()
@@ -70,7 +73,7 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		internal ArrayList Items
+        internal List<ChartSeries> Items
 		{
 			get { return  _Items; }
 		}

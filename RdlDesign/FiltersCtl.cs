@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -38,16 +38,15 @@ namespace fyiReporting.RdlDesign
 	{
 		private DesignXmlDraw _Draw;
 		private XmlNode _FilterParent;
-		private DataTable _DataTable;
-		private DataGridTextBoxColumn dgtbFE;
-		private DataGridTextBoxColumn dgtbOP;
-		private DataGridTextBoxColumn dgtbFV;
+        private DataGridViewTextBoxColumn dgtbFE;
+        private DataGridViewComboBoxColumn dgtbOP;
+        private DataGridViewTextBoxColumn dgtbFV;
 
 		private System.Windows.Forms.Button bDelete;
-		private System.Windows.Forms.DataGrid dgFilters;
-		private System.Windows.Forms.DataGridTableStyle dgTableStyle;
+		private System.Windows.Forms.DataGridView dgFilters;
 		private System.Windows.Forms.Button bUp;
 		private System.Windows.Forms.Button bDown;
+		private System.Windows.Forms.Button bValueExpr;
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
@@ -67,56 +66,42 @@ namespace fyiReporting.RdlDesign
 		private void InitValues()
 		{
 			// Initialize the DataGrid columns
-			dgtbFE = new DataGridTextBoxColumn();
-			dgtbOP = new DataGridTextBoxColumn();
-			dgtbFV = new DataGridTextBoxColumn();
 
-			this.dgTableStyle.GridColumnStyles.AddRange(new DataGridColumnStyle[] {
-															this.dgtbFE,
-															this.dgtbOP,
-															this.dgtbFV});
-			// 
+            dgtbFE = new DataGridViewTextBoxColumn();
+            dgtbOP = new DataGridViewComboBoxColumn(); 
+            dgtbOP.Items.AddRange(new string[] 
+                { "Equal", "Like", "NotEqual", "GreaterThan", "GreaterThanOrEqual", "LessThan",
+                    "LessThanOrEqual", "TopN", "BottomN", "TopPercent", "BottomPercent", "In", "Between" });
+            dgtbFV = new DataGridViewTextBoxColumn();
+
+            dgFilters.Columns.Add(dgtbFE);
+            dgFilters.Columns.Add(dgtbOP);
+            dgFilters.Columns.Add(dgtbFV);
+            // 
 			// dgtbFE
 			// 
 			dgtbFE.HeaderText = "Filter Expression";
-			dgtbFE.MappingName = "FilterExpression";
-			dgtbFE.Width = 75;
+			dgtbFE.Width = 130;
 			// Get the parent's dataset name
-//			string dataSetName = _Draw.GetDataSetNameValue(_FilterParent);
-//
-//			string[] fields = _Draw.GetFields(dataSetName, true);
-//			if (fields != null)
-//				dgtbFE.CB.Items.AddRange(fields);
-			// 
-			// dgtbOP
-			// 
-			//dgtbOP.Format = "";
-			//dgtbOP.FormatInfo = null;
-			dgtbOP.HeaderText = "Operator";
-			dgtbOP.MappingName = "Operator";
-			dgtbOP.Width = 70;
-//			dgtbOP.CB.Items.AddRange(new string[] 
-//				{"=", "Like", "NotEqual", ">",
-//				 ">=", "<", "<=",
-//				 "TopN", "BottomN", "TopPercent", "BottomPercent",
-//				 "In", "Between" } );
+			string dataSetName = _Draw.GetDataSetNameValue(_FilterParent);
+
+            // unfortunately no way to make combo box editable
+            //string[] fields = _Draw.GetFields(dataSetName, true);
+            //if (fields != null)
+            //    dgtbFE.Items.AddRange(fields);
+
+            dgtbOP.HeaderText = "Operator";
+			dgtbOP.Width = 100;
+            dgtbOP.DropDownWidth = 140;
 			// 
 			// dgtbFV
 			// 
 			this.dgtbFV.HeaderText = "Value(s)";
-			this.dgtbFV.MappingName = "Value";
-			this.dgtbFV.Width = 75;
-//			string[] parms = _Draw.GetReportParameters(true);
-//			if (parms != null)
-//				dgtbFV.CB.Items.AddRange(parms);
+			this.dgtbFV.Width = 130;
+            //string[] parms = _Draw.GetReportParameters(true);
+            //if (parms != null)
+            //    dgtbFV.Items.AddRange(parms);
 
-			// Initialize the DataTable
-			_DataTable = new DataTable();
-			_DataTable.Columns.Add(new DataColumn("FilterExpression", typeof(string)));
-			_DataTable.Columns.Add(new DataColumn("Operator", typeof(string)));
-			_DataTable.Columns.Add(new DataColumn("Value", typeof(string)));
-
-			string[] rowValues = new string[3];
 			XmlNode filters = _Draw.GetNamedChildNode(_FilterParent, "Filters");
 
 			if (filters != null)
@@ -125,13 +110,11 @@ namespace fyiReporting.RdlDesign
 				if (fNode.NodeType != XmlNodeType.Element || 
 						fNode.Name != "Filter")
 					continue;
-				rowValues[0] = _Draw.GetElementValue(fNode, "FilterExpression", "");
-				rowValues[1] = _Draw.GetElementValue(fNode, "Operator", "");
 				// Get the values
 				XmlNode vNodes = _Draw.GetNamedChildNode(fNode, "FilterValues");
+				StringBuilder sb = new StringBuilder();
 				if (vNodes != null)
 				{
-					StringBuilder sb = new StringBuilder();
 					foreach (XmlNode v in vNodes.ChildNodes)
 					{
 						if (v.InnerText.Length <= 0)
@@ -140,19 +123,12 @@ namespace fyiReporting.RdlDesign
 							sb.Append(", ");
 						sb.Append(v.InnerText);
 					}
-					rowValues[2] = sb.ToString();
 				}
-				else 
-					rowValues[2] = "";
-
-				_DataTable.Rows.Add(rowValues);
+                // Add the row
+                dgFilters.Rows.Add(_Draw.GetElementValue(fNode, "FilterExpression", ""),
+                    _Draw.GetElementValue(fNode, "Operator", ""),
+                    sb.ToString());
 			}
-			this.dgFilters.DataSource = _DataTable;
-			DataGridTableStyle ts = dgFilters.TableStyles[0];
-		//	ts.PreferredRowHeight = dgtbOP.CB.Height;
-			ts.GridColumnStyles[0].Width = 140;
-			ts.GridColumnStyles[1].Width = 55;
-			ts.GridColumnStyles[2].Width = 140;
 		}
 
 		/// <summary> 
@@ -177,70 +153,71 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.dgFilters = new System.Windows.Forms.DataGrid();
-			this.dgTableStyle = new System.Windows.Forms.DataGridTableStyle();
-			this.bDelete = new System.Windows.Forms.Button();
-			this.bUp = new System.Windows.Forms.Button();
-			this.bDown = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.dgFilters)).BeginInit();
-			this.SuspendLayout();
-			// 
-			// dgFilters
-			// 
-			this.dgFilters.CaptionVisible = false;
-			this.dgFilters.DataMember = "";
-			this.dgFilters.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dgFilters.Location = new System.Drawing.Point(8, 8);
-			this.dgFilters.Name = "dgFilters";
-			this.dgFilters.Size = new System.Drawing.Size(376, 264);
-			this.dgFilters.TabIndex = 2;
-			this.dgFilters.TableStyles.AddRange(new System.Windows.Forms.DataGridTableStyle[] {
-																								  this.dgTableStyle});
-			// 
-			// dgTableStyle
-			// 
-			this.dgTableStyle.AllowSorting = false;
-			this.dgTableStyle.DataGrid = this.dgFilters;
-			this.dgTableStyle.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dgTableStyle.MappingName = "";
-			// 
-			// bDelete
-			// 
-			this.bDelete.Location = new System.Drawing.Point(392, 16);
-			this.bDelete.Name = "bDelete";
-			this.bDelete.Size = new System.Drawing.Size(48, 23);
-			this.bDelete.TabIndex = 1;
-			this.bDelete.Text = "Delete";
-			this.bDelete.Click += new System.EventHandler(this.bDelete_Click);
-			// 
-			// bUp
-			// 
-			this.bUp.Location = new System.Drawing.Point(392, 48);
-			this.bUp.Name = "bUp";
-			this.bUp.Size = new System.Drawing.Size(48, 23);
-			this.bUp.TabIndex = 3;
-			this.bUp.Text = "Up";
-			this.bUp.Click += new System.EventHandler(this.bUp_Click);
-			// 
-			// bDown
-			// 
-			this.bDown.Location = new System.Drawing.Point(392, 80);
-			this.bDown.Name = "bDown";
-			this.bDown.Size = new System.Drawing.Size(48, 23);
-			this.bDown.TabIndex = 4;
-			this.bDown.Text = "Down";
-			this.bDown.Click += new System.EventHandler(this.bDown_Click);
-			// 
-			// FiltersCtl
-			// 
-			this.Controls.Add(this.bDown);
-			this.Controls.Add(this.bUp);
-			this.Controls.Add(this.bDelete);
-			this.Controls.Add(this.dgFilters);
-			this.Name = "FiltersCtl";
-			this.Size = new System.Drawing.Size(488, 304);
-			((System.ComponentModel.ISupportInitialize)(this.dgFilters)).EndInit();
-			this.ResumeLayout(false);
+            this.dgFilters = new System.Windows.Forms.DataGridView();
+            this.bDelete = new System.Windows.Forms.Button();
+            this.bUp = new System.Windows.Forms.Button();
+            this.bDown = new System.Windows.Forms.Button();
+            this.bValueExpr = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.dgFilters)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // dgFilters
+            // 
+            this.dgFilters.Location = new System.Drawing.Point(8, 8);
+            this.dgFilters.Name = "dgFilters";
+            this.dgFilters.Size = new System.Drawing.Size(376, 264);
+            this.dgFilters.TabIndex = 2;
+            // 
+            // bDelete
+            // 
+            this.bDelete.Location = new System.Drawing.Point(392, 40);
+            this.bDelete.Name = "bDelete";
+            this.bDelete.Size = new System.Drawing.Size(48, 23);
+            this.bDelete.TabIndex = 1;
+            this.bDelete.Text = "Delete";
+            this.bDelete.Click += new System.EventHandler(this.bDelete_Click);
+            // 
+            // bUp
+            // 
+            this.bUp.Location = new System.Drawing.Point(392, 71);
+            this.bUp.Name = "bUp";
+            this.bUp.Size = new System.Drawing.Size(48, 23);
+            this.bUp.TabIndex = 3;
+            this.bUp.Text = "Up";
+            this.bUp.Click += new System.EventHandler(this.bUp_Click);
+            // 
+            // bDown
+            // 
+            this.bDown.Location = new System.Drawing.Point(392, 102);
+            this.bDown.Name = "bDown";
+            this.bDown.Size = new System.Drawing.Size(48, 23);
+            this.bDown.TabIndex = 4;
+            this.bDown.Text = "Down";
+            this.bDown.Click += new System.EventHandler(this.bDown_Click);
+            // 
+            // bValueExpr
+            // 
+            this.bValueExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bValueExpr.Location = new System.Drawing.Point(392, 16);
+            this.bValueExpr.Name = "bValueExpr";
+            this.bValueExpr.Size = new System.Drawing.Size(22, 16);
+            this.bValueExpr.TabIndex = 5;
+            this.bValueExpr.Tag = "value";
+            this.bValueExpr.Text = "fx";
+            this.bValueExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bValueExpr.Click += new System.EventHandler(this.bValueExpr_Click);
+            // 
+            // FiltersCtl
+            // 
+            this.Controls.Add(this.bValueExpr);
+            this.Controls.Add(this.bDown);
+            this.Controls.Add(this.bUp);
+            this.Controls.Add(this.bDelete);
+            this.Controls.Add(this.dgFilters);
+            this.Name = "FiltersCtl";
+            this.Size = new System.Drawing.Size(488, 304);
+            ((System.ComponentModel.ISupportInitialize)(this.dgFilters)).EndInit();
+            this.ResumeLayout(false);
 
 		}
 		#endregion
@@ -253,21 +230,22 @@ namespace fyiReporting.RdlDesign
 		public void Apply()
 		{
 			// Remove the old filters
-			XmlNode filters = _Draw.GetCreateNamedChildNode(_FilterParent, "Filters");
-			while (filters.FirstChild != null)
-			{
-				filters.RemoveChild(filters.FirstChild);
-			}
+			XmlNode filters = null;
+			_Draw.RemoveElement(_FilterParent, "Filters");
+
 			// Loop thru and add all the filters
-			foreach (DataRow dr in _DataTable.Rows)
+			foreach (DataGridViewRow dr in this.dgFilters.Rows)
 			{
-				if (dr[0] == DBNull.Value || dr[1] == DBNull.Value || dr[2] == DBNull.Value)
+				string fe = dr.Cells[0].Value as string;
+                string op = dr.Cells[1].Value as string;
+                string fv = dr.Cells[2].Value as string;
+				if (fe == null || fe.Length <= 0 || 
+                    op == null || op.Length <= 0 || 
+                    fv == null || fv.Length <= 0)
 					continue;
-				string fe = (string) dr[0];
-				string op = (string) dr[1];
-				string fv = (string) dr[2];
-				if (fe.Length <= 0 || op.Length <= 0 || fv.Length <= 0)
-					continue;
+				if (filters == null)
+					filters = _Draw.CreateElement(_FilterParent, "Filters", null);
+
 				XmlNode fNode = _Draw.CreateElement(filters, "Filter", null);
 				_Draw.CreateElement(fNode, "FilterExpression", fe);
 				_Draw.CreateElement(fNode, "Operator", op);
@@ -289,52 +267,94 @@ namespace fyiReporting.RdlDesign
 					_Draw.CreateElement(fvNode, "FilterValue", fv);
 				}
 			}
-			if (!filters.HasChildNodes)
-				_FilterParent.RemoveChild(filters);
 		}
 
 		private void bDelete_Click(object sender, System.EventArgs e)
 		{
-			this._DataTable.Rows.RemoveAt(this.dgFilters.CurrentRowIndex);
+            if (!dgFilters.Rows[dgFilters.CurrentRow.Index].IsNewRow)   // can't delete the new row
+                dgFilters.Rows.RemoveAt(this.dgFilters.CurrentRow.Index);
+            else
+            {   // just empty out the values
+                DataGridViewRow dgrv = dgFilters.Rows[this.dgFilters.CurrentRow.Index];
+                dgrv.Cells[0].Value = null;
+                dgrv.Cells[1].Value = null;
+                dgrv.Cells[2].Value = null;
+            }
 		}
 
 		private void bUp_Click(object sender, System.EventArgs e)
 		{
-			int cr = dgFilters.CurrentRowIndex;
+			int cr = dgFilters.CurrentRow.Index;
 			if (cr <= 0)		// already at the top
 				return;
-			
-			SwapRow(_DataTable.Rows[cr-1], _DataTable.Rows[cr]);
-			dgFilters.CurrentRowIndex = cr-1;
+
+            SwapRow(dgFilters.Rows[cr - 1], dgFilters.Rows[cr]);
+
+            dgFilters.CurrentCell = 
+                dgFilters.Rows[cr-1].Cells[dgFilters.CurrentCell.ColumnIndex];
 		}
 
 		private void bDown_Click(object sender, System.EventArgs e)
 		{
-			int cr = dgFilters.CurrentRowIndex;
+			int cr = dgFilters.CurrentRow.Index;
 			if (cr < 0)			// invalid index
 				return;
-			if (cr + 1 >= _DataTable.Rows.Count)
-				return;			// already at end
+            if (cr + 1 >= dgFilters.Rows.Count)
+                return;			// already at end
 			
-			SwapRow(_DataTable.Rows[cr+1], _DataTable.Rows[cr]);
-			dgFilters.CurrentRowIndex = cr+1;
+            SwapRow(dgFilters.Rows[cr+1], dgFilters.Rows[cr]);
+            dgFilters.CurrentCell =
+                dgFilters.Rows[cr + 1].Cells[dgFilters.CurrentCell.ColumnIndex];
 		}
 
-		private void SwapRow(DataRow tdr, DataRow fdr)
+        private void SwapRow(DataGridViewRow tdr, DataGridViewRow fdr)
 		{
 			// column 1
-			object save = tdr[0];
-			tdr[0] = fdr[0];
-			fdr[0] = save;
+			object save = tdr.Cells[0].Value;
+            tdr.Cells[0].Value = fdr.Cells[0].Value;
+            fdr.Cells[0].Value = save;
 			// column 2
-			save = tdr[1];
-			tdr[1] = fdr[1];
-			fdr[1] = save;
+            save = tdr.Cells[1].Value;
+            tdr.Cells[1].Value = fdr.Cells[1].Value;
+            fdr.Cells[1].Value = save;
 			// column 3
-			save = tdr[2];
-			tdr[2] = fdr[2];
-			fdr[2] = save;
+            save = tdr.Cells[2].Value;
+            tdr.Cells[2].Value = fdr.Cells[2].Value;
+            fdr.Cells[2].Value = save;
 			return;
+		}
+
+		private void bValueExpr_Click(object sender, System.EventArgs e)
+		{
+			int cr = dgFilters.CurrentRow.Index;
+            //if (cr < 0)
+            //{	// No rows yet; create one
+            //    string[] rowValues = new string[3];
+            //    rowValues[0] = null;
+            //    rowValues[1] = null;
+            //    rowValues[2] = null;
+
+            //    _DataTable.Rows.Add(rowValues);
+            //    cr = 0;
+            //}
+			DataGridViewCell dgc = dgFilters.CurrentCell;
+			int cc = dgc.ColumnIndex;
+			string cv = dgc.Value as string;
+
+			if (cc == 1)
+			{	// This is the FilterOperator
+				DialogFilterOperator fo = new DialogFilterOperator(cv);
+				DialogResult dlgr = fo.ShowDialog();
+				if (dlgr == DialogResult.OK)
+					dgc.Value = fo.Operator;
+			}
+			else
+			{
+				DialogExprEditor ee = new DialogExprEditor(_Draw, cv, _FilterParent, false);
+				DialogResult dlgr = ee.ShowDialog();
+				if (dlgr == DialogResult.OK)
+					dgc.Value = ee.Expression;
+			}
 		}
 	}
 }

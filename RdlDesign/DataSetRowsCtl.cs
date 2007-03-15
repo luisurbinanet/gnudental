@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -76,6 +76,8 @@ namespace fyiReporting.RdlDesign
 			CreateDataTable();		// create data table based on the existing fields
 
 			XmlNode rows = _Draw.GetNamedChildNode(_dsNode, "Rows");
+			if (rows == null)
+				rows = _Draw.GetNamedChildNode(_dsNode, "fyi:Rows");
 			string file=null;
 			if (rows != null)
 			{
@@ -310,12 +312,14 @@ namespace fyiReporting.RdlDesign
 		{
 			// Remove the old row
 			XmlNode rows = _Draw.GetNamedChildNode(this._dsNode, "Rows");
+			if (rows == null)
+				rows =  _Draw.GetNamedChildNode(this._dsNode, "fyi:Rows");
 			if (rows != null)
 				_dsNode.RemoveChild(rows);
 			// different result if we just want the file
 			if (this.chkRowsFile.Checked)
 			{
-				rows = _Draw.GetCreateNamedChildNode(_dsNode, "Rows");
+				rows = _Draw.GetCreateNamedChildNode(_dsNode, "fyi:Rows");
 				_Draw.SetElementAttribute(rows, "File", this.tbRowsFile.Text);
 			}
 			else
@@ -426,7 +430,7 @@ namespace fyiReporting.RdlDesign
 		{
 			XmlDocumentFragment fDoc = _Draw.ReportDocument.CreateDocumentFragment();
 
-			XmlNode rows = _Draw.CreateElement(fDoc, "Rows", null);
+			XmlNode rows = _Draw.CreateElement(fDoc, "fyi:Rows", null);
 			foreach (DataRow dr in _DataTable.Rows)
 			{
 				XmlNode row = _Draw.CreateElement(rows, "Row", null);

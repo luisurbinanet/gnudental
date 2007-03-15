@@ -1,30 +1,31 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
+using System.Threading;
 
 using fyiReporting.RDL;
 
@@ -32,25 +33,22 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Aggregate function: RunningValue stdev
-	/// <p>
-	///	
+	/// Aggregate function: RunningValue stdev
 	/// </summary>
 	[Serializable]
-	internal class FunctionAggrRvStdev : FunctionAggr, IExpr
+	internal class FunctionAggrRvStdev : FunctionAggr, IExpr, ICacheData
 	{
-		private double _sum;		// 
-		private double _sum2;		// 
-		private int _count;			//
+		string _key;				// key for cached between invocations
 		/// <summary>
 		/// Aggregate function: RunningValue Stdev returns the Stdev of all values of the
 		///		expression within the scope up to that row
 		///	Return type is double for all expressions.	
 		/// </summary>
-		public FunctionAggrRvStdev(IExpr e, object scp):base(e, scp) 
+        public FunctionAggrRvStdev(List<ICacheData> dataCache, IExpr e, object scp)
+            : base(e, scp) 
 		{
-			_sum = _sum2 = 0;
-			_count = -1;
+			_key = "aggrrvstdev" + Interlocked.Increment(ref Parser.Counter).ToString();
+			dataCache.Add(this);
 		}
 
 		public TypeCode GetTypeCode()
@@ -58,15 +56,15 @@ namespace fyiReporting.RDL
 			return TypeCode.Double;
 		}
 
-		public object Evaluate(Row row)
+		public object Evaluate(Report rpt, Row row)
 		{
-			return (object) EvaluateDouble(row);
+			return (object) EvaluateDouble(rpt, row);
 		}
 		
-		public double EvaluateDouble(Row row)
+		public double EvaluateDouble(Report rpt, Row row)
 		{
 			bool bSave=true;
-			IEnumerable re = this.GetDataScope(row, out bSave);
+			IEnumerable re = this.GetDataScope(rpt, row, out bSave);
 			if (re == null)
 				return double.NaN;
 
@@ -77,49 +75,86 @@ namespace fyiReporting.RDL
 				break;
 			}
 
-			double currentValue = _Expr.EvaluateDouble(row);
+			WorkClass wc = GetValue(rpt);
+			double currentValue = _Expr.EvaluateDouble(rpt, row);
 			if (row == startrow)
 			{
 				// restart the group
-				_sum = _sum2 = 0;
-				_count = 0;
+				wc.Sum = wc.Sum2 = 0;
+				wc.Count = 0;
 			}
 			
 			if (currentValue.CompareTo(double.NaN) != 0)
 			{
-				_sum += currentValue;
-				_sum2 += (currentValue*currentValue);
-				_count++;
+				wc.Sum += currentValue;
+				wc.Sum2 += (currentValue*currentValue);
+				wc.Count++;
 			}
 
 			double result;
-			if (_count > 1)
-				result = Math.Sqrt((_count * _sum2 - _sum*_sum) / (_count * (_count-1)));
+			if (wc.Count > 1)
+				result = Math.Sqrt((wc.Count * wc.Sum2 - wc.Sum*wc.Sum) / (wc.Count * (wc.Count-1)));
 			else
 				result = double.NaN;
 
 			return result;
 		}
 		
-		public decimal EvaluateDecimal(Row row)
+		public decimal EvaluateDecimal(Report rpt, Row row)
 		{
-			double d = EvaluateDouble(row);
+			double d = EvaluateDouble(rpt, row);
 			if (d.CompareTo(double.NaN) == 0)
 				return decimal.MinValue;
 
 			return Convert.ToDecimal(d);
 		}
 
-		public string EvaluateString(Row row)
+		public string EvaluateString(Report rpt, Row row)
 		{
-			object result = Evaluate(row);
+			object result = Evaluate(rpt, row);
 			return Convert.ToString(result);
 		}
 
-		public DateTime EvaluateDateTime(Row row)
+		public DateTime EvaluateDateTime(Report rpt, Row row)
 		{
-			object result = Evaluate(row);
+			object result = Evaluate(rpt, row);
 			return Convert.ToDateTime(result);
+		}
+		private WorkClass GetValue(Report rpt)
+		{
+			WorkClass wc = rpt.Cache.Get(_key) as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass();
+				rpt.Cache.Add(_key, wc);
+			}
+			return wc;
+		}
+
+		private void SetValue(Report rpt, WorkClass w)
+		{
+			rpt.Cache.AddReplace(_key, w);
+		}
+
+		#region ICacheData Members
+
+		public void ClearCache(Report rpt)
+		{
+			rpt.Cache.Remove(_key);
+		}
+
+		#endregion
+
+		class WorkClass
+		{
+			internal double Sum;		
+			internal double Sum2;		
+			internal int Count;			
+			internal WorkClass()
+			{
+				Sum = Sum2 = 0;
+				Count = -1;
+			}
 		}
 	}
 }
