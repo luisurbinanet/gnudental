@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -37,10 +37,8 @@ namespace fyiReporting.RDL
 		Name _InstanceName;		// The name of the variable to assign the class to.
 								// This variable can be used in expressions
 								// throughout the report.
-		[NonSerialized] object _Instance=null;	// 
-		[NonSerialized] bool bCreateFailed=false;
 	
-		internal ReportClass(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal ReportClass(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_ClassName=null;
 			_InstanceName = null;
@@ -74,16 +72,17 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		internal void Load()
+		internal object Load(Report rpt)
 		{
-			if (bCreateFailed)		// We only try to create once.
-				return;
+			WorkClass wc = GetWC(rpt);
+			if (wc.bCreateFailed)		// We only try to create once.
+				return wc.Instance;
 
-			if (_Instance != null)	// Already loaded
-				return;
+			if (wc.Instance != null)	// Already loaded
+				return wc.Instance;
 
 			if (OwnerReport.CodeModules == null)	// nothing to load against
-				return;
+				return null;
 
 			// Load an instance of the object
 			string err="";
@@ -93,24 +92,28 @@ namespace fyiReporting.RDL
 				if (tp != null)
 				{
 					Assembly asm = tp.Assembly;
-					_Instance = asm.CreateInstance(_ClassName, false);
+					wc.Instance = asm.CreateInstance(_ClassName, false);
 				}
 				else
 					err = "Class not found.";
 			}
 			catch (Exception e)
 			{
-				_Instance = null;
+				wc.Instance = null;
 				err = e.Message;
 			}
 
-			if (_Instance == null)
+			if (wc.Instance == null)
 			{
-				OwnerReport.rl.LogError(4, String.Format("Unable to create instance of class {0}.  {1}",
-					_ClassName, err));
-				bCreateFailed = true;
+				string e = String.Format("Unable to create instance of class {0}.  {1}",
+					_ClassName, err);
+				if (rpt == null)
+					OwnerReport.rl.LogError(4, e);
+				else
+					rpt.rl.LogError(4, e);
+				wc.bCreateFailed = true;
 			}
-			return;			
+			return wc.Instance;			
 		}
 
 		internal string ClassName
@@ -123,13 +126,37 @@ namespace fyiReporting.RDL
 			get { return  _InstanceName; }
 		}
 
-		internal object Instance
+		internal object Instance(Report rpt)
 		{
-			get 
+			return Load(rpt);			// load if necessary
+		}
+		private WorkClass GetWC(Report rpt)
+		{
+			if (rpt == null)
+				return new WorkClass();
+
+			WorkClass wc = rpt.Cache.Get(this, "wc") as WorkClass;
+			if (wc == null)
 			{
-				if (_Instance == null)			// try to load
-					Load();
-				return  _Instance; 
+				wc = new WorkClass();
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
+
+		private void RemoveWC(Report rpt)
+		{
+			rpt.Cache.Remove(this, "wc");
+		}
+
+		class WorkClass
+		{
+			internal object Instance;
+			internal bool bCreateFailed;
+			internal WorkClass()
+			{
+				Instance=null;	// 
+				bCreateFailed=false;
 			}
 		}
 	}

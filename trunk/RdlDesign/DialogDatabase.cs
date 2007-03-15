@@ -1,5 +1,5 @@
 ﻿/* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Text;
@@ -32,6 +33,7 @@ using System.Data.Odbc;
 using System.Data.SqlClient;
 using System.IO;
 using System.Globalization;
+using System.Xml;
 using fyiReporting.RDL;
 
 namespace fyiReporting.RdlDesign
@@ -41,6 +43,10 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	public class DialogDatabase : System.Windows.Forms.Form
 	{
+		RdlDesigner _rDesigner=null;
+		static private readonly string SHARED_CONNECTION="Shared Data Source";
+		string _StashConnection=null;
+
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Button btnOK;
@@ -61,23 +67,25 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.TextBox tbReportSyntax;
 		private System.Windows.Forms.TabPage ReportPreview;
 
-		private ArrayList _ColumnList=null;
+		private List<SqlColumn> _ColumnList=null;
 		private string _TempFileName=null;
 		private string _ResultReport="nothing";
 
+		private readonly string _Schema2003 = 
+"xmlns=\"http://schemas.microsoft.com/sqlserver/reporting/2003/10/reportdefinition\" xmlns:rd=\"http://schemas.microsoft.com/SQLServer/reporting/reportdesigner\"";
+		private readonly string _Schema2005 = 
+"xmlns=\"http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition\" xmlns:rd=\"http://schemas.microsoft.com/SQLServer/reporting/reportdesigner\"";
+		
 		private string _TemplateChart=" some junk";
 		private string _TemplateMatrix=" some junk";
 		private string _TemplateTable=@"<?xml version='1.0' encoding='UTF-8'?>
-<Report Name='|reportname|'> 
+<Report |schema| > 
 	<Description>|description|</Description>
 	<Author>|author|</Author>
 	|orientation|
 	<DataSources>
 		<DataSource Name='DS1'>
-			<ConnectionProperties> 
-				<DataProvider>|dataprovider|</DataProvider>
-				<ConnectString>|connectstring|</ConnectString>
-			</ConnectionProperties>
+			|connectionproperties|
 		</DataSource>
 	</DataSources>
 	<Width>7.5in</Width>
@@ -91,7 +99,6 @@ namespace fyiReporting.RdlDesign
 			<Query>
 				<DataSourceName>DS1</DataSourceName>
 				<CommandText>|sqltext|</CommandText>
-				<Timeout>10</Timeout>
 				|queryparameters|
 			</Query>
 			<Fields>
@@ -103,7 +110,7 @@ namespace fyiReporting.RdlDesign
 	<PageHeader>
 		<Height>.5in</Height>
 		<ReportItems>
-			<Textbox><Top>.1in</Top><Left>.1in</Left><Height>.25in</Height><Value>|reportname|</Value><Style><FontSize>15pt</FontSize><FontWeight>Bold</FontWeight></Style></Textbox> 
+			<Textbox><Top>.1in</Top><Left>.1in</Left><Width>6in</Width><Height>.25in</Height><Value>|reportnameasis|</Value><Style><FontSize>15pt</FontSize><FontWeight>Bold</FontWeight></Style></Textbox> 
 		</ReportItems>
 	</PageHeader>
 |endif|
@@ -195,10 +202,6 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.TreeView tvTablesColumns;
 		private System.Windows.Forms.TextBox tbSQL;
-		private System.Windows.Forms.GroupBox groupBox2;
-		private System.Windows.Forms.RadioButton rbODBC;
-		private System.Windows.Forms.RadioButton rbOleDb;
-		private System.Windows.Forms.RadioButton rbSqlServer;
 		private fyiReporting.RdlViewer.RdlViewer rdlViewer1;
 		private System.Windows.Forms.TabPage ReportParameters;
 		private System.Windows.Forms.ListBox lbParameters;
@@ -229,17 +232,25 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.ComboBox cbOrientation;
 		private System.Windows.Forms.Button bMove;
 		private System.Windows.Forms.Button bValidValues;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.ComboBox cbConnectionTypes;
+		private System.Windows.Forms.Label lODBC;
+		private System.Windows.Forms.ComboBox cbOdbcNames;
+		private System.Windows.Forms.Button bTestConnection;
+		private System.Windows.Forms.Label lConnection;
+		private System.Windows.Forms.Button bShared;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.RadioButton rbSchemaNo;
+		private System.Windows.Forms.RadioButton rbSchema2003;
+		private System.Windows.Forms.RadioButton rbSchema2005;
 		private string _TemplateList=@"<?xml version='1.0' encoding='UTF-8'?>
-<Report Name='|reportname|'> 
+<Report |schema| > 
 	<Description>|description|</Description>
 	<Author>|author|</Author>
 	|orientation|
 	<DataSources>
 		<DataSource Name='DS1'>
-			<ConnectionProperties> 
-				<DataProvider>|dataprovider|</DataProvider>
-				<ConnectString>|connectstring|</ConnectString>
-			</ConnectionProperties>
+			|connectionproperties|
 		</DataSource>
 	</DataSources>
 	<Width>7.5in</Width>
@@ -253,7 +264,6 @@ namespace fyiReporting.RdlDesign
 			<Query>
 				<DataSourceName>DS1</DataSourceName>
 				<CommandText>|sqltext|</CommandText>
-				<Timeout>10</Timeout>
 				|queryparameters|
 			</Query>
 			<Fields>
@@ -265,7 +275,7 @@ namespace fyiReporting.RdlDesign
 		<Height>.5in</Height>
 		<ReportItems>
 |ifdef reportname|
-			<Textbox><Top>.02in</Top><Left>.1in</Left><Height>.25in</Height><Value>|reportname|</Value><Style><FontSize>15pt</FontSize><FontWeight>Bold</FontWeight></Style></Textbox> 
+			<Textbox><Top>.02in</Top><Left>.1in</Left><Width>6in</Width><Height>.25in</Height><Value>|reportname|</Value><Style><FontSize>15pt</FontSize><FontWeight>Bold</FontWeight></Style></Textbox> 
 |endif|
 			|listheaders|
 		</ReportItems>
@@ -294,16 +304,19 @@ namespace fyiReporting.RdlDesign
 	</PageFooter>
 		</Report>";
 
-		public DialogDatabase()
+		public DialogDatabase(RdlDesigner rDesigner)
 		{
+			_rDesigner = rDesigner;
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
 
+			string[] items = RdlEngineConfig.GetProviders();
+			cbConnectionTypes.Items.Add(SHARED_CONNECTION);
+			cbConnectionTypes.Items.AddRange(items);
+			cbConnectionTypes.SelectedIndex = 1;
 			cbOrientation.SelectedIndex = 0;
-			tcDialog.TabPages.RemoveAt(1);
-			tcDialog.TabPages.RemoveAt(1);
 		}
 
 		/// <summary>
@@ -343,6 +356,15 @@ namespace fyiReporting.RdlDesign
 			this.rbMatrix = new System.Windows.Forms.RadioButton();
 			this.rbList = new System.Windows.Forms.RadioButton();
 			this.rbTable = new System.Windows.Forms.RadioButton();
+			this.DBConnection = new System.Windows.Forms.TabPage();
+			this.bShared = new System.Windows.Forms.Button();
+			this.bTestConnection = new System.Windows.Forms.Button();
+			this.cbOdbcNames = new System.Windows.Forms.ComboBox();
+			this.lODBC = new System.Windows.Forms.Label();
+			this.lConnection = new System.Windows.Forms.Label();
+			this.cbConnectionTypes = new System.Windows.Forms.ComboBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.tbConnection = new System.Windows.Forms.TextBox();
 			this.ReportParameters = new System.Windows.Forms.TabPage();
 			this.bValidValues = new System.Windows.Forms.Button();
 			this.tbParmDefaultValue = new System.Windows.Forms.TextBox();
@@ -362,12 +384,6 @@ namespace fyiReporting.RdlDesign
 			this.bRemove = new System.Windows.Forms.Button();
 			this.bAdd = new System.Windows.Forms.Button();
 			this.lbParameters = new System.Windows.Forms.ListBox();
-			this.DBConnection = new System.Windows.Forms.TabPage();
-			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.rbODBC = new System.Windows.Forms.RadioButton();
-			this.rbOleDb = new System.Windows.Forms.RadioButton();
-			this.rbSqlServer = new System.Windows.Forms.RadioButton();
-			this.tbConnection = new System.Windows.Forms.TextBox();
 			this.DBSql = new System.Windows.Forms.TabPage();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.bMove = new System.Windows.Forms.Button();
@@ -386,24 +402,29 @@ namespace fyiReporting.RdlDesign
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.btnOK = new System.Windows.Forms.Button();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.rbSchemaNo = new System.Windows.Forms.RadioButton();
+			this.rbSchema2003 = new System.Windows.Forms.RadioButton();
+			this.rbSchema2005 = new System.Windows.Forms.RadioButton();
 			this.tcDialog.SuspendLayout();
 			this.ReportType.SuspendLayout();
 			this.groupBox1.SuspendLayout();
-			this.ReportParameters.SuspendLayout();
 			this.DBConnection.SuspendLayout();
-			this.groupBox2.SuspendLayout();
+			this.ReportParameters.SuspendLayout();
 			this.DBSql.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.TabularGroup.SuspendLayout();
 			this.ReportSyntax.SuspendLayout();
+			this.ReportPreview.SuspendLayout();
 			this.panel1.SuspendLayout();
+			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// tcDialog
 			// 
 			this.tcDialog.Controls.Add(this.ReportType);
-			this.tcDialog.Controls.Add(this.ReportParameters);
 			this.tcDialog.Controls.Add(this.DBConnection);
+			this.tcDialog.Controls.Add(this.ReportParameters);
 			this.tcDialog.Controls.Add(this.DBSql);
 			this.tcDialog.Controls.Add(this.TabularGroup);
 			this.tcDialog.Controls.Add(this.ReportSyntax);
@@ -412,12 +433,13 @@ namespace fyiReporting.RdlDesign
 			this.tcDialog.Location = new System.Drawing.Point(0, 0);
 			this.tcDialog.Name = "tcDialog";
 			this.tcDialog.SelectedIndex = 0;
-			this.tcDialog.Size = new System.Drawing.Size(909, 631);
+			this.tcDialog.Size = new System.Drawing.Size(528, 326);
 			this.tcDialog.TabIndex = 0;
 			this.tcDialog.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
 			// 
 			// ReportType
 			// 
+			this.ReportType.Controls.Add(this.groupBox2);
 			this.ReportType.Controls.Add(this.cbOrientation);
 			this.ReportType.Controls.Add(this.label6);
 			this.ReportType.Controls.Add(this.tbReportAuthor);
@@ -429,7 +451,7 @@ namespace fyiReporting.RdlDesign
 			this.ReportType.Controls.Add(this.groupBox1);
 			this.ReportType.Location = new System.Drawing.Point(4, 22);
 			this.ReportType.Name = "ReportType";
-			this.ReportType.Size = new System.Drawing.Size(901, 605);
+			this.ReportType.Size = new System.Drawing.Size(520, 300);
 			this.ReportType.TabIndex = 3;
 			this.ReportType.Tag = "type";
 			this.ReportType.Text = "Report Info";
@@ -438,8 +460,8 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.cbOrientation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbOrientation.Items.AddRange(new object[] {
-																											 "Portrait (8.5\" by 11\")",
-																											 "Landscape (11\" by 8.5\")"});
+															   "Portrait (8.5\" by 11\")",
+															   "Landscape (11\" by 8.5\")"});
 			this.cbOrientation.Location = new System.Drawing.Point(96, 224);
 			this.cbOrientation.Name = "cbOrientation";
 			this.cbOrientation.Size = new System.Drawing.Size(168, 21);
@@ -554,6 +576,96 @@ namespace fyiReporting.RdlDesign
 			this.rbTable.Text = "Table";
 			this.rbTable.CheckedChanged += new System.EventHandler(this.rbTable_CheckedChanged);
 			// 
+			// DBConnection
+			// 
+			this.DBConnection.CausesValidation = false;
+			this.DBConnection.Controls.Add(this.bShared);
+			this.DBConnection.Controls.Add(this.bTestConnection);
+			this.DBConnection.Controls.Add(this.cbOdbcNames);
+			this.DBConnection.Controls.Add(this.lODBC);
+			this.DBConnection.Controls.Add(this.lConnection);
+			this.DBConnection.Controls.Add(this.cbConnectionTypes);
+			this.DBConnection.Controls.Add(this.label7);
+			this.DBConnection.Controls.Add(this.tbConnection);
+			this.DBConnection.Location = new System.Drawing.Point(4, 22);
+			this.DBConnection.Name = "DBConnection";
+			this.DBConnection.Size = new System.Drawing.Size(520, 300);
+			this.DBConnection.TabIndex = 0;
+			this.DBConnection.Tag = "connect";
+			this.DBConnection.Text = "Connection";
+			this.DBConnection.Validating += new System.ComponentModel.CancelEventHandler(this.DBConnection_Validating);
+			// 
+			// bShared
+			// 
+			this.bShared.Location = new System.Drawing.Point(216, 48);
+			this.bShared.Name = "bShared";
+			this.bShared.Size = new System.Drawing.Size(24, 16);
+			this.bShared.TabIndex = 6;
+			this.bShared.Text = "...";
+			this.bShared.Click += new System.EventHandler(this.bShared_Click);
+			// 
+			// bTestConnection
+			// 
+			this.bTestConnection.Location = new System.Drawing.Point(16, 104);
+			this.bTestConnection.Name = "bTestConnection";
+			this.bTestConnection.Size = new System.Drawing.Size(104, 23);
+			this.bTestConnection.TabIndex = 3;
+			this.bTestConnection.Text = "Test Connection";
+			this.bTestConnection.Click += new System.EventHandler(this.bTestConnection_Click);
+			// 
+			// cbOdbcNames
+			// 
+			this.cbOdbcNames.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbOdbcNames.Location = new System.Drawing.Point(352, 16);
+			this.cbOdbcNames.Name = "cbOdbcNames";
+			this.cbOdbcNames.Size = new System.Drawing.Size(152, 21);
+			this.cbOdbcNames.Sorted = true;
+			this.cbOdbcNames.TabIndex = 1;
+			this.cbOdbcNames.SelectedIndexChanged += new System.EventHandler(this.cbOdbcNames_SelectedIndexChanged);
+			// 
+			// lODBC
+			// 
+			this.lODBC.Location = new System.Drawing.Point(240, 16);
+			this.lODBC.Name = "lODBC";
+			this.lODBC.Size = new System.Drawing.Size(112, 23);
+			this.lODBC.TabIndex = 5;
+			this.lODBC.Text = "ODBC Data Sources";
+			// 
+			// lConnection
+			// 
+			this.lConnection.Location = new System.Drawing.Point(16, 48);
+			this.lConnection.Name = "lConnection";
+			this.lConnection.Size = new System.Drawing.Size(184, 16);
+			this.lConnection.TabIndex = 4;
+			this.lConnection.Text = "Connection:";
+			// 
+			// cbConnectionTypes
+			// 
+			this.cbConnectionTypes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbConnectionTypes.Location = new System.Drawing.Point(112, 16);
+			this.cbConnectionTypes.Name = "cbConnectionTypes";
+			this.cbConnectionTypes.Size = new System.Drawing.Size(128, 21);
+			this.cbConnectionTypes.TabIndex = 0;
+			this.cbConnectionTypes.SelectedIndexChanged += new System.EventHandler(this.cbConnectionTypes_SelectedIndexChanged);
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(16, 16);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(96, 23);
+			this.label7.TabIndex = 2;
+			this.label7.Text = "Connection Type:";
+			// 
+			// tbConnection
+			// 
+			this.tbConnection.Location = new System.Drawing.Point(16, 72);
+			this.tbConnection.Name = "tbConnection";
+			this.tbConnection.Size = new System.Drawing.Size(488, 20);
+			this.tbConnection.TabIndex = 2;
+			this.tbConnection.Text = "Server=(local)\\VSDotNet;DataBase=Northwind;Integrated Security=SSPI;Connect Timeo" +
+				"ut=5";
+			this.tbConnection.TextChanged += new System.EventHandler(this.tbConnection_TextChanged);
+			// 
 			// ReportParameters
 			// 
 			this.ReportParameters.Controls.Add(this.bValidValues);
@@ -576,7 +688,7 @@ namespace fyiReporting.RdlDesign
 			this.ReportParameters.Controls.Add(this.lbParameters);
 			this.ReportParameters.Location = new System.Drawing.Point(4, 22);
 			this.ReportParameters.Name = "ReportParameters";
-			this.ReportParameters.Size = new System.Drawing.Size(901, 605);
+			this.ReportParameters.Size = new System.Drawing.Size(520, 300);
 			this.ReportParameters.TabIndex = 6;
 			this.ReportParameters.Tag = "parameters";
 			this.ReportParameters.Text = "Parameters";
@@ -683,11 +795,11 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.cbParmType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbParmType.Items.AddRange(new object[] {
-																										"Boolean",
-																										"DateTime",
-																										"Integer",
-																										"Float",
-																										"String"});
+															"Boolean",
+															"DateTime",
+															"Integer",
+															"Float",
+															"String"});
 			this.cbParmType.Location = new System.Drawing.Point(288, 56);
 			this.cbParmType.Name = "cbParmType";
 			this.cbParmType.Size = new System.Drawing.Size(80, 21);
@@ -745,71 +857,12 @@ namespace fyiReporting.RdlDesign
 			this.lbParameters.TabIndex = 0;
 			this.lbParameters.SelectedIndexChanged += new System.EventHandler(this.lbParameters_SelectedIndexChanged);
 			// 
-			// DBConnection
-			// 
-			this.DBConnection.Controls.Add(this.groupBox2);
-			this.DBConnection.Controls.Add(this.tbConnection);
-			this.DBConnection.Location = new System.Drawing.Point(4, 22);
-			this.DBConnection.Name = "DBConnection";
-			this.DBConnection.Size = new System.Drawing.Size(901, 605);
-			this.DBConnection.TabIndex = 0;
-			this.DBConnection.Tag = "connect";
-			this.DBConnection.Text = "Connection";
-			// 
-			// groupBox2
-			// 
-			this.groupBox2.Controls.Add(this.rbODBC);
-			this.groupBox2.Controls.Add(this.rbOleDb);
-			this.groupBox2.Controls.Add(this.rbSqlServer);
-			this.groupBox2.Location = new System.Drawing.Point(24, 16);
-			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(384, 96);
-			this.groupBox2.TabIndex = 1;
-			this.groupBox2.TabStop = false;
-			this.groupBox2.Text = "Connection Type";
-			// 
-			// rbODBC
-			// 
-			this.rbODBC.Location = new System.Drawing.Point(168, 24);
-			this.rbODBC.Name = "rbODBC";
-			this.rbODBC.TabIndex = 2;
-			this.rbODBC.Text = "ODBC";
-			this.rbODBC.CheckedChanged += new System.EventHandler(this.rbODBC_CheckedChanged);
-			// 
-			// rbOleDb
-			// 
-			this.rbOleDb.Location = new System.Drawing.Point(32, 56);
-			this.rbOleDb.Name = "rbOleDb";
-			this.rbOleDb.TabIndex = 1;
-			this.rbOleDb.Text = "OLE DB";
-			this.rbOleDb.CheckedChanged += new System.EventHandler(this.rbOleDb_CheckedChanged);
-			// 
-			// rbSqlServer
-			// 
-			this.rbSqlServer.Checked = true;
-			this.rbSqlServer.Location = new System.Drawing.Point(32, 24);
-			this.rbSqlServer.Name = "rbSqlServer";
-			this.rbSqlServer.TabIndex = 0;
-			this.rbSqlServer.TabStop = true;
-			this.rbSqlServer.Text = "SQL Server";
-			this.rbSqlServer.CheckedChanged += new System.EventHandler(this.rbSqlServer_CheckedChanged);
-			// 
-			// tbConnection
-			// 
-			this.tbConnection.Location = new System.Drawing.Point(16, 136);
-			this.tbConnection.Name = "tbConnection";
-			this.tbConnection.Size = new System.Drawing.Size(400, 20);
-			this.tbConnection.TabIndex = 0;
-			this.tbConnection.Text = "Server=(local)\\VSDotNet;DataBase=Northwind;Integrated Security=SSPI;Connect Timeo" +
-				"ut=5";
-			this.tbConnection.TextChanged += new System.EventHandler(this.tbConnection_TextChanged);
-			// 
 			// DBSql
 			// 
 			this.DBSql.Controls.Add(this.panel2);
 			this.DBSql.Location = new System.Drawing.Point(4, 22);
 			this.DBSql.Name = "DBSql";
-			this.DBSql.Size = new System.Drawing.Size(901, 605);
+			this.DBSql.Size = new System.Drawing.Size(520, 300);
 			this.DBSql.TabIndex = 1;
 			this.DBSql.Tag = "sql";
 			this.DBSql.Text = "SQL";
@@ -822,12 +875,12 @@ namespace fyiReporting.RdlDesign
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel2.Location = new System.Drawing.Point(0, 0);
 			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(901, 605);
+			this.panel2.Size = new System.Drawing.Size(520, 300);
 			this.panel2.TabIndex = 1;
 			// 
 			// bMove
 			// 
-			this.bMove.Location = new System.Drawing.Point(229, 16);
+			this.bMove.Location = new System.Drawing.Point(140, 16);
 			this.bMove.Name = "bMove";
 			this.bMove.Size = new System.Drawing.Size(32, 23);
 			this.bMove.TabIndex = 4;
@@ -840,10 +893,10 @@ namespace fyiReporting.RdlDesign
 			this.tbSQL.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right)));
-			this.tbSQL.Location = new System.Drawing.Point(267, 0);
+			this.tbSQL.Location = new System.Drawing.Point(176, 0);
 			this.tbSQL.Multiline = true;
 			this.tbSQL.Name = "tbSQL";
-			this.tbSQL.Size = new System.Drawing.Size(629, 605);
+			this.tbSQL.Size = new System.Drawing.Size(344, 300);
 			this.tbSQL.TabIndex = 3;
 			this.tbSQL.Text = "";
 			this.tbSQL.TextChanged += new System.EventHandler(this.tbSQL_TextChanged);
@@ -856,7 +909,7 @@ namespace fyiReporting.RdlDesign
 			this.tvTablesColumns.Location = new System.Drawing.Point(0, 0);
 			this.tvTablesColumns.Name = "tvTablesColumns";
 			this.tvTablesColumns.SelectedImageIndex = -1;
-			this.tvTablesColumns.Size = new System.Drawing.Size(216, 605);
+			this.tvTablesColumns.Size = new System.Drawing.Size(136, 300);
 			this.tvTablesColumns.TabIndex = 1;
 			this.tvTablesColumns.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvTablesColumns_BeforeExpand);
 			// 
@@ -869,7 +922,7 @@ namespace fyiReporting.RdlDesign
 			this.TabularGroup.Controls.Add(this.cbColumnList);
 			this.TabularGroup.Location = new System.Drawing.Point(4, 22);
 			this.TabularGroup.Name = "TabularGroup";
-			this.TabularGroup.Size = new System.Drawing.Size(901, 605);
+			this.TabularGroup.Size = new System.Drawing.Size(520, 300);
 			this.TabularGroup.TabIndex = 7;
 			this.TabularGroup.Tag = "group";
 			this.TabularGroup.Text = "Grouping";
@@ -922,7 +975,7 @@ namespace fyiReporting.RdlDesign
 			this.ReportSyntax.Controls.Add(this.tbReportSyntax);
 			this.ReportSyntax.Location = new System.Drawing.Point(4, 22);
 			this.ReportSyntax.Name = "ReportSyntax";
-			this.ReportSyntax.Size = new System.Drawing.Size(901, 605);
+			this.ReportSyntax.Size = new System.Drawing.Size(520, 300);
 			this.ReportSyntax.TabIndex = 4;
 			this.ReportSyntax.Tag = "syntax";
 			this.ReportSyntax.Text = "Report Syntax";
@@ -935,16 +988,17 @@ namespace fyiReporting.RdlDesign
 			this.tbReportSyntax.Name = "tbReportSyntax";
 			this.tbReportSyntax.ReadOnly = true;
 			this.tbReportSyntax.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.tbReportSyntax.Size = new System.Drawing.Size(901, 605);
+			this.tbReportSyntax.Size = new System.Drawing.Size(520, 300);
 			this.tbReportSyntax.TabIndex = 0;
 			this.tbReportSyntax.Text = "";
 			this.tbReportSyntax.WordWrap = false;
 			// 
 			// ReportPreview
 			// 
+			this.ReportPreview.Controls.Add(this.rdlViewer1);
 			this.ReportPreview.Location = new System.Drawing.Point(4, 22);
 			this.ReportPreview.Name = "ReportPreview";
-			this.ReportPreview.Size = new System.Drawing.Size(901, 605);
+			this.ReportPreview.Size = new System.Drawing.Size(520, 300);
 			this.ReportPreview.TabIndex = 5;
 			this.ReportPreview.Tag = "preview";
 			this.ReportPreview.Text = "Report Preview";
@@ -965,16 +1019,17 @@ namespace fyiReporting.RdlDesign
 			this.rdlViewer1.SourceRdl = null;
 			this.rdlViewer1.TabIndex = 0;
 			this.rdlViewer1.Text = "rdlViewer1";
-			this.rdlViewer1.Zoom = 0.5969145F;
+			this.rdlViewer1.Zoom = 0.5947548F;
 			this.rdlViewer1.ZoomMode = fyiReporting.RdlViewer.ZoomEnum.FitWidth;
 			// 
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCancel.CausesValidation = false;
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(821, 10);
+			this.btnCancel.Location = new System.Drawing.Point(440, 10);
 			this.btnCancel.Name = "btnCancel";
-			this.btnCancel.TabIndex = 1;
+			this.btnCancel.TabIndex = 0;
 			this.btnCancel.Text = "Cancel";
 			// 
 			// panel1
@@ -982,26 +1037,64 @@ namespace fyiReporting.RdlDesign
 			this.panel1.Controls.Add(this.btnOK);
 			this.panel1.Controls.Add(this.btnCancel);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 631);
+			this.panel1.Location = new System.Drawing.Point(0, 326);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(909, 40);
+			this.panel1.Size = new System.Drawing.Size(528, 40);
 			this.panel1.TabIndex = 3;
 			// 
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Location = new System.Drawing.Point(725, 10);
+			this.btnOK.Location = new System.Drawing.Point(344, 10);
 			this.btnOK.Name = "btnOK";
-			this.btnOK.TabIndex = 2;
+			this.btnOK.TabIndex = 1;
 			this.btnOK.Text = "OK";
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+			// 
+			// groupBox2
+			// 
+			this.groupBox2.Controls.Add(this.rbSchema2005);
+			this.groupBox2.Controls.Add(this.rbSchema2003);
+			this.groupBox2.Controls.Add(this.rbSchemaNo);
+			this.groupBox2.Location = new System.Drawing.Point(16, 256);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(384, 40);
+			this.groupBox2.TabIndex = 9;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "RDL Schema";
+			// 
+			// rbSchemaNo
+			// 
+			this.rbSchemaNo.Location = new System.Drawing.Point(8, 16);
+			this.rbSchemaNo.Name = "rbSchemaNo";
+			this.rbSchemaNo.Size = new System.Drawing.Size(104, 16);
+			this.rbSchemaNo.TabIndex = 0;
+			this.rbSchemaNo.Text = "None";
+			// 
+			// rbSchema2003
+			// 
+			this.rbSchema2003.Location = new System.Drawing.Point(120, 16);
+			this.rbSchema2003.Name = "rbSchema2003";
+			this.rbSchema2003.Size = new System.Drawing.Size(104, 16);
+			this.rbSchema2003.TabIndex = 1;
+			this.rbSchema2003.Text = "2003";
+			// 
+			// rbSchema2005
+			// 
+			this.rbSchema2005.Checked = true;
+			this.rbSchema2005.Location = new System.Drawing.Point(248, 16);
+			this.rbSchema2005.Name = "rbSchema2005";
+			this.rbSchema2005.Size = new System.Drawing.Size(104, 16);
+			this.rbSchema2005.TabIndex = 2;
+			this.rbSchema2005.TabStop = true;
+			this.rbSchema2005.Text = "2005";
 			// 
 			// DialogDatabase
 			// 
 			this.AcceptButton = this.btnOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(909, 671);
+			this.ClientSize = new System.Drawing.Size(528, 366);
 			this.Controls.Add(this.tcDialog);
 			this.Controls.Add(this.panel1);
 			this.MaximizeBox = false;
@@ -1014,14 +1107,15 @@ namespace fyiReporting.RdlDesign
 			this.tcDialog.ResumeLayout(false);
 			this.ReportType.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
-			this.ReportParameters.ResumeLayout(false);
 			this.DBConnection.ResumeLayout(false);
-			this.groupBox2.ResumeLayout(false);
+			this.ReportParameters.ResumeLayout(false);
 			this.DBSql.ResumeLayout(false);
 			this.panel2.ResumeLayout(false);
 			this.TabularGroup.ResumeLayout(false);
 			this.ReportSyntax.ResumeLayout(false);
+			this.ReportPreview.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
+			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1080,7 +1174,7 @@ namespace fyiReporting.RdlDesign
 			tvTablesColumns.BeginUpdate();
 			
 			// Get the schema information
-			ArrayList si = DesignerUtility.GetSchemaInfo(GetDataProvider(), tbConnection.Text);
+			List<SqlSchemaInfo> si = DesignerUtility.GetSchemaInfo(GetDataProvider(), GetDataConnection());
 			TreeNode ndRoot = new TreeNode("Tables");
 			tvTablesColumns.Nodes.Add(ndRoot);
 			bool bView = false;
@@ -1119,7 +1213,7 @@ namespace fyiReporting.RdlDesign
 					ndRoot.Nodes.Add(aRoot);
 				}
 			}
-			ndRoot.Expand();
+
 			tvTablesColumns.EndUpdate();
 		}
 
@@ -1129,7 +1223,7 @@ namespace fyiReporting.RdlDesign
 				return;
 
 			if (_ColumnList == null)
-				_ColumnList = DesignerUtility.GetSqlColumns(GetDataProvider(), tbConnection.Text, tbSQL.Text, this.lbParameters.Items);
+				_ColumnList = DesignerUtility.GetSqlColumns(GetDataProvider(), GetDataConnection(), tbSQL.Text, this.lbParameters.Items);
 
 			foreach (SqlColumn sq in _ColumnList)
 			{
@@ -1159,7 +1253,7 @@ namespace fyiReporting.RdlDesign
 				template = _TemplateTable;	// default to table- should never reach
 			
 			if (_ColumnList == null)
-				_ColumnList = DesignerUtility.GetSqlColumns(GetDataProvider(), tbConnection.Text, tbSQL.Text, this.lbParameters.Items);
+				_ColumnList = DesignerUtility.GetSqlColumns(GetDataProvider(), GetDataConnection(), tbSQL.Text, this.lbParameters.Items);
 
 			if (_ColumnList.Count == 0)		// can only happen by an error
 				return false;
@@ -1229,7 +1323,16 @@ namespace fyiReporting.RdlDesign
 						if (skip > 0)
 							skip--;
 						break;
-					case "reportname":
+					case "schema":
+						if (this.rbSchema2003.Checked)
+							sb.Append(_Schema2003);
+						else if (this.rbSchema2005.Checked)
+							sb.Append(_Schema2005);
+						break;
+					case "reportname":	 
+						sb.Append(tbReportName.Text.Replace('\'', '_'));
+						break;
+					case "reportnameasis":
 						sb.Append(tbReportName.Text);
 						break;
 					case "description":
@@ -1237,6 +1340,17 @@ namespace fyiReporting.RdlDesign
 						break;
 					case "author":
 						sb.Append(tbReportAuthor.Text);
+						break;
+					case "connectionproperties":
+						if (this.cbConnectionTypes.Text == SHARED_CONNECTION)
+						{
+							string file = this.tbConnection.Text;
+							file = Path.GetFileNameWithoutExtension(file);
+							sb.AppendFormat("<DataSourceReference>{0}</DataSourceReference>", file);
+						}
+						else
+							sb.AppendFormat("<ConnectionProperties><DataProvider>{0}</DataProvider><ConnectString>{1}</ConnectString></ConnectionProperties>",
+								GetDataProvider(), GetDataConnection());
 						break;
 					case "dataprovider":
 						sb.Append(GetDataProvider());
@@ -1274,7 +1388,10 @@ namespace fyiReporting.RdlDesign
 						{
 							name = GetFieldName(sq.Name);
 							string type = sq.DataType.FullName;
-							sb.AppendFormat(cinfo, "<Field Name='{0}'><DataField>{1}</DataField><TypeName>{2}</TypeName></Field>", name, sq.Name, type);
+							if (this.rbSchemaNo.Checked)
+								sb.AppendFormat(cinfo, "<Field Name='{0}'><DataField>{1}</DataField><TypeName>{2}</TypeName></Field>", name, sq.Name, type);
+							else
+								sb.AppendFormat(cinfo, "<Field Name='{0}'><DataField>{1}</DataField><rd:TypeName>{2}</rd:TypeName></Field>", name, sq.Name, type);
 						}
 						break;
 					case "listheaders":
@@ -1322,22 +1439,7 @@ namespace fyiReporting.RdlDesign
 							bodyHeight += 12m;
 							sb.AppendFormat(cinfo, @"
 							<TableCell>
-								<ReportItems>
-									<Textbox>
-										<Value>{0}</Value>
-										<Style>
-											<TextAlign>Center</TextAlign>
-											<BorderStyle>
-												<Default>Solid</Default>
-											</BorderStyle>
-											<FontWeight>Bold</FontWeight>
-											<BorderColor>
-                        <Default>Black</Default>
-                      </BorderColor>
-											<BackgroundColor>Lightgrey</BackgroundColor>
-										</Style>
-									</Textbox>
-								</ReportItems>
+								<ReportItems><Textbox><Value>{0}</Value><Style><TextAlign>Center</TextAlign><BorderStyle><Default>Solid</Default></BorderStyle><FontWeight>Bold</FontWeight></Style></Textbox></ReportItems>
 							</TableCell>",
 								this.cbColumnList.Text);
 						}
@@ -1349,22 +1451,7 @@ namespace fyiReporting.RdlDesign
 								continue;
 							sb.AppendFormat(cinfo, @"
 							<TableCell>
-								<ReportItems>
-									<Textbox>
-										<Value>{0}</Value>
-										<Style>
-											<TextAlign>Center</TextAlign>
-											<BorderStyle>
-												<Default>Solid</Default>
-											</BorderStyle>
-											<FontWeight>Bold</FontWeight>
-											<BorderColor>
-                        <Default>Black</Default>
-                      </BorderColor>
-											<BackgroundColor>Lightgrey</BackgroundColor>
-										</Style>
-									</Textbox>
-								</ReportItems>
+								<ReportItems><Textbox><Value>{0}</Value><Style><TextAlign>Center</TextAlign><BorderStyle><Default>Solid</Default></BorderStyle><FontWeight>Bold</FontWeight></Style></Textbox></ReportItems>
 							</TableCell>",
 								name);
 						}
@@ -1395,20 +1482,7 @@ namespace fyiReporting.RdlDesign
 						if (gbcolumn != null)
 						{
 							sb.Append(@"<TableCell>
-								<ReportItems>
-									<Textbox>
-										<Value></Value>
-										<Style>
-											<BorderStyle>
-												<Default>Solid</Default>
-												<Top>None</Top>
-											</BorderStyle>
-											<BorderColor>
-												<Default>Silver</Default>
-                      </BorderColor>
-										</Style>
-									</Textbox>
-								</ReportItems>
+								<ReportItems><Textbox><Value></Value><Style><BorderStyle><Default>None</Default><Left>Solid</Left></BorderStyle></Style></Textbox></ReportItems>
 							</TableCell>");
 						}
 						foreach (SqlColumn sq in _ColumnList)
@@ -1419,22 +1493,7 @@ namespace fyiReporting.RdlDesign
 							DoAlignAndCanGrow(sq.DataType, out canGrow, out align);
 							sb.AppendFormat(cinfo, @"
 							<TableCell>
-								<ReportItems>
-									<Textbox Name='{0}'>
-										<Value>=Fields!{0}.Value</Value>
-										<CanGrow>{1}</CanGrow>
-										<Style>
-											<BorderStyle>
-												<Default>Solid</Default>
-												<Top>None</Top>
-											</BorderStyle>
-											<BorderColor>
-												<Default>Silver</Default>
-                      </BorderColor>
-											{2}
-										</Style>
-									</Textbox>
-								</ReportItems>
+								<ReportItems><Textbox Name='{0}'><Value>=Fields!{0}.Value</Value><CanGrow>{1}</CanGrow><Style><BorderStyle><Default>Solid</Default></BorderStyle>{2}</Style></Textbox></ReportItems>
 							</TableCell>",
 								name, canGrow, align);
 						}
@@ -1631,18 +1690,56 @@ namespace fyiReporting.RdlDesign
 			rdlViewer1.SourceRdl = tbReportSyntax.Text;
 			return true;
 		}
+
 		private string GetDataProvider()
 		{
-			string dp;
-			if (rbSqlServer.Checked)
-				dp = "SQL";
-			else if (rbODBC.Checked)
-				dp = "ODBC";
-			else if (rbOleDb.Checked)
-				dp = "OLEDB";
+			string cType = cbConnectionTypes.Text;
+			_StashConnection = null;
+			if (cType == SHARED_CONNECTION)
+			{
+				string pswd = null;
+				string xml = "";
+				try
+				{
+					pswd = _rDesigner.GetPassword();
+					if (pswd == null)
+						return null;
+					xml = RDL.DataSourceReference.Retrieve(tbConnection.Text, pswd);
+				}
+				catch
+				{
+					MessageBox.Show("Unable to open shared connection, password or file is invalid.", "Test Connection");
+					_rDesigner.ResetPassword();			// make sure to prompt again for the password
+					return null;
+				}
+				XmlDocument xDoc = new XmlDocument();
+				xDoc.LoadXml(xml);
+				XmlNode xNodeLoop = xDoc.FirstChild;
+				foreach (XmlNode node in xNodeLoop.ChildNodes)
+				{
+					switch (node.Name)
+					{
+						case "DataProvider":
+							cType = node.InnerText;
+							break;
+						case "ConnectString":
+							_StashConnection = node.InnerText;
+							break;
+						default:
+							break;
+					}
+				}
+			}
 			else
-				dp = "SQL";		// shouldn't ever happen
-			return dp;
+			{
+				_StashConnection = tbConnection.Text;
+			}
+			return cType;
+		}
+
+		private string GetDataConnection()
+		{	// GetDataProvider must be called first to ensure the DataConnection is correct.
+			return _StashConnection;
 		}
 
 		private void tvTablesColumns_BeforeExpand(object sender, System.Windows.Forms.TreeViewCancelEventArgs e)
@@ -1663,7 +1760,7 @@ namespace fyiReporting.RdlDesign
 			tvTablesColumns.BeginUpdate();
 			
 			string sql = "SELECT * FROM " + NormalizeName(tNode.Text);
-			ArrayList tColumns = DesignerUtility.GetSqlColumns(GetDataProvider(), tbConnection.Text, sql, null);
+			List<SqlColumn> tColumns = DesignerUtility.GetSqlColumns(GetDataProvider(), GetDataConnection(), sql, null);
 			bool bFirstTime=true;
 			foreach (SqlColumn sc in tColumns)
 			{
@@ -1732,7 +1829,9 @@ namespace fyiReporting.RdlDesign
 			bool bLetterOrDigit = true;
 			for (int i=0; i < name.Length && bLetterOrDigit; i++)
 			{
-				if (!Char.IsLetterOrDigit(name, i))
+				if (name[i] == '.')
+				{}						// allow names to have a "." for owner qualified tables
+				else if (!Char.IsLetterOrDigit(name, i))
 					bLetterOrDigit = false;
 			}
 			if (bLetterOrDigit)
@@ -1745,30 +1844,6 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_TempFileName != null)
 				File.Delete(_TempFileName);
-		}
-
-		private void rbSqlServer_CheckedChanged(object sender, System.EventArgs e)
-		{
-			if (rbSqlServer.Checked)	// TODO: put this in config
-				tbConnection.Text = "Server=(local)\\VSDotNet;DataBase=Northwind;Integrated Security=SSPI;Connect Timeout=5";
-			tbReportSyntax.Text = "";	// when SQL changes get rid of report syntax
-			tvTablesColumns.Nodes.Clear();
-		}
-
-		private void rbODBC_CheckedChanged(object sender, System.EventArgs e)
-		{
-			if (rbODBC.Checked)			// TODO: put this in config
-				tbConnection.Text = "dsn=world;UID=user;PWD=pswd;";
-			tbReportSyntax.Text = "";	// when SQL changes get rid of report syntax
-			tvTablesColumns.Nodes.Clear();
-		}
-
-		private void rbOleDb_CheckedChanged(object sender, System.EventArgs e)
-		{
-			if (rbOleDb.Checked)		// TODO: put this in config
-				tbConnection.Text = "";
-			tbReportSyntax.Text = "";	// when SQL changes get rid of report syntax
-			tvTablesColumns.Nodes.Clear();
 		}
 
 		private void tbSQL_TextChanged(object sender, System.EventArgs e)
@@ -1979,7 +2054,7 @@ namespace fyiReporting.RdlDesign
 			if (tbParmDefaultValue.Text.Length > 0)
 			{
 				if (rp.DefaultValue == null)
-					rp.DefaultValue = new ArrayList();
+					rp.DefaultValue = new List<string>();
 				else
 					rp.DefaultValue.Clear();
 				rp.DefaultValue.Add(tbParmDefaultValue.Text);
@@ -2051,6 +2126,99 @@ namespace fyiReporting.RdlDesign
 				return;
 			rp.ValidValues = dvv.ValidValues;
 			this.tbParmValidValues.Text = rp.ValidValuesDisplay;
+		}
+
+		private void cbConnectionTypes_SelectedIndexChanged(object sender, System.EventArgs e)
+		{
+			if (cbConnectionTypes.Text == SHARED_CONNECTION)
+			{
+				this.lConnection.Text = "Shared Data Source File:";
+				bShared.Visible = true;
+			}
+			else
+			{
+				this.lConnection.Text = "Connection:";
+				bShared.Visible = false;
+			}
+
+			if (cbConnectionTypes.Text == "ODBC")
+			{
+				lODBC.Visible = cbOdbcNames.Visible = true;
+				DesignerUtility.FillOdbcNames(cbOdbcNames);
+			}
+			else
+			{
+				lODBC.Visible = cbOdbcNames.Visible = false;
+			}
+#if DEBUG
+			// this is only for ease of testing
+			switch (cbConnectionTypes.Text)
+			{
+				case "SQL":
+					tbConnection.Text = "Server=(local)\\VSDotNet;DataBase=Northwind;Integrated Security=SSPI;Connect Timeout=5";
+					break;
+				case "ODBC":
+					tbConnection.Text = "dsn=world;UID=user;PWD=pswd;";
+					break;
+				case "Oracle":
+					tbConnection.Text = "User Id=SYSTEM;Password=tiger;Data Source=orcl";
+					break;
+				case "Firebird.NET":
+					tbConnection.Text = @"Dialect=3;User Id=SYSDBA;Database=C:\Program Files\Firebird\Firebird_1_5\examples\employee.fdb;Data Source=localhost;Password=masterkey";
+					break;
+				case "MySQL.NET":
+					tbConnection.Text = "database=world;user id=user;password=pswd;";
+					break;
+				case "iAnywhere.NET":
+					tbConnection.Text = "Data Source=ASA 9.0 Sample;UID=DBA;PWD=SQL";
+					break;
+				default:
+					tbConnection.Text = "";
+					break;
+			}
+#endif
+		}
+
+		private void cbOdbcNames_SelectedIndexChanged(object sender, System.EventArgs e)
+		{
+			string name = "dsn=" + cbOdbcNames.Text + ";";
+			this.tbConnection.Text = name;
+		}
+
+		private void bTestConnection_Click(object sender, System.EventArgs e)
+		{
+			string cType = GetDataProvider();
+			if (cType == null)
+				return;
+
+			if (DesignerUtility.TestConnection(cType, GetDataConnection()))
+				MessageBox.Show("Connection successful!", "Test Connection");
+		}
+
+		private void DBConnection_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			if (!DesignerUtility.TestConnection(this.GetDataConnection(), GetDataConnection()))
+				e.Cancel = true;
+		}
+
+		private void bShared_Click(object sender, System.EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Filter = "Data source reference files (*.dsr)|*.dsr" +
+				"All files (*.*)|*.*|";
+			ofd.FilterIndex = 1;
+			if (tbConnection.Text.Length > 0)
+				ofd.FileName = tbConnection.Text;
+			else
+				ofd.FileName = "*.dsr";
+
+			ofd.Title = "Specify Data Source Reference File Name";
+			ofd.CheckFileExists = true;
+			ofd.DefaultExt = "dsr";
+			ofd.AddExtension = true;
+			
+			if (ofd.ShowDialog() == DialogResult.OK)
+				tbConnection.Text = ofd.FileName;
 		}
 	}
 }

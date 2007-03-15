@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -114,10 +114,8 @@ namespace fyiReporting.RDL
 		//     versions of regular digits]
 		// 7: ko only
 		bool _ConstantStyle;		//  true if all Style elements are constant
-		string _CssStyle;			// When ConstantStyle is true; this will hold cache of css
-		StyleInfo _StyleInfo;		// When ConstantStyle is true; this will hold cache of StyleInfo
 
-		internal Style(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Style(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_BorderColor=null;
 			_BorderStyle=null;
@@ -147,7 +145,6 @@ namespace fyiReporting.RDL
 			_Calendar=null;
 			_NumeralLanguage=null;
 			_NumeralVariant=null;
-			_CssStyle=null;
 
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -312,7 +309,7 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		internal void DrawBackground(Graphics g, Row r, System.Drawing.Rectangle rect)
+		internal void DrawBackground(Report rpt, Graphics g, Row r, System.Drawing.Rectangle rect)
 		{
 			LinearGradientBrush linGrBrush = null;
 
@@ -320,13 +317,13 @@ namespace fyiReporting.RDL
 				this.BackgroundGradientEndColor != null &&
 				this.BackgroundColor != null)
 			{
-				string bgt = this.BackgroundGradientType.EvaluateString(r);
-				string bgc = this.BackgroundColor.EvaluateString(r);
+				string bgt = this.BackgroundGradientType.EvaluateString(rpt, r);
+				string bgc = this.BackgroundColor.EvaluateString(rpt, r);
 				
-				Color c = XmlUtil.ColorFromHtml(bgc, System.Drawing.Color.White, this.OwnerReport);
+				Color c = XmlUtil.ColorFromHtml(bgc, System.Drawing.Color.White, rpt);
 
-				string bgec = this.BackgroundGradientEndColor.EvaluateString(r);
-				Color ec = XmlUtil.ColorFromHtml(bgec, System.Drawing.Color.White, this.OwnerReport);
+				string bgec = this.BackgroundGradientEndColor.EvaluateString(rpt, r);
+				Color ec = XmlUtil.ColorFromHtml(bgec, System.Drawing.Color.White, rpt);
 
 				switch (bgt)
 				{
@@ -366,8 +363,8 @@ namespace fyiReporting.RDL
 			{
 				if (this.BackgroundColor != null)
 				{
-					string bgc = this.BackgroundColor.EvaluateString(r);
-					Color c = XmlUtil.ColorFromHtml(bgc, System.Drawing.Color.White, this.OwnerReport);
+					string bgc = this.BackgroundColor.EvaluateString(rpt, r);
+					Color c = XmlUtil.ColorFromHtml(bgc, System.Drawing.Color.White, rpt);
 
 					SolidBrush sb = new SolidBrush(c);
 					g.FillRectangle(sb, rect);
@@ -377,14 +374,14 @@ namespace fyiReporting.RDL
 			return;
 		}
  
-		internal void DrawBackgroundCircle(Graphics g, Row r, System.Drawing.Rectangle rect)
+		internal void DrawBackgroundCircle(Report rpt, Graphics g, Row r, System.Drawing.Rectangle rect)
 		{
 			// Don't use the gradient in this case (since it won't match) the rest of the 
 			//    background.  (Routine is only used by ChartPie in the doughnut case.)
 			if (this.BackgroundColor != null)
 			{
-				string bgc = this.BackgroundColor.EvaluateString(r);
-				Color c = XmlUtil.ColorFromHtml(bgc, System.Drawing.Color.White, this.OwnerReport);
+				string bgc = this.BackgroundColor.EvaluateString(rpt, r);
+				Color c = XmlUtil.ColorFromHtml(bgc, System.Drawing.Color.White, rpt);
 
 				SolidBrush sb = new SolidBrush(c);
 				g.FillEllipse(sb, rect);
@@ -395,7 +392,7 @@ namespace fyiReporting.RDL
 		}
 
 		// Draw a border using the current style
-		internal void DrawBorder(Graphics g, Row r, System.Drawing.Rectangle rect)
+		internal void DrawBorder(Report rpt, Graphics g, Row r, System.Drawing.Rectangle rect)
 		{
 			if (this.BorderStyle == null)
 				return;
@@ -415,27 +412,27 @@ namespace fyiReporting.RDL
 			{
 				if (BorderStyle.Default != null)
 				{
-					v = BorderStyle.Default.EvaluateString(r);
+					v = BorderStyle.Default.EvaluateString(rpt, r);
 					topBS = bottomBS = leftBS = rightBS = StyleBorderStyle.GetBorderStyle(v, BorderStyleEnum.None);
 				}
 				if (BorderStyle.Top != null)
 				{
-					v = BorderStyle.Top.EvaluateString(r);
+					v = BorderStyle.Top.EvaluateString(rpt, r);
 					topBS = StyleBorderStyle.GetBorderStyle(v, topBS);
 				}
 				if (BorderStyle.Bottom != null)
 				{
-					v = BorderStyle.Bottom.EvaluateString(r);
+					v = BorderStyle.Bottom.EvaluateString(rpt, r);
 					bottomBS = StyleBorderStyle.GetBorderStyle(v, bottomBS);
 				}
 				if (BorderStyle.Left != null)
 				{
-					v = BorderStyle.Left.EvaluateString(r);
+					v = BorderStyle.Left.EvaluateString(rpt, r);
 					leftBS = StyleBorderStyle.GetBorderStyle(v, leftBS);
 				}
 				if (BorderStyle.Right != null)
 				{
-					v = BorderStyle.Right.EvaluateString(r);
+					v = BorderStyle.Right.EvaluateString(rpt, r);
 					rightBS = StyleBorderStyle.GetBorderStyle(v, rightBS);
 				}
 			}
@@ -446,29 +443,29 @@ namespace fyiReporting.RDL
 			{
 				if (BorderColor.Default != null)
 				{
-					v = BorderColor.Default.EvaluateString(r);
+					v = BorderColor.Default.EvaluateString(rpt, r);
 					topColor = bottomColor = leftColor = rightColor = 
-						XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, this.OwnerReport);
+						XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, rpt);
 				}
 				if (BorderColor.Top != null)
 				{
-					v = BorderColor.Top.EvaluateString(r);
-					topColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, this.OwnerReport);
+					v = BorderColor.Top.EvaluateString(rpt, r);
+					topColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, rpt);
 				}
 				if (BorderColor.Bottom != null)
 				{
-					v = BorderColor.Bottom.EvaluateString(r);
-					bottomColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, this.OwnerReport);
+					v = BorderColor.Bottom.EvaluateString(rpt, r);
+					bottomColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, rpt);
 				}
 				if (BorderColor.Left != null)
 				{
-					v = BorderColor.Left.EvaluateString(r);
-					leftColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, this.OwnerReport);
+					v = BorderColor.Left.EvaluateString(rpt, r);
+					leftColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, rpt);
 				}
 				if (BorderColor.Right != null)
 				{
-					v = BorderColor.Right.EvaluateString(r);
-					rightColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, this.OwnerReport);
+					v = BorderColor.Right.EvaluateString(rpt, r);
+					rightColor = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, rpt);
 				}
 			}
 
@@ -478,23 +475,23 @@ namespace fyiReporting.RDL
 			{
 				if (BorderWidth.Default != null)
 				{
-					topWidth = bottomWidth = leftWidth = rightWidth = (int) new RSize(this.OwnerReport, BorderWidth.Default.EvaluateString(r)).PixelsX;
+					topWidth = bottomWidth = leftWidth = rightWidth = (int) new RSize(this.OwnerReport, BorderWidth.Default.EvaluateString(rpt, r)).PixelsX;
 				}
 				if (BorderWidth.Top != null)
 				{
-					topWidth = (int) new RSize(this.OwnerReport, BorderWidth.Top.EvaluateString(r)).PixelsX;
+					topWidth = (int) new RSize(this.OwnerReport, BorderWidth.Top.EvaluateString(rpt, r)).PixelsX;
 				}
 				if (BorderWidth.Bottom != null)
 				{
-					bottomWidth = (int) new RSize(this.OwnerReport, BorderWidth.Bottom.EvaluateString(r)).PixelsX;
+					bottomWidth = (int) new RSize(this.OwnerReport, BorderWidth.Bottom.EvaluateString(rpt, r)).PixelsX;
 				}
 				if (BorderWidth.Left != null)
 				{
-					leftWidth = (int) new RSize(this.OwnerReport, BorderWidth.Left.EvaluateString(r)).PixelsY;
+					leftWidth = (int) new RSize(this.OwnerReport, BorderWidth.Left.EvaluateString(rpt, r)).PixelsY;
 				}
 				if (BorderWidth.Right != null)
 				{
-					rightWidth = (int) new RSize(this.OwnerReport, BorderWidth.Right.EvaluateString(r)).PixelsY;
+					rightWidth = (int) new RSize(this.OwnerReport, BorderWidth.Right.EvaluateString(rpt, r)).PixelsY;
 				}
 			}
 
@@ -594,7 +591,7 @@ namespace fyiReporting.RDL
 		}
 
 		// Draw a line into the specified graphics object using the current style
-		internal void DrawStyleLine(Graphics g, Row r, Point s, Point e)
+		internal void DrawStyleLine(Report rpt, Graphics g, Row r, Point s, Point e)
 		{
 			Pen p = null;
 			Brush b = null;
@@ -606,15 +603,15 @@ namespace fyiReporting.RDL
 
 				// Border Width default is used for the line width
 				if (BorderWidth != null && BorderWidth.Default != null)
-					width = (int) new RSize(this.OwnerReport, BorderWidth.Default.EvaluateString(r)).PixelsX;
+					width = (int) new RSize(this.OwnerReport, BorderWidth.Default.EvaluateString(rpt, r)).PixelsX;
 				else
 					width = 1;
 
 				// Border Color default is used for the line color
 				if (BorderColor != null && BorderColor.Default != null)
 				{
-					string v = BorderColor.Default.EvaluateString(r);
-					color = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, this.OwnerReport);
+					string v = BorderColor.Default.EvaluateString(rpt, r);
+					color = XmlUtil.ColorFromHtml(v, System.Drawing.Color.Black, rpt);
 				}
 				else
 					color = System.Drawing.Color.Black;
@@ -622,7 +619,7 @@ namespace fyiReporting.RDL
 				//
 				if (BorderStyle != null && BorderStyle.Default != null)
 				{
-					string v = BorderStyle.Default.EvaluateString(r);
+					string v = BorderStyle.Default.EvaluateString(rpt, r);
 					bs = StyleBorderStyle.GetBorderStyle(v, BorderStyleEnum.None);
 				}
 				else
@@ -644,7 +641,7 @@ namespace fyiReporting.RDL
 
 		// Draw a string into the specified graphics object using the current style
 		//  information
-		internal void DrawString(Graphics g, object o, TypeCode tc, Row r, System.Drawing.Rectangle rect)
+		internal void DrawString(Report rpt, Graphics g, object o, TypeCode tc, Row r, System.Drawing.Rectangle rect)
 		{
 			Font drawFont=null;				// Font we'll draw with
 			Brush drawBrush=null;			// Brush we'll draw with
@@ -653,13 +650,13 @@ namespace fyiReporting.RDL
 
 			try			// Want to make sure we dispose of the font and brush (no matter what)
 			{
-				s = Style.GetFormatedString(this, r, o, tc);
+				s = Style.GetFormatedString(rpt, this, r, o, tc);
 
-				drawFont = GetFont(r);
+				drawFont = GetFont(rpt, r);
 
-				drawBrush = GetBrush(r);
+				drawBrush = GetBrush(rpt, r);
 
-				drawFormat = GetStringFormat(r);
+				drawFormat = GetStringFormat(rpt, r);
 
 				// Draw string
 				drawFormat.FormatFlags |= StringFormatFlags.NoWrap;
@@ -706,7 +703,7 @@ namespace fyiReporting.RDL
 
 		// Calc size of a string with the specified graphics object using the current style
 		//  information
-		internal Size MeasureString(Graphics g, object o, TypeCode tc, Row r, int maxWidth)
+		internal Size MeasureString(Report rpt, Graphics g, object o, TypeCode tc, Row r, int maxWidth)
 		{
 			Font drawFont=null;				// Font we'll draw with
 			StringFormat drawFormat=null;	// StringFormat we'll draw with
@@ -715,11 +712,11 @@ namespace fyiReporting.RDL
 			Size size = Size.Empty;
 			try			// Want to make sure we dispose of the font and brush (no matter what)
 			{
-				s = Style.GetFormatedString(this, r, o, tc);
+				s = Style.GetFormatedString(rpt, this, r, o, tc);
 
-				drawFont = GetFont(r);
+				drawFont = GetFont(rpt, r);
 
-				drawFormat = GetStringFormat(r);
+				drawFormat = GetStringFormat(rpt, r);
 
 				// Measure string
 				if (maxWidth == int.MaxValue)
@@ -741,7 +738,7 @@ namespace fyiReporting.RDL
 		}
 
 		// Measure a string using the defaults for a Style font
-		static internal Size MeasureStringDefaults(Graphics g, object o, TypeCode tc, Row r, int maxWidth)
+		static internal Size MeasureStringDefaults(Report rpt, Graphics g, object o, TypeCode tc, Row r, int maxWidth)
 		{
 			Font drawFont=null;				// Font we'll draw with
 			StringFormat drawFormat=null;	// StringFormat we'll draw with
@@ -750,7 +747,7 @@ namespace fyiReporting.RDL
 			Size size = Size.Empty;
 			try			// Want to make sure we dispose of the font and brush (no matter what)
 			{
-				s = Style.GetFormatedString(null, r, o, tc);
+				s = Style.GetFormatedString(rpt, null, r, o, tc);
 
 				drawFont = new Font("Arial", 10);
 				drawFormat = new StringFormat();
@@ -774,14 +771,14 @@ namespace fyiReporting.RDL
 			return size;
 		}
 
-		internal Brush GetBrush(Row r)
+		internal Brush GetBrush(Report rpt, Row r)
 		{
 			Brush drawBrush;
 			// Get the brush information
 			if (this.Color != null)
 			{
-				string c = this.Color.EvaluateString(r);
-				Color color = XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, this.OwnerReport);
+				string c = this.Color.EvaluateString(rpt, r);
+				Color color = XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, rpt);
 				drawBrush = new SolidBrush(color);
 			}
 			else
@@ -789,13 +786,13 @@ namespace fyiReporting.RDL
 			return drawBrush;
 		}
 
-		internal Font GetFont(Row r)
+		internal Font GetFont(Report rpt, Row r)
 		{
 			// Get the font information
 			// FAMILY
 			string ff;
 			if (this.FontFamily != null)
-				ff = this.FontFamily.EvaluateString(r);
+				ff = this.FontFamily.EvaluateString(rpt, r);
 			else
 				ff = "Arial";
 
@@ -803,13 +800,13 @@ namespace fyiReporting.RDL
 			System.Drawing.FontStyle fs = 0;
 			if (this.FontStyle != null)
 			{
-				string fStyle = this.FontStyle.EvaluateString(r);
+				string fStyle = this.FontStyle.EvaluateString(rpt, r);
 				if (fStyle == "Italic")
 					fs |= System.Drawing.FontStyle.Italic;
 			}
 			if (this.TextDecoration != null)
 			{
-				string td = this.TextDecoration.EvaluateString(r);
+				string td = this.TextDecoration.EvaluateString(rpt, r);
 				switch (td)
 				{
 					case "Underline":
@@ -829,7 +826,7 @@ namespace fyiReporting.RDL
 			// WEIGHT
 			if (this.FontWeight != null)
 			{
-				string weight = this.FontWeight.EvaluateString(r);
+				string weight = this.FontWeight.EvaluateString(rpt, r);
 				switch(weight.ToLower())
 				{
 					case "bold":
@@ -857,37 +854,38 @@ namespace fyiReporting.RDL
 			float size;			// Value is in points
 			if (this.FontSize != null)
 			{
-				string lsize = this.FontSize.EvaluateString(r);
+				string lsize = this.FontSize.EvaluateString(rpt, r);
 				RSize rs = new RSize(this.OwnerReport, lsize);
 				size = rs.Points;
 			}
 			else
 				size = 10;
 			
-			return new Font(ff, size, fs);
+			FontFamily fFamily = StyleInfo.GetFontFamily(ff);
+			return new Font(fFamily, size, fs);
 		}
 
-		internal StringFormat GetStringFormat(Row r)
+		internal StringFormat GetStringFormat(Report rpt, Row r)
 		{
 			// Set format of string.
 			StringFormat drawFormat = new StringFormat();
 			
 			if (this.Direction != null)
 			{
-				string dir = this.Direction.EvaluateString(r);
+				string dir = this.Direction.EvaluateString(rpt, r);
 				if (dir == "RTL")
 					drawFormat.FormatFlags |= StringFormatFlags.DirectionRightToLeft;
 			}
 			if (this.WritingMode != null)
 			{
-				string wm = this.WritingMode.EvaluateString(r);
+				string wm = this.WritingMode.EvaluateString(rpt, r);
 				if (wm == "tb-rl")
 					drawFormat.FormatFlags |= StringFormatFlags.DirectionVertical;
 			}
 
 			if (this.TextAlign != null)
 			{
-				string ta = this.TextAlign.EvaluateString(r);
+				string ta = this.TextAlign.EvaluateString(rpt, r);
 				switch (ta.ToLower())
 				{
 					case "left":
@@ -908,7 +906,7 @@ namespace fyiReporting.RDL
 
 			if (this.VerticalAlign != null)
 			{
-				string va = this.VerticalAlign.EvaluateString(r);
+				string va = this.VerticalAlign.EvaluateString(rpt, r);
 				switch (va.ToLower())
 				{
 					case "top":
@@ -931,10 +929,11 @@ namespace fyiReporting.RDL
 		}
 
 		// Generate a CSS string from the specified styles
-		internal string GetCSS(Row row, bool bDefaults)
+		internal string GetCSS(Report rpt, Row row, bool bDefaults)
 		{
-			if (_CssStyle != null)		// When CssStyle is available; style is a constant
-				return _CssStyle;		//   The first time called bDefaults will affect all subsequant calls
+			WorkClass wc = GetWC(rpt);
+			if (wc != null && wc.CssStyle != null)	// When CssStyle is available; style is a constant
+				return wc.CssStyle;					//   The first time called bDefaults will affect all subsequant calls
 
 			StringBuilder sb = new StringBuilder();
 
@@ -942,140 +941,143 @@ namespace fyiReporting.RDL
 				sb.Append("border-collapse:collapse;");	// collapse the borders
 
 			if (_BorderColor != null)
-				sb.Append(_BorderColor.GetCSS(row, bDefaults));
+				sb.Append(_BorderColor.GetCSS(rpt, row, bDefaults));
 			else if (bDefaults)
 				sb.Append(StyleBorderColor.GetCSSDefaults());
 
 			if (_BorderStyle != null)
-				sb.Append(_BorderStyle.GetCSS(row, bDefaults));
+				sb.Append(_BorderStyle.GetCSS(rpt, row, bDefaults));
 			else if (bDefaults)
 				sb.Append(StyleBorderStyle.GetCSSDefaults());
 
 			if (_BorderWidth != null)
-				sb.Append(_BorderWidth.GetCSS(row, bDefaults));
+				sb.Append(_BorderWidth.GetCSS(rpt, row, bDefaults));
 			else if (bDefaults)
 				sb.Append(StyleBorderWidth.GetCSSDefaults());
 
 			if (_BackgroundColor != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "background-color:{0};",_BackgroundColor.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "background-color:{0};",_BackgroundColor.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("background-color:transparent;");
 
 			if (_BackgroundImage != null)
-				sb.Append(_BackgroundImage.GetCSS(row, bDefaults));
+				sb.Append(_BackgroundImage.GetCSS(rpt, row, bDefaults));
 			else if (bDefaults)
 				sb.Append(StyleBackgroundImage.GetCSSDefaults());
 
 			if (_FontStyle != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-style:{0};",_FontStyle.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-style:{0};",_FontStyle.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("font-style:normal;");
 
 			if (_FontFamily != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-family:{0};",_FontFamily.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-family:{0};",_FontFamily.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("font-family:Arial;");
 
 			if (_FontSize != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-size:{0};",_FontSize.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-size:{0};",_FontSize.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("font-size:10pt;");
 
 			if (_FontWeight != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-weight:{0};",_FontWeight.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-weight:{0};",_FontWeight.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("font-weight:normal;");
 
 			if (_TextDecoration != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "text-decoration:{0};",_TextDecoration.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "text-decoration:{0};",_TextDecoration.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("text-decoration:none;");
 
 			if (_TextAlign != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "text-align:{0};",_TextAlign.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "text-align:{0};",_TextAlign.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("");	// no CSS default for text align
 
 			if (_VerticalAlign != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "vertical-align:{0};",_VerticalAlign.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "vertical-align:{0};",_VerticalAlign.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("vertical-align:top;");
 
 			if (_Color != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "color:{0};",_Color.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "color:{0};",_Color.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("color:black;");
 
 			if (_PaddingLeft != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-left:{0};",_PaddingLeft.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-left:{0};",_PaddingLeft.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("padding-left:0pt;");
 
 			if (_PaddingRight != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-right:{0};",_PaddingRight.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-right:{0};",_PaddingRight.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("padding-right:0pt;");
 
 			if (_PaddingTop != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-top:{0};",_PaddingTop.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-top:{0};",_PaddingTop.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("padding-top:0pt;");
 
 			if (_PaddingBottom != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-bottom:{0};",_PaddingBottom.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "padding-bottom:{0};",_PaddingBottom.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("padding-bottom:0pt;");
 
 			if (_LineHeight != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "line-height:{0};",_LineHeight.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "line-height:{0};",_LineHeight.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("line-height:normal;");
 
 			if (this._ConstantStyle)		// We'll only do this work once
 			{								//   when all are constant
-				_CssStyle = sb.ToString();
-				return _CssStyle;
+				wc.CssStyle = sb.ToString();
+				return wc.CssStyle;
 			}
 
 			return sb.ToString();
 		}
 
 		// Generate an evaluated version of all the style parameters; used for page processing
-		internal StyleInfo GetStyleInfo(Row r)
+		internal StyleInfo GetStyleInfo(Report rpt, Row r)
 		{
-			if (_StyleInfo != null)		// When StyleInfo is available; style is a constant
-				return _StyleInfo;		
+			WorkClass wc = GetWC(rpt);
+			if (wc != null && wc.StyleInfo != null)		// When StyleInfo is available; style is a constant
+			{
+				return (StyleInfo) wc.StyleInfo.Clone();	// clone it because others can modify it after this		
+			}
 
 			StyleInfo si = new StyleInfo();
 
 			if (this.BorderColor != null)
 			{
 				StyleBorderColor bc = this.BorderColor;
-				si.BColorLeft = bc.EvalLeft(r);
-				si.BColorRight = bc.EvalRight(r);
-				si.BColorTop = bc.EvalTop(r);
-				si.BColorBottom = bc.EvalBottom(r);
+				si.BColorLeft = bc.EvalLeft(rpt, r);
+				si.BColorRight = bc.EvalRight(rpt, r);
+				si.BColorTop = bc.EvalTop(rpt, r);
+				si.BColorBottom = bc.EvalBottom(rpt, r);
 			}
 
 			if (this.BorderStyle != null)
 			{
 				StyleBorderStyle bs = this.BorderStyle;
-				si.BStyleLeft = bs.EvalLeft(r);
-				si.BStyleRight = bs.EvalRight(r);
-				si.BStyleTop = bs.EvalTop(r);
-				si.BStyleBottom = bs.EvalBottom(r);
+				si.BStyleLeft = bs.EvalLeft(rpt, r);
+				si.BStyleRight = bs.EvalRight(rpt, r);
+				si.BStyleTop = bs.EvalTop(rpt, r);
+				si.BStyleBottom = bs.EvalBottom(rpt, r);
 			}
 
 			if (this.BorderWidth != null)
 			{
 				StyleBorderWidth bw = this.BorderWidth;
-				si.BWidthLeft = bw.EvalLeft(r);
-				si.BWidthRight = bw.EvalRight(r);
-				si.BWidthTop = bw.EvalTop(r);
-				si.BWidthBottom = bw.EvalBottom(r);
+				si.BWidthLeft = bw.EvalLeft(rpt, r);
+				si.BWidthRight = bw.EvalRight(rpt, r);
+				si.BWidthTop = bw.EvalTop(rpt, r);
+				si.BWidthBottom = bw.EvalBottom(rpt, r);
 			}
 
-			si.BackgroundColor = this.EvalBackgroundColor(r);
+			si.BackgroundColor = this.EvalBackgroundColor(rpt, r);
 			// When background color not specified; and reportitem part of table
 			//   use the tables background color
 			if (si.BackgroundColor == System.Drawing.Color.Empty)
@@ -1087,49 +1089,52 @@ namespace fyiReporting.RDL
 					{
 						Table t = ri.TC.OwnerTable;
 						if (t.Style != null)
-							si.BackgroundColor = t.Style.EvalBackgroundColor(r);
+							si.BackgroundColor = t.Style.EvalBackgroundColor(rpt, r);
 					}
 				}
 			}
-			si.BackgroundGradientType = this.EvalBackgroundGradientType(r);
-			si.BackgroundGradientEndColor = this.EvalBackgroundGradientEndColor(r);
+			si.BackgroundGradientType = this.EvalBackgroundGradientType(rpt, r);
+			si.BackgroundGradientEndColor = this.EvalBackgroundGradientEndColor(rpt, r);
 			if (this._BackgroundImage != null)
 			{
-				si.BackgroundImage = _BackgroundImage.GetPageImage(r);
+				si.BackgroundImage = _BackgroundImage.GetPageImage(rpt, r);
 			}
 			else
 				si.BackgroundImage = null;
 
-			si.FontStyle = this.EvalFontStyle(r);
-			si.FontFamily = this.EvalFontFamily(r);
-			si.FontSize = this.EvalFontSize(r);
-			si.FontWeight = this.EvalFontWeight(r);
+			si.FontStyle = this.EvalFontStyle(rpt, r);
+			si.FontFamily = this.EvalFontFamily(rpt, r);
+			si.FontSize = this.EvalFontSize(rpt, r);
+			si.FontWeight = this.EvalFontWeight(rpt, r);
 			//		Expression _Format;			//(string) .NET Framework formatting string1
-			si.TextDecoration = this.EvalTextDecoration(r);
-			si.TextAlign = this.EvalTextAlign(r);
-			si.VerticalAlign = this.EvalVerticalAlign(r);
-			si.Color = this.EvalColor(r);
-			si.PaddingLeft = this.EvalPaddingLeft(r);
-			si.PaddingRight = this.EvalPaddingRight(r);
-			si.PaddingTop = this.EvalPaddingTop(r);
-			si.PaddingBottom = this.EvalPaddingBottom(r);
-			si.LineHeight = this.EvalLineHeight(r);
-			si.Direction = this.EvalDirection(r);
-			si.WritingMode = this.EvalWritingMode(r);
-			si.Language = this.EvalLanguage(r);
-			si.UnicodeBiDirectional = this.EvalUnicodeBiDirectional(r);
-			si.Calendar = this.EvalCalendar(r);
-			si.NumeralLanguage = this.EvalNumeralLanguage(r);
-			si.NumeralVariant = this.EvalNumeralVariant(r);
+			si.TextDecoration = this.EvalTextDecoration(rpt, r);
+			si.TextAlign = this.EvalTextAlign(rpt, r);
+			si.VerticalAlign = this.EvalVerticalAlign(rpt, r);
+			si.Color = this.EvalColor(rpt, r);
+			si.PaddingLeft = this.EvalPaddingLeft(rpt, r);
+			si.PaddingRight = this.EvalPaddingRight(rpt, r);
+			si.PaddingTop = this.EvalPaddingTop(rpt, r);
+			si.PaddingBottom = this.EvalPaddingBottom(rpt, r);
+			si.LineHeight = this.EvalLineHeight(rpt, r);
+			si.Direction = this.EvalDirection(rpt, r);
+			si.WritingMode = this.EvalWritingMode(rpt, r);
+			si.Language = this.EvalLanguage(rpt, r);
+			si.UnicodeBiDirectional = this.EvalUnicodeBiDirectional(rpt, r);
+			si.Calendar = this.EvalCalendar(rpt, r);
+			si.NumeralLanguage = this.EvalNumeralLanguage(rpt, r);
+			si.NumeralVariant = this.EvalNumeralVariant(rpt, r);
 
 			if (this._ConstantStyle)		// We'll only do this work once
-				_StyleInfo = si;			//   when all are constant
+			{
+				wc.StyleInfo = si;			//   when all are constant
+				si = (StyleInfo) wc.StyleInfo.Clone();
+			}
 
 			return si;
 		}
 
 		// Format a string; passed a style but style may be null;
-		static internal string GetFormatedString(Style s, Row row, object o, TypeCode tc)
+		static internal string GetFormatedString(Report rpt, Style s, Row row, object o, TypeCode tc)
 		{
 			string t = null;
 			if (o == null)
@@ -1137,60 +1142,62 @@ namespace fyiReporting.RDL
 
 			try 
 			{
-				if (s != null && s.Format != null)
-				{
-					string format = s.Format.EvaluateString(row);
-					if (format != null && format.Length > 0)
-					{
-						switch (tc)
-						{
-							case TypeCode.DateTime:
-								t = ((DateTime) o).ToString(format);
-								break;
-							case TypeCode.Int16:
-								t = ((short) o).ToString(format);
-								break;
-							case TypeCode.UInt16:
-								t = ((ushort) o).ToString(format);
-								break;
-							case TypeCode.Int32:
-								t = ((int) o).ToString(format);
-								break;
-							case TypeCode.UInt32:
-								t = ((uint) o).ToString(format);
-								break;
-							case TypeCode.Int64:
-								t = ((long) o).ToString(format);
-								break;
-							case TypeCode.UInt64:
-								t = ((ulong) o).ToString(format);
-								break;
-							case TypeCode.String:
-								t = (string) o;
-								break;
-							case TypeCode.Decimal:
-								t = ((decimal) o).ToString(format);
-								break;
-							case TypeCode.Single:
-								t = ((float) o).ToString(format);
-								break;
-							case TypeCode.Double:
-								t = ((double) o).ToString(format);
-								break;
-							default:
-								t = o.ToString();
-								break;
-						}
-					}
-					else
-						t = o.ToString();
-				}
-				else
-					t = o.ToString();
+                if (s != null && s.Format != null)
+                {
+                    string format = s.Format.EvaluateString(rpt, row);
+                    if (format != null && format.Length > 0)
+                    {
+                        switch (tc)
+                        {
+                            case TypeCode.DateTime:
+                                t = ((DateTime)o).ToString(format);
+                                break;
+                            case TypeCode.Int16:
+                                t = ((short)o).ToString(format);
+                                break;
+                            case TypeCode.UInt16:
+                                t = ((ushort)o).ToString(format);
+                                break;
+                            case TypeCode.Int32:
+                                t = ((int)o).ToString(format);
+                                break;
+                            case TypeCode.UInt32:
+                                t = ((uint)o).ToString(format);
+                                break;
+                            case TypeCode.Int64:
+                                t = ((long)o).ToString(format);
+                                break;
+                            case TypeCode.UInt64:
+                                t = ((ulong)o).ToString(format);
+                                break;
+                            case TypeCode.String:
+                                t = (string)o;
+                                break;
+                            case TypeCode.Decimal:
+                                t = ((decimal)o).ToString(format);
+                                break;
+                            case TypeCode.Single:
+                                t = ((float)o).ToString(format);
+                                break;
+                            case TypeCode.Double:
+                                t = ((double)o).ToString(format);
+                                break;
+                            default:
+                                t = o.ToString();
+                                break;
+                        }
+                    }
+                    else    
+                        t = o.ToString();       // No format provided
+                }
+                else
+                {   // No style provided
+                    t = o.ToString();
+                }
 			}
 			catch
 			{
-				t = o.ToString();
+				t = o.ToString();       // probably type mismatch from expectation
 			}
 			return t;
 		}
@@ -1310,12 +1317,12 @@ namespace fyiReporting.RDL
 			return rc;
 		}
 
-		internal System.Drawing.Rectangle PaddingAdjust(Row r, System.Drawing.Rectangle rect, bool bAddIn)
+		internal System.Drawing.Rectangle PaddingAdjust(Report rpt, Row r, System.Drawing.Rectangle rect, bool bAddIn)
 		{
-			int pbottom = this.EvalPaddingBottomPx(r);
-			int ptop = this.EvalPaddingTopPx(r);
-			int pleft = this.EvalPaddingLeftPx(r);
-			int pright = this.EvalPaddingRightPx(r);
+			int pbottom = this.EvalPaddingBottomPx(rpt, r);
+			int ptop = this.EvalPaddingTopPx(rpt, r);
+			int pleft = this.EvalPaddingLeftPx(rpt, r);
+			int pright = this.EvalPaddingRightPx(rpt, r);
 
 			System.Drawing.Rectangle rt;
 			if (bAddIn)		// add in when trying to size the object
@@ -1351,13 +1358,13 @@ namespace fyiReporting.RDL
 			set {  _BackgroundColor = value; }
 		}
 
-		internal Color EvalBackgroundColor(Row row)
+		internal Color EvalBackgroundColor(Report rpt, Row row)
 		{
 			if (_BackgroundColor == null)
 				return System.Drawing.Color.Empty;
 
-			string c = _BackgroundColor.EvaluateString(row);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Empty, this.OwnerReport);
+			string c = _BackgroundColor.EvaluateString(rpt, row);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Empty, rpt);
 		}
 
 		internal Expression BackgroundGradientType
@@ -1366,12 +1373,12 @@ namespace fyiReporting.RDL
 			set {  _BackgroundGradientType = value; }
 		}
 
-		internal BackgroundGradientTypeEnum EvalBackgroundGradientType(Row r)
+		internal BackgroundGradientTypeEnum EvalBackgroundGradientType(Report rpt, Row r)
 		{
 			if (_BackgroundGradientType == null)
 				return BackgroundGradientTypeEnum.None;
 
-			string bgt = _BackgroundGradientType.EvaluateString(r);
+			string bgt = _BackgroundGradientType.EvaluateString(rpt, r);
 			return 	StyleInfo.GetBackgroundGradientType(bgt, BackgroundGradientTypeEnum.None);
 		}
 
@@ -1381,13 +1388,13 @@ namespace fyiReporting.RDL
 			set {  _BackgroundGradientEndColor = value; }
 		}
 
-		internal Color EvalBackgroundGradientEndColor(Row r)
+		internal Color EvalBackgroundGradientEndColor(Report rpt, Row r)
 		{
 			if (_BackgroundGradientEndColor == null)
 				return System.Drawing.Color.Empty;
 
-			string c = _BackgroundGradientEndColor.EvaluateString(r);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Empty, this.OwnerReport);
+			string c = _BackgroundGradientEndColor.EvaluateString(rpt, r);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Empty, rpt);
 		}
 
 		internal StyleBackgroundImage BackgroundImage
@@ -1407,20 +1414,20 @@ namespace fyiReporting.RDL
 			set {  _FontStyle = value; }
 		}
 
-		internal bool IsFontItalic(Row r)
+		internal bool IsFontItalic(Report rpt, Row r)
 		{
-			if (EvalFontStyle(r) == FontStyleEnum.Italic)
+			if (EvalFontStyle(rpt, r) == FontStyleEnum.Italic)
 				return true;
 
 			return false;
 		}
 
-		internal FontStyleEnum EvalFontStyle(Row row)
+		internal FontStyleEnum EvalFontStyle(Report rpt, Row row)
 		{
 			if (_FontStyle == null)
 				return FontStyleEnum.Normal;
 
-			string fs = _FontStyle.EvaluateString(row);
+			string fs = _FontStyle.EvaluateString(rpt, row);
 			return StyleInfo.GetFontStyle(fs, FontStyleEnum.Normal);
 		}
 
@@ -1430,12 +1437,12 @@ namespace fyiReporting.RDL
 			set {  _FontFamily = value; }
 		}
 
-		internal string EvalFontFamily(Row row)
+		internal string EvalFontFamily(Report rpt, Row row)
 		{
 			if (_FontFamily == null)
 				return "Arial";
 
-			return _FontFamily.EvaluateString(row);
+			return _FontFamily.EvaluateString(rpt, row);
 		}
 
 		internal Expression FontSize
@@ -1444,13 +1451,13 @@ namespace fyiReporting.RDL
 			set {  _FontSize = value; }
 		}
 
-		internal float EvalFontSize(Row row)
+		internal float EvalFontSize(Report rpt, Row row)
 		{
 			if (_FontSize == null)
 				return 10;
 
 			string pts;
-			pts = _FontSize.EvaluateString(row);
+			pts = _FontSize.EvaluateString(rpt, row);
 			RSize sz = new RSize(this.OwnerReport, pts);
 
 			return sz.Points;
@@ -1462,21 +1469,21 @@ namespace fyiReporting.RDL
 			set {  _FontWeight = value; }
 		}
 
-		internal FontWeightEnum EvalFontWeight(Row row)
+		internal FontWeightEnum EvalFontWeight(Report rpt, Row row)
 		{
 			if (_FontWeight == null)
 				return FontWeightEnum.Normal;
 
-			string weight = this.FontWeight.EvaluateString(row);
+			string weight = this.FontWeight.EvaluateString(rpt, row);
 			return StyleInfo.GetFontWeight(weight, FontWeightEnum.Normal);
 		}
 
-		internal bool IsFontBold(Row r)
+		internal bool IsFontBold(Report rpt, Row r)
 		{
 			if (this.FontWeight == null)
 				return false;
 
-			string weight = this.FontWeight.EvaluateString(r);
+			string weight = this.FontWeight.EvaluateString(rpt, r);
 			switch(weight.ToLower())
 			{
 				case "bold":
@@ -1504,12 +1511,12 @@ namespace fyiReporting.RDL
 			set {  _TextDecoration = value; }
 		}
 
-		internal TextDecorationEnum EvalTextDecoration(Row r)
+		internal TextDecorationEnum EvalTextDecoration(Report rpt, Row r)
 		{
 			if (_TextDecoration == null)
 				return TextDecorationEnum.None;
 
-			string td = _TextDecoration.EvaluateString(r);
+			string td = _TextDecoration.EvaluateString(rpt, r);
 			return StyleInfo.GetTextDecoration(td, TextDecorationEnum.None);
 		}
 
@@ -1519,12 +1526,12 @@ namespace fyiReporting.RDL
 			set {  _TextAlign = value; }
 		}
 
-		internal TextAlignEnum EvalTextAlign(Row row)
+		internal TextAlignEnum EvalTextAlign(Report rpt, Row row)
 		{
 			if (_TextAlign == null)
 				return TextAlignEnum.General;
 	
-			string a = _TextAlign.EvaluateString(row);
+			string a = _TextAlign.EvaluateString(rpt, row);
 			return StyleInfo.GetTextAlign(a, TextAlignEnum.General);
 		}
 
@@ -1534,12 +1541,12 @@ namespace fyiReporting.RDL
 			set {  _VerticalAlign = value; }
 		}
 
-		internal VerticalAlignEnum EvalVerticalAlign(Row row)
+		internal VerticalAlignEnum EvalVerticalAlign(Report rpt, Row row)
 		{
 			if (_VerticalAlign == null)
 				return VerticalAlignEnum.Top;
 
-			string v = _VerticalAlign.EvaluateString(row);
+			string v = _VerticalAlign.EvaluateString(rpt, row);
 			return StyleInfo.GetVerticalAlign(v, VerticalAlignEnum.Top);
 		}
 
@@ -1549,13 +1556,13 @@ namespace fyiReporting.RDL
 			set {  _Color = value; }
 		}
 
-		internal Color EvalColor(Row row)
+		internal Color EvalColor(Report rpt, Row row)
 		{
 			if (_Color == null)
 				return System.Drawing.Color.Black;
 
-			string c = _Color.EvaluateString(row);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, this.OwnerReport);
+			string c = _Color.EvaluateString(rpt, row);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, rpt);
 		}
 
 		internal Expression PaddingLeft
@@ -1564,22 +1571,22 @@ namespace fyiReporting.RDL
 			set {  _PaddingLeft = value; }
 		}
 
-		internal float EvalPaddingLeft(Row row)
+		internal float EvalPaddingLeft(Report rpt, Row row)
 		{
 			if (_PaddingLeft == null)
 				return 0;
 
-			string v = _PaddingLeft.EvaluateString(row);
+			string v = _PaddingLeft.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.Points;
 		}
 
-		internal int EvalPaddingLeftPx(Row row)
+		internal int EvalPaddingLeftPx(Report rpt, Row row)
 		{
 			if (_PaddingLeft == null)
 				return 0;
 
-			string v = _PaddingLeft.EvaluateString(row);
+			string v = _PaddingLeft.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.PixelsX;
 		}
@@ -1590,22 +1597,22 @@ namespace fyiReporting.RDL
 			set {  _PaddingRight = value; }
 		}
 
-		internal float EvalPaddingRight(Row row)
+		internal float EvalPaddingRight(Report rpt, Row row)
 		{
 			if (_PaddingRight == null)
 				return 0;
 
-			string v = _PaddingRight.EvaluateString(row);
+			string v = _PaddingRight.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.Points;
 		}
 
-		internal int EvalPaddingRightPx(Row row)
+		internal int EvalPaddingRightPx(Report rpt, Row row)
 		{
 			if (_PaddingRight == null)
 				return 0;
 
-			string v = _PaddingRight.EvaluateString(row);
+			string v = _PaddingRight.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.PixelsX;
 		}
@@ -1616,22 +1623,22 @@ namespace fyiReporting.RDL
 			set {  _PaddingTop = value; }
 		}
 
-		internal float EvalPaddingTop(Row row)
+		internal float EvalPaddingTop(Report rpt, Row row)
 		{
 			if (_PaddingTop == null)
 				return 0;
 
-			string v = _PaddingTop.EvaluateString(row);
+			string v = _PaddingTop.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.Points;
 		}
 
-		internal int EvalPaddingTopPx(Row row)
+		internal int EvalPaddingTopPx(Report rpt, Row row)
 		{
 			if (_PaddingTop == null)
 				return 0;
 
-			string v = _PaddingTop.EvaluateString(row);
+			string v = _PaddingTop.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.PixelsY;
 		}
@@ -1642,22 +1649,22 @@ namespace fyiReporting.RDL
 			set {  _PaddingBottom = value; }
 		}
 
-		internal float EvalPaddingBottom(Row row)
+		internal float EvalPaddingBottom(Report rpt, Row row)
 		{
 			if (_PaddingBottom == null)
 				return 0;
 
-			string v = _PaddingBottom.EvaluateString(row);
+			string v = _PaddingBottom.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.Points;
 		}
 
-		internal int EvalPaddingBottomPx(Row row)
+		internal int EvalPaddingBottomPx(Report rpt, Row row)
 		{
 			if (_PaddingBottom == null)
 				return 0;
 
-			string v = _PaddingBottom.EvaluateString(row);
+			string v = _PaddingBottom.EvaluateString(rpt, row);
 			RSize rz = new RSize(OwnerReport, v);
 			return rz.PixelsY;
 		}
@@ -1668,12 +1675,12 @@ namespace fyiReporting.RDL
 			set {  _LineHeight = value; }
 		}
 
-		internal float EvalLineHeight(Row r)
+		internal float EvalLineHeight(Report rpt, Row r)
 		{
 			if (_LineHeight == null)
 				return float.NaN;
 
-			string sz = _LineHeight.EvaluateString(r);
+			string sz = _LineHeight.EvaluateString(rpt, r);
 			RSize rz = new RSize(OwnerReport, sz);
 			return rz.Points;
 		}
@@ -1684,12 +1691,12 @@ namespace fyiReporting.RDL
 			set {  _Direction = value; }
 		}
 
-		internal DirectionEnum EvalDirection(Row r)
+		internal DirectionEnum EvalDirection(Report rpt, Row r)
 		{
 			if (_Direction == null)
 				return DirectionEnum.LTR;
 
-			string d = _Direction.EvaluateString(r);
+			string d = _Direction.EvaluateString(rpt, r);
 			return StyleInfo.GetDirection(d, DirectionEnum.LTR);
 		}
 
@@ -1699,12 +1706,12 @@ namespace fyiReporting.RDL
 			set {  _WritingMode = value; }
 		}
 
-		internal WritingModeEnum EvalWritingMode(Row r)
+		internal WritingModeEnum EvalWritingMode(Report rpt, Row r)
 		{
 			if (_WritingMode == null)
 				return WritingModeEnum.lr_tb;
 
-			string w = _WritingMode.EvaluateString(r);
+			string w = _WritingMode.EvaluateString(rpt, r);
 
 			return StyleInfo.GetWritingMode(w, WritingModeEnum.lr_tb);
 		}
@@ -1715,12 +1722,12 @@ namespace fyiReporting.RDL
 			set {  _Language = value; }
 		}
 
-		internal string EvalLanguage(Row r)
+		internal string EvalLanguage(Report rpt, Row r)
 		{
 			if (_Language == null)
-				return OwnerReport.EvalLanguage(r);
+				return OwnerReport.EvalLanguage(rpt, r);
 
-			return _Language.EvaluateString(r);
+			return _Language.EvaluateString(rpt, r);
 		}
 
 		internal Expression UnicodeBiDirectional
@@ -1729,12 +1736,12 @@ namespace fyiReporting.RDL
 			set {  _UnicodeBiDirectional = value; }
 		}
 
-		internal UnicodeBiDirectionalEnum EvalUnicodeBiDirectional(Row r)
+		internal UnicodeBiDirectionalEnum EvalUnicodeBiDirectional(Report rpt, Row r)
 		{
 			if (_UnicodeBiDirectional == null)
 				return UnicodeBiDirectionalEnum.Normal;
 
-			string u = _UnicodeBiDirectional.EvaluateString(r);
+			string u = _UnicodeBiDirectional.EvaluateString(rpt, r);
 			return StyleInfo.GetUnicodeBiDirectional(u, UnicodeBiDirectionalEnum.Normal);
 		}
 
@@ -1744,12 +1751,12 @@ namespace fyiReporting.RDL
 			set {  _Calendar = value; }
 		}
 
-		internal CalendarEnum EvalCalendar(Row r)
+		internal CalendarEnum EvalCalendar(Report rpt, Row r)
 		{
 			if (_Calendar == null)
 				return CalendarEnum.Gregorian;
 
-			string c = _Calendar.EvaluateString(r);
+			string c = _Calendar.EvaluateString(rpt, r);
 			return StyleInfo.GetCalendar(c, CalendarEnum.Gregorian);
 		}
 
@@ -1759,12 +1766,12 @@ namespace fyiReporting.RDL
 			set {  _NumeralLanguage = value; }
 		}
 
-		internal string EvalNumeralLanguage(Row r)
+		internal string EvalNumeralLanguage(Report rpt, Row r)
 		{
 			if (_NumeralLanguage == null)
-				return EvalLanguage(r);
+				return EvalLanguage(rpt, r);
 
-			return _NumeralLanguage.EvaluateString(r);
+			return _NumeralLanguage.EvaluateString(rpt, r);
 		}
 
 		internal Expression NumeralVariant
@@ -1773,15 +1780,45 @@ namespace fyiReporting.RDL
 			set {  _NumeralVariant = value; }
 		}
 
-		internal int EvalNumeralVariant(Row r)
+		internal int EvalNumeralVariant(Report rpt, Row r)
 		{
 			if (_NumeralVariant == null)
 				return 1;
 
-			int v = (int) _NumeralVariant.EvaluateDouble(r);
+			int v = (int) _NumeralVariant.EvaluateDouble(rpt, r);
 			if (v < 1 || v > 7)		// correct for bad data
 				v = 1;
 			return v;
+		}
+
+		private WorkClass GetWC(Report rpt)
+		{
+			if (!this.ConstantStyle)
+				return null;
+
+			WorkClass wc = rpt.Cache.Get(this, "wc") as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass();
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
+
+		private void RemoveWC(Report rpt)
+		{
+			rpt.Cache.Remove(this, "wc");
+		}
+
+		class WorkClass
+		{
+			internal string CssStyle;		// When ConstantStyle is true; this will hold cache of css
+			internal StyleInfo StyleInfo;	// When ConstantStyle is true; this will hold cache of StyleInfo
+			internal WorkClass()
+			{
+				CssStyle = null;
+				StyleInfo = null;
+			}
 		}
 
 	}

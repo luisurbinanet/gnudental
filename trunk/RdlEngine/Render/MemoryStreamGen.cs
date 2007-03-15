@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -25,7 +25,9 @@ using System;
 using fyiReporting.RDL;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace fyiReporting.RDL
 {
@@ -37,11 +39,37 @@ namespace fyiReporting.RDL
 
 	public class MemoryStreamGen : IStreamGen, IDisposable
 	{
+		static internal long Counter;			// counter used for unique expression count
 		MemoryStream _io;
 		StreamWriter _sw=null;
-		public MemoryStreamGen()
+        List<MemoryStream> _MemoryList;			// array of MemoryStreams - 1st is main stream; others are generated 
+										//   for charts, images, ...
+		List<string> _MemoryNames;			// names associated with the MemoryStreams
+		internal string Prefix;			// used as prefix to names generated
+		internal string Suffix;			// used as a suffix to names generated
+		internal string Extension="";		// extension name for first file
+
+		public MemoryStreamGen() : this(null, null, null) {}
+		public MemoryStreamGen(string prefix, string suffix, string extension)
 		{
+			Prefix = prefix;
+			Suffix = suffix;
+			Extension = extension;
+
 			_io = new MemoryStream();
+            _MemoryList = new List<MemoryStream>();
+			_MemoryList.Add(_io);
+			_MemoryNames = new List<string>();
+
+			// create the first name
+			string unique = Interlocked.Increment(ref MemoryStreamGen.Counter).ToString();
+			string name;
+			if (Prefix == null)
+				name = "a" + Extension + "&unique=" + unique;
+			else
+				name = Prefix + Extension + "&unique=" + unique;
+
+			_MemoryNames.Add(name);
 		}
 
 		public string GetText()
@@ -62,10 +90,20 @@ namespace fyiReporting.RDL
 			return t;
 		}
 
+		public IList MemoryList
+		{
+			get {return _MemoryList;}
+		}
+
+		public IList MemoryNames
+		{
+			get {return _MemoryNames;}
+		}
+
 		#region IStreamGen Members
 		public void CloseMainStream()
 		{
-			_io.Close();
+		//	_io.Close();   // TODO  --- need to make this more robust; need multiple streams as well
 			return;
 		}
 
@@ -81,12 +119,28 @@ namespace fyiReporting.RDL
 			return _sw;
 		}
 
-		// create a new file in the directory specified and return
-		//   a Stream caller can then write to.   relativeName is filled in with
-		//   name we generate (sans the directory).
+		/// <summary>
+		/// Createa a new stream and return a Stream caller can then write to.  
+		/// </summary>
+		/// <param name="relativeName">Filled in with a name</param>
+		/// <param name="extension">????</param>
+		/// <returns></returns>
 		public Stream GetIOStream(out string relativeName, string extension)
 		{
-			throw new ArgumentException("GetIOStream not supported");
+			MemoryStream ms = new MemoryStream();
+			_MemoryList.Add(ms);
+			string unique = Interlocked.Increment(ref MemoryStreamGen.Counter).ToString();
+
+			if (Prefix == null)
+				relativeName = "a" + extension + "&unique=" + unique;
+			else
+				relativeName = Prefix + extension + "&unique=" + unique;
+			if (Suffix != null)
+				relativeName += Suffix;
+
+			_MemoryNames.Add(relativeName);
+
+			return ms;
 		}
 
 		#endregion

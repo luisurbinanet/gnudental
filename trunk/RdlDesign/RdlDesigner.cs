@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing.Printing;
@@ -30,8 +31,10 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Globalization;
+using System.Diagnostics;
 using fyiReporting.RDL;
 using fyiReporting.RdlViewer;
+using System.Runtime.InteropServices;
 
 namespace fyiReporting.RdlDesign
 {
@@ -45,12 +48,26 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 		private MDIChild printChild=null;
-		SortedList _RecentFiles=null;
-		ArrayList _CurrentFiles=null;		// temporary variable for current files
+		SortedList<DateTime, string> _RecentFiles=null;
+		List<string> _CurrentFiles=null;		// temporary variable for current files
+		List<string> _Toolbar = null;			// temporary variable for toolbar entries
+		List<string> _TempReportFiles = null;		// temporary files created for report browsing
+		int _RecentFilesMax = 5;			// # of items in recent files
+		Process _ServerProcess = null;		// process for the RdlDesktop.exe --
 		private RDL.NeedPassword _GetPassword;
 		private string _DataSourceReferencePassword=null;
 		private bool bGotPassword=false;
 		private bool bMono = false;
+		private readonly string DefaultHelpUrl="http://www.fyireporting.com/helpv2/index.html";
+		private readonly string DefaultSupportUrl="http://www.fyireporting.com/forum";
+		private string _HelpUrl;
+		private string _SupportUrl;
+		private DialogValidateRdl _ValidateRdl=null;
+        private bool _ShowEditLines=true;
+        private bool _ShowReportItemOutline = false;
+        private bool _ShowTabbedInterface = true;
+		private readonly string TEMPRDL = "_tempfile_.rdl";
+		private int TEMPRDL_INC=0;
 
 		// Status bar
 		private System.Windows.Forms.StatusBar mainSB;
@@ -58,36 +75,44 @@ namespace fyiReporting.RdlDesign
 		private StatusBarPanel statusSelected;
 		private StatusBarPanel statusPosition;
 
-		// Tool bar
+		// Tool bar  --- if you add to this list LOOK AT INIT TOOLBAR FIRST
 		bool bSuppressChange=false;
 		private System.Windows.Forms.ToolBar mainTB;
-		private SimpleToggle ctlBold;
-		private SimpleToggle ctlItalic;
-		private SimpleToggle ctlUnderline;
-		private ComboBox ctlFont;
-		private ComboBox ctlFontSize;
-		private ComboBox ctlForeColor;
-		private ComboBox ctlBackColor;
-		private Button ctlNew;
-		private Button ctlOpen;
-		private Button ctlSave;
-		private Button ctlCut;
-		private Button ctlCopy;
-		private Button ctlPaste;
-		private Button ctlPrint;
-		private ComboBox ctlZoom;
+        internal System.Windows.Forms.TabControl mainTC; 
+		private SimpleToggle ctlBold=null;
+		private SimpleToggle ctlItalic=null;
+		private SimpleToggle ctlUnderline=null;
+		private ComboBox ctlFont=null;
+		private ComboBox ctlFontSize=null;
+		private ComboBox ctlForeColor=null;
+		private ComboBox ctlBackColor=null;
+		private Button ctlNew=null;
+		private Button ctlOpen=null;
+		private Button ctlSave=null;
+		private Button ctlCut=null;
+		private Button ctlCopy=null;
+		private Button ctlUndo=null;
+		private Button ctlPaste=null;
+		private Button ctlPrint=null;
+		private Button ctlPdf=null;
+		private Button ctlXml=null;
+		private Button ctlHtml=null;
+		private Button ctlMht=null;
+		private ComboBox ctlZoom=null;
+		private SimpleToggle ctlInsertCurrent=null;
+		private SimpleToggle ctlInsertTextbox=null;
+		private SimpleToggle ctlInsertChart=null; 
+		private SimpleToggle ctlInsertRectangle=null;
+		private SimpleToggle ctlInsertTable=null;
+		private SimpleToggle ctlInsertMatrix=null;
+		private SimpleToggle ctlInsertList=null;
+		private SimpleToggle ctlInsertLine=null;
+		private SimpleToggle ctlInsertImage=null;
+		private SimpleToggle ctlInsertSubreport=null;
 
-		// Insert items
-		private SimpleToggle ctlInsertCurrent;
-		private SimpleToggle ctlInsertTextbox;
-		private SimpleToggle ctlInsertChart;
-		private SimpleToggle ctlInsertRectangle;
-		private SimpleToggle ctlInsertTable;
-		private SimpleToggle ctlInsertMatrix;
-		private SimpleToggle ctlInsertList;
-		private SimpleToggle ctlInsertLine;
-		private SimpleToggle ctlInsertImage;
-		private SimpleToggle ctlInsertSubreport;
+		// Edit items
+		private System.Windows.Forms.TextBox ctlEditTextbox=null;			// when you're editting textbox's
+		private System.Windows.Forms.Label ctlEditLabel=null;
 
 		// Menu Items
 		MenuItem menuFSep1;
@@ -100,6 +125,11 @@ namespace fyiReporting.RdlDesign
 		MenuItem menuClose;
 		MenuItem menuSave;
 		MenuItem menuSaveAs;
+		MenuItem menuExport;
+		MenuItem menuExportXml;
+		MenuItem menuExportPdf;
+		MenuItem menuExportHtml;
+		MenuItem menuExportMHtml;
 		MenuItem menuPrint;
 		MenuItem menuRecentFile;
 		MenuItem menuExit;
@@ -112,18 +142,77 @@ namespace fyiReporting.RdlDesign
 		MenuItem menuEditPaste;
 		MenuItem menuEditDelete;
 		MenuItem menuEditSelectAll;
-		MenuItem menuEditProperties;
 		MenuItem menuEditFind;
 		MenuItem menuEditFindNext;
 		MenuItem menuEditReplace;
 		MenuItem menuEditGoto;
 		MenuItem menuEditFormatXml;
+		// View
+		MenuItem menuView;
+		MenuItem menuViewDesigner;
+		MenuItem menuViewRDL;
+		MenuItem menuViewPreview;
+		MenuItem menuViewBrowser;
+		MenuItem menuViewProperties;
 		// Data
 		MenuItem menuData;
 		MenuItem menuDataSources;
 		MenuItem menuDataSets;
 		MenuItem menuEmbeddedImages;
 		MenuItem menuNewDataSourceRef;
+		// Format
+		MenuItem menuFormatAlign;
+		MenuItem menuFormatAlignL;
+		MenuItem menuFormatAlignC;
+		MenuItem menuFormatAlignR;
+		MenuItem menuFormatAlignT;
+		MenuItem menuFormatAlignM;
+		MenuItem menuFormatAlignB;
+
+		MenuItem menuFormatSize;
+		MenuItem menuFormatSizeW;
+		MenuItem menuFormatSizeH;
+		MenuItem menuFormatSizeB;
+
+		MenuItem menuFormatHorz;
+		MenuItem menuFormatHorzE;
+		MenuItem menuFormatHorzI;
+		MenuItem menuFormatHorzD;
+		MenuItem menuFormatHorzZ;
+
+		MenuItem menuFormatVert;
+		MenuItem menuFormatVertE;
+		MenuItem menuFormatVertI;
+		MenuItem menuFormatVertD;
+		MenuItem menuFormatVertZ;
+
+		MenuItem menuFormatPaddingLeft;
+		MenuItem menuFormatPaddingLeftI;
+		MenuItem menuFormatPaddingLeftD;
+		MenuItem menuFormatPaddingLeftZ;
+
+		MenuItem menuFormatPaddingRight;
+		MenuItem menuFormatPaddingRightI;
+		MenuItem menuFormatPaddingRightD;
+		MenuItem menuFormatPaddingRightZ;
+
+		MenuItem menuFormatPaddingTop;
+		MenuItem menuFormatPaddingTopI;
+		MenuItem menuFormatPaddingTopD;
+		MenuItem menuFormatPaddingTopZ;
+
+		MenuItem menuFormatPaddingBottom;
+		MenuItem menuFormatPaddingBottomI;
+		MenuItem menuFormatPaddingBottomD;
+		MenuItem menuFormatPaddingBottomZ;
+
+		MenuItem menuFormat;
+
+		// Tools
+		MenuItem menuTools;
+		MenuItem menuToolsValidateSchema;
+		MenuItem menuToolsProcess;
+		MenuItem menuToolsOptions;
 
 		// Window
 		MenuItem menuCascade;
@@ -146,6 +235,11 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.Button bCopy;
 		private System.Windows.Forms.Button bCut;
 		private System.Windows.Forms.Button bNew;
+		private System.Windows.Forms.Button bUndo;
+		private System.Windows.Forms.Button bPdf;
+		private System.Windows.Forms.Button bXml;
+		private System.Windows.Forms.Button bHtml;
+		private System.Windows.Forms.Button bMht;
 		MenuItem menuCloseAll;
 
 		public RdlDesigner(bool mono)
@@ -154,6 +248,7 @@ namespace fyiReporting.RdlDesign
 			GetStartupState();
 			BuildMenus();
 			InitializeComponent();
+            
 			this.MdiChildActivate +=new EventHandler(RdlDesigner_MdiChildActivate);
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.RdlDesigner_Closing);
 			_GetPassword = new RDL.NeedPassword(this.GetPassword);
@@ -166,19 +261,7 @@ namespace fyiReporting.RdlDesign
 			{
 				foreach (string file in _CurrentFiles)
 				{
-					MDIChild mc = new MDIChild(this.ClientRectangle.Width*3/5, this.ClientRectangle.Height*3/5);
-					mc.OnSelectionChanged += new MDIChild.RdlChangeHandler(SelectionChanged);
-					mc.OnSelectionMoved += new MDIChild.RdlChangeHandler(SelectionMoved);
-					mc.OnReportItemInserted += new MDIChild.RdlChangeHandler(ReportItemInserted);
-					mc.OnDesignTabChanged += new MDIChild.RdlChangeHandler(DesignTabChanged);
-
-					mc.MdiParent = this;
-					mc.Viewer.GetDataSourceReferencePassword = _GetPassword;
-					mc.Viewer.Folder = Path.GetDirectoryName(file);
-					mc.Viewer.ReportName = Path.GetFileNameWithoutExtension(file);
-					mc.SourceFile = file;
-					mc.Text = Path.GetFileName(file);
-					mc.Show();
+					CreateMDIChild(file, null, false);
 				}
 				_CurrentFiles = null;		// don't need this any longer
 			}
@@ -233,15 +316,53 @@ namespace fyiReporting.RdlDesign
 
 		private void InitToolbar()
 		{
-			mainTB = new ToolBar();
-			// This is the default toolbar setup:  TODO - put this in the config file
-			string[] items = new string[] {
-				"New", "Open", "Save", "Space", "Cut", "Copy", "Paste", "Space",
-				"Textbox", "Chart", "Table", "List", "Image", "Matrix", "Subreport", "Rectangle", "Line","\n",
-				"Bold", "Italic", "Underline", "Space",
-				"Font", "FontSize", "Space", "ForeColor", "BackColor", 
-				"Space", "Print", "Space", "Zoom"};
-
+			bool bResumeLayout=false;
+			// Clear out anything from before
+			if (mainTB != null)
+			{
+				this.SuspendLayout();
+				mainTB.SuspendLayout();
+				bResumeLayout=true;
+				mainTB.Controls.Clear();
+				if (ctlBold!=null) {ctlBold=null;}
+				if (ctlItalic!=null) {ctlItalic=null;}
+				if (ctlUnderline!=null) {ctlUnderline=null;}
+				if (ctlFont!=null) {ctlFont=null;}
+				if (ctlFontSize!=null) {ctlFontSize=null;}
+				if (ctlForeColor!=null) {ctlForeColor=null;}
+				if (ctlBackColor!=null) {ctlBackColor=null;}
+				if (ctlNew!=null) {ctlNew=null;}
+				if (ctlOpen!=null) {ctlOpen=null;}
+				if (ctlSave!=null) {ctlSave=null;}
+				if (ctlCut!=null) {ctlCut=null;}
+				if (ctlCopy!=null) {ctlCopy=null;}
+				if (ctlUndo!=null) {ctlUndo=null;}
+				if (ctlPaste!=null) {ctlPaste=null;}
+				if (ctlPrint!=null) {ctlPrint=null;}
+				if (ctlPdf!=null) {ctlPdf=null;}
+				if (ctlXml!=null) {ctlXml=null;}
+				if (ctlHtml!=null) {ctlHtml=null;}
+				if (ctlMht!=null) {ctlMht=null;}
+				if (ctlZoom!=null) {ctlZoom=null;}
+				if (ctlInsertCurrent!=null) {ctlInsertCurrent=null;}
+				if (ctlInsertTextbox!=null) {ctlInsertTextbox=null;}
+				if (ctlInsertChart!=null) {ctlInsertChart=null;}
+				if (ctlInsertRectangle!=null) {ctlInsertRectangle=null;}
+				if (ctlInsertTable!=null) {ctlInsertTable=null;}
+				if (ctlInsertMatrix!=null) {ctlInsertMatrix=null;}
+				if (ctlInsertList!=null) {ctlInsertList=null;}
+				if (ctlInsertLine!=null) {ctlInsertLine=null;}
+				if (ctlInsertImage!=null) {ctlInsertImage=null;}
+				if (ctlInsertSubreport!=null) {ctlInsertSubreport=null;}
+				if (ctlEditTextbox!=null){ctlEditTextbox=null;}
+				if (ctlEditLabel!=null){ctlEditLabel=null;}
+			}
+			else
+			{
+				mainTB = new ToolBar();
+                mainTB.SizeChanged += new EventHandler(mainTB_SizeChanged);
+				mainTB.SuspendLayout();
+			}
 			const int LINEHEIGHT = 22;
 			const int LEFTMARGIN = 5;
 			int y = 2;
@@ -250,11 +371,12 @@ namespace fyiReporting.RdlDesign
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(RdlDesigner));
 
 			// Build the controls the user wants
-			foreach (string tbi in items)
+			foreach (string tbi in _Toolbar)
 			{
 				switch (tbi)
 				{
 					case "\n":
+					case "Newline":
 						y += LINEHEIGHT;
 						x = LEFTMARGIN;
 						break;
@@ -301,11 +423,29 @@ namespace fyiReporting.RdlDesign
 					case "Copy":
 						ctlCopy = InitToolbarMenu(ref x, y, "Copy", bCopy.Image, new EventHandler(this.menuEditCopy_Click));
 						break;
+					case "Undo":
+						ctlUndo = InitToolbarMenu(ref x, y, "Undo", bUndo.Image, new EventHandler(this.menuEditUndo_Click));
+						break;
 					case "Paste":
 						ctlPaste = InitToolbarMenu(ref x, y, "Paste", bPaste.Image, new EventHandler(this.menuEditPaste_Click));
 						break;
 					case "Print":
 						ctlPrint = InitToolbarMenu(ref x, y, "Print", bPrint.Image, new EventHandler(this.menuFilePrint_Click));
+						break;
+					case "XML":
+						ctlXml = InitToolbarMenu(ref x, y, "XML", bXml.Image, new EventHandler(this.menuExportXml_Click));
+						break;
+					case "PDF":
+						ctlPdf = InitToolbarMenu(ref x, y, "PDF", bPdf.Image, new EventHandler(this.menuExportPdf_Click));
+						break;
+					case "HTML":
+						ctlHtml = InitToolbarMenu(ref x, y, "HTML", bHtml.Image, new EventHandler(this.menuExportHtml_Click));
+						break;
+					case "MHT":
+						ctlMht = InitToolbarMenu(ref x, y, "MHT", bMht.Image, new EventHandler(this.menuExportMHtml_Click));
+						break;
+					case "Edit":
+						ctlEditTextbox = InitToolbarEditTextbox(ref x, y);
 						break;
 					case "Textbox":
 						ctlInsertTextbox = InitToolbarInsertToogle(ref x, y, "Textbox", bText.Image);
@@ -343,8 +483,29 @@ namespace fyiReporting.RdlDesign
 						break;
 				}
 			}
+            
+            // put the tab control in
+            if (mainTC == null)
+            {
+                mainTC = new TabControl();
+                mainTC.SelectedIndexChanged += new EventHandler(mainTC_SelectedIndexChanged);
+                mainTC.ShowToolTips = true;
+            }
+            mainTC.Parent = mainTB;
+            mainTC.Visible = _ShowTabbedInterface;
+            if (_ShowTabbedInterface)
+            {   // When tabbed we force the mdi children to be maximized (on reset)
+                foreach (MDIChild mc in this.MdiChildren)
+                {
+                    mc.WindowState = FormWindowState.Maximized;
+                }
+            }
+            mainTC.Location = new Point(0, y + LINEHEIGHT + 1);
+            mainTC.Size = new Size(mainTB.Width, LINEHEIGHT);
+            if (_ShowTabbedInterface)
+                y += LINEHEIGHT;
 
-			mainTB.Parent = this;
+            mainTB.Parent = this;
 			mainTB.BorderStyle = BorderStyle.None;
 			mainTB.DropDownArrows = true;
 			mainTB.Name = "mainTB";
@@ -352,7 +513,186 @@ namespace fyiReporting.RdlDesign
 			//			mainTB.Size = new Size(440,20);
 			mainTB.TabIndex = 1;
 			mainTB.AutoSize = false;
-			mainTB.Height = y + LINEHEIGHT + 4;	
+			mainTB.Height = y + LINEHEIGHT + 1;     // 1 was 4	
+			if (bResumeLayout)
+			{
+				mainTB.ResumeLayout();
+				this.ResumeLayout();
+			}
+		}
+
+        void mainTB_SizeChanged(object sender, EventArgs e)
+        {
+            mainTC.Width = mainTB.Width;
+        }
+
+         void mainTC_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MDIChild mc = mainTC.SelectedTab == null? null: mainTC.SelectedTab.Tag as MDIChild;
+            mdi_Activate(mc);
+        }
+
+        [DllImport("user32.dll")]
+        public static extern bool LockWindowUpdate(IntPtr hWndLock);
+
+
+        void mdi_Activate(MDIChild mc)
+        {
+            if (mc == null)
+                return;
+            LockWindowUpdate(this.Handle);
+            mc.Activate();
+            this.Refresh(); //Forces a synchronous redraw of all controls
+
+            LockWindowUpdate(IntPtr.Zero);
+        }
+
+		internal int RecentFilesMax
+		{
+			get {return _RecentFilesMax;}
+			set {_RecentFilesMax = value;}
+		}
+
+		internal SortedList<DateTime, string> RecentFiles
+		{
+			get {return _RecentFiles;}
+		}
+
+		internal string HelpUrl
+		{
+			get 
+			{
+				if (_HelpUrl != null && _HelpUrl.Length > 0)
+					return _HelpUrl;
+				return DefaultHelpUrl;
+			}
+			set 
+			{
+				_HelpUrl = value.Length > 0? value: DefaultHelpUrl;
+			}
+		}
+
+        internal bool ShowEditLines
+		{
+			get 
+			{
+                return _ShowEditLines;
+			}
+			set 
+			{
+                _ShowEditLines = value;
+			}
+		}
+
+        internal bool ShowReportItemOutline
+        {
+            get
+            {
+                return _ShowReportItemOutline;
+            }
+            set
+            {
+                _ShowReportItemOutline = value;
+            }
+        }
+
+        internal bool ShowTabbedInterface
+        {
+            get { return _ShowTabbedInterface; }
+            set { _ShowTabbedInterface = value; }
+        }
+
+		internal string SupportUrl
+		{
+			get 
+			{
+				if (_SupportUrl != null && _SupportUrl.Length > 0)
+					return _SupportUrl;
+				return DefaultSupportUrl;
+			}
+			set 
+			{
+				_SupportUrl = value.Length > 0? value: DefaultSupportUrl;
+			}
+		}
+
+
+		internal List<string> Toolbar
+		{
+			get {return _Toolbar;}
+			set 
+			{
+				_Toolbar = value;
+				InitToolbar();			// reset the toolbar
+			}
+		}
+
+		internal List<string> ToolbarDefault
+		{
+			get 
+			{
+				return new List<string>(new string[] {
+					"New", "Open", "Save", "Space", "Cut", "Copy", "Paste", "Undo", "Space", 
+					"Textbox", "Chart", "Table", "List", "Image", "Matrix", "Subreport", 
+					"Rectangle", "Line","Space","Edit", "Newline",
+					"Bold", "Italic", "Underline", "Space",
+					"Font", "FontSize", "Space", "ForeColor", "BackColor", 
+					"Space", "Print", "Space", "Zoom", "Space", "PDF", "HTML", "XML", "MHT"});
+				;
+			}
+		}
+
+		internal List<string> ToolbarAllowDups
+		{
+			get 
+			{
+				return new List<string>(new string[] {
+				  "Space",
+				  "Newline"});
+				;
+			}
+		}
+
+		/// <summary>
+		/// All of the possible items that can be placed on a toolbar
+		/// </summary>
+		internal string[] ToolbarOperations
+		{
+			get 
+			{
+				return new string[] 
+					{"Newline",
+					"Bold",
+					"Italic",
+					"Underline",
+					"Space",
+					"Font",
+					"FontSize",
+					"ForeColor",
+					"BackColor",
+					"New",
+					"Open",
+					"Save",
+					"Cut",
+					"Copy",
+					"Undo",
+					"Paste",
+					"Print",
+					"XML",
+					"PDF",
+					"HTML",
+					"Edit",
+					"Textbox",
+					"Chart",
+					"Rectangle",
+					"Table",
+					"Matrix",
+					"List",
+					"Line",
+					"Image",
+					"Subreport",
+					"Zoom"   };
+			}
 		}
 
 		private Button InitToolbarMenu(ref int x, int y, string t, System.EventHandler handler)
@@ -368,11 +708,14 @@ namespace fyiReporting.RdlDesign
 			if (img == null)
 			{
 				ctl.Text = t;
+				ctl.Font = new Font("Arial", 8, FontStyle.Regular);
+
 				using ( Graphics g = ctl.CreateGraphics() )
 				{
 					SizeF fs = g.MeasureString( ctl.Text, ctl.Font);
-					ctl.Height = (int) fs.Height + 8;	// 8 is for margins
-					ctl.Width = (int) fs.Width + 12;		
+					ctl.Height = (int) fs.Height+8;		// 8 is for margin so entire text shows in button
+					ctl.Width = (int) fs.Width+4;		
+					ctl.TextAlign = ContentAlignment.MiddleCenter;
 				}
 			}
 			else
@@ -396,6 +739,28 @@ namespace fyiReporting.RdlDesign
 			x = x+ ctl.Width;
 
 			return ctl;
+		}
+		
+		private System.Windows.Forms.TextBox InitToolbarEditTextbox(ref int x, int y)
+		{
+			System.Windows.Forms.TextBox tb = new System.Windows.Forms.TextBox();
+			Label l = this.ctlEditLabel = new Label();
+			l.AutoSize = true;
+			l.Font = new Font("Arial", 8, FontStyle.Bold | FontStyle.Italic);
+			l.Text = "fx";
+			l.Left = x;
+			l.Top = y + (tb.Height / 2) - (l.Height / 2);
+			mainTB.Controls.Add(l);
+			x += l.Width;
+			tb.Left = x;
+			tb.Width = 230;
+			x += tb.Width;
+			tb.Top = y;
+			tb.Validated += new EventHandler(this.EditTextbox_Validated);	// handler for edit changes
+			tb.KeyDown += new KeyEventHandler(EditTextBox_KeyDown);
+
+			mainTB.Controls.Add(tb);
+			return tb;
 		}
 
 		private SimpleToggle InitToolbarInsertToogle(ref int x, int y, string t)
@@ -464,6 +829,8 @@ namespace fyiReporting.RdlDesign
 			ctlBold.Left = x;
 			ctlBold.Top = y;
 			ctlBold.FlatStyle = FlatStyle.Flat;
+			ctlBold.TextAlign = ContentAlignment.MiddleCenter;
+
 			ToolTip tipb = new ToolTip();
 			tipb.AutomaticDelay = 500;
 			tipb.ShowAlways = true;
@@ -648,6 +1015,11 @@ namespace fyiReporting.RdlDesign
 			this.bCopy = new System.Windows.Forms.Button();
 			this.bCut = new System.Windows.Forms.Button();
 			this.bNew = new System.Windows.Forms.Button();
+			this.bUndo = new System.Windows.Forms.Button();
+			this.bPdf = new System.Windows.Forms.Button();
+			this.bXml = new System.Windows.Forms.Button();
+			this.bHtml = new System.Windows.Forms.Button();
+			this.bMht = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// bTable
@@ -810,10 +1182,65 @@ namespace fyiReporting.RdlDesign
 			this.bNew.Text = "New";
 			this.bNew.Visible = false;
 			// 
+			// bUndo
+			// 
+			this.bUndo.Image = ((System.Drawing.Image)(resources.GetObject("bUndo.Image")));
+			this.bUndo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bUndo.Location = new System.Drawing.Point(504, 256);
+			this.bUndo.Name = "bUndo";
+			this.bUndo.TabIndex = 16;
+			this.bUndo.Text = "Undo";
+			this.bUndo.Visible = false;
+			// 
+			// bPdf
+			// 
+			this.bPdf.Image = ((System.Drawing.Image)(resources.GetObject("bPdf.Image")));
+			this.bPdf.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bPdf.Location = new System.Drawing.Point(504, 320);
+			this.bPdf.Name = "bPdf";
+			this.bPdf.TabIndex = 17;
+			this.bPdf.Text = "PDF";
+			this.bPdf.Visible = false;
+			// 
+			// bXml
+			// 
+			this.bXml.Image = ((System.Drawing.Image)(resources.GetObject("bXml.Image")));
+			this.bXml.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bXml.Location = new System.Drawing.Point(504, 288);
+			this.bXml.Name = "bXml";
+			this.bXml.TabIndex = 18;
+			this.bXml.Text = "XML";
+			this.bXml.Visible = false;
+			// 
+			// bHtml
+			// 
+			this.bHtml.Image = ((System.Drawing.Image)(resources.GetObject("bHtml.Image")));
+			this.bHtml.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bHtml.Location = new System.Drawing.Point(608, 320);
+			this.bHtml.Name = "bHtml";
+			this.bHtml.TabIndex = 19;
+			this.bHtml.Text = "HTML";
+			this.bHtml.Visible = false;
+			// 
+			// bMht
+			// 
+			this.bMht.Image = ((System.Drawing.Image)(resources.GetObject("bMht.Image")));
+			this.bMht.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bMht.Location = new System.Drawing.Point(504, 360);
+			this.bMht.Name = "bMht";
+			this.bMht.TabIndex = 20;
+			this.bMht.Text = "HTML";
+			this.bMht.Visible = false;
+			// 
 			// RdlDesigner
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(712, 470);
+			this.Controls.Add(this.bMht);
+			this.Controls.Add(this.bHtml);
+			this.Controls.Add(this.bXml);
+			this.Controls.Add(this.bPdf);
+			this.Controls.Add(this.bUndo);
 			this.Controls.Add(this.bNew);
 			this.Controls.Add(this.bCut);
 			this.Controls.Add(this.bCopy);
@@ -834,7 +1261,6 @@ namespace fyiReporting.RdlDesign
 			this.Name = "RdlDesigner";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.Text = "fyiReporting Designer";
-			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.ResumeLayout(false);
 
 		}
@@ -871,6 +1297,13 @@ namespace fyiReporting.RdlDesign
 			menuSave = new MenuItem("&Save", new EventHandler(this.menuFileSave_Click), Shortcut.CtrlS);
 			menuSaveAs = new MenuItem("Save &As...", new EventHandler(this.menuFileSaveAs_Click));
 			menuPrint = new MenuItem("Print...", new EventHandler(this.menuFilePrint_Click), Shortcut.CtrlP);
+			menuExport = new MenuItem("Export");
+			menuExportPdf =  new MenuItem("PDF...", new EventHandler(this.menuExportPdf_Click));
+			menuExportXml =  new MenuItem("XML...", new EventHandler(this.menuExportXml_Click));
+			menuExportHtml =  new MenuItem("Web Page, HTML...", new EventHandler(this.menuExportHtml_Click));
+			menuExportMHtml =  new MenuItem("Web Archive, single file MHT...", new EventHandler(this.menuExportMHtml_Click));
+			menuExport.MenuItems.AddRange(new MenuItem[] {menuExportPdf, menuExportHtml, menuExportMHtml, menuExportXml});
+
 			menuFSep2 = new MenuItem("-");
 			MenuItem menuRecentItem = new MenuItem("");
 			menuRecentFile = new MenuItem("Recent &Files");
@@ -883,7 +1316,7 @@ namespace fyiReporting.RdlDesign
 			menuFile.Popup +=new EventHandler(this.menuFile_Popup);
 			menuFile.MenuItems.AddRange(
 				new MenuItem[] { menuNew, menuOpen, menuClose, menuFSep1, menuSave, menuSaveAs, 
-								   menuPrint, menuFSep2, menuRecentFile, menuFSep3, menuExit });
+								   menuPrint, menuExport, menuFSep2, menuRecentFile, menuFSep3, menuExit });
 
 			// Intialize the recent file menu
 			RecentFilesMenu();
@@ -895,10 +1328,9 @@ namespace fyiReporting.RdlDesign
 			menuEditCut = new MenuItem("Cu&t", new EventHandler(this.menuEditCut_Click), Shortcut.CtrlX);
 			menuEditCopy = new MenuItem("&Copy", new EventHandler(this.menuEditCopy_Click), Shortcut.CtrlC);
 			menuEditPaste = new MenuItem("&Paste", new EventHandler(this.menuEditPaste_Click), Shortcut.CtrlV);
-			menuEditDelete = new MenuItem("&Delete", new EventHandler(this.menuEditDelete_Click), Shortcut.Del);
+			menuEditDelete = new MenuItem("&Delete", new EventHandler(this.menuEditDelete_Click));
 			menuFSep2 = new MenuItem("-");
 			menuEditSelectAll = new MenuItem("Select &All", new EventHandler(this.menuEditSelectAll_Click), Shortcut.CtrlA);
-			menuEditProperties = new MenuItem("Properties...", new EventHandler(this.menuEditProperties_Click));
 			menuFSep3 = new MenuItem("-");
 			menuEditFind = new MenuItem("&Find...", new EventHandler(this.menuEditFind_Click), Shortcut.CtrlF);
 			menuEditFindNext = new MenuItem("Find Next", new EventHandler(this.menuEditFindNext_Click), Shortcut.F3);
@@ -915,7 +1347,19 @@ namespace fyiReporting.RdlDesign
 								   menuEditDelete, menuFSep2, menuEditSelectAll, menuFSep3,
 								   menuEditFind, menuEditFindNext, menuEditReplace, menuEditGoto,
 								   menuFSep4, menuEditFormatXml});
-			// Data Window
+			// View Menu
+			menuViewDesigner = new MenuItem("Designer", new EventHandler(this.menuViewDesigner_Click), Shortcut.F7);
+			menuViewRDL = new MenuItem("RDL Text", new EventHandler(this.menuViewRDL_Click), Shortcut.ShiftF7);
+			menuViewPreview = new MenuItem("Preview", new EventHandler(this.menuViewPreview_Click), Shortcut.F5);
+			menuViewBrowser = new MenuItem("Show Report in Browser", new EventHandler(this.menuViewBrowser_Click), Shortcut.F6);
+			menuViewProperties = new MenuItem("Properties...", new EventHandler(this.menuEditProperties_Click), Shortcut.F4);
+			menuView = new MenuItem("&View");
+			menuView.Popup += new EventHandler(menuView_Popup);
+			menuView.MenuItems.AddRange(
+				new MenuItem[] {menuViewDesigner, menuViewRDL, menuViewPreview, 
+							  new MenuItem("-"), menuViewBrowser, new MenuItem("-"), menuViewProperties});
+			
+			// Data Menu
 			menuNewDataSourceRef = new MenuItem("&Create Shared Data Source...", new EventHandler(this.menuFileNewDataSourceRef_Click));
 			menuDataSources = new MenuItem("Data &Sources...", new EventHandler(this.menuDataSources_Click));
 			menuDataSets = new MenuItem("&Data Sets");
@@ -926,6 +1370,86 @@ namespace fyiReporting.RdlDesign
 			menuData.Popup +=new EventHandler(this.menuData_Popup);
 			menuData.MenuItems.AddRange(
 				new MenuItem[] { menuDataSets, menuDataSources, new MenuItem("-"), menuEmbeddedImages, new MenuItem("-"), menuNewDataSourceRef });
+
+			// Format menu
+			menuFormatAlign = new MenuItem("&Align");
+			menuFormatAlignL = new MenuItem("&Lefts", new EventHandler(this.menuFormatAlignL_Click));
+			menuFormatAlignC = new MenuItem("&Centers", new EventHandler(this.menuFormatAlignC_Click));
+			menuFormatAlignR = new MenuItem("&Rights", new EventHandler(this.menuFormatAlignR_Click));
+			menuFormatAlignT = new MenuItem("&Tops", new EventHandler(this.menuFormatAlignT_Click));
+			menuFormatAlignM = new MenuItem("&Middles", new EventHandler(this.menuFormatAlignM_Click));
+			menuFormatAlignB = new MenuItem("&Bottoms", new EventHandler(this.menuFormatAlignB_Click));
+			menuFormatAlign.MenuItems.AddRange(
+				new MenuItem[] {menuFormatAlignL,menuFormatAlignC,menuFormatAlignR,new MenuItem("-"),menuFormatAlignT,menuFormatAlignM,menuFormatAlignB });
+
+			menuFormatSize = new MenuItem("&Size");
+			menuFormatSizeW = new MenuItem("&Width", new EventHandler(this.menuFormatSizeW_Click));
+			menuFormatSizeH = new MenuItem("&Height", new EventHandler(this.menuFormatSizeH_Click));
+			menuFormatSizeB = new MenuItem("&Both", new EventHandler(this.menuFormatSizeB_Click));
+			menuFormatSize.MenuItems.AddRange(
+				new MenuItem[] {menuFormatSizeW, menuFormatSizeH, menuFormatSizeB });
+
+			menuFormatHorz = new MenuItem("&Horizontal Spacing");
+			menuFormatHorzE = new MenuItem("&Make Equal", new EventHandler(this.menuFormatHorzE_Click));
+			menuFormatHorzI = new MenuItem("&Increase", new EventHandler(this.menuFormatHorzI_Click));
+			menuFormatHorzD = new MenuItem("&Decrease", new EventHandler(this.menuFormatHorzD_Click));
+			menuFormatHorzZ = new MenuItem("&Zero", new EventHandler(this.menuFormatHorzZ_Click));
+			menuFormatHorz.MenuItems.AddRange(
+				new MenuItem[] {menuFormatHorzE,menuFormatHorzI,menuFormatHorzD,menuFormatHorzZ });
+
+			menuFormatVert = new MenuItem("&Vertical Spacing");
+			menuFormatVertE = new MenuItem("&Make Equal", new EventHandler(this.menuFormatVertE_Click));
+			menuFormatVertI = new MenuItem("&Increase", new EventHandler(this.menuFormatVertI_Click));
+			menuFormatVertD = new MenuItem("&Decrease", new EventHandler(this.menuFormatVertD_Click));
+			menuFormatVertZ = new MenuItem("&Zero", new EventHandler(this.menuFormatVertZ_Click));
+			menuFormatVert.MenuItems.AddRange(
+				new MenuItem[] {menuFormatVertE,menuFormatVertI,menuFormatVertD,menuFormatVertZ });
+
+			menuFormatPaddingLeft = new MenuItem("Padding Left");
+			menuFormatPaddingLeftI = new MenuItem("Increase", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingLeftD = new MenuItem("Decrease", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingLeftZ = new MenuItem("Zero", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingLeft.MenuItems.AddRange(
+				new MenuItem[] {menuFormatPaddingLeftI,menuFormatPaddingLeftD,menuFormatPaddingLeftZ  });
+
+			menuFormatPaddingRight = new MenuItem("Padding Right");
+			menuFormatPaddingRightI = new MenuItem("Increase", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingRightD = new MenuItem("Decrease", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingRightZ = new MenuItem("Zero", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingRight.MenuItems.AddRange(
+				new MenuItem[] {menuFormatPaddingRightI,menuFormatPaddingRightD,menuFormatPaddingRightZ  });
+
+			menuFormatPaddingTop = new MenuItem("Padding Top");
+			menuFormatPaddingTopI = new MenuItem("Increase", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingTopD = new MenuItem("Decrease", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingTopZ = new MenuItem("Zero", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingTop.MenuItems.AddRange(
+				new MenuItem[] {menuFormatPaddingTopI,menuFormatPaddingTopD,menuFormatPaddingTopZ  });
+
+			menuFormatPaddingBottom = new MenuItem("Padding Bottom");
+			menuFormatPaddingBottomI = new MenuItem("Increase", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingBottomD = new MenuItem("Decrease", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingBottomZ = new MenuItem("Zero", new EventHandler(this.menuFormatPadding_Click));
+			menuFormatPaddingBottom.MenuItems.AddRange(
+				new MenuItem[] {menuFormatPaddingBottomI,menuFormatPaddingBottomD,menuFormatPaddingBottomZ  });
+
+			menuFormat = new MenuItem("F&ormat");
+			menuFormat.Popup +=new EventHandler(menuFormat_Popup);
+			menuFormat.MenuItems.AddRange(
+				new MenuItem[] { menuFormatAlign, menuFormatSize, menuFormatHorz, menuFormatVert, 
+								   new MenuItem("-"), 
+								   menuFormatPaddingLeft,menuFormatPaddingRight,
+								   menuFormatPaddingTop,menuFormatPaddingBottom} );
+
+			// Tools menu
+			this.menuToolsProcess = new MenuItem("Start Desktop Server", new EventHandler(this.menuToolsProcess_Click));
+			this.menuToolsValidateSchema = new  MenuItem("Validate RDL", new EventHandler(this.menuToolsValidateSchema_Click));
+			this.menuToolsOptions = new  MenuItem("Options...", new EventHandler(this.menuToolsOptions_Click));
+			menuTools = new MenuItem("&Tools");
+			menuTools.MenuItems.AddRange(
+				new MenuItem[] { menuToolsValidateSchema, new MenuItem("-"), menuToolsProcess, 
+								   new MenuItem("-"), menuToolsOptions} );
+			menuTools.Popup +=new EventHandler(this.menuTools_Popup);
 
 			// WINDOW MENU
 			menuCascade = new MenuItem("&Cascade", new EventHandler(this.menuWndCascade_Click), Shortcut.CtrlShiftJ);
@@ -945,10 +1469,13 @@ namespace fyiReporting.RdlDesign
 
 			// HELP MENU
 			MenuItem menuAbout = new MenuItem("&About...", new EventHandler(this.menuHelpAbout_Click));
+			MenuItem menuHelpItem = new MenuItem("&Help", new EventHandler(this.menuHelpHelp_Click));
+			MenuItem menuSupport = new MenuItem("&Support", new EventHandler(this.menuHelpSupport_Click));
 			MenuItem menuHelp = new MenuItem("&Help");
-			menuHelp.MenuItems.AddRange(new MenuItem[] {menuAbout } );
+			menuHelp.MenuItems.AddRange(new MenuItem[] {menuHelpItem, new MenuItem("-"), menuSupport, new MenuItem("-"), menuAbout } );
 
-			MainMenu menuMain = new MainMenu(new MenuItem[]{menuFile, menuEdit, menuData, menuWindow, menuHelp});	
+			MainMenu menuMain = new MainMenu(new MenuItem[]{menuFile, menuEdit, menuView, menuData, 
+															menuFormat, menuTools, menuWindow, menuHelp});	
 			IsMdiContainer = true;
 			this.Menu = menuMain;   
 		}
@@ -970,7 +1497,9 @@ namespace fyiReporting.RdlDesign
 			menuClose.Enabled = bEnable;
 			menuSave.Enabled = bEnable;
 			menuSaveAs.Enabled = bEnable;
-			menuPrint.Enabled = bEnable;
+
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			menuPrint.Enabled = menuExport.Enabled = (mc != null && mc.DesignTab == "preview");
 
 			// Recent File is enabled when there exists some files 
 			menuRecentFile.Enabled = this._RecentFiles.Count <= 0? false: true;
@@ -987,12 +1516,27 @@ namespace fyiReporting.RdlDesign
 		{
 			if (!OkToSave())
 				return;
+			SaveStartupState();
+			menuToolsCloseProcess(false);
+			CleanupTempFiles();
 			Environment.Exit(0);
 		}
 
 		private void menuFileOpen_Click(object sender, EventArgs e)
 		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			OpenFileDialog ofd = new OpenFileDialog();
+			if (mc != null)
+			{
+				try 
+				{
+					ofd.InitialDirectory = Path.GetDirectoryName(mc.SourceFile);
+				}
+				catch
+				{
+				}
+			}
+			ofd.DefaultExt = "rdl";
 			ofd.Filter = "Report files (*.rdl)|*.rdl|" +
 				"All files (*.*)|*.*";
 			ofd.FilterIndex = 1;
@@ -1025,35 +1569,66 @@ namespace fyiReporting.RdlDesign
 					}
 				}
 			}
-			if (mcOpen == null)
-			{
-				MDIChild mc = new MDIChild(this.ClientRectangle.Width*3/5, this.ClientRectangle.Height*3/5);
-				mc.OnSelectionChanged += new MDIChild.RdlChangeHandler(SelectionChanged);
-				mc.OnSelectionMoved += new MDIChild.RdlChangeHandler(SelectionMoved);
-				mc.OnReportItemInserted += new MDIChild.RdlChangeHandler(ReportItemInserted);
-				mc.OnDesignTabChanged += new MDIChild.RdlChangeHandler(DesignTabChanged);
-				mc.WindowState=FormWindowState.Maximized;//added by js
-				mc.MdiParent = this;
-				mc.Viewer.GetDataSourceReferencePassword = _GetPassword;
-				if (file != null)
-				{
-					mc.Viewer.Folder = Path.GetDirectoryName(file);
-					mc.SourceFile = file;
-					mc.Text = Path.GetFileName(file);
-					mc.Viewer.Folder = Path.GetDirectoryName(file);
-					mc.Viewer.ReportName = Path.GetFileNameWithoutExtension(file);
-					NoteRecentFiles(file, bMenuUpdate);
-				}
-				else
-				{
-					mc.SourceRdl = rdl;
-					mc.Viewer.ReportName = mc.Text = "Untitled";
-				}
-				mc.Show();
-				mcOpen = mc;
-			}
-			else
-				mcOpen.Activate();
+            if (mcOpen == null)
+            {
+                MDIChild mc = null;
+                try
+                {
+                    mc = new MDIChild(this.ClientRectangle.Width * 3 / 5, this.ClientRectangle.Height * 3 / 5);
+                    mc.OnSelectionChanged += new MDIChild.RdlChangeHandler(SelectionChanged);
+                    mc.OnSelectionMoved += new MDIChild.RdlChangeHandler(SelectionMoved);
+                    mc.OnReportItemInserted += new MDIChild.RdlChangeHandler(ReportItemInserted);
+                    mc.OnDesignTabChanged += new MDIChild.RdlChangeHandler(DesignTabChanged);
+                    mc.OnOpenSubreport += new DesignCtl.OpenSubreportEventHandler(OpenSubReportEvent);
+                    mc.OnHeightChanged += new DesignCtl.HeightEventHandler(HeightChanged);
+                    
+                    mc.MdiParent = this;
+                    if (this._ShowTabbedInterface)
+                        mc.WindowState = FormWindowState.Maximized;
+                    mc.Viewer.GetDataSourceReferencePassword = _GetPassword;
+                    if (file != null)
+                    {
+                        mc.Viewer.Folder = Path.GetDirectoryName(file);
+                        mc.SourceFile = file;
+                        mc.Text = Path.GetFileName(file);
+                        mc.Viewer.Folder = Path.GetDirectoryName(file);
+                        mc.Viewer.ReportName = Path.GetFileNameWithoutExtension(file);
+                        NoteRecentFiles(file, bMenuUpdate);
+                    }
+                    else
+                    {
+                        mc.SourceRdl = rdl;
+                        mc.Viewer.ReportName = mc.Text = "Untitled";
+                    }
+                    mc.ShowEditLines(this._ShowEditLines);
+                    mc.ShowReportItemOutline = this.ShowReportItemOutline;
+                    // add to toolbar tab
+                    TabPage tp = new TabPage();
+                    tp.Location = new System.Drawing.Point(0, 0);
+                    tp.Name = mc.Text;
+                    tp.TabIndex = 1;
+                    tp.Text = mc.Text;
+                    tp.Tag = mc;                // tie the mdichild to the tabpage
+                    tp.ToolTipText = file;
+                    mainTC.Controls.Add(tp);
+                    mc.Tab = tp;
+
+                    mc.Show();
+                    mcOpen = mc;
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    if (mc != null)
+                        mc.Close();
+                    return null;
+                }
+            }
+            else
+            {
+                mcOpen.Activate();
+            }
 			return mcOpen;
 		}
 
@@ -1078,6 +1653,10 @@ namespace fyiReporting.RdlDesign
 					bEnablePreview=true;
 					break;
 			}
+			if (!bEnableEdit && this._ValidateRdl != null)
+			{
+				this._ValidateRdl.Close();
+			}
 			if (ctlBold != null)
 				ctlBold.Enabled = bEnableDesign;
 			if (ctlItalic != null)
@@ -1096,6 +1675,8 @@ namespace fyiReporting.RdlDesign
 				ctlCut.Enabled = bEnableDesign | bEnableEdit;
 			if (ctlCopy != null)
 				ctlCopy.Enabled = bEnableDesign | bEnableEdit;
+			if (ctlUndo != null)
+				ctlUndo.Enabled = bEnableDesign | bEnableEdit; 
 			if (ctlPaste != null)
 				ctlPaste.Enabled = bEnableDesign | bEnableEdit;
 			if (ctlPrint != null)
@@ -1119,6 +1700,17 @@ namespace fyiReporting.RdlDesign
 				ctlInsertImage.Enabled = bEnableDesign;
 			if (ctlInsertSubreport != null)
 				ctlInsertSubreport.Enabled = bEnableDesign;
+			if (ctlPdf != null)
+				ctlPdf.Enabled = bEnablePreview;
+			if (ctlXml != null)
+				ctlXml.Enabled = bEnablePreview;
+			if (ctlHtml != null)
+				ctlHtml.Enabled = bEnablePreview;
+			if (ctlMht != null)
+				ctlMht.Enabled = bEnablePreview;
+
+			this.EnableEditTextBox();
+
 			if (ctlZoom != null)
 			{
 				ctlZoom.Enabled = bEnablePreview;
@@ -1144,10 +1736,37 @@ namespace fyiReporting.RdlDesign
 				}
 			}
 			// when no active sheet
-			this.ctlSave.Enabled = mc != null;
+			if (this.ctlSave != null)
+				this.ctlSave.Enabled = mc != null;
 			
 			// Update the status and position information
 			SetStatusNameAndPosition();
+		}
+
+		private void EnableEditTextBox()
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			bool bEnable = false;
+
+			if (this.ctlEditTextbox == null || mc == null || 
+				mc.DesignTab != "design" || mc.DrawCtl.SelectedCount != 1)
+			{}
+			else
+			{
+				XmlNode tn = mc.DrawCtl.SelectedList[0] as XmlNode;
+				if (tn != null && tn.Name == "Textbox")
+				{
+					ctlEditTextbox.Text = mc.DrawCtl.GetElementValue(tn, "Value", "");
+					bEnable = true;
+				}
+			}
+			if (ctlEditTextbox != null)
+			{
+				if (!bEnable)
+					ctlEditTextbox.Text = "";
+				ctlEditTextbox.Enabled = bEnable;
+				ctlEditLabel.Enabled = bEnable;
+			}
 		}
 
 		private void ReportItemInserted(object sender, System.EventArgs e)
@@ -1164,7 +1783,46 @@ namespace fyiReporting.RdlDesign
 				ctlInsertCurrent = null;
 			}
 		}
-		
+	
+		private void OpenSubReportEvent(object sender, SubReportEventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			string file = mc.Viewer.Folder;
+			if (e.SubReportName[0] == Path.DirectorySeparatorChar)
+				file = file + e.SubReportName;
+			else
+				file = file + Path.DirectorySeparatorChar + e.SubReportName + ".rdl";
+
+			CreateMDIChild(file, null, true);
+		}
+
+        private void HeightChanged(object sender, HeightEventArgs e)
+        {
+            if (e.Height == null)
+            {
+                statusPosition.Text = "";
+                return;
+            }
+
+            RegionInfo rinfo = new RegionInfo(CultureInfo.CurrentCulture.LCID);
+            float h = DesignXmlDraw.GetSize(e.Height);
+            string sh;
+            if (rinfo.IsMetric)
+            {
+                sh = string.Format("   height={0:0.00}cm        ",
+                        h / (DesignXmlDraw.POINTSIZED / 2.54d));
+            }
+            else
+            {
+                sh = string.Format("   height={0:0.00}\"        ",
+                        h / DesignXmlDraw.POINTSIZED);
+            }
+            statusPosition.Text = sh;
+        }
+
 		private void SelectionMoved(object sender, System.EventArgs e)
 		{
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
@@ -1179,10 +1837,17 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
+			// handle edit tab first
+			if (mc.RdlEditor.DesignTab == "edit")
+			{
+				SetStatusNameAndPosition();
+				return;
+			}
 
 			bSuppressChange = true;			// don't process changes in status bar
 
 			SetStatusNameAndPosition();
+			this.EnableEditTextBox();	// handling enabling/disabling of textbox
 
 			StyleInfo si = mc.SelectedStyle;
 			if (si == null)
@@ -1249,9 +1914,11 @@ namespace fyiReporting.RdlDesign
 			if (mc == null)
 				return;
 
+			mc.Editor.StartUndoGroup("DataSources Dialog");
 			DialogDataSources dlgDS = new DialogDataSources(mc.DrawCtl);
 			dlgDS.StartPosition = FormStartPosition.CenterParent;
 			DialogResult dr = dlgDS.ShowDialog();
+			mc.Editor.EndUndoGroup(dr == DialogResult.OK);
 			if (dr == DialogResult.OK)
 				mc.Modified = true;
 		}
@@ -1265,29 +1932,35 @@ namespace fyiReporting.RdlDesign
 			MenuItem menu = sender as MenuItem;
 			if (menu == null)
 				return;
+			mc.Editor.StartUndoGroup("DataSet Dialog");
+
 			string dsname = menu.Text;
 
 			// Find the dataset we need
-			ArrayList ds = new ArrayList();
+            List<XmlNode> ds = new List<XmlNode>();
 			DesignXmlDraw draw = mc.DrawCtl;
 			XmlNode rNode = draw.GetReportNode();
 			XmlNode dsNode = draw.GetCreateNamedChildNode(rNode, "DataSets");
 			XmlNode dataset=null;
-			{
-				foreach (XmlNode dNode in dsNode)
-				{	
-					if (dNode.Name != "DataSet")
-						continue;
-					XmlAttribute nAttr = dNode.Attributes["Name"];
-					if (nAttr == null)	// shouldn't really happen
-						continue;
-					if (nAttr.Value == dsname)
-					{
-						dataset = dNode;
-						break;	
-					}
-				}
+			
+			// find the requested dataset: the menu text equals the name of the dataset
+			int dsCount=0;		// count of the datasets
+			string onlyOneDsname=null;
+			foreach (XmlNode dNode in dsNode)
+			{	
+				if (dNode.Name != "DataSet")
+					continue;
+				XmlAttribute nAttr = dNode.Attributes["Name"];
+				if (nAttr == null)	// shouldn't really happen
+					continue;
+				if (dsCount == 0)
+					onlyOneDsname = nAttr.Value;		// we keep track of 1st name; 
+
+				dsCount++;
+				if (nAttr.Value == dsname)
+					dataset = dNode;
 			}
+
 			bool bNew = false;
 			if (dataset == null)	// This must be the new menu item
 			{
@@ -1300,6 +1973,42 @@ namespace fyiReporting.RdlDesign
 			DialogResult dr = pd.ShowDialog();
 			if (pd.Changed || dr == DialogResult.OK)
 			{
+				if (dsCount == 1)	
+				// if we used to just have one DataSet we may need to fix up DataRegions 
+				//	that were defaulting to that name
+				{
+					dsCount=0;
+					bool bUseName = false;
+					foreach (XmlNode dNode in dsNode)
+					{	
+						if (dNode.Name != "DataSet")
+							continue;
+						XmlAttribute nAttr = dNode.Attributes["Name"];
+						if (nAttr == null)	// shouldn't really happen
+							continue;
+
+						dsCount++;
+						if (onlyOneDsname == nAttr.Value)
+							bUseName = true;
+					}
+					if (bUseName && dsCount > 1)
+					{
+						foreach (XmlNode drNode in draw.ReportNames.ReportItems)
+						{
+							switch (drNode.Name)
+							{
+								// If a DataRegion doesn't have a dataset name specified use previous one
+								case "Table": case "List": case "Matrix": case "Chart":
+									XmlNode aNode = draw.GetNamedChildNode(drNode, "DataSetName");
+									if (aNode == null)
+										draw.CreateElement(drNode, "DataSetName", onlyOneDsname);
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				}
 				mc.Modified = true;
 			}
 			else if (bNew)	// if canceled and new DataSet get rid of temp node
@@ -1311,6 +2020,8 @@ namespace fyiReporting.RdlDesign
 
 			if (!dsNode.HasChildNodes)		// If no dataset exists we remove DataSets
 				draw.RemoveElement(rNode, "DataSets");
+
+			mc.Editor.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 		}
  
 		private void menuEmbeddedImages_Click(object sender, System.EventArgs e)
@@ -1319,9 +2030,11 @@ namespace fyiReporting.RdlDesign
 			if (mc == null)
 				return;
 
+			mc.Editor.StartUndoGroup("Embedded Images Dialog");
 			DialogEmbeddedImages dlgEI = new DialogEmbeddedImages(mc.DrawCtl);
 			dlgEI.StartPosition = FormStartPosition.CenterParent;
 			DialogResult dr = dlgEI.ShowDialog();
+			mc.Editor.EndUndoGroup(dr == DialogResult.OK);
 			if (dr == DialogResult.OK)
 				mc.Modified = true;
 		}
@@ -1337,7 +2050,7 @@ namespace fyiReporting.RdlDesign
 
 		private void menuFileNewReport_Click(object sender, System.EventArgs e)
 		{
-			DialogDatabase dlgDB = new DialogDatabase();
+			DialogDatabase dlgDB = new DialogDatabase(this);
 			dlgDB.StartPosition = FormStartPosition.CenterParent;
 			dlgDB.FormBorderStyle = FormBorderStyle.SizableToolWindow;
 
@@ -1350,6 +2063,9 @@ namespace fyiReporting.RdlDesign
 			// Create the MDI child using the RDL syntax the wizard generates
 			MDIChild mc = CreateMDIChild(null, rdl, false);
 			mc.Modified = true;
+			// Force building of report names for new reports
+			if (mc.DrawCtl.ReportNames == null) {}	
+			
 		}
 
 		private void menuFilePrint_Click(object sender, EventArgs e)
@@ -1406,6 +2122,49 @@ namespace fyiReporting.RdlDesign
 
 			NoteRecentFiles(mc.SourceFile, true);
 
+			if (mc.Editor != null)
+				mc.Editor.ClearUndo();
+
+			return;
+		}
+
+		private void menuExportXml_Click(object sender, EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Export("xml");
+			return;
+		}
+
+		private void menuExportHtml_Click(object sender, EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Export("html");
+			return;
+		}
+
+		private void menuExportMHtml_Click(object sender, EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Export("mht");
+			return;
+		}
+
+		private void menuExportPdf_Click(object sender, EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Export("pdf");
 			return;
 		}
 
@@ -1424,6 +2183,9 @@ namespace fyiReporting.RdlDesign
 			
 			NoteRecentFiles(mc.SourceFile, true);
 
+			if (mc.Editor != null)
+				mc.Editor.ClearUndo();
+
 			return;
 		}
 
@@ -1431,25 +2193,26 @@ namespace fyiReporting.RdlDesign
 		{
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			// These menus require an MDIChild in order to work
-			RdlEditPreview e = GetEditor();
+			RdlEditPreview e = GetEditor();			
 			menuEdit.MenuItems.Clear();
 			if (e == null || e.DesignTab != "edit")
 			{
+				menuEditUndo.Text = e == null? "Undo": "Undo " + e.UndoDescription;
 				menuEdit.MenuItems.AddRange(
-					new MenuItem[] { /* menuEditUndo, menuEditRedo, menuFSep1, */ menuEditCut, menuEditCopy,
-									   menuEditPaste, menuEditDelete, menuFSep2, menuEditSelectAll, new MenuItem("-"), menuEditProperties});
+					new MenuItem[] {  menuEditUndo, /* menuEditRedo,*/ menuFSep1,  menuEditCut, menuEditCopy,
+									   menuEditPaste, menuEditDelete, menuFSep2, menuEditSelectAll});
 
 				if (mc == null || e == null)
 				{
 					menuEditUndo.Enabled = menuEditRedo.Enabled = menuEditCut.Enabled = menuEditCopy.Enabled = 
 						menuEditPaste.Enabled = menuEditDelete.Enabled = menuEditSelectAll.Enabled =
-						menuEditProperties.Enabled = false;
+						 false;
 					return;
 				}
-				menuEditProperties.Enabled = true;
 			}
 			else
 			{
+				menuEditUndo.Text = "Undo";
 				menuEdit.MenuItems.AddRange(
 					new MenuItem[] { menuEditUndo, menuEditRedo, menuFSep1, menuEditCut, menuEditCopy,
 									   menuEditPaste, menuEditDelete, menuFSep2, menuEditSelectAll, menuFSep3,
@@ -1472,6 +2235,12 @@ namespace fyiReporting.RdlDesign
 
 		private void menuEditUndo_Click(object sender, System.EventArgs ea)
 		{
+			if (this.ctlEditTextbox != null && ctlEditTextbox.Focused)
+			{
+				ctlEditTextbox.Undo();
+				return;	
+			}
+
 			RdlEditPreview e = GetEditor();
 			if (e == null)
 				return;
@@ -1479,6 +2248,13 @@ namespace fyiReporting.RdlDesign
 			if (e.CanUndo == true)
 			{
 				e.Undo();
+
+				MDIChild mc = this.ActiveMdiChild as MDIChild;
+				if (mc != null && mc.DesignTab == "design")
+				{
+					e.DesignCtl.SetScrollControls();
+				}
+				this.SelectionChanged(this, new EventArgs());
 			}
 		}
 
@@ -1496,6 +2272,12 @@ namespace fyiReporting.RdlDesign
 
 		private void menuEditCut_Click(object sender, System.EventArgs ea)
 		{
+			if (this.ctlEditTextbox != null && ctlEditTextbox.Focused)
+			{
+				ctlEditTextbox.Cut();
+				return;	
+			}
+
 			RdlEditPreview e = GetEditor();
 			if (e == null)
 				return;
@@ -1506,6 +2288,11 @@ namespace fyiReporting.RdlDesign
 
 		private void menuEditCopy_Click(object sender, System.EventArgs ea)
 		{
+			if (this.ctlEditTextbox != null && ctlEditTextbox.Focused)
+			{
+				ctlEditTextbox.Copy();
+				return;	
+			}
 			RdlEditPreview e = GetEditor();
 			if (e == null)
 				return;
@@ -1516,6 +2303,12 @@ namespace fyiReporting.RdlDesign
 
 		private void menuEditPaste_Click(object sender, System.EventArgs ea)
 		{
+			if (this.ctlEditTextbox != null && ctlEditTextbox.Focused)
+			{
+				ctlEditTextbox.Paste();
+				return;	
+			}
+
 			RdlEditPreview e = GetEditor();
 			if (e == null)
 				return;
@@ -1546,6 +2339,11 @@ namespace fyiReporting.RdlDesign
 
 		private void menuEditSelectAll_Click(object sender, System.EventArgs ea)
 		{
+			if (this.ctlEditTextbox != null && ctlEditTextbox.Focused)
+			{
+				ctlEditTextbox.SelectAll();
+				return;	
+			}
 			RdlEditPreview e = GetEditor();
 			if (e == null)
 				return;
@@ -1620,12 +2418,130 @@ namespace fyiReporting.RdlDesign
 			dlg.ShowDialog();
 		}
 
-		private RdlEditPreview GetEditor()
+		private void menuHelpHelp_Click(object sender, System.EventArgs ea)
+		{
+			try
+			{
+				System.Diagnostics.Process.Start(HelpUrl);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message + "\n\n" + "Resetting Help URL to default.", "Help URL Invalid");
+				_HelpUrl = DefaultHelpUrl;
+			}
+		}
+
+		private void menuHelpSupport_Click(object sender, System.EventArgs ea)
+		{
+			try
+			{
+				System.Diagnostics.Process.Start(SupportUrl);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message + "\n\n" + "Resetting Support URL to default.", "Support URL Invalid");
+				_SupportUrl = DefaultSupportUrl;
+			}
+		}
+
+		internal RdlEditPreview GetEditor()
 		{
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return null;
 			return mc.Editor;
+		}
+
+		private void menuTools_Popup(object sender, EventArgs e)
+		{
+			// If the server process isn't running then we'll start it up
+			if (_ServerProcess != null && _ServerProcess.HasExited)
+				_ServerProcess = null;
+			menuToolsProcess.Text = this._ServerProcess == null? "Start Desktop": "Stop Desktop";
+
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			this.menuToolsValidateSchema.Enabled = (mc != null && mc.DesignTab == "edit");
+			
+		}
+
+		private void menuToolsProcess_Click(object sender, EventArgs e)
+		{
+			if (_ServerProcess == null)
+				menuToolsStartProcess(true);
+			else
+				menuToolsCloseProcess(true);
+		}
+
+		internal void menuToolsStartProcess(bool bMsg)
+		{
+			if (_ServerProcess != null && !_ServerProcess.HasExited)
+				return;
+
+			string pswd = GetPassword();
+
+			try
+			{
+				string filename = string.Format("{0}{1}",
+					AppDomain.CurrentDomain.BaseDirectory, "RdlDesktop.exe");
+
+				ProcessStartInfo psi = new ProcessStartInfo(filename);
+				if (pswd != null)
+					psi.Arguments = "/p" + pswd;
+				psi.RedirectStandardError = psi.RedirectStandardInput = psi.RedirectStandardOutput = true;
+				psi.UseShellExecute = false;
+				//psi.WindowStyle = ProcessWindowStyle.Hidden;
+				psi.CreateNoWindow = true;
+				_ServerProcess = Process.Start(psi);
+			}
+			catch (Exception ex)
+			{
+				if (bMsg)
+					MessageBox.Show(ex.Message, "Unable to start Desktop");
+			}
+
+			return;
+		}
+
+		internal void menuToolsCloseProcess(bool bMsg)
+		{
+			if (_ServerProcess == null)
+				return;
+			if (!_ServerProcess.HasExited)
+			{
+				try
+				{
+					_ServerProcess.StandardInput.WriteLine("x");	// x stops the server
+				}
+				catch  (Exception ex)
+				{
+					if (bMsg)
+						MessageBox.Show(ex.Message, "Error stopping process");
+				}
+			}
+			_ServerProcess = null;
+		}
+
+		private void menuToolsOptions_Click(object sender, EventArgs e)
+		{
+			DialogToolOptions dlg = new DialogToolOptions(this);
+			DialogResult rc = dlg.ShowDialog();
+		}
+		
+		private void menuToolsValidateSchema_Click(object sender, EventArgs e)
+		{
+			if (_ValidateRdl == null)
+			{
+				_ValidateRdl = new DialogValidateRdl(this);
+				_ValidateRdl.Show();
+			}
+			else
+				_ValidateRdl.BringToFront();
+			return;
+		}
+
+		internal void ValidateSchemaClosing()
+		{
+			this._ValidateRdl = null;
 		}
 
 		private void menuWnd_Popup(object sender, EventArgs e)
@@ -1664,28 +2580,17 @@ namespace fyiReporting.RdlDesign
 		private void menuRecentItem_Click(object sender, System.EventArgs e)
 		{
 			MenuItem m = (MenuItem) sender;
-			string file = m.Text.Substring(2);
+			int si = m.Text.IndexOf(" ");
+			string file = m.Text.Substring(si+1);
 
 			CreateMDIChild(file, null, true);
-		}
-				
-		private void DoPropertyDialog(PropertyTypeEnum type)
-		{
-			MDIChild mc = this.ActiveMdiChild as MDIChild;
-			if (mc == null || mc.DrawCtl == null || mc.ReportDocument == null)
-				return;
-
-			PropertyDialog pd = new PropertyDialog(mc.DrawCtl, null, type);
-			DialogResult dr = pd.ShowDialog();
-			if (pd.Changed || dr == DialogResult.OK)
-			{
-				mc.Modified = true;
-			}
 		}
 
 		private void RdlDesigner_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			SaveStartupState();
+			menuToolsCloseProcess(false);
+			CleanupTempFiles();
 		}
  
 		private void NoteRecentFiles(string name, bool bResetMenu)
@@ -1699,7 +2604,7 @@ namespace fyiReporting.RdlDesign
 				int loc = _RecentFiles.IndexOfValue(name);
 				_RecentFiles.RemoveAt(loc);
 			}
-			if (_RecentFiles.Count >= 5)
+			if (_RecentFiles.Count >= _RecentFilesMax)
 			{
 				_RecentFiles.RemoveAt(0);	// remove the first entry
 			}
@@ -1709,20 +2614,26 @@ namespace fyiReporting.RdlDesign
 			return;
 		}
 
-		private void RecentFilesMenu()
+		internal void RecentFilesMenu()
 		{
 			menuRecentFile.MenuItems.Clear();
 			int mi = 1;
 			for (int i=_RecentFiles.Count-1; i >= 0; i--)
 			{
-				string menuText = string.Format("&{0} {1}", mi++, (string) (_RecentFiles.GetValueList()[i]));
+				string menuText = string.Format("&{0} {1}", mi++, _RecentFiles.Values[i]);
 				MenuItem m = new MenuItem(menuText);
 				m.Click += new EventHandler(this.menuRecentItem_Click);
 				menuRecentFile.MenuItems.Add(m);
 			}
 		}
  
-		private string GetPassword()
+		internal void ResetPassword()
+		{
+			bGotPassword = false;
+			_DataSourceReferencePassword = null;
+		}
+
+		internal string GetPassword()
 		{
 			if (bGotPassword)
 				return _DataSourceReferencePassword;
@@ -1739,8 +2650,10 @@ namespace fyiReporting.RdlDesign
 		private void GetStartupState()
 		{
 			string optFileName = AppDomain.CurrentDomain.BaseDirectory + "designerstate.xml";
-			_RecentFiles = new SortedList();
-			_CurrentFiles = new ArrayList();
+			_RecentFiles = new SortedList<DateTime, string>();
+			_CurrentFiles = new List<string>();
+			_HelpUrl = DefaultHelpUrl;				// set as default
+			_SupportUrl = DefaultSupportUrl;
 			
 			try
 			{
@@ -1779,6 +2692,16 @@ namespace fyiReporting.RdlDesign
 								}
 							}
 							break;
+						case "RecentFilesMax":
+							try
+							{
+								this._RecentFilesMax = Convert.ToInt32(xNodeLoop.InnerText);
+							}
+							catch 
+							{
+								this._RecentFilesMax = 5;
+							}
+							break;
 						case "CurrentFiles":
 							if (_CurrentFiles.Count > 0)	// don't open other current files if opened with argument
 								break;
@@ -1789,7 +2712,32 @@ namespace fyiReporting.RdlDesign
 									_CurrentFiles.Add(file);
 							}
 							break;
-						default:
+						case "Toolbar":
+							_Toolbar = new List<string>();
+							foreach (XmlNode xN in xNodeLoop.ChildNodes)
+							{
+								string item = xN.InnerText.Trim();
+								_Toolbar.Add(item);
+							}
+							break;
+						case "Help":
+							if (xNodeLoop.InnerText.Length > 0)		//empty means to use the default
+								_HelpUrl = xNodeLoop.InnerText;
+							break;
+						case "Support":
+							if (xNodeLoop.InnerText.Length > 0)		//empty means to use the default
+								_SupportUrl = xNodeLoop.InnerText;
+							break;
+                        case "EditLines":
+                            _ShowEditLines = (xNodeLoop.InnerText.ToLower() == "true") ;
+                            break;
+                        case "OutlineReportItems":
+                            this.ShowReportItemOutline = (xNodeLoop.InnerText.ToLower() == "true");
+                            break;
+                        case "ShowTabbedInterface":
+                            this._ShowTabbedInterface = (xNodeLoop.InnerText.ToLower() == "true");
+                            break;
+                        default:
 							break;
 					}
 				}
@@ -1799,6 +2747,8 @@ namespace fyiReporting.RdlDesign
 				Console.WriteLine(string.Format("Exception in GetStartupState ignored.\n{0}\n{1}", ex.Message, ex.StackTrace));
 			}
 
+			if (_Toolbar == null)		// Use this as the default toolbar
+				_Toolbar = this.ToolbarDefault;
 			return;
 		}
 
@@ -1830,6 +2780,11 @@ namespace fyiReporting.RdlDesign
 					xFiles.AppendChild(xN);
 				}
 
+				// Recent File Count
+				XmlNode rfc = xDoc.CreateElement("RecentFilesMax");
+				xDS.AppendChild(rfc);
+				rfc.InnerText = this._RecentFilesMax.ToString();
+
 				// Loop thru recent files list
 				xFiles = xDoc.CreateElement("RecentFiles");
 				xDS.AppendChild(xFiles);
@@ -1838,6 +2793,36 @@ namespace fyiReporting.RdlDesign
 					xN = xDoc.CreateElement("file");
 					xN.InnerText = f;
 					xFiles.AppendChild(xN);
+				}
+
+				// Help File URL
+				XmlNode hfu = xDoc.CreateElement("Help");
+				xDS.AppendChild(hfu);
+				hfu.InnerText = this._HelpUrl;
+
+                // Show Line numbers
+                XmlNode bln = xDoc.CreateElement("EditLines");
+                xDS.AppendChild(bln);
+                bln.InnerText = this._ShowEditLines ? "true" : "false";
+
+                // Outline reportitems
+                XmlNode ori = xDoc.CreateElement("OutlineReportItems");
+                xDS.AppendChild(ori);
+                ori.InnerText = this.ShowReportItemOutline ? "true" : "false";
+
+                // ShowTabbedInterface
+                XmlNode sti = xDoc.CreateElement("ShowTabbedInterface");
+                xDS.AppendChild(sti);
+                sti.InnerText = this._ShowTabbedInterface ? "true" : "false";
+
+                // Save the toolbar items
+				XmlNode xTB = xDoc.CreateElement("Toolbar");
+				xDS.AppendChild(xTB);
+				foreach(string t in _Toolbar)
+				{
+					xN = xDoc.CreateElement("item");
+					xN.InnerText = t;
+					xTB.AppendChild(xN);
 				}
 
 				// Save the custom colors
@@ -1952,6 +2937,17 @@ namespace fyiReporting.RdlDesign
 			return;
 		}
 
+		private void EditTextbox_Validated(object sender, EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null || mc == null || 
+				mc.DesignTab != "design" || mc.DrawCtl.SelectedCount != 1 ||
+				mc.Editor == null)
+				return;
+
+			mc.Editor.SetSelectedText(ctlEditTextbox.Text);
+		}
+
 		private void Insert_Click(object sender, EventArgs e)
 		{
 			if (ctlInsertCurrent != null)
@@ -1973,9 +2969,10 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
-			mc.SetFocus();
 			
 			mc.ApplyStyleToSelected("FontWeight", ctlBold.Checked? "Bold": "Normal");
+
+			SetMDIChildFocus(mc);
 		}
 
 		private void ctlItalic_Click(object sender, EventArgs e)
@@ -1983,9 +2980,10 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
-			mc.SetFocus();
 			
 			mc.ApplyStyleToSelected("FontStyle", ctlItalic.Checked? "Italic": "Normal");
+
+			SetMDIChildFocus(mc);
 		}
 
 		private void ctlUnderline_Click(object sender, EventArgs e)
@@ -1993,9 +2991,10 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
-			mc.SetFocus();
 			
 			mc.ApplyStyleToSelected("TextDecoration", ctlUnderline.Checked? "Underline": "None");
+
+			SetMDIChildFocus(mc);
 		}
 
 		private void ctlForeColor_Change(object sender, EventArgs e)
@@ -2003,10 +3002,10 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
-			mc.SetFocus();
 			
 			if (!bSuppressChange)
 				mc.ApplyStyleToSelected("Color", ctlForeColor.Text);
+			SetMDIChildFocus(mc);
 		}
 
 		private void ctlBackColor_Change(object sender, EventArgs e)
@@ -2014,9 +3013,9 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
-			mc.SetFocus();
 			if (!bSuppressChange)
 				mc.ApplyStyleToSelected("BackgroundColor", ctlBackColor.Text);
+			SetMDIChildFocus(mc);
 		}
 
 		private void ctlFont_Change(object sender, EventArgs e)
@@ -2024,10 +3023,11 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
-			mc.SetFocus();
 			
 			if (!bSuppressChange)
 				mc.ApplyStyleToSelected("FontFamily", ctlFont.Text);
+			
+			SetMDIChildFocus(mc);
 		}
 
 		private void ctlFontSize_Change(object sender, EventArgs e)
@@ -2035,10 +3035,11 @@ namespace fyiReporting.RdlDesign
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
-			mc.SetFocus();
 			
 			if (!bSuppressChange)
 				mc.ApplyStyleToSelected("FontSize", ctlFontSize.Text + "pt");
+
+			SetMDIChildFocus(mc);
 		}
 
 		private void ctlZoom_Change(object sender, EventArgs e)
@@ -2077,36 +3078,83 @@ namespace fyiReporting.RdlDesign
 
 		private void RdlDesigner_MdiChildActivate(object sender, EventArgs e)
 		{
+			if (this._ValidateRdl != null)		// don't keep the validation open when window changes
+				this._ValidateRdl.Close();
+
 			DesignTabChanged(sender, e);
 			SelectionChanged(sender, e);
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
 			if (mc == null)
 				return;
 			mc.SetFocus();
+            mainTC.SelectTab(mc.Tab);
 		}
-		
+
+		private void SetMDIChildFocus(MDIChild mc)
+		{
+			// We don't want to be triggering any change events when the focus is changing
+			bool bSuppress = bSuppressChange;
+			bSuppressChange = true;
+			mc.SetFocus();
+			bSuppressChange = bSuppress;
+		}
+
 		private void SetStatusNameAndPosition()
 		{
 			MDIChild mc = this.ActiveMdiChild as MDIChild;
-			if (mc == null || mc.DesignTab != "design" || mc.DrawCtl.SelectedCount <= 0)
+
+			if (mc == null)
 			{
-				statusPosition.Text = "";
-				statusSelected.Text = "";
+				statusPosition.Text = statusSelected.Text = "";
+			}
+			else if (mc.DesignTab == "design")
+				SetStatusNameAndPositionDesign(mc);
+			else if (mc.DesignTab == "edit")
+				SetStatusNameAndPositionEdit(mc);
+			else
+			{
+				statusPosition.Text = statusSelected.Text = "";
+			}
+			return;
+		}
+		
+		private void SetStatusNameAndPositionDesign(MDIChild mc)
+		{
+			if (mc.DrawCtl.SelectedCount <= 0)
+			{
+				statusPosition.Text = statusSelected.Text = "";
 				return;
 			}
 
 			// Handle position
 			PointF pos = mc.SelectionPosition;
+			SizeF sz = mc.SelectionSize;
 			string spos;
-			if (pos.X == float.MinValue)
+			if (pos.X == float.MinValue)	// no item selected is probable cause
 				spos = "";
 			else
 			{
 				RegionInfo rinfo = new RegionInfo( CultureInfo.CurrentCulture.LCID );
+                double m72 = DesignXmlDraw.POINTSIZED;
 				if (rinfo.IsMetric)
-					spos =  string.Format("   x={0:0.00}cm, y={1:0.00}cm        ", pos.X / (72 / 2.54d), pos.Y / (72 / 2.54d));
+				{
+					if (sz.Width == float.MinValue)	// item is in a table/matrix is probably cause
+						spos =  string.Format("   x={0:0.00}cm, y={1:0.00}cm        ",
+                            pos.X / (m72 / 2.54d), pos.Y / (m72 / 2.54d));
+					else
+						spos =  string.Format("   x={0:0.00}cm, y={1:0.00}cm, w={2:0.00}cm, h={3:0.00}cm        ", 
+							pos.X / (m72 / 2.54d), pos.Y / (m72 / 2.54d),
+							sz.Width / (m72 / 2.54d), sz.Height / (m72 / 2.54d));
+				}
 				else
-					spos =  string.Format("   x={0:0.00}\", y={1:0.00}\"        ", pos.X/72, pos.Y/72);
+				{
+					if (sz.Width == float.MinValue)
+						spos =  string.Format("   x={0:0.00}\", y={1:0.00}\"        ", 
+							pos.X/m72, pos.Y/m72);
+					else
+						spos =  string.Format("   x={0:0.00}\", y={1:0.00}\", w={2:0.00}\", h={3:0.00}\"        ", 
+							pos.X/m72, pos.Y/m72, sz.Width/m72, sz.Height/m72);
+				}
 			}
 			if (spos != statusPosition.Text)
 				statusPosition.Text = spos;
@@ -2116,6 +3164,409 @@ namespace fyiReporting.RdlDesign
 			if (sname != statusSelected.Text)
 				statusSelected.Text = sname;
 			return;
+		}
+
+		private void SetStatusNameAndPositionEdit(MDIChild mc)
+		{
+			string spos = string.Format("Ln {0}  Ch {1}", mc.CurrentLine, mc.CurrentCh);
+			if (spos != statusSelected.Text)
+				statusSelected.Text = spos;
+
+			if (statusPosition.Text != "")
+				statusPosition.Text = "";
+
+			return;
+		}
+
+		private void EditTextBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			// Force scroll up and down
+			switch (e.KeyCode)
+			{
+				case Keys.Enter:
+					mc.SetFocus();
+					e.Handled = true;
+					break;
+				case Keys.Escape:
+					if (mc.DrawCtl.SelectedCount == 1)
+					{
+						XmlNode tn = mc.DrawCtl.SelectedList[0] as XmlNode;
+						if (tn != null && tn.Name == "Textbox")
+						{
+							ctlEditTextbox.Text = mc.DrawCtl.GetElementValue(tn, "Value", "");
+							e.Handled = true;
+						}
+					}
+					break;
+				default:
+					break;
+			}
+
+		}
+
+		private void menuFormat_Popup(object sender, EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+
+			// Determine if group operation on selected is currently allowed
+			bool bEnable = (mc != null && mc.DesignTab == "design" && mc.DrawCtl.AllowGroupOperationOnSelected);
+			
+			this.menuFormatAlignB.Enabled = this.menuFormatAlignC.Enabled = 
+				this.menuFormatAlignL.Enabled = this.menuFormatAlignM.Enabled = 
+				this.menuFormatAlignR.Enabled = this.menuFormatAlignT.Enabled = 
+				bEnable;
+
+			menuFormatSizeW.Enabled	= menuFormatSizeH.Enabled = menuFormatSizeB.Enabled = bEnable;
+
+			menuFormatHorzE.Enabled = menuFormatHorzI.Enabled = menuFormatHorzD.Enabled =
+				menuFormatHorzZ.Enabled = bEnable;
+
+			menuFormatVertE.Enabled = menuFormatVertI.Enabled = menuFormatVertD.Enabled =
+				menuFormatVertZ.Enabled = bEnable;
+
+			bEnable  = (mc != null && mc.DesignTab == "design" && mc.DrawCtl.SelectedCount > 0);
+			this.menuFormatPaddingBottomI.Enabled =
+				this.menuFormatPaddingBottomD.Enabled =
+				this.menuFormatPaddingBottomZ.Enabled =
+				this.menuFormatPaddingTopI.Enabled =
+				this.menuFormatPaddingTopD.Enabled =
+				this.menuFormatPaddingTopZ.Enabled =
+				this.menuFormatPaddingLeftI.Enabled =
+				this.menuFormatPaddingLeftD.Enabled =
+				this.menuFormatPaddingLeftZ.Enabled =
+				this.menuFormatPaddingRightI.Enabled = 
+				this.menuFormatPaddingRightD.Enabled = 
+				this.menuFormatPaddingRightZ.Enabled = 
+					bEnable;
+		}
+		
+		private void menuFormatAlignC_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.AlignCenters();
+		}
+		
+		private void menuFormatAlignL_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.AlignLefts();
+		}
+
+		private void menuFormatAlignR_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.AlignRights();
+		}
+
+		private void menuFormatAlignB_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.AlignBottoms();
+		}
+
+		private void menuFormatAlignT_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.AlignTops();
+		}
+
+		private void menuFormatAlignM_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.AlignMiddles();
+		}
+
+		private void menuFormatSizeH_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.SizeHeights();
+		}
+
+		private void menuFormatSizeW_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.SizeWidths();
+		}
+
+		private void menuFormatSizeB_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.SizeBoth();
+		}
+
+		private void menuFormatHorzE_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.HorzSpacingMakeEqual();
+		}
+
+		private void menuFormatHorzI_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.HorzSpacingIncrease();
+		}
+
+		private void menuFormatHorzD_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.HorzSpacingDecrease();
+		}
+
+		private void menuFormatHorzZ_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.HorzSpacingMakeZero();
+		}
+
+		private void menuFormatVertE_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.VertSpacingMakeEqual();
+		}
+
+		private void menuFormatVertI_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.VertSpacingIncrease();
+		}
+
+		private void menuFormatVertD_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.VertSpacingDecrease();
+		}
+
+		private void menuFormatVertZ_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			mc.Editor.DesignCtl.VertSpacingMakeZero();
+		}
+
+		private void menuView_Popup(object sender, EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			bool bEnable = mc != null;
+
+			menuViewDesigner.Enabled = menuViewRDL.Enabled =
+				menuViewPreview.Enabled = bEnable;
+
+			menuViewProperties.Enabled = bEnable && mc.DesignTab == "design";
+		}
+
+		private void menuViewDesigner_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+			mc.RdlEditor.DesignTab = "design";
+		}
+
+		private void menuViewRDL_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+			mc.RdlEditor.DesignTab = "edit";
+		}
+
+		private void menuViewBrowser_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			try
+			{
+				menuToolsStartProcess(true);		// start desktop if not already up
+
+				DesktopConfig dc = DialogToolOptions.DesktopConfiguration;
+
+				string rdlfile = Path.GetFileNameWithoutExtension(mc.SourceFile) + "_" + (++TEMPRDL_INC).ToString() + TEMPRDL;
+				string file; 
+				if (Path.IsPathRooted(dc.Directory))
+					file = dc.Directory + Path.DirectorySeparatorChar + rdlfile;
+				else
+					file = AppDomain.CurrentDomain.BaseDirectory +  
+						 dc.Directory + Path.DirectorySeparatorChar + rdlfile;
+
+				if (_TempReportFiles == null)
+				{
+					_TempReportFiles = new List<string>();
+					_TempReportFiles.Add(file);
+				}
+				else
+				{
+					if (!_TempReportFiles.Contains(file))
+						_TempReportFiles.Add(file);
+				}
+				StreamWriter sw = File.CreateText(file);
+				sw.Write(mc.SourceRdl);
+				sw.Close();
+		 // http://localhost:8080/aReport.rdl?rs:Format=HTML
+				string url = string.Format("http://localhost:{0}/{1}?rd:Format=HTML", dc.Port, rdlfile);
+				System.Diagnostics.Process.Start(url);
+				
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Unable to Show Report");
+			}
+			
+		}
+
+		private void menuViewPreview_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+			mc.RdlEditor.DesignTab = "preview";
+		}
+
+		private void menuFormatPadding_Click(object sender, System.EventArgs e)
+		{
+			MDIChild mc = this.ActiveMdiChild as MDIChild;
+			if (mc == null)
+				return;
+
+			MenuItem mi = sender as MenuItem;
+
+			string padname=null;
+			int paddiff=0;
+			if (mi == menuFormatPaddingLeftI)
+			{
+				padname = "PaddingLeft";
+				paddiff = 4;
+			}
+			else if (mi == menuFormatPaddingLeftD)
+			{
+				padname = "PaddingLeft";
+				paddiff = -4;
+			}
+			else if (mi == menuFormatPaddingLeftZ)
+			{
+				padname = "PaddingLeft";
+				paddiff = 0;
+			}
+			else if (mi == menuFormatPaddingRightI)
+			{
+				padname = "PaddingRight";
+				paddiff = 4;
+			}
+			else if (mi == menuFormatPaddingRightD)
+			{
+				padname = "PaddingRight";
+				paddiff = -4;
+			}
+			else if (mi == menuFormatPaddingRightZ)
+			{
+				padname = "PaddingRight";
+				paddiff = 0;
+			}
+			else if (mi == menuFormatPaddingTopI)
+			{
+				padname = "PaddingTop";
+				paddiff = 4;
+			}
+			else if (mi == menuFormatPaddingTopD)
+			{
+				padname = "PaddingTop";
+				paddiff = -4;
+			}
+			else if (mi == menuFormatPaddingTopZ)
+			{
+				padname = "PaddingTop";
+				paddiff = 0;
+			}
+			else if (mi == menuFormatPaddingBottomI)
+			{
+				padname = "PaddingBottom";
+				paddiff = 4;
+			}
+			else if (mi == menuFormatPaddingBottomD)
+			{
+				padname = "PaddingBottom";
+				paddiff = -4;
+			}
+			else if (mi == menuFormatPaddingBottomZ)
+			{
+				padname = "PaddingBottom";
+				paddiff = 0;
+			}
+
+			if (padname != null)
+				mc.Editor.DesignCtl.SetPadding(padname, paddiff);
+
+		}
+
+		private void CleanupTempFiles()
+		{
+			if (_TempReportFiles == null)
+				return;
+			foreach (string file in _TempReportFiles)
+			{
+				try		
+				{	// It's ok for the delete to fail
+					File.Delete(file);
+				}
+				catch
+				{}
+			}
+			_TempReportFiles = null;
 		}
 	}
 }

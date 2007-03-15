@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -39,14 +39,14 @@ namespace fyiReporting.RDL
 		int _Size;					// Normalized size in 1/100,000 meters
 		string _Original;			// save original string for recreation of syntax
 
-		internal RSize(Report r, string t)
+		internal RSize(ReportDefn r, string t)
 		{
 			// Size is specified in CSS Length Units
 			// format is <decimal number nnn.nnn><optional space><unit>
 			// in -> inches (1 inch = 2.54 cm)
 			// cm -> centimeters (.01 meters)
 			// mm -> millimeters (.001 meters)
-			// pt -> points (1 point = 1/72 inches)
+			// pt -> points (1 point = 1/72.27 inches)
 			// pc -> Picas (1 pica = 12 points)
 			_Original = t;					// Save original string for recreation
 			t = t.Trim();
@@ -101,10 +101,10 @@ namespace fyiReporting.RDL
 					_Size = (int) (d * 100m);
 					break;
 				case "pt":
-					_Size = (int) (d * (2540m / 72m));
+					_Size = (int) (d * (2540m / POINTSIZEM));
 					break;
 				case "pc":
-					_Size = (int) (d * (2540m / 72m * 12m));
+					_Size = (int) (d * (2540m / POINTSIZEM * 12m));
 					break;
 				default:	 
 					// Illegal unit
@@ -112,14 +112,14 @@ namespace fyiReporting.RDL
 					_Size = (int) (d * 2540m);
 					break;
 			}
-			if (_Size > 160 * 2540)	// Size can't be greater than 160 inches
-			{
-				r.rl.LogError(4, "Size '" + this._Original + "' is larger than maximum of 160 inches, assuming 160 inches.");
-				_Size = 160 * 2540;
+			if (_Size > 160 * 2540)	// Size can't be greater than 160 inches according to spec
+			{   // but RdlEngine supports higher values so just do a warning
+				r.rl.LogError(4, "Size '" + this._Original + "' is larger than the RDL specification maximum of 160 inches.");
+//				_Size = 160 * 2540;     // this would force maximum to spec max of 160
 			}
 		}
 
-		internal RSize(Report r, XmlNode xNode):this(r, xNode.InnerText)
+		internal RSize(ReportDefn r, XmlNode xNode):this(r, xNode.InnerText)
 		{
 		}
 
@@ -141,16 +141,19 @@ namespace fyiReporting.RDL
 			}
 		}
 
+		static internal readonly float POINTSIZED = 72.27f;
+		static internal readonly decimal POINTSIZEM = 72.27m;
+
 		static internal int PixelsFromPoints(float x)
 		{
-			int result = (int) (x * 96 / 72.0f);	// convert to pixels
+			int result = (int) (x * 96 / POINTSIZED);	// convert to pixels
 
 			return result;
 		}
 
 		static internal int PixelsFromPoints(Graphics g, float x)
 		{
-			int result = (int) (x * g.DpiX / 72.0f);	// convert to pixels
+			int result = (int) (x * g.DpiX / POINTSIZED);	// convert to pixels
 
 			return result;
 		}
@@ -170,13 +173,20 @@ namespace fyiReporting.RDL
 		{
 			get
 			{	
-				return (float) ((double) _Size / 2540.0 * 72.0);
+				return (float) ((double) _Size / 2540.0 * POINTSIZED);
 			}
 		}
 
 		static internal float PointsFromPixels(Graphics g, int x)
 		{
-			float result = (x * 72.0f) / g.DpiX;	// convert to points from pixels
+			float result = (float) ((x * POINTSIZED) / g.DpiX);	// convert to points from pixels
+
+			return result;
+		}
+
+		static internal float PointsFromPixels(Graphics g, float x)
+		{
+			float result = (float) ((x * POINTSIZED) / g.DpiX);	// convert to points from pixels
 
 			return result;
 		}

@@ -26,6 +26,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -74,8 +75,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RdlEngine">
-      <Name>RdlEngine</Name>
+    <Reference Include="RdlEngine, Version=2.9.1.0, Culture=neutral, PublicKeyToken=98d963a3ed6bf418, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\RdlEngine\bin\Debug\RdlEngine.dll</HintPath>
     </Reference>
     <Reference Include="System">

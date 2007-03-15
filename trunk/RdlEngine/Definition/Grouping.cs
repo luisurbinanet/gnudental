@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace fyiReporting.RDL
 {
@@ -80,11 +81,10 @@ namespace fyiReporting.RDL
 						// Default: “DataElementName_Collection”
 		DataElementOutputEnum _DataElementOutput;	// Indicates whether the group should appear
 						// in a data rendering.  Default: Output
-		ArrayList _HideDuplicates;	// holds any textboxes that use this as a hideduplicate scope
+		List<Textbox> _HideDuplicates;	// holds any textboxes that use this as a hideduplicate scope
+		bool _InMatrix;	// true if grouping is in a matrix
 
-		// runtime working value
-		int _Index=-1;	// index for runtime grouping
-		internal Grouping(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Grouping(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Name=null;
 			_Label=null;
@@ -179,23 +179,43 @@ namespace fyiReporting.RDL
 				_Filters.FinalPass();
 			if (_ParentGroup != null)
 				_ParentGroup.FinalPass();
+
+			// Determine if group is defined inside of a Matrix;  these get
+			//   different runtime expression handling in FunctionAggr
+			_InMatrix = false;
+			for (ReportLink rl = this.Parent; rl != null; rl = rl.Parent)
+			{
+				if (rl is Matrix)
+				{
+					_InMatrix = true;
+					break;
+				}
+				if (rl is Table || rl is List || rl is Chart)
+					break;
+			}
+
 			return;
 		}
 
 		internal void AddHideDuplicates(Textbox tb)
 		{
 			if (_HideDuplicates == null)
-				_HideDuplicates = new ArrayList();
+                _HideDuplicates = new List<Textbox>();
 			_HideDuplicates.Add(tb);
 		}
 
-		internal void ResetHideDuplicates()
+		internal void ResetHideDuplicates(Report rpt)
 		{
 			if (_HideDuplicates == null)
 				return;
 
 			foreach (Textbox tb in _HideDuplicates)
-				tb.ResetPrevious();
+				tb.ResetPrevious(rpt);
+		}
+
+		internal bool InMatrix
+		{
+			get { return _InMatrix; }
 		}
 
 		internal Name Name
@@ -277,10 +297,52 @@ namespace fyiReporting.RDL
 			set {  _DataElementOutput = value; }
 		}
 
-		internal int Index
+		internal int GetIndex(Report rpt)
 		{
-			get { return  _Index; }
-			set {  _Index = value; }
+			WorkClass wc = GetValue(rpt);
+			return wc.index;
 		}
+
+		internal void SetIndex(Report rpt, int i)
+		{
+			WorkClass wc = GetValue(rpt);
+			wc.index = i;
+			return;
+		}
+
+		internal Rows GetRows(Report rpt)
+		{
+			WorkClass wc = GetValue(rpt);
+			return wc.rows;
+		}
+
+		internal void SetRows(Report rpt, Rows rows)
+		{
+			WorkClass wc = GetValue(rpt);
+			wc.rows = rows;
+			return;
+		}
+
+		private WorkClass GetValue(Report rpt)
+		{
+			WorkClass wc = rpt.Cache.Get(this, "wc") as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass();
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
+
+		class WorkClass
+		{
+			internal int index;			// used by tables (and others) to set grouping values
+			internal Rows rows;			// used by matrixes to get/set grouping values
+			internal WorkClass()
+			{
+				index = -1;
+			}
+		}
+
 	}
 }

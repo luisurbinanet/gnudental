@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -25,7 +25,9 @@ using System;
 using fyiReporting.RDL;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
 
 namespace fyiReporting.RDL
@@ -44,17 +46,25 @@ namespace fyiReporting.RDL
 		PdfInfo info;
 		PdfFonts fonts;
 		PdfImages images;
+        PdfOutline outline;         // holds the bookmarks (if any)
 		PdfUtility pdfUtility;
 		int filesize;
 		PdfPage page;
 		PdfContent content;
 		PdfElements elements;
-		readonly char[] lineBreak = new char[] {' ', '\r', '\n'};
+		static readonly char[] lineBreak = new char[] {'\n'};
+		static readonly char[] wordBreak = new char[] {' '};
+		static readonly int MEASUREMAX = int.MaxValue;  //  .Net 2 doesn't seem to have a limit; 1.1 limit was 32
 
 		public RenderPdf(Report rep, IStreamGen sg)
 		{
 			r = rep;
 			tw = sg.GetStream();
+		}
+
+		public Report Report()
+		{
+			return r;
 		}
 
 		public bool IsPagingNeeded()
@@ -65,12 +75,13 @@ namespace fyiReporting.RDL
 		public void Start()		
 		{
 			// Create the anchor for all pdf objects
-			anchor = new PdfAnchor();
+			CompressionConfig cc = RdlEngineConfig.GetCompression();
+			anchor = new PdfAnchor(cc != null);
 
 			//Create a PdfCatalog
 			string lang;
-			if (r.Language != null)
-				lang = r.Language.EvaluateString(null);
+			if (r.ReportDefinition.Language != null)
+				lang = r.ReportDefinition.Language.EvaluateString(this.r, null);
 			else
 				lang = null;
 			catalog= new PdfCatalog(anchor, lang);
@@ -84,7 +95,10 @@ namespace fyiReporting.RDL
 			//Create an Image Dictionary
 			images = new PdfImages(anchor);
 
-			//Create the info Dictionary
+            //Create an Outline Dictionary
+            outline = new PdfOutline(anchor);
+
+            //Create the info Dictionary
 			info=new PdfInfo(anchor);
 
 			//Set the info Dictionary. 
@@ -96,14 +110,14 @@ namespace fyiReporting.RDL
 			//write out the header
 			int size=0;
 			tw.Write(pdfUtility.GetHeader("1.5",out size),0,size);
-			filesize = size;
+            filesize = size;
 		}
 
 		public void End()
 		{
 			//Write everything 
 			int size=0;
-			tw.Write(catalog.GetCatalogDict(pageTree.objectNum, 
+			tw.Write(catalog.GetCatalogDict(outline.GetObjectNumber(), pageTree.objectNum, 
 				filesize,out size),0,size);
 			filesize += size;
 			tw.Write(pageTree.GetPageTree(filesize,out size),0,size);
@@ -115,10 +129,18 @@ namespace fyiReporting.RDL
 				tw.Write(images.GetImageDict(filesize,out size),0,size);
 				filesize += size;
 			}
+            if (outline.Bookmarks.Count > 0)
+            {
+                tw.Write(outline.GetOutlineDict(filesize, out size), 0, size);
+                filesize += size;
+            }
+
 			tw.Write(info.GetInfoDict(filesize,out size),0,size);
 			filesize += size;
+
 			tw.Write(pdfUtility.CreateXrefTable(filesize,out size),0,size);
 			filesize += size;
+
 			tw.Write(pdfUtility.GetTrailer(catalog.objectNum,
 				info.objectNum,out size),0,size);
 			filesize += size;
@@ -133,7 +155,8 @@ namespace fyiReporting.RDL
 				page=new PdfPage(anchor);
 				content=new PdfContent(anchor);
 
-				PdfPageSize pSize=new PdfPageSize((int) r.PageWidth.Points, (int) r.PageHeight.Points);
+				PdfPageSize pSize=new PdfPageSize((int) r.ReportDefinition.PageWidth.Points, 
+									(int) r.ReportDefinition.PageHeight.Points);
 				page.CreatePage(pageTree.objectNum,pSize);
 				pageTree.AddPage(page.objectNum);
 
@@ -157,15 +180,23 @@ namespace fyiReporting.RDL
 			return;
 		}
 		// render all the objects in a page in PDF
-		private void ProcessPage(Pages pgs, Page p)
+		private void ProcessPage(Pages pgs, IEnumerable items)
 		{
-			foreach (PageItem pi in p)
+			foreach (PageItem pi in items)
 			{
 				if (pi.SI.BackgroundImage != null)
 				{	// put out any background image
 					PageImage i = pi.SI.BackgroundImage;
 					elements.AddImage(images, i.Name, content.objectNum, i.SI, i.ImgFormat, 
-						pi.X, pi.Y, pi.W, pi.H, i.ImageData,i.SamplesW, i.SamplesH);
+						pi.X, pi.Y, pi.W, pi.H, i.ImageData,i.SamplesW, i.SamplesH, null);
+				}
+
+				if (pi is PageTextHtml)
+				{
+					PageTextHtml pth = pi as PageTextHtml;
+					pth.Build(pgs.G);
+					ProcessPage(pgs, pth);
+					continue;
 				}
 
 				if (pi is PageText)
@@ -173,7 +204,12 @@ namespace fyiReporting.RDL
 					PageText pt = pi as PageText;
 					float[] textwidth;
 					string[] sa = MeasureString(pt, pgs.G, out textwidth);
-					elements.AddText(pt.X, pt.Y, pt.H, pt.W, sa, pt.SI, fonts, textwidth, pt.CanGrow);
+					elements.AddText(pt.X, pt.Y, pt.H, pt.W, sa, pt.SI, 
+						fonts, textwidth, pt.CanGrow, pt.HyperLink, pt.NoClip);
+                    if (pt.BookmarkLink != null)
+                    {
+                        outline.Bookmarks.Add(new PdfOutlineEntry(anchor, page.objectNum, pt.BookmarkLink, pt.X, elements.PageSize.yHeight - pt.Y));
+                    }
 					continue;
 				}
 
@@ -187,15 +223,19 @@ namespace fyiReporting.RDL
 				if (pi is PageImage)
 				{
 					PageImage i = pi as PageImage;
+					float x = i.X + i.SI.PaddingLeft;
+					float y = i.Y + i.SI.PaddingTop;
+					float w = i.W - i.SI.PaddingLeft - i.SI.PaddingRight;
+					float h = i.H - i.SI.PaddingTop - i.SI.PaddingBottom;
 					elements.AddImage(images, i.Name, content.objectNum, i.SI, i.ImgFormat, 
-						i.X, i.Y, i.W, i.H, i.ImageData,i.SamplesW, i.SamplesH);
+						x, y, w, h, i.ImageData,i.SamplesW, i.SamplesH, i.HyperLink);
 					continue;
 				}
 
 				if (pi is PageRectangle)
 				{
 					PageRectangle pr = pi as PageRectangle;
-					elements.AddRectangle(pr.X, pr.Y, pr.H, pr.W, pi.SI);
+					elements.AddRectangle(pr.X, pr.Y, pr.H, pr.W, pi.SI, pi.HyperLink);
 					continue;
 				}
 			}
@@ -233,59 +273,102 @@ namespace fyiReporting.RDL
 					default:
 						break;
 				}
-				drawFont = new Font(si.FontFamily, si.FontSize, fs);
+
+				drawFont = new Font(StyleInfo.GetFontFamily(si.FontFamilyFull), si.FontSize, fs);
 				drawFormat = new StringFormat();
 				drawFormat.Alignment = StringAlignment.Near;
 
-				// Measure string
-				if (!pt.CanGrow || pt.SI.WritingMode == WritingModeEnum.tb_rl)	// a single line;; TODO: support multiple lines for vertical text
+				// Measure string   
+				//  pt.NoClip indicates that this was generated by PageTextHtml Build.  It has already word wrapped.
+				if (pt.NoClip || pt.SI.WritingMode == WritingModeEnum.tb_rl)	// TODO: support multiple lines for vertical text
 				{
-					ms = g.MeasureString(s, drawFont, int.MaxValue, drawFormat);
+					ms = MeasureString(s, g, drawFont, drawFormat);
 					width = new float[1];
-					width[0] = ms.Width / g.DpiX * 72.0f;	// convert to points from pixels
+					width[0] = RSize.PointsFromPixels(g, ms.Width);	// convert to points from pixels
 					sa = new string[1];
 					sa[0] = s;
 					return sa;
 				}
 
-				// handle multiple lines
-				string[] parts = s.Split(lineBreak);	// this is the maximum split of lines; TODO: more sophisticated line breaks 
-				float[] partWidths = new float[parts.Length];
-				for (int i=0; i < parts.Length; i++)
+				// handle multiple lines;
+				//  1) split the string into the forced line breaks (ie "\n and \r")
+				//  2) foreach of the forced line breaks; break these into words and recombine 
+				s = s.Replace("\r\n", "\n");	// don't want this to result in double lines
+				string[] flines = s.Split(lineBreak);
+				List<string> lines = new List<string>();
+				List<float> lineWidths = new List<float>();
+                // remove the size reserved for left and right padding
+                float ptWidth = pt.W - pt.SI.PaddingLeft - pt.SI.PaddingRight;
+                if (ptWidth <= 0)
+                    ptWidth = 1;
+				foreach (string tfl in flines)
 				{
-					ms = g.MeasureString(parts[i], drawFont, int.MaxValue, drawFormat);
-					partWidths[i] = ms.Width / g.DpiX * 72.0f;	// convert to points from pixels
-				}
-
-				// now combine the lines
-				ArrayList lines = new ArrayList();
-				ArrayList lineWidths = new ArrayList();
-				float cwidth=partWidths[0];
-				string cstring=parts[0];
-				for (int i=1; i < parts.Length; i++)
-				{
-					if (cwidth + partWidths[i] > pt.W)
-					{	// time for a new line
-						lines.Add(cstring);
-						lineWidths.Add(cwidth);
-						cstring=null;
-						cwidth=0;
-					}
-					if (cstring == null)
-						cstring = parts[i];
+					string fl;
+					if (tfl.Length > 0 && tfl[tfl.Length-1] == ' ')
+						fl = tfl.TrimEnd(' ');
 					else
-						cstring += (" " + parts[i]);	// TODO: really need to account for width of blank
-					cwidth += partWidths[i];
+						fl = tfl;
+
+                    // Check if entire string fits into a line
+                    ms = MeasureString(fl, g, drawFont, drawFormat);
+                    float tw = RSize.PointsFromPixels(g, ms.Width);
+                    if (tw <= ptWidth)      
+                    {                       // line fits don't need to break it down further
+                        lines.Add(fl);
+                        lineWidths.Add(tw);
+                        continue;
+                    }
+                    
+                    // Line too long; need to break into multiple lines
+                    // 1) break line into parts; then build up again keeping track of word positions
+					string[] parts = fl.Split(wordBreak);	// this is the maximum split of lines
+                    StringBuilder sb = new StringBuilder(fl.Length);
+                    CharacterRange[] cra = new CharacterRange[parts.Length];
+                    for (int i = 0; i < parts.Length; i++)
+					{
+                        int sc = sb.Length;     // starting character
+                        sb.Append(parts[i]);    // endding character
+                        int ec = sb.Length;
+                        if (i != parts.Length - 1)  // last item doesn't need blank
+                            sb.Append(" ");
+                        CharacterRange cr = new CharacterRange(sc, ec-sc);
+                        cra[i] = cr;            // add to character array
+					}
+
+                    // 2) Measure the word locations within the line
+                    string wfl = sb.ToString();
+                    float[] wordLocations = MeasureString(wfl, g, drawFont, drawFormat, cra);
+                    if (wordLocations == null)
+                        continue;
+
+					// 3) Loop thru creating new lines as needed
+                    int startLoc = 0;
+                    CharacterRange crs = cra[startLoc];
+                    CharacterRange cre = cra[startLoc];
+                    float cwidth = wordLocations[0];    // length of the first
+                    string ts;
+                    for (int i=1; i < cra.Length; i++)
+					{
+                        cwidth = wordLocations[i] - (startLoc == 0 ? 0 : wordLocations[startLoc-1]);
+                        if (cwidth > ptWidth)
+						{	// time for a new line
+                            cre = cra[i-1];
+                            ts = wfl.Substring(crs.First, cre.First + cre.Length - crs.First);
+                            startLoc = i;
+                            crs = cre = cra[startLoc];
+                            lines.Add(ts);
+							lineWidths.Add(cwidth);
+						}
+                        else
+                            cre = cra[i];
+                    }
+                    ts = fl.Substring(crs.First, cre.First + cre.Length - crs.First);
+					lines.Add(ts);
+					lineWidths.Add(cwidth);
 				}
-				lines.Add(cstring);
-				lineWidths.Add(cwidth);
-				string[] la = new string[lines.Count];
-				width = new float[lineWidths.Count];
-				for (int i=0; i < lineWidths.Count; i++)
-				{
-					la[i] = (string) lines[i];
-					width[i] = (float) lineWidths[i];
-				}
+                // create the final array from the Lists
+                string[] la = lines.ToArray();
+                width = lineWidths.ToArray(); 
 				return la;
 			}
 			finally
@@ -295,6 +378,112 @@ namespace fyiReporting.RDL
 				if (drawFormat != null)
 					drawFont.Dispose();
 			}
+		}
+
+		/// <summary>
+		/// Measures the location of an arbritrary # of words within a string
+		/// </summary>
+		private float[] MeasureString(string s, Graphics g, Font drawFont, StringFormat drawFormat, CharacterRange[] cra)
+        {
+			if (cra.Length <= MEASUREMAX)		// handle the simple case of < MEASUREMAX words
+				return MeasureString32(s, g, drawFont, drawFormat, cra);
+
+			// Need to compensate for SetMeasurableCharacterRanges limitation of 32 (MEASUREMAX)
+			int mcra = (cra.Length / MEASUREMAX);	// # of full 32 arrays we need
+			int ip = cra.Length % MEASUREMAX;		// # of partial entries needed for last array (if any)
+			float[] sz = new float[cra.Length];	// this is the final result;
+			float startPos=0;
+			CharacterRange[] cra32 = new CharacterRange[MEASUREMAX];	// fill out			
+			int icra=0;						// index thru the cra 
+			for (int i=0; i < mcra; i++)
+			{
+				// fill out the new array
+				int ticra = icra;
+				for (int j=0; j < cra32.Length; j++)
+				{
+					cra32[j] = cra[ticra++];
+					cra32[j].First -= cra[icra].First;	// adjust relative offsets of strings
+				}
+
+				// measure the word locations (in the new string)
+				// ???? should I put a blank in front of it?? 
+				string ts = s.Substring(cra[icra].First, 
+					cra[icra + cra32.Length-1].First + cra[icra + cra32.Length-1].Length - cra[icra].First);
+				float[] pos = MeasureString32(ts, g, drawFont, drawFormat, cra32);
+
+				// copy the values adding in the new starting positions
+				for (int j=0; j < pos.Length; j++)
+					sz[icra++] = pos[j] + startPos;
+
+				startPos = sz[icra-1];	// reset the start position for the next line
+			}
+			// handle the remaining character
+			if (ip > 0)
+			{
+				// resize the range array
+				cra32 = new CharacterRange[ip];				
+				// fill out the new array
+				int ticra = icra;
+				for (int j=0; j < cra32.Length; j++)
+				{
+					cra32[j] = cra[ticra++];
+					cra32[j].First -= cra[icra].First;	// adjust relative offsets of strings
+				}
+				// measure the word locations (in the new string)
+				// ???? should I put a blank in front of it?? 
+				string ts = s.Substring(cra[icra].First, 
+					cra[icra + cra32.Length-1].First + cra[icra + cra32.Length-1].Length - cra[icra].First);
+				float[] pos = MeasureString32(ts, g, drawFont, drawFormat, cra32);
+
+				// copy the values adding in the new starting positions
+				for (int j=0; j < pos.Length; j++)
+					sz[icra++] = pos[j] + startPos;
+			}
+			return sz;
+        }
+
+		/// <summary>
+		/// Measures the location of words within a string;  limited by .Net 1.1 to 32 words
+		///     MEASUREMAX is a constant that defines that limit
+		/// </summary>
+		/// <param name="s"></param>
+		/// <param name="g"></param>
+		/// <param name="drawFont"></param>
+		/// <param name="drawFormat"></param>
+		/// <param name="cra"></param>
+		/// <returns></returns>
+		private float[] MeasureString32(string s, Graphics g, Font drawFont, StringFormat drawFormat, CharacterRange[] cra)
+		{
+			if (s == null || s.Length == 0)
+				return null;
+
+			drawFormat.SetMeasurableCharacterRanges(cra);
+			Region[] rs = new Region[cra.Length];
+			rs = g.MeasureCharacterRanges(s, drawFont, new RectangleF(0, 0, float.MaxValue, float.MaxValue),
+				drawFormat);
+			float[] sz = new float[cra.Length];
+			int isz = 0;
+			foreach (Region r in rs)
+			{
+				RectangleF mr = r.GetBounds(g);
+				sz[isz++] = RSize.PointsFromPixels(g, mr.Right);
+			}
+			return sz;
+		}
+
+		private SizeF MeasureString(string s, Graphics g, Font drawFont, StringFormat drawFormat)
+		{
+			if (s == null || s.Length == 0)
+				return SizeF.Empty;
+
+			CharacterRange[] cr = {new CharacterRange(0, s.Length)};
+			drawFormat.SetMeasurableCharacterRanges(cr);
+			Region[] rs = new Region[1];
+			rs = g.MeasureCharacterRanges(s, drawFont, new RectangleF(0,0,float.MaxValue,float.MaxValue),
+				drawFormat);
+			RectangleF mr = rs[0].GetBounds(g);
+
+			return new SizeF(mr.Width, mr.Height);
 		}
 
 		// Body: main container for the report
@@ -409,7 +598,7 @@ namespace fyiReporting.RDL
 		{
 		}
 
-		public void MatrixCellStart(Matrix m, ReportItem ri, int row, int column, Row r)
+		public void MatrixCellStart(Matrix m, ReportItem ri, int row, int column, Row r, float h, float w, int colSpan)
 		{
 		}
 
@@ -454,6 +643,7 @@ namespace fyiReporting.RDL
 		public void Subreport(Subreport s, Row r)
 		{
 		}
+
 		public void GroupingStart(Grouping g)			// called at start of grouping
 		{
 		}

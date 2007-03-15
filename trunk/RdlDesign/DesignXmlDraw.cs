@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -29,6 +30,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Xml;
 using System.Globalization;
+using System.Net;
 using fyiReporting.RDL;
 
 namespace fyiReporting.RdlDesign
@@ -39,6 +41,8 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class DesignXmlDraw: UserControl
 	{
+		static internal readonly float POINTSIZED = 72.27f;
+		static internal readonly decimal POINTSIZEM = 72.27m;
 		const float RADIUS = 2.5f;	
 		const int BANDHEIGHT = 12;
 		const float LEFTGAP = 12f;				// keep a gap on the left size of the screen
@@ -50,7 +54,7 @@ namespace fyiReporting.RdlDesign
 		XmlNode pfNode;
 
 		private XmlDocument rDoc;			// the reporting XML document
-		private ArrayList _SelectedReportItems = new ArrayList();
+        private List<XmlNode> _SelectedReportItems = new List<XmlNode>();
 		private ReportNames _ReportNames;	// holds the names of the report items
 		float DpiX;
 		float DpiY;
@@ -68,6 +72,8 @@ namespace fyiReporting.RdlDesign
 		// Durning GetRectangle 
 		XmlNode _RectNode;
 		RectangleF _GetRect;
+
+        bool _ShowReportItemOutline=false;
 
 		internal DesignXmlDraw():base()
 		{
@@ -106,9 +112,28 @@ namespace fyiReporting.RdlDesign
 			return true;
 		}
 
+        internal bool ShowReportItemOutline
+        {
+            get { return _ShowReportItemOutline; }
+            set 
+            {
+                if (value != _ShowReportItemOutline)
+                    this.Invalidate();
+
+                _ShowReportItemOutline = value; 
+            }
+        }
+
 		internal ReportNames ReportNames
 		{
-			get {return this._ReportNames;}
+			get 
+			{
+				if (_ReportNames == null && ReportDocument != null)
+					_ReportNames = new ReportNames(rDoc);	// rebuild report names on demand
+				
+				return _ReportNames;
+			}
+			set {_ReportNames = value;}
 		}
 
 		internal XmlDocument ReportDocument
@@ -119,14 +144,14 @@ namespace fyiReporting.RdlDesign
 				rDoc = value;
 				if (rDoc != null)
 				{
+					ReportNames = null;		// this needs to get rebuilt
 					ProcessReport(rDoc.LastChild);
-					_ReportNames = new ReportNames(rDoc);
 					this.ClearSelected();
 				}
 				else
 				{
 					this._SelectedReportItems.Clear();
-					_ReportNames = null;
+					ReportNames = null;
 					this.ClearSelected();
 				}
 			}
@@ -205,6 +230,7 @@ namespace fyiReporting.RdlDesign
 					case "Subreport":
 					case "Chart":
 					case "Line":
+                    case "CustomReportItem":
 						rir = GetRectRI(xNodeLoop, r);
 						break;
 					case "Table":
@@ -264,7 +290,7 @@ namespace fyiReporting.RdlDesign
 			tr.Width = w;
 
 			// For Table height is really defined the sum of the RowHeights
-			ArrayList trs = GetTableRows(xNode);
+			List<XmlNode> trs = GetTableRows(xNode);
 			tr.Height = GetTableRowsHeight(trs);
 
 			// Loop thru the TableRows and the columns in each of them to get at the
@@ -382,7 +408,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		internal object[] DataSetNames
 		{
-			get {return _ReportNames.DataSetNames;}
+			get {return ReportNames.DataSetNames;}
 		}
  
 		/// <summary>
@@ -390,12 +416,12 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		internal object[] DataSourceNames
 		{
-			get {return _ReportNames.DataSourceNames;}
+			get {return ReportNames.DataSourceNames;}
 		}
 
 		internal XmlNode DataSourceName(string dsn)
 		{
-			return _ReportNames.DataSourceName(dsn);
+			return ReportNames.DataSourceName(dsn);
 		}
 
 		/// <summary>
@@ -403,23 +429,66 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		internal object[] GroupingNames
 		{
-			get {return _ReportNames.GroupingNames;}
+			get {return ReportNames.GroupingNames;}
 		}
 
 		internal string[] GetFields(string dataSetName, bool asExpression)
 		{
-			return _ReportNames.GetFields(dataSetName, asExpression);
+			return ReportNames.GetFields(dataSetName, asExpression);
 		}
 
 		internal string[] GetReportParameters(bool asExpression)
 		{
-			return _ReportNames.GetReportParameters(asExpression);
+			return ReportNames.GetReportParameters(asExpression);
 		}
 
 		internal PointF SelectionPosition(XmlNode xNode)
 		{
 			RectangleF r = this.GetReportItemRect(xNode);
 			return new PointF(r.X, r.Y);
+		}
+
+		internal SizeF SelectionSize(XmlNode xNode)
+		{
+			SizeF rs = new SizeF(float.MinValue, float.MinValue);
+			if (this.InTable(xNode))
+			{
+				XmlNode tcol = this.GetTableColumn(xNode);
+				XmlNode tcell = this.GetTableCell(xNode);
+				if (tcol != null && tcell != null)
+				{
+					int colSpan = Convert.ToInt32(GetElementValue(tcell, "ColSpan", "1"));
+					float width=0;
+					while (colSpan > 0 && tcol != null)
+					{
+						XmlNode w = this.GetNamedChildNode(tcol, "Width");
+						if (w != null)
+							width += GetSize(w.InnerText);
+						colSpan--;
+						tcol = tcol.NextSibling;
+					}
+					if (width > 0)					
+						rs.Width = width;
+				}
+				XmlNode tr = this.GetTableRow(xNode);
+				if (tr != null)
+				{
+					XmlNode h = this.GetNamedChildNode(tr, "Height");
+					if (h != null)
+						rs.Height = GetSize(h.InnerText);
+				}
+			}
+			else
+			{
+				RectangleF r = this.GetReportItemRect(xNode);
+				rs.Width = r.Width;
+				rs.Height = r.Height;
+			}
+
+			// we want both values or neither
+			if (rs.Width == float.MinValue || rs.Height == float.MinValue)
+				rs.Width = rs.Height = float.MinValue;
+			return rs;
 		}
 
 		/// <summary>
@@ -490,16 +559,36 @@ namespace fyiReporting.RdlDesign
 		{
 			XmlNode sNode;
 			if (_SelectedReportItems.Count > 0)
-				sNode = (XmlNode) _SelectedReportItems[0];
+				sNode = _SelectedReportItems[0];
 			else
 				sNode = null;
 
-			XmlNode nNode = bReverse? this._ReportNames.FindPrior(sNode): this._ReportNames.FindNext(sNode);
+			XmlNode nNode = bReverse? ReportNames.FindPrior(sNode): ReportNames.FindNext(sNode);
 			if (nNode == null)
 				return false;
 			this.ClearSelected();
 			this.AddSelection(nNode);
 			return true;
+		}
+
+		static internal int CountChildren(XmlNode node, params string[] names)
+		{
+			return CountChildren(node, names, 0);
+		}
+
+		static private int CountChildren(XmlNode node, string[] names, int index)
+		{
+			int count = 0;
+			foreach (XmlNode c in node.ChildNodes)
+			{
+				if (c.Name != names[index])
+					continue;
+				if (names.Length-1 == index)
+					count++;
+				else
+					count += CountChildren(c, names, index+1);
+			}
+			return count;
 		}
 
 		static internal XmlNode FindNextInHierarchy(XmlNode xNode, params string [] names)
@@ -524,6 +613,21 @@ namespace fyiReporting.RdlDesign
 			return rNode;
 		}
 
+		internal bool AllowGroupOperationOnSelected
+		{
+			get
+			{
+				if (_SelectedReportItems.Count <= 1)
+					return false;
+				foreach (XmlNode xNode in SelectedList)
+				{
+					if (InMatrix(xNode) || InTable(xNode))
+						return false;
+				}
+				return true;
+			}
+		}
+
 		internal int SelectedCount
 		{
 			get {return _SelectedReportItems.Count;}
@@ -538,7 +642,7 @@ namespace fyiReporting.RdlDesign
 			this.Invalidate();
 		}
 
-		internal ArrayList SelectedList
+		internal List<XmlNode> SelectedList
 		{
 			get {return _SelectedReportItems;}
 		}
@@ -557,9 +661,72 @@ namespace fyiReporting.RdlDesign
 
 		internal float HorizontalMax
 		{
-			get {return Math.Max(pWidth, rWidth);}
+			get 
+			{
+				float hm = Math.Max(pWidth, rWidth);
+				return Math.Max(hm, RightMost(rDoc.LastChild)+90);  // 90: just to give a little extra room on right
+			}
+		}
+		/// <summary>
+		/// Find the Right most (largest x) position of a report item
+		/// </summary>
+		/// <param name="xNode">Should be the "Report" node</param>
+		/// <returns>x + width of rightmost object</returns>
+		private float RightMost(XmlNode xNode)
+		{
+			float rm=0;			// current rightmost position
+
+			// Loop thru all the child nodes
+			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
+			{
+				if (xNodeLoop.NodeType != XmlNodeType.Element)
+					continue;
+				switch (xNodeLoop.Name)
+				{
+					case "Body":
+					case "PageHeader":
+					case "PageFooter":
+						rm = Math.Max(rm, RightMostRI(GetNamedChildNode(xNodeLoop, "ReportItems")));
+						break;
+				}
+			}
+			return rm;
 		}
 
+		private float RightMostRI(XmlNode xNode)
+		{
+			if (xNode == null)
+				return 0;
+
+			float rm = 0;
+
+			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
+			{
+				RectangleF r = GetReportItemRect(xNodeLoop);		// get the ReportItem rectangle
+
+				switch (xNodeLoop.Name)
+				{
+					case "Table":
+						// Table width is really defined by the table columns
+						float[] colWidths;
+						colWidths = GetTableColumnWidths(GetNamedChildNode(xNodeLoop, "TableColumns"));
+						// calc the total width
+						float w=0;
+						foreach (float cw in colWidths)
+							w += cw;
+						rm = Math.Max(rm, r.Left + w);
+						break;
+					case "Matrix":
+						MatrixView matrix = new MatrixView(this, xNodeLoop);
+						rm = Math.Max(rm, r.Left + matrix.Width);
+						break;
+					default:
+						rm = Math.Max(rm, r.Right);
+						break;
+				}
+			}
+			return rm;
+		}
 
 		/// <summary>
 		/// Delete the matrix that contains the passed node
@@ -593,33 +760,34 @@ namespace fyiReporting.RdlDesign
 				node.Name == "Rectangle")
 				bRebuildNames = true;
 			XmlNode reportItemsNode = node.ParentNode;
+			if (reportItemsNode == null)
+				return false;			// can't delete this; it is already deleted
 			XmlNode pReportItems = reportItemsNode.ParentNode;
 			if (pReportItems.Name == "TableCell")
 			{	// Report item is part of a table; just convert it to an Textbox with no text
 				rc = false;
-				reportItemsNode.RemoveChild(node);
-				this._ReportNames.RemoveName(node);
 				XmlNode styleNode = GetNamedChildNode(node, "Style");	// want to retain style if possible
-				XmlElement tbnode = rDoc.CreateElement("Textbox");
-				this._ReportNames.GenerateName(tbnode);
-				reportItemsNode.AppendChild(tbnode);
-				XmlElement vnode = rDoc.CreateElement("Value");
-				vnode.InnerText = "";
-				tbnode.AppendChild(vnode);
+				if (styleNode != null)
+					styleNode = styleNode.CloneNode(true);
+				reportItemsNode.RemoveChild(node);
+				ReportNames.RemoveName(node);
+				XmlElement tbnode = this.CreateElement(reportItemsNode,"Textbox", null);
+				ReportNames.GenerateName(tbnode);
+				XmlElement vnode = this.CreateElement(tbnode, "Value", "");
 				if (styleNode != null)
 					tbnode.AppendChild(styleNode);
 			}
 			else
 			{
 				reportItemsNode.RemoveChild(node);
-				this._ReportNames.RemoveName(node);
+				ReportNames.RemoveName(node);
 				if (!reportItemsNode.HasChildNodes) 
 				{	// ReportItems now has no nodes and needs to be removed
 					pReportItems.RemoveChild(reportItemsNode);	
 				}
 			}
 			if (bRebuildNames)
-				_ReportNames = new ReportNames(rDoc);
+				ReportNames = null;			// this will force a rebuild when next needed
 
 			return rc;
 		}
@@ -843,6 +1011,9 @@ namespace fyiReporting.RdlDesign
 					case "Image":
 						rir = DrawImage(xNodeLoop, r);
 						break;
+                    case "CustomReportItem":
+                        rir = DrawCustomReportItem(xNodeLoop, r);
+                        break;
 					case "Rectangle":
 						rir = DrawRectangle(xNodeLoop, r);
 						break;
@@ -870,10 +1041,10 @@ namespace fyiReporting.RdlDesign
 			}
 		}
 
-		private ArrayList DrawReportItemsOrdered(XmlNode xNode)
+		private List<XmlNode> DrawReportItemsOrdered(XmlNode xNode)
 		{
 			// build the array
-			ArrayList al = new ArrayList(xNode.ChildNodes.Count);
+            List<XmlNode> al = new List<XmlNode>(xNode.ChildNodes.Count);
 			foreach (XmlNode n in xNode.ChildNodes)
 				al.Add(n);
 
@@ -895,8 +1066,13 @@ namespace fyiReporting.RdlDesign
 			rir.Intersect(r);
 			return rir;
 		}
-	
-		private RectangleF GetReportItemRect(XmlNode xNode)
+
+		/// <summary>
+		/// Return the rectangle as specified by Left, Top, Height, Width elements 
+		/// </summary>
+		/// <param name="xNode"></param>
+		/// <returns></returns>
+		internal RectangleF GetReportItemRect(XmlNode xNode)
 		{
 			float t=0;
 			float l=0;
@@ -1019,7 +1195,7 @@ namespace fyiReporting.RdlDesign
 			return ir;
 		}
 
-		private RectangleF DrawImage(XmlNode xNode, RectangleF r)
+		private RectangleF DrawCustomReportItem(XmlNode xNode, RectangleF r)
 		{
 			RectangleF ir = GetReportItemRect(xNode, r);
 			if (!ir.IntersectsWith(_clip))
@@ -1027,37 +1203,85 @@ namespace fyiReporting.RdlDesign
 
 			StyleInfo si = GetStyleInfo(xNode);
 
-			XmlNode sNode = this.GetNamedChildNode(xNode, "Source");
-			XmlNode vNode = this.GetNamedChildNode(xNode, "Value");
-			if (sNode == null || vNode == null)
+			XmlNode tNode = this.GetNamedChildNode(xNode, "Type");
+			if (tNode == null)
 			{	// shouldn't really ever happen
-				DrawString("Image with invalid source or value.", si, ir);
+				DrawString("CustomReportItem requires type.", si, ir);
 				return ir;		
 			}
+            string type = tNode.InnerText;
+            ICustomReportItem cri = null;
+            Bitmap bm = null;
+            try
+            {
+                cri = RdlEngineConfig.CreateCustomReportItem(type);
+                int width = (int)PixelsX(ir.Width - (si.PaddingLeft + si.PaddingRight));
+                int height = (int)PixelsY(ir.Height - (si.PaddingTop + si.PaddingBottom));
+                if (width <= 0)
+                    width = 1;
+                if (height <= 0)
+                    height = 1;
+                bm = new Bitmap(width, height);
+                cri.DrawDesignerImage(bm);
+                DrawImageSized(xNode,ImageSizingEnum.Clip, bm, si, ir);
 
-			switch (sNode.InnerText)
-			{
-				case "External":
-					if (DrawImageExternal(xNode, sNode, vNode, si, ir))
-						ir = GetReportItemRect(xNode, r);
+                DrawBorder(si, ir);
+            }
+            catch
+            {
+                DrawString("CustomReportItem type is unknown.", si, ir);
+            }
+            finally
+            {
+                if (cri != null)
+                    cri.Dispose();
+                if (bm != null)
+                    bm.Dispose();
+            }
 
-					DrawBorder(si,ir);
-					break;
-				case "Embedded":
-					if (DrawImageEmbedded(xNode, sNode, vNode, si, ir))
-						ir = GetReportItemRect(xNode, r);
-
-					DrawBorder(si,ir);
-					break;
-				case "Database":
-					DrawString(string.Format("Database Image: {0}.",vNode.InnerText), si, ir);
-					break;
-				default:
-					DrawString(string.Format("Image, invalid source={0}.",sNode.InnerText), si, ir);
-					break;
-			}
 			return ir;
 		}
+
+
+        private RectangleF DrawImage(XmlNode xNode, RectangleF r)
+        {
+            RectangleF ir = GetReportItemRect(xNode, r);
+            if (!ir.IntersectsWith(_clip))
+                return ir;
+
+            StyleInfo si = GetStyleInfo(xNode);
+
+            XmlNode sNode = this.GetNamedChildNode(xNode, "Source");
+            XmlNode vNode = this.GetNamedChildNode(xNode, "Value");
+            if (sNode == null || vNode == null)
+            {	// shouldn't really ever happen
+                DrawString("Image with invalid source or value.", si, ir);
+                return ir;
+            }
+
+            switch (sNode.InnerText)
+            {
+                case "External":
+                    if (DrawImageExternal(xNode, sNode, vNode, si, ir))
+                        ir = GetReportItemRect(xNode, r);
+
+                    DrawBorder(si, ir);
+                    break;
+                case "Embedded":
+                    if (DrawImageEmbedded(xNode, sNode, vNode, si, ir))
+                        ir = GetReportItemRect(xNode, r);
+
+                    DrawBorder(si, ir);
+                    break;
+                case "Database":
+                    DrawString(string.Format("Database Image: {0}.", vNode.InnerText), si, ir);
+                    break;
+                default:
+                    DrawString(string.Format("Image, invalid source={0}.", sNode.InnerText), si, ir);
+                    break;
+            }
+            return ir;
+        }
 
 		private bool DrawImageEmbedded(XmlNode iNode, XmlNode sNode, XmlNode vNode, StyleInfo si, RectangleF r)
 		{
@@ -1122,11 +1346,28 @@ namespace fyiReporting.RdlDesign
 			bool bResize = false;
 			try 
 			{
-				// TODO: should probably put this into cached memory: instead of reading all the time
-				strm = new FileStream(vNode.InnerText, FileMode.Open, FileAccess.Read, FileShare.Read);
-				im = System.Drawing.Image.FromStream(strm);
-				// Draw based on sizing options
-				bResize = DrawImageSized(iNode, im, si, r);
+				if (vNode.InnerText[0] == '=')
+				{	// Image is an expression; can't calculate at design time
+					DrawString(string.Format("Image: {0}",vNode.InnerText), si, r);
+				}
+				else
+				{
+					// TODO: should probably put this into cached memory: instead of reading all the time
+					string fname = vNode.InnerText;
+					if (fname.StartsWith("http:") ||
+						fname.StartsWith("file:") ||
+						fname.StartsWith("https:"))
+					{
+						WebRequest wreq = WebRequest.Create(fname);
+						WebResponse wres = wreq.GetResponse();
+						strm = wres.GetResponseStream();
+					}
+					else
+						strm = new FileStream(fname, FileMode.Open, FileAccess.Read, FileShare.Read);
+					im = System.Drawing.Image.FromStream(strm);
+					// Draw based on sizing options
+					bResize = DrawImageSized(iNode, im, si, r);
+				}
 			}
 			catch (Exception e)
 			{
@@ -1141,8 +1382,21 @@ namespace fyiReporting.RdlDesign
 			}
 			return bResize;
 		}
+        
+        ImageSizingEnum GetSizing(XmlNode iNode)
+        {
+            XmlNode szNode = this.GetNamedChildNode(iNode, "Sizing");
+            ImageSizingEnum ise = szNode == null ? ImageSizingEnum.AutoSize :
+                ImageSizing.GetStyle(szNode.InnerText);
+            return ise;
+        }
 
-		private bool DrawImageSized(XmlNode iNode, Image im, StyleInfo si, RectangleF r)
+        private bool DrawImageSized(XmlNode iNode, Image im, StyleInfo si, RectangleF r)
+        {
+            return DrawImageSized(iNode, GetSizing(iNode), im, si, r);
+        }
+
+		private bool DrawImageSized(XmlNode iNode, ImageSizingEnum ise, Image im, StyleInfo si, RectangleF r)
 		{
 			// calculate new rectangle based on padding and scroll
 			RectangleF r2 = new RectangleF(r.Left + si.PaddingLeft - _hScroll,
@@ -1150,19 +1404,29 @@ namespace fyiReporting.RdlDesign
 				r.Width - si.PaddingLeft - si.PaddingRight,
 				r.Height - si.PaddingTop - si.PaddingBottom);
 
-			XmlNode szNode = this.GetNamedChildNode(iNode, "Sizing");
-			ImageSizingEnum ise = szNode == null? ImageSizingEnum.AutoSize:
-				ImageSizing.GetStyle(szNode.InnerText);
 			bool bResize = false;
 			float height, width;		// some work variables
-			switch (ise)
+            Rectangle ir;	// int work rectangle
+            GraphicsUnit gu;
+
+            switch (ise)
 			{
 				case ImageSizingEnum.AutoSize:
-					// correct the height and width of the image: to match size of image
+                    // Note: GDI+ will stretch an image when you only provide
+                    //  the left/top coordinates.  This seems pretty stupid since
+                    //  it results in the image being out of focus even though
+                    //  you don't want the image resized.
+                    //					g.DrawImage(im, r2.Left, r2.Top);
+                    // correct the height and width of the image: to match size of image
 					width = PointsX(im.Width) + si.PaddingLeft + si.PaddingRight;
 					height = PointsY(im.Height) + si.PaddingTop + si.PaddingBottom;
 					this.SetReportItemHeightWidth(iNode, height, width);
-					g.DrawImage(im, r2.Left, r2.Top);
+                    
+                    gu = g.PageUnit;
+                    g.PageUnit = GraphicsUnit.Pixel;
+                    ir = new Rectangle(PixelsX(r2.Left), PixelsY(r2.Top), im.Width, im.Height);
+                    g.DrawImage(im, ir);
+                    g.PageUnit = gu;
 					bResize = true;
 					break;
 				case ImageSizingEnum.Clip:
@@ -1171,8 +1435,12 @@ namespace fyiReporting.RdlDesign
 					//RectangleF r3 = new RectangleF(PointsX(r2.Left), PointsY(r2.Top), PointsX(r2.Width), PointsY(r2.Height));
 					clipRegion.Intersect(r2);
 					g.Clip = clipRegion;
-					g.DrawImage(im, r2.Left, r2.Top);
-					g.Clip = saveRegion;
+                    gu = g.PageUnit;
+                    g.PageUnit = GraphicsUnit.Pixel;
+                    ir = new Rectangle(PixelsX(r2.Left), PixelsY(r2.Top), im.Width, im.Height);
+                    g.DrawImage(im, ir);
+                    g.PageUnit = gu;
+                    g.Clip = saveRegion;
 					break;
 				case ImageSizingEnum.FitProportional:
 					float ratioIm = (float) im.Height / (float) im.Width;
@@ -1343,7 +1611,7 @@ namespace fyiReporting.RdlDesign
 			tr.Width = w;
 
 			// For Table height is really defined the sum of the RowHeights
-			ArrayList trs = GetTableRows(xNode);
+			List<XmlNode> trs = GetTableRows(xNode);
 			tr.Height = GetTableRowsHeight(trs);
 
 			DrawBackground(tr, GetStyleInfo(xNode));
@@ -1395,9 +1663,9 @@ namespace fyiReporting.RdlDesign
 			return cols;
 		}
 
-		private ArrayList GetTableRows(XmlNode xNode)
+		private List<XmlNode> GetTableRows(XmlNode xNode)
 		{
-			ArrayList trs = new ArrayList();
+            List<XmlNode> trs = new List<XmlNode>();
 
 			XmlNode tblGroups=null, header=null, footer=null, details=null;
 
@@ -1431,7 +1699,7 @@ namespace fyiReporting.RdlDesign
 			return trs;
 		}
 
-		private void GetTableGroupsRows(XmlNode xNode, ArrayList trs, string name)
+        private void GetTableGroupsRows(XmlNode xNode, List<XmlNode> trs, string name)
 		{
 			if (xNode == null)
 				return;
@@ -1452,8 +1720,8 @@ namespace fyiReporting.RdlDesign
 			}
 
 		}
-		
-		private void GetTableRowsAdd(XmlNode xNode, ArrayList trs)
+
+        private void GetTableRowsAdd(XmlNode xNode, List<XmlNode> trs)
 		{
 			if (xNode == null)
 				return;
@@ -1467,7 +1735,7 @@ namespace fyiReporting.RdlDesign
 			}
 		}
 
-		private float GetTableRowsHeight(ArrayList trs)
+        private float GetTableRowsHeight(List<XmlNode> trs)
 		{
 			float h=0;
 			foreach (XmlNode tr in trs)
@@ -1484,7 +1752,7 @@ namespace fyiReporting.RdlDesign
 			if (xNode == null)
 				return new float[0];
 
-			ArrayList cl = new ArrayList();
+            List<float> cl = new List<float>();
 			foreach (XmlNode xNodeLoop in xNode.ChildNodes)
 			{
 				if (xNodeLoop.NodeType == XmlNodeType.Element && 
@@ -1495,8 +1763,7 @@ namespace fyiReporting.RdlDesign
 						cl.Add(GetSize(cNode.InnerText));
 				}
 			}
-			float a=0;
-			float[] r = (float[]) cl.ToArray(a.GetType());
+			float[] r = cl.ToArray();
 			return r;
 		}
 
@@ -1559,7 +1826,6 @@ namespace fyiReporting.RdlDesign
 			XmlNode node = GetNamedChildNode(xNode, name);
 			if (node == null)
 				node = CreateElement(xNode, name, null);
-
 			return node;
 		}
 
@@ -1938,21 +2204,19 @@ namespace fyiReporting.RdlDesign
 					size = (int) (d * 100m);
 					break;
 				case "pt":
-					size = (int) (d * (2540m / 72m));
-					break;
+					return Convert.ToSingle(d);
 				case "pc":
-					size = (int) (d * (2540m / 72m * 12m));
+					size = (int) (d * (2540m / POINTSIZEM * 12m));
 					break;
 				default:	 
 					// Illegal unit
 					size = (int) (d * 2540m);
 					break;
 			}
-			if (size > 160 * 2540)	// Size can't be greater than 160 inches
-				size = 160 * 2540;
+
 
 			// and return as points
-			return (float) ((double) size / 2540.0 * 72.0);
+			return (float) ((double) size / 2540.0 * POINTSIZED);
 		}
 
 		private void DrawBackground(System.Drawing.RectangleF rect, StyleInfo si)
@@ -2089,9 +2353,17 @@ namespace fyiReporting.RdlDesign
 		private void DrawLine(Color c, BorderStyleEnum bs, float w,  
 								float x, float y, float x2, float y2)
 		{
-			if (bs == BorderStyleEnum.None || c.IsEmpty || w <= 0)	// nothing to draw
-				return;
-
+            Color lc = c;
+            if (this.ShowReportItemOutline)
+            {   // force an outline
+                lc = (bs == BorderStyleEnum.None || c.IsEmpty)? Color.LightGray : c;
+                if (w <= 0)
+                    w = 1;
+            }
+            else if (bs == BorderStyleEnum.None || c.IsEmpty || w <= 0)	// nothing to draw
+            {
+                return;
+            }
 			// adjust coordinates for scrolling
 			x -= _hScroll;
 			y -= _vScroll;
@@ -2101,7 +2373,7 @@ namespace fyiReporting.RdlDesign
 			Pen p=null;
 			try
 			{
-				p = new Pen(c, w);
+				p = new Pen(lc, w);
 				switch (bs)
 				{
 					case BorderStyleEnum.Dashed:
@@ -2248,11 +2520,11 @@ namespace fyiReporting.RdlDesign
 		{
 			string t = string.Format(NumberFormatInfo.InvariantInfo, 
 				"<ReportItems><Image><Source>Embedded</Source><Height>{0:0.00}in</Height><Width>{1:0.00}in</Width><Sizing>FitProportional</Sizing></Image></ReportItems>",
-									PointsY(img.Height)/72, PointsX(img.Width)/72);
+									PointsY(img.Height)/POINTSIZED, PointsX(img.Width)/POINTSIZED);
 			PasteReportItems(parent, t, p);
 			if (_SelectedReportItems.Count != 1)	
 				return;									// Paste must have failed
-			XmlNode iNode = (XmlNode) this._SelectedReportItems[0];		// Get the just pasted image
+			XmlNode iNode = this._SelectedReportItems[0];		// Get the just pasted image
 			
 			// Get the name; we'll use that as the embedded image name as well
 			XmlAttribute xAttr = iNode.Attributes["Name"];
@@ -2331,7 +2603,7 @@ namespace fyiReporting.RdlDesign
 															//   cell we need to put a rectangle over it
 			{
 				XmlNode rectNode = this.CreateElement(riNode, "Rectangle", null);
-				this._ReportNames.GenerateName(rectNode);		// generate a new name
+				ReportNames.GenerateName(rectNode);		// generate a new name
 				riNode = this.CreateElement(rectNode, "ReportItems", null);
 			}
 
@@ -2420,7 +2692,7 @@ namespace fyiReporting.RdlDesign
 			XmlNode repItems = hl.HitNode.ParentNode;
 			if (repItems.Name != "ReportItems")
 				return null;
-
+			
 			XmlNode p = repItems.ParentNode;
 			p.RemoveChild(repItems);
 
@@ -2430,7 +2702,16 @@ namespace fyiReporting.RdlDesign
 		internal XmlNode PasteTableMatrixOrChart(XmlNode parent, string sTable, PointF p)
 		{
 			XmlDocumentFragment fDoc = rDoc.CreateDocumentFragment();
-			fDoc.InnerXml = sTable;
+			try 
+			{
+				fDoc.InnerXml = sTable;
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show(e.Message, "XML is Invalid");
+				return null;
+			}
+
 			string type;
 			if (sTable.Substring(0, 6) == "<Table")
 				type = "Table";
@@ -2473,21 +2754,22 @@ namespace fyiReporting.RdlDesign
 				case "Textbox":
 				case "Image":
 				case "Subreport":
-				case "Line":		
-					this._ReportNames.GenerateName(node);	// generate a new name
+				case "Line":
+		        case "CustomReportItem":
+					ReportNames.GenerateName(node);	// generate a new name
 					return;
 				case "Chart":
 				case "Rectangle":
 				case "Table":
 				case "Matrix":
 				case "List":
-					this._ReportNames.GenerateName(node);	// generate a new name
+					ReportNames.GenerateName(node);	// generate a new name
 					break;
 				case "Style":		// just to limit some of the dead ends we might hit
 				case "Filters":
 					return;
 				case "Grouping":		// need to assign name to groups too
-					this._ReportNames.GenerateGroupingName(node);
+					ReportNames.GenerateGroupingName(node);
 					return;
 			}
 			foreach (XmlNode xNodeLoop in node.ChildNodes)
@@ -2580,6 +2862,7 @@ namespace fyiReporting.RdlDesign
 					case "Chart":
 					case "Image":
 					case "Subreport":
+                    case "CustomReportItem":
 						RectangleF rif = GetReportItemRect(xNodeLoop, r);
 						if (rif.IntersectsWith(_HitRect))
 							this.AddSelection(xNodeLoop);
@@ -2684,7 +2967,7 @@ namespace fyiReporting.RdlDesign
 			tr.Width = w;
 
 			// For Table height is really defined the sum of the RowHeights
-			ArrayList trs = GetTableRows(xNode);
+			List<XmlNode> trs = GetTableRows(xNode);
 			tr.Height = GetTableRowsHeight(trs);
 
 			if (!tr.IntersectsWith(_HitRect))
@@ -2934,6 +3217,7 @@ namespace fyiReporting.RdlDesign
 					case "Chart":
 					case "Image":
 					case "Subreport":
+                    case "CustomReportItem":
 						hnl = HitReportItem(xNodeLoop, r);
 						break;
 					case "Rectangle":
@@ -3035,7 +3319,6 @@ namespace fyiReporting.RdlDesign
 			if (!mr.Contains(_HitPoint))
 				return null;
 
-
 			// Check to see if column resize location
 			HitLocation hl = HitMatrixColumnResize(xNode, matrix, mr);
 			if (hl != null)
@@ -3103,8 +3386,40 @@ namespace fyiReporting.RdlDesign
 				result = new HitLocation(hNode, xNode, HitLocationEnum.TableColumnResize, new PointF(0,0));
 			else
 			{
-				XmlNode mc = DesignXmlDraw.FindNextInHierarchy(xNode, 
-					"MatrixColumns", "MatrixColumn");
+				// find out which column it is.
+				// 1) Get the report item found
+				XmlNode ri = matrix[matrix.HeaderRows, i].ReportItem;
+				// 2) Find its relative location in the MatrixCells
+				XmlNode mcells = DesignXmlDraw.FindNextInHierarchy(xNode, "MatrixRows", "MatrixRow", "MatrixCells");
+				if (mcells == null)
+					return null;
+				int offsetColumn=0;
+				foreach (XmlNode mcell in mcells.ChildNodes)
+				{
+					if (mcell.Name != "MatrixCell")
+						continue;
+					XmlNode cri = DesignXmlDraw.FindNextInHierarchy(mcell, "ReportItems");
+					if (ri == cri)
+						break;
+					offsetColumn++;
+				}
+				// 3) Now find the same relative location in MatrixColumns
+				XmlNode mcols =	DesignXmlDraw.FindNextInHierarchy(xNode, "MatrixColumns");
+				if (mcols == null)
+					return null;
+				XmlNode mc=null;
+				foreach (XmlNode mcol in mcols.ChildNodes)
+				{
+					if (offsetColumn == 0)
+					{
+						mc = mcol;
+						break;
+					}
+					offsetColumn--;
+				}
+				if (mc == null)		// Not found; just use the first one
+					mc = DesignXmlDraw.FindNextInHierarchy(xNode, 
+										"MatrixColumns", "MatrixColumn");
 				if (mc != null)
 					result = new HitLocation(mc, xNode, HitLocationEnum.TableColumnResize, new PointF(0,0));
 			}
@@ -3139,10 +3454,43 @@ namespace fyiReporting.RdlDesign
 				result = new HitLocation(hNode, xNode, HitLocationEnum.TableRowResize, new PointF(0,0));
 			else
 			{
-				XmlNode mc = DesignXmlDraw.FindNextInHierarchy(xNode, 
-					"MatrixRows", "MatrixRow");
-				if (mc != null)
-					result = new HitLocation(mc, xNode, HitLocationEnum.TableRowResize, new PointF(0,0));
+				// find out which row it is.
+				// 1) Get the report item found
+				XmlNode ri = matrix[row, matrix.HeaderColumns].ReportItem;
+				// 2) Find its location in the MatrixRows
+				XmlNode mrows = DesignXmlDraw.FindNextInHierarchy(xNode, "MatrixRows");
+				if (mrows == null)
+					return null;
+				XmlNode mr=null;
+				foreach (XmlNode mrow in mrows.ChildNodes)
+				{
+					if (mrow.Name != "MatrixRow")
+						continue;
+					// find the report item
+					XmlNode mcells = DesignXmlDraw.FindNextInHierarchy(mrow, "MatrixCells");
+					if (mcells == null)
+						return null;
+					foreach (XmlNode mcell in mcells.ChildNodes)
+					{
+						if (mcell.Name != "MatrixCell")
+							continue;
+						XmlNode cri = DesignXmlDraw.FindNextInHierarchy(mcell, "ReportItems");
+						if (ri == cri)
+						{
+							mr = mrow;
+							break;
+						}
+					}
+					if (mr != null)
+						break;
+				}
+				if (mr == null)		// Not found; just use the first one
+				{
+					mr = DesignXmlDraw.FindNextInHierarchy(xNode, 
+						"MatrixRows", "MatrixRow");
+				}
+				if (mr != null)
+					result = new HitLocation(mr, xNode, HitLocationEnum.TableRowResize, new PointF(0,0));
 			}
 			return result;
 		}
@@ -3238,7 +3586,7 @@ namespace fyiReporting.RdlDesign
 			tr.Width = w;
 
 			// For Table height is really defined the sum of the RowHeights
-			ArrayList trs = GetTableRows(xNode);
+            List<XmlNode> trs = GetTableRows(xNode);
 			tr.Height = GetTableRowsHeight(trs);
 
 			// If not in the bigger rectangle; its not in any smaller rectangles
@@ -3341,13 +3689,13 @@ namespace fyiReporting.RdlDesign
 			return hl;
 		}
 
-		private HitLocation HitTableRowResize(XmlNode xNode, RectangleF r, ArrayList trs)
+        private HitLocation HitTableRowResize(XmlNode xNode, RectangleF r, List<XmlNode> trs)
 		{
 			// Loop thru the table rows to see if point is over the row resize area
 			XmlNode rn=null;
 			float yPos = r.Bottom-RADIUS;
 
-			ArrayList reverse = new ArrayList(trs);
+            List<XmlNode> reverse = new List<XmlNode>(trs);
 			reverse.Reverse();
 			foreach (XmlNode trn in reverse)
 			{
@@ -3434,9 +3782,22 @@ namespace fyiReporting.RdlDesign
 			// Are we just moving the selected items
 			if (hle == HitLocationEnum.Move)
 			{
+                List<XmlNode> ar = null;
 				foreach (XmlNode ri in this._SelectedReportItems)
 				{
-					rc |= MoveReportItem(ri, xInc, yInc);
+					// Ensure we don't move table or matrixes multiple times depending on selection
+					XmlNode tm = TMParent(ri);
+					if (tm == null)
+					{
+						rc |= MoveReportItem(ri, xInc, yInc);
+						continue;
+					}
+					if (ar == null)
+                        ar = new List<XmlNode>();
+					else if (ar.Contains(tm))
+						continue;
+					ar.Add(tm);
+					rc |= MoveReportItem(tm, xInc, yInc);
 				}
 				return rc;
 			}
@@ -3615,7 +3976,25 @@ namespace fyiReporting.RdlDesign
 
 		internal XmlElement CreateElement(XmlNode parent, string name, string val)
 		{
-			XmlElement node = rDoc.CreateElement(name);
+			XmlElement node;
+			if (name.StartsWith("rd:"))	
+			{
+				string nms = rDoc.DocumentElement.GetNamespaceOfPrefix("rd");
+				if (nms == null || nms.Length == 0)
+					nms = DialogValidateRdl.MSDESIGNERSCHEMA;
+
+				node = rDoc.CreateElement(name, nms);
+			}
+			else if (name.StartsWith("fyi:"))	
+			{
+				string nms = rDoc.DocumentElement.GetNamespaceOfPrefix("fyi");
+				if (nms == null || nms.Length == 0)
+					nms = DialogValidateRdl.DESIGNERSCHEMA;
+
+				node = rDoc.CreateElement(name, nms);
+			}
+			else
+				node = rDoc.CreateElement(name);
 			if (val != null)
 				node.InnerText = val;
 			parent.AppendChild(node);
@@ -3631,22 +4010,22 @@ namespace fyiReporting.RdlDesign
 		/// <returns></returns>
 		internal string NameError(XmlNode xNode, string name)
 		{
-			return _ReportNames.NameError(xNode, name);
+			return ReportNames.NameError(xNode, name);
 		}
 
 		internal string GroupingNameCheck(XmlNode xNode, string name)
 		{
-			return _ReportNames.GroupingNameCheck(xNode, name);
+			return ReportNames.GroupingNameCheck(xNode, name);
 		}
 
 		internal bool SetName(XmlNode xNode, string name)
 		{
-			return this._ReportNames.ChangeName(xNode, name);
+			return ReportNames.ChangeName(xNode, name);
 		}
 
 		internal bool SetGroupName(XmlNode xNode, string name)
 		{
-			return this._ReportNames.ChangeGroupName(xNode, name);
+			return ReportNames.ChangeGroupName(xNode, name);
 		}
 
 		internal void SetElementAttribute(XmlNode parent, string name, string val)
@@ -3851,7 +4230,7 @@ namespace fyiReporting.RdlDesign
 			return DeleteChartGrouping(group);
 		}
 
-		internal object[] GetChartCategoryGroupNames(XmlNode chart)
+		internal string[] GetChartCategoryGroupNames(XmlNode chart)
 		{
 			if (chart == null || chart.Name != "Chart")
 				return null;
@@ -3860,7 +4239,7 @@ namespace fyiReporting.RdlDesign
 			if (catGroups == null)
 				return null;
 
-			ArrayList ar = new ArrayList();
+			List<string> ar = new List<string>();
 			foreach (XmlNode cgroup in catGroups.ChildNodes)
 			{
 				if (cgroup.Name != "CategoryGrouping")
@@ -3877,7 +4256,7 @@ namespace fyiReporting.RdlDesign
 			return ar.ToArray();
 		}
 
-		internal object[] GetChartSeriesGroupNames(XmlNode chart)
+		internal string[] GetChartSeriesGroupNames(XmlNode chart)
 		{
 			if (chart == null || chart.Name != "Chart")
 				return null;
@@ -3886,7 +4265,7 @@ namespace fyiReporting.RdlDesign
 			if (serGroups == null)
 				return null;
 
-			ArrayList ar = new ArrayList();
+            List<string> ar = new List<string>();
 			foreach (XmlNode sgroup in serGroups.ChildNodes)
 			{
 				if (sgroup.Name != "SeriesGrouping")
@@ -3983,6 +4362,8 @@ namespace fyiReporting.RdlDesign
 				case "Subtotal":
 				case "DynamicRows":
 				case "DynamicColumns":
+				case "StaticRows":
+				case "StaticColumns":
 				case "Corner":
 					return true;
 				default:
@@ -4006,7 +4387,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		/// <param name="riNode"></param>
 		/// <returns></returns>
-		internal object[] GetMatrixColumnGroupNames(XmlNode riNode)
+		internal string[] GetMatrixColumnGroupNames(XmlNode riNode)
 		{
 			XmlNode matrix = GetMatrixFromReportItem(riNode);
 			if (matrix == null)
@@ -4016,7 +4397,7 @@ namespace fyiReporting.RdlDesign
 			if (colGroups == null)
 				return null;
 
-			ArrayList ar = new ArrayList();
+            List<string> ar = new List<string>();
 			foreach (XmlNode cgroup in colGroups.ChildNodes)
 			{
 				if (cgroup.Name != "ColumnGrouping")
@@ -4038,7 +4419,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		/// <param name="riNode"></param>
 		/// <returns></returns>
-		internal object[] GetMatrixRowGroupNames(XmlNode riNode)
+		internal string[] GetMatrixRowGroupNames(XmlNode riNode)
 		{
 			XmlNode matrix = GetMatrixFromReportItem(riNode);
 			if (matrix == null)
@@ -4048,7 +4429,7 @@ namespace fyiReporting.RdlDesign
 			if (colGroups == null)
 				return null;
 
-			ArrayList ar = new ArrayList();
+            List<string> ar = new List<string>();
 			foreach (XmlNode cgroup in colGroups.ChildNodes)
 			{
 				if (cgroup.Name != "RowGrouping")
@@ -4212,6 +4593,83 @@ namespace fyiReporting.RdlDesign
 					break;
 			}
 			return table;
+		}
+		/// <summary>
+		/// Return TableCell that contains the specified reportitem
+		/// </summary>
+		/// <param name="node">ReportItem in a table row</param>
+		/// <returns>null if not found</returns>
+		internal XmlNode GetTableCell(XmlNode node)
+		{
+			// find the table cell
+			XmlNode tcNode;
+			for (tcNode = node.ParentNode; tcNode != null; tcNode = tcNode.ParentNode)
+			{
+				if (tcNode.Name == "TableCell")
+					break;
+			}
+			return tcNode;
+		}
+
+		/// <summary>
+		/// Return Table column that contains the specified reportitem
+		/// </summary>
+		/// <param name="node">ReportItem in a table row</param>
+		/// <returns>null if not found</returns>
+		internal XmlNode GetTableColumn(XmlNode node)
+		{
+			// find the table cell
+			XmlNode tcNode = GetTableCell(node);
+			if (tcNode == null)
+				return null;
+
+			// Get the table
+			XmlNode table;
+			for (table = tcNode.ParentNode; table != null; table = table.ParentNode)
+			{
+				if (table.Name == "Table")
+					break;
+			}
+			if (table == null)
+				return null;
+
+			int col = GetTableColumnNumber(tcNode);
+
+			XmlNode tcs = this.GetNamedChildNode(table, "TableColumns");
+			if (tcs == null)
+				return null;
+
+			XmlNode savetc=null;
+			foreach (XmlNode tc in tcs.ChildNodes)
+			{
+				if (tc.Name != "TableColumn")
+					continue;
+
+				if (col < 1)
+				{
+					savetc = tc;
+					break;
+				}
+				col--;
+			}
+			return savetc;
+		}
+
+		/// <summary>
+		/// Return TableRow that contains the specified reportitem
+		/// </summary>
+		/// <param name="node">ReportItem in a table row</param>
+		/// <returns>null if not found</returns>
+		internal XmlNode GetTableRow(XmlNode node)
+		{
+			// find the tablerow
+			XmlNode trNode;
+			for (trNode = node.ParentNode; trNode != null; trNode = trNode.ParentNode)
+			{
+				if (trNode.Name == "TableRow")
+					break;
+			}
+			return trNode;
 		}
 		
 		/// <summary>
@@ -4456,7 +4914,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		/// <param name="riNode"></param>
 		/// <returns></returns>
-		internal object[] GetTableGroupNames(XmlNode riNode)
+		internal string[] GetTableGroupNames(XmlNode riNode)
 		{
 			XmlNode table;
 			for (table = riNode.ParentNode; table != null; table = table.ParentNode)
@@ -4471,7 +4929,7 @@ namespace fyiReporting.RdlDesign
 			if (tblGroups == null)
 				return null;
 
-			ArrayList ar = new ArrayList();
+            List<string> ar = new List<string>();
 			foreach (XmlNode tgroup in tblGroups.ChildNodes)
 			{
 				if (tgroup.Name != "TableGroup")
@@ -4616,7 +5074,7 @@ namespace fyiReporting.RdlDesign
 			ntcell.AppendChild(ris);
 			// TextBox in ReportItems
 			XmlElement tbox = rDoc.CreateElement("Textbox");
-			this._ReportNames.GenerateName(tbox);
+			ReportNames.GenerateName(tbox);
 			ris.AppendChild(tbox);
 
 			XmlElement vnode = rDoc.CreateElement("Value");
@@ -4725,7 +5183,7 @@ namespace fyiReporting.RdlDesign
 				for (int ci=0; ci < colSpan; ci++)
 				{
 					XmlElement tbox = rDoc.CreateElement("Textbox");
-					this._ReportNames.GenerateName(tbox);
+					ReportNames.GenerateName(tbox);
 					ris.AppendChild(tbox);
 
 					XmlElement vnode = rDoc.CreateElement("Value");
@@ -4776,7 +5234,7 @@ namespace fyiReporting.RdlDesign
 				XmlElement ntcell = this.CreateElement(tablecells, "TableCell", null);
 				XmlElement ris = this.CreateElement(ntcell, "ReportItems", null);
 				XmlElement tbox = this.CreateElement(ris, "Textbox", null);
-				this._ReportNames.GenerateName(tbox);
+				ReportNames.GenerateName(tbox);
 				XmlElement style = this.CreateElement(tbox, "Style", null);
 				XmlElement bstyle = this.CreateElement(style, "BorderStyle", null);
 				this.SetElement(bstyle, "Default", "Solid");
@@ -4813,15 +5271,40 @@ namespace fyiReporting.RdlDesign
 				return true;
 		}
 
-		private float PointsX(float x)		// pixels to points
+		/// <summary>
+		/// Returns the node of the parent table (or matrix) or null
+		/// </summary>
+		/// <param name="node"></param>
+		/// <returns></returns>
+		private XmlNode TMParent(XmlNode node)
 		{
-			return x * 72f / DpiX;
+			for (XmlNode pNode = node.ParentNode; pNode != null; pNode = pNode.ParentNode)
+			{
+				if (pNode.Name == "Table" || pNode.Name == "Matrix")
+					return pNode;
+			}
+			return null;
 		}
 
-		private float PointsY(float y)
+		private int PixelsX(float x)		// points to pixels
 		{
-			return y * 72f / DpiY;
+			return (int) (x * DpiX / POINTSIZED);
 		}
+
+		private int PixelsY(float y)
+		{
+			return (int) (y * DpiY / POINTSIZED);
+		}
+
+        private float PointsX(float x)		// pixels to points
+        {
+            return x * POINTSIZED / DpiX;
+        }
+
+        private float PointsY(float y)
+        {
+            return y * POINTSIZED / DpiY;
+        }
 
 	}
 
@@ -4857,7 +5340,7 @@ namespace fyiReporting.RdlDesign
 			HitRelative = offset;
 		}
 	}
-	internal class ReportItemSorter: IComparer
+	internal class ReportItemSorter: IComparer<XmlNode>
 	{
 		DesignXmlDraw _Draw;
 		internal ReportItemSorter(DesignXmlDraw d)
@@ -4867,10 +5350,10 @@ namespace fyiReporting.RdlDesign
 
 		#region IComparer Members
 
-		public int Compare(object x, object y)
+		public int Compare(XmlNode x, XmlNode y)
 		{
-			int xi = Convert.ToInt32(_Draw.GetElementValue(x as XmlNode, "ZIndex", "0"));
-			int yi = Convert.ToInt32(_Draw.GetElementValue(y as XmlNode, "ZIndex", "0"));
+			int xi = Convert.ToInt32(_Draw.GetElementValue(x, "ZIndex", "0"));
+			int yi = Convert.ToInt32(_Draw.GetElementValue(y, "ZIndex", "0"));
 
 			return xi-yi;
 		}

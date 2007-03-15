@@ -26,6 +26,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -74,8 +75,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <Name>MySql.Data</Name>
+    <Reference Include="MySql.Data, Version=1.0.7.30072, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System">
@@ -87,7 +88,6 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
@@ -165,6 +165,9 @@
     <Compile Include="Definition\Classes.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Definition\Code.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Definition\CodeModule.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -216,22 +219,22 @@
     <Compile Include="Definition\DataRegion.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\DataSet.cs">
+    <Compile Include="Definition\DataSetDefn.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Definition\DataSetReference.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\DataSets.cs">
+    <Compile Include="Definition\DataSetsDefn.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\DataSource.cs">
+    <Compile Include="Definition\DataSourceDefn.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Definition\DataSourceReference.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\DataSources.cs">
+    <Compile Include="Definition\DataSourcesDefn.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Definition\DataType.cs">
@@ -396,9 +399,6 @@
     <Compile Include="Definition\PageHeader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\Pages.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Definition\ParameterValue.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -432,10 +432,10 @@
     <Compile Include="Definition\Rectangle.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\Report.cs">
+    <Compile Include="Definition\ReportClass.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\ReportClass.cs">
+    <Compile Include="Definition\ReportDefn.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Definition\ReportItem.cs">
@@ -525,9 +525,6 @@
     <Compile Include="Definition\StyleBorderWidth.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\StyleInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Definition\Subreport.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -609,7 +606,11 @@
     <Compile Include="Definition\Visibility.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Definition\XmlUtil.cs">
+    <Compile Include="Runtime\ParameterLexer.cs" />
+    <Compile Include="Render\RenderHtmlTable.cs" />
+    <Compile Include="Render\PdfOutline.cs" />
+    <Compile Include="Runtime\PageTextHtmlCmdLexer.cs" />
+    <Compile Include="Runtime\XmlUtil.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ExprParser\CharReader.cs">
@@ -690,6 +691,12 @@
     <Compile Include="Functions\FunctionAggrMin.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Functions\FunctionAggrNext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrPrevious.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Functions\FunctionAggrRvAvg.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -741,6 +748,9 @@
     <Compile Include="Functions\FunctionChoose.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Functions\FunctionCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Functions\FunctionCustomInstance.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -762,10 +772,16 @@
     <Compile Include="Functions\FunctionField.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Functions\FunctionFieldCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Functions\FunctionFieldIsMissing.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Functions\FunctionFormat.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionGlobalCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Functions\FunctionIif.cs">
@@ -793,6 +809,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Functions\FunctionPageNumber.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionParameterCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Functions\FunctionPlus.cs">
@@ -825,6 +844,9 @@
     <Compile Include="Functions\FunctionReportFolder.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Functions\FunctionReportItemCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Functions\FunctionReportName.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -855,6 +877,9 @@
     <Compile Include="Functions\FunctionUnaryMinusInteger.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Functions\FunctionUserCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Functions\FunctionUserID.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -883,6 +908,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Render\MemoryStreamGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\MhtConverter\MhtBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\MhtConverter\MhtWebClientLocal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\MhtConverter\MhtWebFile.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Render\OneFileStreamGen.cs">
@@ -928,6 +962,37 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Render\StreamGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\DataSet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\DataSets.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\DataSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\DataSources.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\ICustomReportItem.cs" />
+    <Compile Include="Runtime\Pages.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\PageTextHtml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\PageTextHtmlLexer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\RdlEngineConfig.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\Report.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Runtime\StyleInfo.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

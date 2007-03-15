@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -35,7 +36,7 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class ChartLegendCtl : System.Windows.Forms.UserControl, IProperty
 	{
-		private ArrayList _ReportItems;
+        private List<XmlNode> _ReportItems;
 		private DesignXmlDraw _Draw;
 		bool fVisible, fLayout, fPosition, fInsidePlotArea;
 		private System.Windows.Forms.Label label1;
@@ -49,7 +50,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal ChartLegendCtl(DesignXmlDraw dxDraw, ArrayList ris)
+        internal ChartLegendCtl(DesignXmlDraw dxDraw, List<XmlNode> ris)
 		{
 			_ReportItems = ris;
 			_Draw = dxDraw;
@@ -62,12 +63,12 @@ namespace fyiReporting.RdlDesign
 
 		private void InitValues()
 		{
-			XmlNode node = (XmlNode) _ReportItems[0];
+			XmlNode node = _ReportItems[0];
 
 			this.cbPosition.Text = _Draw.GetElementValue(node, "Position", "RightTop");
 			this.cbLayout.Text = _Draw.GetElementValue(node, "Layout", "Column");
-			this.chkVisible.Checked = _Draw.GetElementValue(node, "Visible", "False").ToLower() == "true"? true: false;
-			this.chkInsidePlotArea.Checked = _Draw.GetElementValue(node, "InsidePlotArea", "False").ToLower() == "true"? true: false;
+			this.chkVisible.Checked = _Draw.GetElementValue(node, "Visible", "false").ToLower() == "true"? true: false;
+			this.chkInsidePlotArea.Checked = _Draw.GetElementValue(node, "InsidePlotArea", "false").ToLower() == "true"? true: false;
 
 			fVisible = fLayout = fPosition = fInsidePlotArea = false;
 		}
@@ -209,7 +210,7 @@ namespace fyiReporting.RdlDesign
 		{
 			if (fVisible)
 			{
-				_Draw.SetElement(node, "Visible", this.chkVisible.Checked? "True": "False");
+				_Draw.SetElement(node, "Visible", this.chkVisible.Checked? "true": "false");
 			}
 			if (fLayout)
 			{
@@ -221,7 +222,7 @@ namespace fyiReporting.RdlDesign
 			}
 			if (fInsidePlotArea)
 			{
-				_Draw.SetElement(node, "InsidePlotArea", this.chkInsidePlotArea.Checked? "True": "False");
+				_Draw.SetElement(node, "InsidePlotArea", this.chkInsidePlotArea.Checked? "true": "false");
 			}
 		}
 

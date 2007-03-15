@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -51,7 +52,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal DialogValidValues(ArrayList list)
+        internal DialogValidValues(List<ParameterValueItem> list)
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
@@ -60,11 +61,11 @@ namespace fyiReporting.RdlDesign
 			InitValues(list);			
 		}
 
-		internal ArrayList ValidValues
+        internal List<ParameterValueItem> ValidValues
 		{
 			get
 			{
-				ArrayList list = new ArrayList();
+                List<ParameterValueItem> list = new List<ParameterValueItem>();
 				foreach (DataRow dr in _DataTable.Rows)
 				{
 					if (dr[0] == DBNull.Value)
@@ -89,7 +90,7 @@ namespace fyiReporting.RdlDesign
 			}
 		}
 
-		private void InitValues(ArrayList list)
+        private void InitValues(List<ParameterValueItem> list)
 		{
 			// Initialize the DataGrid columns
 			dgtbLabel = new DataGridTextBoxColumn();

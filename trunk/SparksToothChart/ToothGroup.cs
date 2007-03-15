@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SparksToothChart {
 	///<summary>For 3D tooth graphics, this is a group of faces within a single tooth.  Different groups can be assigned different colors and visibility.  Groups might include enamel, the filling surfaces, pulp, canals, and cementum.  If a group does not apply, such as a F on a posterior tooth, then that tooth will not have that group.  The code must be resiliant enough to handle missing groups.  We might add more groups later and subdivide existing groups.  For instance pits, grooves, cusps, cervical areas, etc.  Over the years, this could get quite extensive and complex.  We would have to add a table to the database to handle additional groups painted by user.</summary>
-	class ToothGroup {
+	public class ToothGroup {
 		///<summary></summary>
 		public bool Visible;
 		///<summary></summary>
@@ -20,25 +20,25 @@ namespace SparksToothChart {
 
 	///<summary></summary>
 	public enum ToothGroupType{
-		///<summary></summary>
+		///<summary>0</summary>
 		Enamel,
-		///<summary></summary>
+		///<summary>1</summary>
 		Cementum,
-		///<summary></summary>
+		///<summary>2</summary>
 		M,
-		///<summary></summary>
+		///<summary>3</summary>
 		O,
-		///<summary></summary>
+		///<summary>4</summary>
 		D,
-		///<summary></summary>
+		///<summary>5</summary>
 		B,
-		///<summary></summary>
+		///<summary>6</summary>
 		L,
-		///<summary></summary>
+		///<summary>7</summary>
 		F,
-		///<summary></summary>
+		///<summary>8</summary>
 		I,
-		///<summary>class V. In addition to B or F</summary>
+		///<summary>9. class V. In addition to B or F</summary>
 		V,
 		///<summary>Only present in the special implant tooth object.</summary>
 		Implant,

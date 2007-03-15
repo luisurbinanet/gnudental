@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -25,12 +25,13 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Drawing;
-
+using System.Collections;
+using System.Collections.Generic;
 
 namespace fyiReporting.RDL
 {
 	///<summary>
-	/// The Textbox definition and runtime processing.  Inherits from ReportItem.
+	/// The Textbox definition.  Inherits from ReportItem.
 	///</summary>
 	[Serializable]
 	internal class Textbox : ReportItem
@@ -67,15 +68,10 @@ namespace fyiReporting.RDL
 								// should render as an element or attribute: Auto (Default)
 								// Auto uses the setting on the Report element.
 		bool _IsToggle;		// Textbox is used to toggle a detail row
+		List<string> _ExprReferences;	// array of names of expressions that reference this Textbox;
+								//  only needed for page header/footer references 
 	
-		// runtime
-		[NonSerialized] int _RunCount;			// number of times TextBox is rendered at runtime;
-							//    used to generate unique names for toggling visibility
-		[NonSerialized] float _RunHeight=0;		// the runtime height (in points)
-		[NonSerialized] string _PreviousText=null;	// previous text displayed
-		[NonSerialized] Page _PreviousPage=null;	//  page previous text was shown on
-
-		internal Textbox(Report r, ReportLink p, XmlNode xNode):base(r,p,xNode)
+		internal Textbox(ReportDefn r, ReportLink p, XmlNode xNode):base(r,p,xNode)
 		{
 			_Value=null;
 			_CanGrow=false;
@@ -83,7 +79,6 @@ namespace fyiReporting.RDL
 			_HideDuplicates=null;
 			_ToggleImage=null;
 			_DataElementStyle=DataElementStyleEnum.Auto;
-			_RunCount = 0;
 		
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -167,123 +162,199 @@ namespace fyiReporting.RDL
 					Grouping g = o as Grouping;
 					g.AddHideDuplicates(this);
 				}
-				else if (o is DataSet)
+				else if (o is DataSetDefn)
 				{
-					DataSet ds = o as DataSet;
+					DataSetDefn ds = o as DataSetDefn;
 					ds.AddHideDuplicates(this);
 				}
 			}
 			return;
 		}
 
-		internal void ResetPrevious()
+		internal void AddExpressionReference(string name)
 		{
-			_PreviousText=null;	
-			_PreviousPage=null;	
+			if (_ExprReferences == null)
+				_ExprReferences = new List<string>();
+			_ExprReferences.Add(name);
+		}
+
+		internal void RecordPageReference(Report rpt, Page p, Row r)
+		{
+			if (_ExprReferences == null)
+				return;
+			foreach (string refr in _ExprReferences)
+			{
+				p.AddPageExpressionRow(rpt, refr, r);
+			}
+		}
+
+		internal void ResetPrevious(Report rpt)
+		{
+			TextboxRuntime tbr = TextboxRuntime.GetTextboxRuntime(rpt, this);
+			ResetPrevious(tbr);
+		}
+
+		void ResetPrevious(TextboxRuntime tbr)
+		{
+			tbr.PreviousText=null;	
+			tbr.PreviousPage=null;	
 		}
 
 		override internal void Run(IPresent ip, Row row)
 		{
+			Report rpt = ip.Report();
 			base.Run(ip, row);
 
-			_RunCount++;		// Increment the run count
-			string t = RunText(row);
-			bool bDup =	RunTextIsDuplicate(t, null);
+			TextboxRuntime tbr = TextboxRuntime.GetTextboxRuntime(rpt, this);
+
+			tbr.RunCount++;		// Increment the run count
+			string t = RunText(rpt, row);
+			bool bDup =	RunTextIsDuplicate(tbr, t, null);
 			if (bDup)
 			{
-				if (!(this.IsTableOrMatrixCell))	// don't put out anything if not in Table or Matrix
+				if (!(this.IsTableOrMatrixCell(rpt)))	// don't put out anything if not in Table or Matrix
 					return;
 				t = "";		// still need to put out the cell
 			}
 			ip.Textbox(this, t, row);
 
 			if (!bDup)
-				_PreviousText=t;	// set for next time
+				tbr.PreviousText=t;	// set for next time
 		}
 
 		override internal void RunPage(Pages pgs, Row row)
 		{
-			_RunCount++;		// Increment the run count
+			Report r = pgs.Report;
+			TextboxRuntime tbr = TextboxRuntime.GetTextboxRuntime(pgs.Report, this);
 
-			if (IsHidden(row))
+			tbr.RunCount++;		// Increment the run count
+
+			if (IsHidden(pgs.Report, row))
 				return;
 
 			SetPagePositionBegin(pgs);
 
-			string t = RunText(row);	// get the text
+			string t = RunText(r, row);	// get the text
 
-			bool bDup =	RunTextIsDuplicate(t, pgs.CurrentPage);
+			bool bDup =	RunTextIsDuplicate(tbr, t, pgs.CurrentPage);
 			if (bDup)
 			{
-				if (!(this.IsTableOrMatrixCell))	// don't put out anything if not in Table or Matrix
+				if (!(this.IsTableOrMatrixCell(r)))	// don't put out anything if not in Table or Matrix
 					return;
 				t = "";		// still need to put out the cell
 			}
-
-			PageText pt = new PageText(t);
-			SetPagePositionAndStyle(pt, row);
-			if (this.CanGrow && _RunHeight == 0)	// when textbox is in a DataRegion this will already be called
-				this.RunTextCalcHeight(pgs.G, row);
-			pt.H = Math.Max(pt.H, _RunHeight);		// reset height
+			PageText pt;
+			PageTextHtml pth=null;
+			if (IsHtml(r, row))
+				pt = pth = new PageTextHtml(t);
+			else
+				pt = new PageText(t);
+			SetPagePositionAndStyle(r, pt, row);
+			if (this.CanGrow && tbr.RunHeight == 0)	// when textbox is in a DataRegion this will already be called
+			{
+				this.RunTextCalcHeight(r, pgs.G, row, pt is PageTextHtml? pt as PageTextHtml: null);
+			}
+			pt.H = Math.Max(pt.H, tbr.RunHeight);		// reset height
 			if (pt.SI.BackgroundImage != null)
 				pt.SI.BackgroundImage.H = pt.H;		//   and in the background image
 			pt.CanGrow = this.CanGrow;
 
+            // Force page break if it doesn't fit on a page
+            if (this.IsInBody &&                         // Only force page when object directly in body
+                pgs.CurrentPage.YOffset + pt.Y + pt.H >= pgs.BottomOfPage && // running off end of page
+                !pgs.CurrentPage.IsEmpty())                             // if page is already empty don't force new
+            {	// force page break if it doesn't fit on the page
+                pgs.NextOrNew();
+                pgs.CurrentPage.YOffset = OwnerReport.TopOfPage;
+                if (this.YParents != null)
+                    pt.Y = 0;
+            }
+
 			Page p = pgs.CurrentPage;
+			RecordPageReference(r, p, row);			// save information for late page header/footer references
 			p.AddObject(pt);
 			if (!bDup)
 			{
-				_PreviousText=t;	// previous text displayed
-				_PreviousPage=p;	//  page previous text was shown on
+				tbr.PreviousText=t;	// previous text displayed
+				tbr.PreviousPage=p;	//  page previous text was shown on
 			}
 
 			SetPagePositionEnd(pgs, pt.Y+pt.H);
-
+			if (pth != null)
+				pth.Reset();
+			if (this.CanGrow && !Value.IsConstant())
+			{
+				tbr.RunHeight = 0;					// need to recalculate
+			}
 		}
 
 		// routine to determine if text is considered to be a duplicate;
 		//  ie: same as previous text and on same page
-		private bool RunTextIsDuplicate(string t, Page p)
+		private bool RunTextIsDuplicate(TextboxRuntime tbr, string t, Page p)
 		{
 			if (this._HideDuplicates == null)
 				return false;
-			if (t == _PreviousText && p == _PreviousPage)
+			if (t == tbr.PreviousText && p == tbr.PreviousPage)
 				return true;
 
 			return false;
 		}
 
-		internal string RunText(Row row)
+		internal string RunText(Report rpt, Row row)
 		{
-			object o = _Value.Evaluate(row);
-			string t = Style.GetFormatedString(this.Style, row, o, _Value.GetTypeCode());
+			object o = _Value.Evaluate(rpt, row);
+			string t = Style.GetFormatedString(rpt, this.Style, row, o, _Value.GetTypeCode());
 			return t;
 		}
-		
-		internal float RunTextCalcHeight(Graphics g, Row row)
-		{	// normally only called when CanGrow is true
-			Size s;
 
-			if (IsHidden(row))
+		internal float RunTextCalcHeight(Report rpt, Graphics g, Row row)
+		{
+			return RunTextCalcHeight(rpt, g, row, null);
+		}
+		
+		internal float RunTextCalcHeight(Report rpt, Graphics g, Row row, PageTextHtml pth)
+		{	// normally only called when CanGrow is true
+			Size s = Size.Empty;
+
+			if (IsHidden(rpt, row))
 				return 0;
 
-			object o = _Value.Evaluate(row);
+			object o = _Value.Evaluate(rpt, row);
 
 			TypeCode tc = _Value.GetTypeCode();
-			int width = this.WidthCalc(g);
+			int width = this.WidthCalc(rpt, g);
 
 			if (this.Style != null)
 			{
-				width -= (Style.EvalPaddingLeftPx(row) + Style.EvalPaddingRightPx(row));
-				s = Style.MeasureString(g, o, tc, row, width);
+				width -= (Style.EvalPaddingLeftPx(rpt, row) + Style.EvalPaddingRightPx(rpt, row));
+
+				if (this.IsHtml(rpt, row))
+				{
+					if (pth == null)
+					{
+						pth = new PageTextHtml(o==null? "": o.ToString());
+						SetPagePositionAndStyle(rpt, pth, row);
+					}
+					pth.Build(g);
+					s.Height = RSize.PixelsFromPoints(pth.TotalHeight);
+				}
+				else
+					s = Style.MeasureString(rpt, g, o, tc, row, width);
 			}
 			else	// call the class static method
-				s = Style.MeasureStringDefaults(g, o, tc, row, width);
+				s = Style.MeasureStringDefaults(rpt, g, o, tc, row, width);
 
-			_RunHeight = RSize.PointsFromPixels(g, s.Height);
+			TextboxRuntime tbr = TextboxRuntime.GetTextboxRuntime(rpt, this);
+			tbr.RunHeight = RSize.PointsFromPixels(g, s.Height);
 			if (Style != null)
-				_RunHeight += (Style.EvalPaddingBottom(row) + Style.EvalPaddingTop(row));
-			return _RunHeight;
+				tbr.RunHeight += (Style.EvalPaddingBottom(rpt, row) + Style.EvalPaddingTop(rpt, row));
+			return tbr.RunHeight;
+		}
+
+		internal object Evaluate(Report rpt, Row r)
+		{
+			object o = _Value.Evaluate(rpt, r);
+			return o;
 		}
 
 		internal Expression Value
@@ -310,6 +381,16 @@ namespace fyiReporting.RDL
 			set {  _HideDuplicates = value; }
 		}
 
+		internal bool IsHtml(Report rpt, Row row)
+		{
+			if (this.Style == null || this.Style.Format == null)
+				return false;
+			string format = Style.Format.EvaluateString(rpt, row);
+			if (format == null)
+				return false;
+			return format.ToLower() == "html";
+		}
+
 		internal ToggleImage ToggleImage
 		{
 			get { return  _ToggleImage; }
@@ -322,9 +403,11 @@ namespace fyiReporting.RDL
 			set {  _IsToggle = value; }
 		}
 
-		internal int RunCount
+		internal int RunCount(Report rpt)
 		{
-			get { return  _RunCount; }
+			TextboxRuntime tbr = TextboxRuntime.GetTextboxRuntime(rpt, this);
+
+			return  tbr.RunCount;
 		}
 
 		internal DataElementStyleEnum DataElementStyle
@@ -339,5 +422,25 @@ namespace fyiReporting.RDL
 			set {  _DataElementStyle = value; }
 		}
 
+	}
+
+	class TextboxRuntime
+	{
+		internal int RunCount=0;			// number of times TextBox is rendered at runtime;
+											//    used to generate unique names for toggling visibility
+		internal float RunHeight=0;			// the runtime height (in points)
+		internal string PreviousText=null;	// previous text displayed
+		internal Page PreviousPage=null;	//  page previous text was shown on
+		internal object LastObject=null;	// last object calculated
+
+		static internal TextboxRuntime GetTextboxRuntime(Report rpt, Textbox tb)
+		{
+			TextboxRuntime tbr = rpt.Cache.Get(tb, "txtbox") as TextboxRuntime;
+			if (tbr != null)
+				return tbr;
+			tbr = new TextboxRuntime();
+			rpt.Cache.Add(tb, "txtbox", tbr);
+			return tbr;
+		}
 	}
 }

@@ -32,12 +32,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Oracle.DataAccess, Version=10.2.0.100, Culture=neutral, PublicKeyToken=89b483f429c47342">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\Oracle.DataAccess.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business\ChartModuleB.cs" />
+    <Compile Include="Business\BenefitB.cs" />
     <Compile Include="Business\CovCatB.cs" />
     <Compile Include="Business\DefB.cs" />
     <Compile Include="Business\DocAttachB.cs" />
@@ -45,11 +51,14 @@
     <Compile Include="Business\EmailAttachB.cs" />
     <Compile Include="Business\EmailMessageB.cs" />
     <Compile Include="Business\GeneralB.cs" />
+    <Compile Include="Business\InsPlanB.cs" />
     <Compile Include="Business\MiscDataB.cs" />
+    <Compile Include="Business\AccountModuleB.cs" />
     <Compile Include="Business\PrefB.cs" />
     <Compile Include="Business\ProcedureB.cs" />
     <Compile Include="Business\ProcNoteB.cs" />
-    <Compile Include="Business\UserB.cs" />
+    <Compile Include="Business\Tooth.cs" />
+    <Compile Include="Business\UserodB.cs" />
     <Compile Include="DataConnection.cs" />
     <Compile Include="DataTransferObject.cs" />
     <Compile Include="Enumerations.cs" />
@@ -80,6 +89,12 @@
     <Compile Include="TableTypes\Commlog.cs" />
     <Compile Include="TableTypes\Computer.cs" />
     <Compile Include="TableTypes\Contact.cs" />
+    <Compile Include="TableTypes\CanadianClaim.cs" />
+    <Compile Include="TableTypes\CanadianExtract.cs" />
+    <Compile Include="TableTypes\CanadianNetwork.cs" />
+    <Compile Include="TableTypes\Ebatch.cs" />
+    <Compile Include="TableTypes\Etrans.cs" />
+    <Compile Include="TableTypes\FormPat.cs" />
     <Compile Include="TableTypes\County.cs" />
     <Compile Include="TableTypes\CovCat.cs" />
     <Compile Include="TableTypes\CovSpan.cs" />
@@ -167,10 +182,16 @@
     <Compile Include="TableTypes\ToothInitial.cs" />
     <Compile Include="TableTypes\Transaction.cs" />
     <Compile Include="TableTypes\TreatPlan.cs" />
-    <Compile Include="TableTypes\User.cs" />
+    <Compile Include="TableTypes\Userod.cs" />
     <Compile Include="TableTypes\UserGroup.cs" />
     <Compile Include="TableTypes\UserQuery.cs" />
     <Compile Include="TableTypes\ZipCode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeBase\xCodeBase.csproj">
+      <Project>{18F7BC78-4B99-48D3-A1F1-0D13A63E3CF9}</Project>
+      <Name>xCodeBase</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -42,7 +42,7 @@ namespace fyiReporting.RDL
 							// No data regions or subreports are allowed in the page header
 		Style _Style;		// Style information for the page header		
 	
-		internal PageHeader(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal PageHeader(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Height=null;
 			_PrintOnFirstPage=true;
@@ -95,6 +95,8 @@ namespace fyiReporting.RDL
 		{
 			if (OwnerReport.Subreport != null)
 				return;		// don't process page headers for sub-reports
+			Report rpt = ip.Report();
+			rpt.TotalPages = rpt.PageNumber = 1;
 			ip.PageHeaderStart(this);
 			if (_ReportItems != null)
 				_ReportItems.Run(ip, row);
@@ -108,13 +110,15 @@ namespace fyiReporting.RDL
 			if (_ReportItems == null)
 				return;
 
-			OwnerReport.TotalPages.RuntimePageCount = pgs.PageCount;
+			Report rpt = pgs.Report;
+			rpt.TotalPages = pgs.PageCount;
 			foreach (Page p in pgs)
 			{
+				rpt.CurrentPage = p;		// needs to know for page header/footer expr processing
 				p.YOffset = OwnerReport.TopMargin.Points;
 				p.XOffset = 0;
 				pgs.CurrentPage = p;
-				OwnerReport.PageNumber.RuntimePageNumber = p.PageNumber;
+				rpt.PageNumber = p.PageNumber;
 				if (p.PageNumber == 1 && pgs.Count > 1 && !_PrintOnFirstPage)
 					continue;		// Don't put header on the first page
 				if (p.PageNumber == pgs.Count && !_PrintOnLastPage)

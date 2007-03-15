@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -29,9 +29,7 @@ using System.Reflection;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Expression definition
-	/// <p>
-	///	
+	/// Process a custom static method invokation.
 	/// </summary>
 	[Serializable]
 	internal class FunctionCustomStatic : IExpr
@@ -41,6 +39,7 @@ namespace fyiReporting.RDL
 		IExpr[] _Args;		// arguments 
 		CodeModules _Cm;		// the loaded assemblies
 		TypeCode _ReturnTypeCode;	// the return type
+		Type[] _ArgTypes;	// argument types
 
 		/// <summary>
 		/// passed class name, function name, and args for evaluation
@@ -52,6 +51,14 @@ namespace fyiReporting.RDL
 			_Args = a;
 			_Cm = cm;
 			_ReturnTypeCode = type;
+
+			_ArgTypes = new Type[a.Length];
+			int i=0;
+			foreach (IExpr ex in a)
+			{
+				_ArgTypes[i++] = XmlUtil.GetTypeFromTypeCode(ex.GetTypeCode());
+			}
+
 		}
 
 		public TypeCode GetTypeCode()
@@ -79,16 +86,21 @@ namespace fyiReporting.RDL
 		}
 
 		// Evaluate is for interpretation  (and is relatively slow)
-		public object Evaluate(Row row)
+		public object Evaluate(Report rpt, Row row)
 		{
 			// get the results
 			object[] argResults = new object[_Args.Length];
 			int i=0;
+			bool bUseArg=true;
 			foreach(IExpr a  in _Args)
 			{
-				argResults[i++] = a.Evaluate(row);
+				argResults[i] = a.Evaluate(rpt, row);
+				if (argResults[i] != null && argResults[i].GetType() != _ArgTypes[i])
+					bUseArg = false;
+				i++;
 			}
-			Type[] argTypes = Type.GetTypeArray(argResults);
+			// we build the arguments based on the type
+			Type[] argTypes = bUseArg? _ArgTypes: Type.GetTypeArray(argResults);
 
 			// We can definitely optimize this by caching some info TODO
 
@@ -101,30 +113,30 @@ namespace fyiReporting.RDL
 			return returnVal;
 		}
 
-		public double EvaluateDouble(Row row)
+		public double EvaluateDouble(Report rpt, Row row)
 		{
-			return Convert.ToDouble(Evaluate(row));
+			return Convert.ToDouble(Evaluate(rpt, row));
 		}
 		
-		public decimal EvaluateDecimal(Row row)
+		public decimal EvaluateDecimal(Report rpt, Row row)
 		{
-			return Convert.ToDecimal(Evaluate(row));
+			return Convert.ToDecimal(Evaluate(rpt, row));
 		}
 
-		public string EvaluateString(Row row)
+		public string EvaluateString(Report rpt, Row row)
 		{
-			return Convert.ToString(Evaluate(row));
+			return Convert.ToString(Evaluate(rpt, row));
 		}
 
-		public DateTime EvaluateDateTime(Row row)
+		public DateTime EvaluateDateTime(Report rpt, Row row)
 		{
-			return Convert.ToDateTime(Evaluate(row));
+			return Convert.ToDateTime(Evaluate(rpt, row));
 		}
 
 
-		public bool EvaluateBoolean(Row row)
+		public bool EvaluateBoolean(Report rpt, Row row)
 		{
-			return Convert.ToBoolean(Evaluate(row));
+			return Convert.ToBoolean(Evaluate(rpt, row));
 		}
 
 		public string Cls

@@ -27,21 +27,39 @@ namespace OpenDentBusiness{
 			return myByte.ToString();
 		}
 
-		///<summary></summary>
+		///<summary>Always encapsulates the result, depending on the current database connection.</summary>
 		public static string PDateT(DateTime myDateT){
 			try{
-				return myDateT.ToString("yyyy-MM-dd HH:mm:ss",CultureInfo.InvariantCulture);//new DateTimeFormatInfo());
+				string outDate=myDateT.ToString("yyyy-MM-dd HH:mm:ss",CultureInfo.InvariantCulture);//new DateTimeFormatInfo());
+				if(DataConnection.DBtype==DatabaseType.Oracle) {
+					return "TO_DATE('"+outDate+"','YYYY-MM-DD HH24:MI:SS')";
+				}
+				return "'"+outDate+"'";
 			}
 			catch{
 				return "";//this actually saves zero's to the database
 			}
 		}
 
-		///<summary>Converts a date to yyyy-MM-dd format which is the format required by MySQL.</summary>
 		public static string PDate(DateTime myDate){
+			return PDate(myDate,true);
+		}
+
+		///<summary>Converts a date to yyyy-MM-dd format which is the format required by MySQL. myDate is the date you want to convert. preText is text that should be placed prior to the date output text but after the leading encapsulating character (if any). postText is text that should be placed after the date output text but before the ending encapsulating character (if any).</summary>
+		public static string PDate(DateTime myDate,bool encapsulate){
 			try{
 				//the new DTFormatInfo is to prevent changes in year for Korea
-				return myDate.ToString("yyyy-MM-dd",new DateTimeFormatInfo());
+				string outDate=myDate.ToString("yyyy-MM-dd",new DateTimeFormatInfo());
+				string frontCap="'";
+				string backCap="'";
+				if(DataConnection.DBtype==DatabaseType.Oracle){
+					frontCap="TO_DATE('";
+					backCap="','YYYY-MM-DD')";
+				}
+				if(encapsulate){
+					outDate=frontCap+outDate+backCap;
+				}
+				return outDate;
 			}
 			catch{
 				//return "0000-00-00";
@@ -72,8 +90,19 @@ namespace OpenDentBusiness{
 
 		///<summary></summary>
 		public static string PString(string myString){
-			if(myString==null){
+			if(myString==null) {
 				return "";
+			}
+			if(DataConnection.DBtype!=DatabaseType.MySql){
+				if(myString.Contains(";")){
+					myString=myString.Replace(";","");
+				}
+				if(myString.Contains("'")) {
+					myString=myString.Replace("'","");
+				}
+				if(myString==null) {
+					return "";
+				}
 			}
 			StringBuilder strBuild=new StringBuilder();
 			for(int i=0;i<myString.Length;i++){

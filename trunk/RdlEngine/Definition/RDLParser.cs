@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -30,13 +30,8 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Language parser.
-	/// <p>
-	/// In BNF the language grammar is:</p>
-	///	<code>
-	///	Program  ::= XMLDocument *
-	///	</code>
-	///	
+	///	The RDLParser class takes an XML representation (either string or DOM) of a
+	///	RDL file and compiles a Report.
 	/// </summary>
 	public class RDLParser
 	{
@@ -65,6 +60,11 @@ namespace fyiReporting.RDL
 			}
 		}
 
+		/// <summary>
+		/// RDLParser takes in an RDL XmlDocument and creates the
+		/// definition that will be used at runtime.  It validates
+		/// that the syntax is correct according to the specification.
+		/// </summary>		
 		public RDLParser(XmlDocument xml) // preparsed XML
 		{
 			_RdlDocument = xml;
@@ -82,6 +82,9 @@ namespace fyiReporting.RDL
 			}
 		}
 
+		/// <summary>
+		/// Get the compiled report.
+		/// </summary>
 		public Report Report
 		{
 			// Only return a report if it has been fully constructed
@@ -101,6 +104,11 @@ namespace fyiReporting.RDL
 		/// <returns>A Report instance.</returns>
 		public Report Parse()
 		{
+			return Parse(0);
+		}
+		
+		internal Report Parse(int oc)
+			{
 			if (_RdlDocument == null)	// no document?
 				return null;			// nothing to do
 			else if (bPassed)			// If I've already parsed it
@@ -115,19 +123,26 @@ namespace fyiReporting.RDL
 			
 			ReportLog rl = new ReportLog();		// create a report log
 
-			_Report = new Report(xNode, rl, this._Folder, this._DataSourceReferencePassword);
-
+			ReportDefn rd = new ReportDefn(xNode, rl, this._Folder, this._DataSourceReferencePassword, oc);
+			_Report = new Report(rd);
+			
 			bPassed = true;
 
 			return _Report;
 		}
 
-		public NeedPassword DataSourceReferencePassword
+		/// <summary>
+		/// For shared data sources, the DataSourceReferencePassword is the user phrase
+		/// used to decrypt the report.
+		/// </summary>
+        public NeedPassword DataSourceReferencePassword
 		{
 			get { return _DataSourceReferencePassword; }
 			set { _DataSourceReferencePassword = value; }
 		}
-
+		/// <summary>
+		/// Folder is the location of the report.
+		/// </summary>
 		public string Folder
 		{
 			get { return _Folder; }

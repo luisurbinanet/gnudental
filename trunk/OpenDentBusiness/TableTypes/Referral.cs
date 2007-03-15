@@ -13,7 +13,7 @@ namespace OpenDentBusiness{
 		public string FName;
 		///<summary>Middle name or initial.</summary>
 		public string MName;
-		///<summary>SSN or TIN, no punctuation.</summary>
+		///<summary>SSN or TIN, no punctuation.  For Canada, this holds the referring provider CDA num for claims.</summary>
 		public string SSN;
 		///<summary>Specificies if SSN is real SSN.</summary>
 		public bool UsingTIN;

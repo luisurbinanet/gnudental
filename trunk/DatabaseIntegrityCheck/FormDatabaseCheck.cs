@@ -67,6 +67,7 @@ namespace DatabaseIntegrityCheck {
 
 
 		private void butRun_Click(object sender,EventArgs e) {
+			//this tool would only be used with MySQL, so the current code is just fine.
 			MySqlDataAdapter da;
 			MySqlConnection con=new MySqlConnection("Server="+textComputerName.Text
 				+";Database="+textDatabase.Text

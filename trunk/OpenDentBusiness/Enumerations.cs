@@ -560,7 +560,7 @@ namespace OpenDentBusiness{
 		AutoItem
 	}
 
-	///<summary></summary>
+	///<summary>0=neither, 1=sent, 2=received.</summary>
 	public enum CommSentOrReceived{
 		///<summary>0</summary>
 		Neither,
@@ -765,7 +765,9 @@ namespace OpenDentBusiness{
 		///<summary>1-The American standard. HIPAA mandated.</summary>
 		X12,
 		///<summary>2-Proprietary format for Renaissance.</summary>
-		Renaissance
+		Renaissance,
+		///<summary>3-CDAnet format version 4.</summary>
+		Canadian
 	}
 
 	///<summary>Used when submitting e-claims to some carriers who require extra provider identifiers.  Usage varies by company.  Only used as needed.</summary>
@@ -799,7 +801,9 @@ namespace OpenDentBusiness{
 		///<summary>7</summary>
 		AOS,//added by SPK 7/15/05
 		///<summary>8</summary>
-		PostnTrack
+		PostnTrack,
+		///<summary>9 Canada</summary>
+		CDAnet
 	}
 
 	///<summary></summary>
@@ -1019,7 +1023,7 @@ namespace OpenDentBusiness{
 		///<summary>2</summary>
 		Equity,
 		///<summary>3</summary>
-		Revenue,
+		Income,
 		///<summary>4</summary>
 		Expense
 	}
@@ -1158,8 +1162,54 @@ namespace OpenDentBusiness{
 		MutuallyDefined
 	}
 
+	///<summary>The _CA of some types should get stripped off when displaying to users.</summary>
+	public enum EtransType{
+		///<summary>0 X12-837</summary>
+		ClaimSent,
+		///<summary>1 claim</summary>
+		ClaimPrinted,
+		///<summary>2 Canada. Type 01</summary>
+		Claim_CA,
+		///<summary>3 Renaissance</summary>
+		Claim_Ren,
+		///<summary>4 Canada. Type 11</summary>
+		ClaimAck_CA,
+		///<summary>5 Canada. Type 21</summary>
+		ClaimEOB_CA,
+		///<summary>6 Canada. Type 08</summary>
+		Eligibility_CA,
+		///<summary>7 Canada. Type 18</summary>
+		EligResponse_CA,
+		///<summary>8 Canada. Type 02</summary>
+		ClaimReversal_CA,
+		///<summary>9 Canada. Type 03</summary>
+		Predeterm_CA,
+		///<summary>10 Canada. Type 04</summary>
+		RequestOutstand_CA,
+		///<summary>11 Canada. Type 05</summary>
+		RequestSumm_CA,
+		///<summary>12 Canada. Type 06</summary>
+		RequestPay_CA,
+		///<summary>13 Canada. Type 07</summary>
+		ClaimCOB_CA,
+		///<summary>14 Canada. Type 12</summary>
+		ReverseResponse_CA,
+		///<summary>15 Canada. Type 13</summary>
+		PredetermAck_CA,
+		///<summary>16 Canada. Type 23</summary>
+		PredetermEOB_CA,
+		///<summary>17 Canada. Type 14</summary>
+		OutstandingAck_CA,
+		///<summary>18 Canada. Type 24</summary>
+		EmailResponse_CA,
+		///<summary>19 Canada. Type 16</summary>
+		PaymentResponse_CA,
+		///<summary>20 Canada. Type 15</summary>
+		SummaryResponse_CA,
+	}
+
 	///<summary></summary>
-	public enum ContactMethod {
+	public enum ContactMethod{
 		///<summary>0</summary>
 		None,
 		///<summary>1</summary>
@@ -1173,8 +1223,12 @@ namespace OpenDentBusiness{
 		///<summary>5</summary>
 		Email,
 		///<summary>6</summary>
-		SeeNotes
+		SeeNotes,
+		///<summary>7</summary>
+		Mail
 	}
+
+	
 
 
 

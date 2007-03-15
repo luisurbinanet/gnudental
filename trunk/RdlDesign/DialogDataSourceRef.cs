@@ -31,6 +31,8 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.TextBox tbPassword2;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Button bTestConnection;
+		private System.Windows.Forms.ComboBox cbOdbcNames;
+		private System.Windows.Forms.Label lODBC;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -42,6 +44,10 @@ namespace fyiReporting.RdlDesign
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+
+			string[] items = RdlEngineConfig.GetProviders();
+
+			cbDataProvider.Items.AddRange(items);
 
 			this.cbDataProvider.SelectedIndex = 0;
 			this.bOK.Enabled = false;		
@@ -86,6 +92,8 @@ namespace fyiReporting.RdlDesign
 			this.tbPassword2 = new System.Windows.Forms.TextBox();
 			this.label6 = new System.Windows.Forms.Label();
 			this.bTestConnection = new System.Windows.Forms.Button();
+			this.cbOdbcNames = new System.Windows.Forms.ComboBox();
+			this.lODBC = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -104,7 +112,7 @@ namespace fyiReporting.RdlDesign
 			this.tbPassword.Name = "tbPassword";
 			this.tbPassword.PasswordChar = '*';
 			this.tbPassword.Size = new System.Drawing.Size(184, 20);
-			this.tbPassword.TabIndex = 1;
+			this.tbPassword.TabIndex = 0;
 			this.tbPassword.Text = "";
 			this.tbPassword.TextChanged += new System.EventHandler(this.validate_TextChanged);
 			// 
@@ -121,7 +129,7 @@ namespace fyiReporting.RdlDesign
 			this.tbFilename.Location = new System.Drawing.Point(16, 112);
 			this.tbFilename.Name = "tbFilename";
 			this.tbFilename.Size = new System.Drawing.Size(392, 20);
-			this.tbFilename.TabIndex = 5;
+			this.tbFilename.TabIndex = 2;
 			this.tbFilename.Text = "";
 			this.tbFilename.TextChanged += new System.EventHandler(this.validate_TextChanged);
 			// 
@@ -130,7 +138,7 @@ namespace fyiReporting.RdlDesign
 			this.bGetFilename.Location = new System.Drawing.Point(424, 112);
 			this.bGetFilename.Name = "bGetFilename";
 			this.bGetFilename.Size = new System.Drawing.Size(24, 23);
-			this.bGetFilename.TabIndex = 6;
+			this.bGetFilename.TabIndex = 3;
 			this.bGetFilename.Text = "...";
 			this.bGetFilename.Click += new System.EventHandler(this.bGetFilename_Click);
 			// 
@@ -145,14 +153,11 @@ namespace fyiReporting.RdlDesign
 			// cbDataProvider
 			// 
 			this.cbDataProvider.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbDataProvider.Items.AddRange(new object[] {
-																"SQL",
-																"ODBC",
-																"OLEDB"});
-			this.cbDataProvider.Location = new System.Drawing.Point(96, 152);
+			this.cbDataProvider.Location = new System.Drawing.Point(80, 152);
 			this.cbDataProvider.Name = "cbDataProvider";
-			this.cbDataProvider.Size = new System.Drawing.Size(88, 21);
-			this.cbDataProvider.TabIndex = 8;
+			this.cbDataProvider.Size = new System.Drawing.Size(104, 21);
+			this.cbDataProvider.TabIndex = 4;
+			this.cbDataProvider.SelectedIndexChanged += new System.EventHandler(this.cbDataProvider_SelectedIndexChanged);
 			// 
 			// label4
 			// 
@@ -168,16 +173,16 @@ namespace fyiReporting.RdlDesign
 			this.tbConnection.Multiline = true;
 			this.tbConnection.Name = "tbConnection";
 			this.tbConnection.Size = new System.Drawing.Size(424, 40);
-			this.tbConnection.TabIndex = 11;
+			this.tbConnection.TabIndex = 7;
 			this.tbConnection.Text = "";
 			this.tbConnection.TextChanged += new System.EventHandler(this.validate_TextChanged);
 			// 
 			// ckbIntSecurity
 			// 
-			this.ckbIntSecurity.Location = new System.Drawing.Point(280, 152);
+			this.ckbIntSecurity.Location = new System.Drawing.Point(296, 184);
 			this.ckbIntSecurity.Name = "ckbIntSecurity";
 			this.ckbIntSecurity.Size = new System.Drawing.Size(144, 24);
-			this.ckbIntSecurity.TabIndex = 9;
+			this.ckbIntSecurity.TabIndex = 6;
 			this.ckbIntSecurity.Text = "Use integrated security";
 			// 
 			// label5
@@ -193,14 +198,14 @@ namespace fyiReporting.RdlDesign
 			this.tbPrompt.Location = new System.Drawing.Point(16, 296);
 			this.tbPrompt.Name = "tbPrompt";
 			this.tbPrompt.Size = new System.Drawing.Size(424, 20);
-			this.tbPrompt.TabIndex = 13;
+			this.tbPrompt.TabIndex = 8;
 			this.tbPrompt.Text = "";
 			// 
 			// bOK
 			// 
 			this.bOK.Location = new System.Drawing.Point(272, 344);
 			this.bOK.Name = "bOK";
-			this.bOK.TabIndex = 14;
+			this.bOK.TabIndex = 10;
 			this.bOK.Text = "OK";
 			this.bOK.Click += new System.EventHandler(this.bOK_Click);
 			// 
@@ -209,7 +214,7 @@ namespace fyiReporting.RdlDesign
 			this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.bCancel.Location = new System.Drawing.Point(368, 344);
 			this.bCancel.Name = "bCancel";
-			this.bCancel.TabIndex = 15;
+			this.bCancel.TabIndex = 11;
 			this.bCancel.Text = "Cancel";
 			// 
 			// tbPassword2
@@ -218,7 +223,7 @@ namespace fyiReporting.RdlDesign
 			this.tbPassword2.Name = "tbPassword2";
 			this.tbPassword2.PasswordChar = '*';
 			this.tbPassword2.Size = new System.Drawing.Size(184, 20);
-			this.tbPassword2.TabIndex = 3;
+			this.tbPassword2.TabIndex = 1;
 			this.tbPassword2.Text = "";
 			this.tbPassword2.TextChanged += new System.EventHandler(this.validate_TextChanged);
 			// 
@@ -235,9 +240,27 @@ namespace fyiReporting.RdlDesign
 			this.bTestConnection.Location = new System.Drawing.Point(16, 344);
 			this.bTestConnection.Name = "bTestConnection";
 			this.bTestConnection.Size = new System.Drawing.Size(96, 23);
-			this.bTestConnection.TabIndex = 16;
+			this.bTestConnection.TabIndex = 9;
 			this.bTestConnection.Text = "Test Connection";
 			this.bTestConnection.Click += new System.EventHandler(this.bTestConnection_Click);
+			// 
+			// cbOdbcNames
+			// 
+			this.cbOdbcNames.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbOdbcNames.Location = new System.Drawing.Point(296, 152);
+			this.cbOdbcNames.Name = "cbOdbcNames";
+			this.cbOdbcNames.Size = new System.Drawing.Size(152, 21);
+			this.cbOdbcNames.Sorted = true;
+			this.cbOdbcNames.TabIndex = 5;
+			this.cbOdbcNames.SelectedIndexChanged += new System.EventHandler(this.cbOdbcNames_SelectedIndexChanged);
+			// 
+			// lODBC
+			// 
+			this.lODBC.Location = new System.Drawing.Point(184, 152);
+			this.lODBC.Name = "lODBC";
+			this.lODBC.Size = new System.Drawing.Size(112, 23);
+			this.lODBC.TabIndex = 17;
+			this.lODBC.Text = "ODBC Data Sources";
 			// 
 			// DialogDataSourceRef
 			// 
@@ -245,6 +268,8 @@ namespace fyiReporting.RdlDesign
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.bCancel;
 			this.ClientSize = new System.Drawing.Size(456, 374);
+			this.Controls.Add(this.cbOdbcNames);
+			this.Controls.Add(this.lODBC);
 			this.Controls.Add(this.bTestConnection);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.tbPassword2);
@@ -341,6 +366,25 @@ namespace fyiReporting.RdlDesign
 			if (DesignerUtility.TestConnection(this.cbDataProvider.Text, tbConnection.Text))
 				MessageBox.Show("Connection succeeded!", "Test Connection");
 
+		}
+
+		private void cbDataProvider_SelectedIndexChanged(object sender, System.EventArgs e)
+		{
+			if (cbDataProvider.Text == "ODBC")
+			{
+				lODBC.Visible = cbOdbcNames.Visible = true;
+				DesignerUtility.FillOdbcNames(cbOdbcNames);
+			}
+			else
+			{
+				lODBC.Visible = cbOdbcNames.Visible = false;
+			}
+
+		}
+
+		private void cbOdbcNames_SelectedIndexChanged(object sender, System.EventArgs e)
+		{
+			tbConnection.Text = "dsn=" + cbOdbcNames.Text + ";";
 		}
 	}
 }

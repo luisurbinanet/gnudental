@@ -1,27 +1,28 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -31,9 +32,7 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Base class for all aggregate functions
-	/// <p>
-	///	
+	/// Base class for all aggregate functions
 	/// </summary>
 	[Serializable]
 	internal abstract class FunctionAggr 
@@ -68,7 +67,7 @@ namespace fyiReporting.RDL
 			return (IExpr) this;
 		}
 
-		public bool EvaluateBoolean(Row row)
+		public bool EvaluateBoolean(Report rpt, Row row)
 		{
 			return false;
 		}
@@ -90,7 +89,7 @@ namespace fyiReporting.RDL
 		}
 
 		// return an IEnumerable that represents the scope of the data
-		protected RowEnumerable GetDataScope(Row row, out bool bSave)
+		protected RowEnumerable GetDataScope(Report rpt, Row row, out bool bSave)
 			{
 			bSave=true;
 			RowEnumerable re=null;
@@ -100,18 +99,35 @@ namespace fyiReporting.RDL
 				Type t = this._Scope.GetType();
 				if (t == typeof(Grouping))
 				{
-					if (row == null)
-						return null;
 					bSave=false;
 					Grouping g = (Grouping) (this._Scope);
-					GroupEntry ge = row.R.CurrentGroups[g.Index];
-					re = new RowEnumerable (ge.StartRow, ge.EndRow, row.R.Data, _LevelCheck);
+					if (g.InMatrix)
+					{
+						Rows rows = g.GetRows(rpt);
+						if (rows == null)
+							return null;
+						re = new RowEnumerable(0, rows.Data.Count-1, rows.Data, _LevelCheck);
+					}
+					else
+					{
+						if (row == null)
+							return null;
+						GroupEntry ge = row.R.CurrentGroups[g.GetIndex(rpt)];
+						re = new RowEnumerable (ge.StartRow, ge.EndRow, row.R.Data, _LevelCheck);
+					}
 				}
 				else if (t == typeof(Matrix))
 				{
 					bSave=false;
 					Matrix m = (Matrix) (this._Scope);
-					re = new RowEnumerable(0, m.Data.Data.Count-1, m.Data.Data, false);
+					Rows mData = m.GetMyData(rpt);
+					re = new RowEnumerable(0, mData.Data.Count-1, mData.Data, false);
+				}
+				else if (t == typeof(string))
+				{	// happens on page header/footer scope
+					if (row != null)
+						re = new RowEnumerable (0, row.R.Data.Count-1, row.R.Data, false);
+					bSave = false;
 				}
 				else if (row != null)
 				{
@@ -119,16 +135,14 @@ namespace fyiReporting.RDL
 				}
 				else
 				{
-					DataSet ds = this._Scope as DataSet;
-					if (ds != null && ds.Query != null && ds.Query.Data != null)
+					DataSetDefn ds = this._Scope as DataSetDefn;
+					if (ds != null && ds.Query != null)
 					{
-						Rows rows = ds.Query.Data;
-						re = new RowEnumerable(0, rows.Data.Count-1, rows.Data, false);
+						Rows rows = ds.Query.GetMyData(rpt);
+						if (rows != null)
+							re = new RowEnumerable(0, rows.Data.Count-1, rows.Data, false);
 					}
 				}
-//				else if (t == typeof(DataRegion))
-//				{
-//				}
 			}
 			else if (row != null)
 			{
@@ -143,9 +157,9 @@ namespace fyiReporting.RDL
 	{
 		int startRow;
 		int endRow;
-		ArrayList data;
+		List<Row> data;
 		bool _LevelCheck;
-		public RowEnumerable (int start, int end, ArrayList d, bool levelCheck)
+        public RowEnumerable(int start, int end, List<Row> d, bool levelCheck)
 		{
 			startRow = start;
 			endRow = end;
@@ -153,7 +167,7 @@ namespace fyiReporting.RDL
 			_LevelCheck = levelCheck;
 		}
 
-		public ArrayList Data
+        public List<Row> Data
 		{
 			get{return data;}
 		}

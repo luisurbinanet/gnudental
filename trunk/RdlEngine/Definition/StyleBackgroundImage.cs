@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -26,6 +26,7 @@ using System.Text;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Globalization;
+using System.Threading;
 
 namespace fyiReporting.RDL
 {
@@ -46,15 +47,13 @@ namespace fyiReporting.RDL
 		Expression _BackgroundRepeat;	// (Enum BackgroundRepeat) Indicates how the background image should
 							// repeat to fill the available space: Default: Repeat
 		bool _ConstantImage;	// true if constant image
-		[NonSerialized] PageImage _pgImage;	// When ConstantImage is true this will save the PageImage for reuse
 	
-		internal StyleBackgroundImage(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal StyleBackgroundImage(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Source=StyleBackgroundImageSourceEnum.Unknown;
 			_Value=null;
 			_MIMEType=null;
 			_BackgroundRepeat=null;
-			_pgImage=null;
 			_ConstantImage=false;
 
 			// Loop thru all the child nodes
@@ -104,18 +103,18 @@ namespace fyiReporting.RDL
 		}
 
 		// Generate a CSS string from the specified styles
-		internal string GetCSS(Row row, bool bDefaults)
+		internal string GetCSS(Report rpt, Row row, bool bDefaults)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			// TODO: need to handle other types of sources
 			if (_Value != null && _Source==StyleBackgroundImageSourceEnum.External)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "background-image:url(\"{0}\");",_Value.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "background-image:url(\"{0}\");",_Value.EvaluateString(rpt, row));
 			else if (bDefaults)
 				return "background-image:none;";	
             			
 			if (_BackgroundRepeat != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "background-repeat:{0};",_BackgroundRepeat.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "background-repeat:{0};",_BackgroundRepeat.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "background-repeat:repeat;");
 
@@ -140,24 +139,25 @@ namespace fyiReporting.RDL
 			return rc;
 		}
 	
-		internal PageImage GetPageImage(Row row)
+		internal PageImage GetPageImage(Report rpt, Row row)
 		{
 			string mtype=null; 
 			Stream strm=null;
 			System.Drawing.Image im=null;
 			PageImage pi=null;
 
-			if (this._pgImage != null)
+			WorkClass wc = GetWC(rpt);
+			if (wc.PgImage != null)
 			{	// have we already generated this one
 				// reuse most of the work; only position will likely change
-				pi = new PageImage(_pgImage.ImgFormat, _pgImage.ImageData, _pgImage.SamplesW, _pgImage.SamplesH);
-				pi.Name = _pgImage.Name;				// this is name it will be shared under
+				pi = new PageImage(wc.PgImage.ImgFormat, wc.PgImage.ImageData, wc.PgImage.SamplesW, wc.PgImage.SamplesH);
+				pi.Name = wc.PgImage.Name;				// this is name it will be shared under
 				return pi;
 			}
 
 			try 
 			{
-				strm = GetImageStream(row, out mtype); 
+				strm = GetImageStream(rpt, row, out mtype); 
 				im = System.Drawing.Image.FromStream(strm);
 				int height = im.Height;
 				int width = im.Width;
@@ -174,7 +174,7 @@ namespace fyiReporting.RDL
 				pi.SI = new StyleInfo();	// this will just default everything
 				if (_BackgroundRepeat != null)
 				{
-					string r = _BackgroundRepeat.EvaluateString(row).ToLower();
+					string r = _BackgroundRepeat.EvaluateString(rpt, row).ToLower();
 					switch (r)
 					{
 						case "repeat":
@@ -197,8 +197,9 @@ namespace fyiReporting.RDL
 
 				if (_ConstantImage)
 				{
-					this._pgImage = pi;
-					pi.Name = OwnerReport.CreateRuntimeName(this);
+					wc.PgImage = pi;
+					// create unique name; PDF generation uses this to optimize the saving of the image only once
+					pi.Name = "pi" + Interlocked.Increment(ref Parser.Counter).ToString();	// create unique name
 				}
 			}
 			finally
@@ -211,7 +212,7 @@ namespace fyiReporting.RDL
 			return pi;
 		}
 
-		Stream GetImageStream(Row row, out string mtype)
+		Stream GetImageStream(Report rpt, Row row, out string mtype)
 		{
 			mtype=null; 
 			Stream strm=null;
@@ -222,12 +223,12 @@ namespace fyiReporting.RDL
 					case StyleBackgroundImageSourceEnum.Database:
 						if (_MIMEType == null)
 							return null;
-						mtype = _MIMEType.EvaluateString(row);
-						object o = _Value.Evaluate(row);
+						mtype = _MIMEType.EvaluateString(rpt, row);
+						object o = _Value.Evaluate(rpt, row);
 						strm = new MemoryStream((byte[]) o);
 						break;
 					case StyleBackgroundImageSourceEnum.Embedded:
-						string name = _Value.EvaluateString(row);
+						string name = _Value.EvaluateString(rpt, row);
 						EmbeddedImage ei = (EmbeddedImage) OwnerReport.LUEmbeddedImages[name];
 						mtype = ei.MIMEType;
 						byte[] ba = Convert.FromBase64String(ei.ImageData);
@@ -236,8 +237,8 @@ namespace fyiReporting.RDL
 					case StyleBackgroundImageSourceEnum.External:
 						if (_MIMEType == null)
 							return null;
-						mtype = _MIMEType.EvaluateString(row);
-						string fname = _Value.EvaluateString(row);
+						mtype = _MIMEType.EvaluateString(rpt, row);
+						string fname = _Value.EvaluateString(rpt, row);
 						strm = new FileStream(fname, System.IO.FileMode.Open, FileAccess.Read);		
 						break;
 					default:
@@ -284,7 +285,31 @@ namespace fyiReporting.RDL
 			get { return  _BackgroundRepeat; }
 			set {  _BackgroundRepeat = value; }
 		}
-		
+
+		private WorkClass GetWC(Report rpt)
+		{
+			WorkClass wc = rpt.Cache.Get(this, "wc") as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass();
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
+
+		private void RemoveWC(Report rpt)
+		{
+			rpt.Cache.Remove(this, "wc");
+		}
+
+		class WorkClass
+		{
+			internal PageImage PgImage;	// When ConstantImage is true this will save the PageImage for reuse
+			internal WorkClass()
+			{
+				PgImage=null;
+			}
+		}
 	}
 
 	internal enum BackgroundRepeat

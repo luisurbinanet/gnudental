@@ -1,27 +1,28 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 
@@ -33,12 +34,12 @@ namespace fyiReporting.RDL
 	[Serializable]
 	internal class TableCells : ReportLink
 	{
-		ArrayList _Items;			// list of report items
+        List<TableCell> _Items;			// list of TableCell
 
-		internal TableCells(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal TableCells(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			TableCell tc;
-			_Items = new ArrayList();
+            _Items = new List<TableCell>();
 			// Loop thru all the child nodes
 			int colIndex=0;			// keep track of the column numbers
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -60,6 +61,8 @@ namespace fyiReporting.RDL
 				if (tc != null)
 					_Items.Add(tc);
 			}
+			if (_Items.Count > 0)
+                _Items.TrimExcess();
 		}
 		
 		override internal void FinalPass()
@@ -102,7 +105,7 @@ namespace fyiReporting.RDL
 				}
 				else if (maxy > pgs.CurrentPage.YOffset)
 				{
-					//maxy = maxy;
+					// maxy = maxy;      TODO what was this meant to do
 				}
 				// restore the beginning start of the row
 				pgs.CurrentPage = savepg;
@@ -113,7 +116,7 @@ namespace fyiReporting.RDL
 			return ;
 		}
 
-		internal ArrayList Items
+        internal List<TableCell> Items
 		{
 			get { return  _Items; }
 		}

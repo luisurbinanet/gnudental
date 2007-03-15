@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -25,6 +25,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace fyiReporting.RdlReader
 {
@@ -35,13 +36,13 @@ namespace fyiReporting.RdlReader
 	{
 		private System.Windows.Forms.Button bOK;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.LinkLabel linkLabel2;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.TextBox tbLicense;
+		private System.Windows.Forms.Label lVersion;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -55,7 +56,7 @@ namespace fyiReporting.RdlReader
 			InitializeComponent();
 
 			tbLicense.Text = @"RDL Reader displays reports defined using the Report Definition Language Specification.
-Copyright (C) 2004-2005  fyiReporting Software, LLC
+Copyright (C) 2004-2006  fyiReporting Software, LLC
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -72,6 +73,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Commercial licenses are available.  Contact fyiReporting Software for additional information.";
+
+			lVersion.Text = "Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			return;
 		}
 
@@ -100,7 +103,7 @@ Commercial licenses are available.  Contact fyiReporting Software for additional
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(DialogAbout));
 			this.bOK = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
+			this.lVersion = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
@@ -126,13 +129,13 @@ Commercial licenses are available.  Contact fyiReporting Software for additional
 			this.label1.TabIndex = 1;
 			this.label1.Text = "fyiReporting Reader";
 			// 
-			// label2
+			// lVersion
 			// 
-			this.label2.Location = new System.Drawing.Point(288, 48);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(72, 24);
-			this.label2.TabIndex = 2;
-			this.label2.Text = "Version 1.0.0";
+			this.lVersion.Location = new System.Drawing.Point(288, 48);
+			this.lVersion.Name = "lVersion";
+			this.lVersion.Size = new System.Drawing.Size(104, 24);
+			this.lVersion.TabIndex = 2;
+			this.lVersion.Text = "Version 1.9.6";
 			// 
 			// label3
 			// 
@@ -204,7 +207,7 @@ Commercial licenses are available.  Contact fyiReporting Software for additional
 			this.Controls.Add(this.linkLabel1);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.label2);
+			this.Controls.Add(this.lVersion);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.bOK);
 			this.Controls.Add(this.pictureBox1);

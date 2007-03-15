@@ -1,30 +1,31 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
+using System.Threading;
 
 using fyiReporting.RDL;
 
@@ -32,24 +33,23 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Aggregate function: sum
-	/// <p>
-	///	
+	/// Aggregate function: sum
 	/// </summary>
 	[Serializable]
 	internal class FunctionAggrSum : FunctionAggr, IExpr, ICacheData
 	{
 		private TypeCode _tc;		// type of result: decimal or double
-		private object _value;		// when scope is dataset we can cache the result
+		string _key;				// key for cache when scope is dataset we can cache the result
 		/// <summary>
 		/// Aggregate function: Sum returns the sum of all values of the
 		///		expression within the scope
 		///	Return type is decimal for decimal expressions and double for all
 		///	other expressions.	
 		/// </summary>
-		public FunctionAggrSum(ArrayList dataCache, IExpr e, object scp):base(e, scp) 
+        public FunctionAggrSum(List<ICacheData> dataCache, IExpr e, object scp)
+            : base(e, scp) 
 		{
-			_value = null;
+			_key = "aggrsum" + Interlocked.Increment(ref Parser.Counter).ToString();
 
 			// Determine the result
 			_tc = e.GetTypeCode();
@@ -64,77 +64,96 @@ namespace fyiReporting.RDL
 		}
 
 		// Evaluate is for interpretation  (and is relatively slow)
-		public object Evaluate(Row row)
+		public object Evaluate(Report rpt, Row row)
 		{
-			return _tc==TypeCode.Decimal? (object) EvaluateDecimal(row): (object) EvaluateDouble(row);
+			return _tc==TypeCode.Decimal? (object) EvaluateDecimal(rpt, row): (object) EvaluateDouble(rpt, row);
 		}
 		
-		public double EvaluateDouble(Row row)
+		public double EvaluateDouble(Report rpt, Row row)
 		{
 			bool bSave=true;
-			IEnumerable re = this.GetDataScope(row, out bSave);
+			IEnumerable re = this.GetDataScope(rpt, row, out bSave);
 			if (re == null)
 				return double.NaN;
 
-			if (_value == null)
+			ODouble v = GetValueDouble(rpt);
+			if (v != null)
+				return v.d;
+
+			double sum=0;
+			double temp;
+			foreach (Row r in re)
 			{
-				double sum=0;
-				double temp;
-				foreach (Row r in re)
-				{
-					temp = _Expr.EvaluateDouble(r);
-					if (temp.CompareTo(double.NaN) != 0)
-						sum += temp;
-				}
-				if (bSave)
-					_value = (object) sum;
-				else
-					return sum;
+				temp = _Expr.EvaluateDouble(rpt, r);
+				if (temp.CompareTo(double.NaN) != 0)
+					sum += temp;
 			}
-			return (double) _value;
+			if (bSave)
+				SetValue(rpt, sum);
+
+			return sum;
 		}
 		
-		public decimal EvaluateDecimal(Row row)
+		public decimal EvaluateDecimal(Report rpt, Row row)
 		{
 			bool bSave;
-			IEnumerable re = this.GetDataScope(row, out bSave);
+			IEnumerable re = this.GetDataScope(rpt, row, out bSave);
 			if (re == null)
 				return decimal.MinValue;
 
-			if (_value == null)
+			ODecimal od = GetValueDecimal(rpt);
+			if (od != null)
+				return od.d;
+
+			decimal sum=0;
+			decimal temp;
+			foreach (Row r in re)
 			{
-				decimal sum=0;
-				decimal temp;
-				foreach (Row r in re)
-				{
-					temp = _Expr.EvaluateDecimal(r);
-					if (temp != decimal.MinValue)		// indicate null value
-						sum += temp;
-				}
-				if (bSave)
-					_value = (object) sum;
-				else
-					return sum;
+				temp = _Expr.EvaluateDecimal(rpt, r);
+				if (temp != decimal.MinValue)		// indicate null value
+					sum += temp;
 			}
-			return (decimal) _value;
+			if (bSave)
+				SetValue(rpt,sum);
+
+			return sum;
 		}
 
-		public string EvaluateString(Row row)
+		public string EvaluateString(Report rpt, Row row)
 		{
-			object result = Evaluate(row);
+			object result = Evaluate(rpt, row);
 			return Convert.ToString(result);
 		}
 
-		public DateTime EvaluateDateTime(Row row)
+		public DateTime EvaluateDateTime(Report rpt, Row row)
 		{
-			object result = Evaluate(row);
+			object result = Evaluate(rpt, row);
 			return Convert.ToDateTime(result);
+		}
+		private ODecimal GetValueDecimal(Report rpt)
+		{
+			return rpt.Cache.Get(_key) as ODecimal;
+		}
+
+		private ODouble GetValueDouble(Report rpt)
+		{
+			return rpt.Cache.Get(_key) as ODouble;
+		}
+
+		private void SetValue(Report rpt, double d)
+		{
+			rpt.Cache.AddReplace(_key, new ODouble(d));
+		}
+
+		private void SetValue(Report rpt, decimal d)
+		{
+			rpt.Cache.AddReplace(_key, new ODecimal(d));
 		}
 		#region ICacheData Members
 
-		public void ClearCache()
+		public void ClearCache(Report rpt)
 		{
-			_value = null;
+			rpt.Cache.Remove(_key);
 		}
 
 		#endregion

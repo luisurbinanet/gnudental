@@ -1,3 +1,8 @@
+//How to format comments to trigger links:
+//FK to definition.DefNum is triggered by "FK to ".  It then looks for ".".  So anything can follow after.
+//and:
+//"Enum:" Then, the enum name must follow.  It must then be followed by a space or by nothing at all.  NO PERIOD allowed.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

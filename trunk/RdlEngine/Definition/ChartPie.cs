@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -30,15 +30,14 @@ namespace fyiReporting.RDL
 	///<summary>
 	/// Pie chart definition and processing.
 	///</summary>
-	[Serializable]
 	internal class ChartPie: ChartBase
 	{
 
-		internal ChartPie(Chart c, MatrixCellEntry[,] m) : base(c, m)
+		internal ChartPie(Report r, Row row, Chart c, MatrixCellEntry[,] m) : base(r, row, c, m)
 		{
 		}
 
-		override internal void Draw()
+		override internal void Draw(Report rpt)
 		{
 			CreateSizedBitmap();
 
@@ -46,41 +45,41 @@ namespace fyiReporting.RDL
 			{
 			
 				// Adjust the top margin to depend on the title height
-				Size titleSize = DrawTitleMeasure(g, ChartDefn.Title);
+				Size titleSize = DrawTitleMeasure(rpt, g, ChartDefn.Title);
 				Layout.TopMargin = titleSize.Height;
 
-				DrawChartStyle(g);
+				DrawChartStyle(rpt, g);
 				
 				// Draw title; routine determines if necessary
-				DrawTitle(g, ChartDefn.Title, new System.Drawing.Rectangle(0, 0, _bm.Width, Layout.TopMargin));
+				DrawTitle(rpt, g, ChartDefn.Title, new System.Drawing.Rectangle(0, 0, _bm.Width, Layout.TopMargin));
 
 				// Draw legend
-				System.Drawing.Rectangle lRect = DrawLegend(g, false, true);
+				System.Drawing.Rectangle lRect = DrawLegend(rpt, g, false, true);
 
 				// Adjust the bottom margin to depend on the Category Axis
-				Size caSize = CategoryAxisSize(g);
+				Size caSize = CategoryAxisSize(rpt, g);
 				Layout.BottomMargin = caSize.Height;
 
 				AdjustMargins(lRect);		// Adjust margins based on legend.
 
 				// Draw Plot area
-				DrawPlotAreaStyle(g, lRect);
+				DrawPlotAreaStyle(rpt, g, lRect);
 
 				// Draw Category Axis
 				if (caSize.Height > 0)
-					DrawCategoryAxis(g,  
+					DrawCategoryAxis(rpt, g,  
 						new System.Drawing.Rectangle(Layout.LeftMargin, _bm.Height-Layout.BottomMargin, _bm.Width - Layout.LeftMargin - Layout.RightMargin, caSize.Height));
 
 				if (ChartDefn.Type == ChartTypeEnum.Doughnut)
-					DrawPlotAreaDoughnut(g);
+					DrawPlotAreaDoughnut(rpt, g);
 				else 
-					DrawPlotAreaPie(g);
+					DrawPlotAreaPie(rpt, g);
 
-				DrawLegend(g, false, false);
+				DrawLegend(rpt, g, false, false);
 			}
 		}
 
-		void DrawPlotAreaDoughnut(Graphics g)
+		void DrawPlotAreaDoughnut(Report rpt, Graphics g)
 		{
 			// Draw Plot area data
 			int widthPie = Layout.PlotArea.Width;
@@ -107,7 +106,7 @@ namespace fyiReporting.RDL
 				double total=0;		// sum up for this category
 				for (int iCol=1; iCol <= SeriesCount; iCol++)
 				{
-					total += this.GetDataValue(iRow, iCol);
+					total += this.GetDataValue(rpt, iRow, iCol);
 				}
 
 				// Pie size decreases as we go in
@@ -115,7 +114,7 @@ namespace fyiReporting.RDL
 				pieSize = maxPieSize - ((iRow - 1) * doughWidth * 2);
 				for (int iCol=1; iCol <= SeriesCount; iCol++)
 				{
-					double v = this.GetDataValue(iRow, iCol);
+					double v = this.GetDataValue(rpt, iRow, iCol);
 					endAngle = (float) (startAngle + v / total * 360);
 							   
 					DrawPie(g, SeriesBrush[iCol-1], 
@@ -133,11 +132,12 @@ namespace fyiReporting.RDL
 			System.Drawing.Rectangle rect = new System.Drawing.Rectangle(pieLocX, pieLocY, pieSize, pieSize);
 			Style s = ChartDefn.PlotArea.Style;
 
-			Row r = (Row) (ChartDefn.ChartMatrix.Data.Data[0]);
-			s.DrawBackgroundCircle(g, r, rect);
+			Rows cData = ChartDefn.ChartMatrix.GetMyData(rpt);
+			Row r = cData.Data[0];
+			s.DrawBackgroundCircle(rpt, g, r, rect);
 		}
 
-		void DrawPlotAreaPie(Graphics g)
+		void DrawPlotAreaPie(Report rpt, Graphics g)
 		{
 			int piesNeeded = CategoryCount; 
 			int gapsNeeded = CategoryCount + 1;
@@ -160,7 +160,7 @@ namespace fyiReporting.RDL
 				double total=0;
 				for (int iCol=1; iCol <= SeriesCount; iCol++)
 				{
-					total += this.GetDataValue(iRow, iCol);
+					total += this.GetDataValue(rpt, iRow, iCol);
 				}
 				if (total > maxCategory)
 					maxCategory = total;
@@ -175,7 +175,7 @@ namespace fyiReporting.RDL
 				double total=0;
 				for (int iCol=1; iCol <= SeriesCount; iCol++)
 				{
-					total += this.GetDataValue(iRow, iCol);
+					total += this.GetDataValue(rpt, iRow, iCol);
 				}
 
 				// Pie size is a ratio of the area of the pies (not the diameter)
@@ -183,7 +183,7 @@ namespace fyiReporting.RDL
 				int pieSize = (int) (2 * Math.Sqrt(Math.PI * ((maxPieSize/2) * (maxPieSize/2) * total/maxCategory) / Math.PI));
 				for (int iCol=1; iCol <= SeriesCount; iCol++)
 				{
-					double v = this.GetDataValue(iRow, iCol);
+					double v = this.GetDataValue(rpt, iRow, iCol);
 					endAngle = (float) (startAngle + v / total * 360);
 				
 					DrawPie(g, SeriesBrush[iCol-1], 
@@ -195,7 +195,7 @@ namespace fyiReporting.RDL
 		}
 
 		// Calculate the size of the category axis
-		protected Size CategoryAxisSize(Graphics g)
+		protected Size CategoryAxisSize(Report rpt, Graphics g)
 		{
 			Size size=Size.Empty;
 			if (this.ChartDefn.CategoryAxis == null || 
@@ -207,7 +207,7 @@ namespace fyiReporting.RDL
 			Style s = a.Style;
 
 			// Measure the title
-			size = DrawTitleMeasure(g, a.Title);
+			size = DrawTitleMeasure(rpt, g, a.Title);
 
 			if (!a.Visible)		// don't need to calculate the height
 				return size;
@@ -217,13 +217,13 @@ namespace fyiReporting.RDL
 			int maxHeight=0;
 			for (int iRow=1; iRow <= CategoryCount; iRow++)
 			{
-				object v = this.GetCategoryValue(iRow, out tc);
+				object v = this.GetCategoryValue(rpt, iRow, out tc);
 				Size tSize;
 				if (s == null)
-					tSize = Style.MeasureStringDefaults(g, v, tc, null, int.MaxValue);
+					tSize = Style.MeasureStringDefaults(rpt, g, v, tc, null, int.MaxValue);
 
 				else
-					tSize =s.MeasureString(g, v, tc, null, int.MaxValue);
+					tSize =s.MeasureString(rpt, g, v, tc, null, int.MaxValue);
 
 				if (tSize.Height > maxHeight)
 					maxHeight = tSize.Height;
@@ -235,7 +235,7 @@ namespace fyiReporting.RDL
 		}
 
 		// DrawCategoryAxis 
-		protected void DrawCategoryAxis(Graphics g, System.Drawing.Rectangle rect)
+		protected void DrawCategoryAxis(Report rpt, Graphics g, System.Drawing.Rectangle rect)
 		{
 			if (this.ChartDefn.CategoryAxis == null)
 				return;
@@ -244,14 +244,14 @@ namespace fyiReporting.RDL
 				return;
 			Style s = a.Style;
 
-			Size tSize = DrawTitleMeasure(g, a.Title);
-			DrawTitle(g, a.Title, new System.Drawing.Rectangle(rect.Left, rect.Bottom-tSize.Height, rect.Width, tSize.Height));
+			Size tSize = DrawTitleMeasure(rpt, g, a.Title);
+			DrawTitle(rpt, g, a.Title, new System.Drawing.Rectangle(rect.Left, rect.Bottom-tSize.Height, rect.Width, tSize.Height));
 
 			int drawWidth = rect.Width / CategoryCount;
 			TypeCode tc;
 			for (int iRow=1; iRow <= CategoryCount; iRow++)
 			{
-				object v = this.GetCategoryValue(iRow, out tc);
+				object v = this.GetCategoryValue(rpt, iRow, out tc);
 
 				int drawLoc=(int) (rect.Left + (iRow-1) * ((double) rect.Width / CategoryCount));
 
@@ -262,7 +262,7 @@ namespace fyiReporting.RDL
 					if (s == null)
 						Style.DrawStringDefaults(g, v, drawRect);
 					else
-						s.DrawString(g, v, tc, null, drawRect);
+						s.DrawString(rpt, g, v, tc, null, drawRect);
 				}
 			}
 

@@ -1,27 +1,28 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 
@@ -33,14 +34,14 @@ namespace fyiReporting.RDL
 	[Serializable]
 	internal class TableRows : ReportLink
 	{
-		ArrayList _Items;			// list of report items
+        List<TableRow> _Items;			// list of TableRow
 		float _HeightOfRows;		// height of contained rows
 		bool _CanGrow;				// if any TableRow contains a TextBox with CanGrow
 
-		internal TableRows(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal TableRows(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			TableRow t;
-			_Items = new ArrayList();
+            _Items = new List<TableRow>();
 			_CanGrow = false;
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -63,6 +64,8 @@ namespace fyiReporting.RDL
 			}
 			if (_Items.Count == 0)
 				OwnerReport.rl.LogError(8, "For TableRows at least one TableRow is required.");
+			else
+                _Items.TrimExcess();
 		}
 		
 		override internal void FinalPass()
@@ -89,11 +92,46 @@ namespace fyiReporting.RDL
 
 		internal void RunPage(Pages pgs, Row row)
 		{
-			foreach (TableRow t in _Items)
-			{
-				t.RunPage(pgs, row);
+			RunPage(pgs, row, false);
+		}
+
+		internal void RunPage(Pages pgs, Row row, bool bCheckRows)
+		{
+			if (bCheckRows)
+			{	// we need to check to see if a row will fit on the page
+				foreach (TableRow t in _Items)
+				{
+					Page p = pgs.CurrentPage;			// this can change after running a row
+					float hrows = t.HeightOfRow(pgs, row);	// height of this row
+					float height = p.YOffset + hrows;
+					if (height > pgs.BottomOfPage)
+					{
+						p = OwnerTable.RunPageNew(pgs, p);
+						OwnerTable.RunPageHeader(pgs, row, false, null);
+					}
+					t.RunPage(pgs, row);
+				}
+			}
+			else
+			{	// all rows will fit on the page
+				foreach (TableRow t in _Items)
+					t.RunPage(pgs, row);
 			}
 			return;
+		}
+
+		internal Table OwnerTable
+		{
+			get 
+			{
+				for (ReportLink rl = this.Parent; rl != null; rl = rl.Parent)
+				{
+					if (rl is Table)
+						return rl as Table;
+				}
+
+				throw new Exception("Internal error.  TableRows must be owned eventually by a table.");
+			}
 		}
 
 		internal float DefnHeight()
@@ -120,7 +158,7 @@ namespace fyiReporting.RDL
 			return Math.Max(height, _HeightOfRows);
 		}
 
-		internal ArrayList Items
+        internal List<TableRow> Items
 		{
 			get { return  _Items; }
 		}

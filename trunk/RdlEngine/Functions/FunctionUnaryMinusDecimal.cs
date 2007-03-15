@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -32,9 +32,7 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Unary minus operator
-	/// <p>
-	///	
+	/// Unary minus operator with a decimal operand
 	/// </summary>
 	[Serializable]
 	internal class FunctionUnaryMinusDecimal : IExpr
@@ -69,7 +67,7 @@ namespace fyiReporting.RDL
 			_rhs = _rhs.ConstantOptimization();
 			if (_rhs.IsConstant())
 			{
-				decimal d = EvaluateDecimal(null);
+				decimal d = EvaluateDecimal(null, null);
 				return new ConstantDecimal(d);
 			}
 
@@ -77,38 +75,38 @@ namespace fyiReporting.RDL
 		}
 
 		// Evaluate is for interpretation  (and is relatively slow)
-		public object Evaluate(Row row)
+		public object Evaluate(Report rpt, Row row)
 		{
-			return EvaluateDecimal(row);
+			return EvaluateDecimal(rpt, row);
 		}
 		
-		public double EvaluateDouble(Row row)
+		public double EvaluateDouble(Report rpt, Row row)
 		{
-			decimal result = EvaluateDecimal(row);
+			decimal result = EvaluateDecimal(rpt, row);
 
 			return Convert.ToDouble(result);
 		}
 		
-		public decimal EvaluateDecimal(Row row)
+		public decimal EvaluateDecimal(Report rpt, Row row)
 		{
-			decimal rhs = _rhs.EvaluateDecimal(row);
+			decimal rhs = _rhs.EvaluateDecimal(rpt, row);
 
 			return (decimal) (-rhs);
 		}
 
-		public string EvaluateString(Row row)
+		public string EvaluateString(Report rpt, Row row)
 		{
-			decimal result = EvaluateDecimal(row);
+			decimal result = EvaluateDecimal(rpt, row);
 			return result.ToString();
 		}
 
-		public DateTime EvaluateDateTime(Row row)
+		public DateTime EvaluateDateTime(Report rpt, Row row)
 		{
-			decimal result = EvaluateDecimal(row);
+			decimal result = EvaluateDecimal(rpt, row);
 			return Convert.ToDateTime(result);
 		}
 
-		public bool EvaluateBoolean(Row row)
+		public bool EvaluateBoolean(Report rpt, Row row)
 		{
 			return false;
 		}

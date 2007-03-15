@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -42,7 +42,7 @@ namespace fyiReporting.RDL
 		Expression _Top;		// (Color) Color of the top border
 		Expression _Bottom;		// (Color) Color of the bottom border
 	
-		internal StyleBorderColor(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal StyleBorderColor(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Default=null;
 			_Left=null;
@@ -97,26 +97,26 @@ namespace fyiReporting.RDL
 		}
 
 		// Generate a CSS string from the specified styles
-		internal string GetCSS(Row row, bool bDefaults)
+		internal string GetCSS(Report rpt, Row row, bool bDefaults)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			if (_Default != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-color:{0};",_Default.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-color:{0};",_Default.EvaluateString(rpt, row));
 			else if (bDefaults)
 				sb.Append("border-color:black;");
 
 			if (_Left != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-left:{0};",_Left.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-left:{0};",_Left.EvaluateString(rpt, row));
 
 			if (_Right != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-right:{0};",_Right.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-right:{0};",_Right.EvaluateString(rpt, row));
 
 			if (_Top != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-top:{0};",_Top.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-top:{0};",_Top.EvaluateString(rpt, row));
 
 			if (_Bottom != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-bottom:{0};",_Bottom.EvaluateString(row));
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "border-bottom:{0};",_Bottom.EvaluateString(rpt, row));
 
 			return sb.ToString();
 		}
@@ -166,13 +166,13 @@ namespace fyiReporting.RDL
 			set {  _Default = value; }
 		}
 
-		internal Color EvalDefault(Row r)
+		internal Color EvalDefault(Report rpt, Row r)
 		{
 			if (_Default == null)
 				return System.Drawing.Color.Black;
 			
-			string c = _Default.EvaluateString(r);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, this.OwnerReport);
+			string c = _Default.EvaluateString(rpt, r);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, rpt);
 		}
 
 		internal Expression Left
@@ -181,13 +181,13 @@ namespace fyiReporting.RDL
 			set {  _Left = value; }
 		}
 
-		internal Color EvalLeft(Row r)
+		internal Color EvalLeft(Report rpt, Row r)
 		{
 			if (_Left == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 			
-			string c = _Left.EvaluateString(r);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, this.OwnerReport);
+			string c = _Left.EvaluateString(rpt, r);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, rpt);
 		}
 
 		internal Expression Right
@@ -196,13 +196,13 @@ namespace fyiReporting.RDL
 			set {  _Right = value; }
 		}
 
-		internal Color EvalRight(Row r)
+		internal Color EvalRight(Report rpt, Row r)
 		{
 			if (_Right == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 			
-			string c = _Right.EvaluateString(r);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, this.OwnerReport);
+			string c = _Right.EvaluateString(rpt, r);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, rpt);
 		}
 
 		internal Expression Top
@@ -211,13 +211,13 @@ namespace fyiReporting.RDL
 			set {  _Top = value; }
 		}
 
-		internal Color EvalTop(Row r)
+		internal Color EvalTop(Report rpt, Row r)
 		{
 			if (_Top == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 			
-			string c = _Top.EvaluateString(r);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, this.OwnerReport);
+			string c = _Top.EvaluateString(rpt, r);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, rpt);
 		}
 
 		internal Expression Bottom
@@ -226,13 +226,13 @@ namespace fyiReporting.RDL
 			set {  _Bottom = value; }
 		}
 
-		internal Color EvalBottom(Row r)
+		internal Color EvalBottom(Report rpt, Row r)
 		{
 			if (_Bottom == null)
-				return EvalDefault(r);
+				return EvalDefault(rpt, r);
 			
-			string c = _Bottom.EvaluateString(r);
-			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, this.OwnerReport);
+			string c = _Bottom.EvaluateString(rpt, r);
+			return XmlUtil.ColorFromHtml(c, System.Drawing.Color.Black, rpt);
 		}
 	}
 }

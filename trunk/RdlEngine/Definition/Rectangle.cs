@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -37,14 +37,14 @@ namespace fyiReporting.RDL
 		bool _PageBreakAtEnd;		// Indicates the report should page break at the end of the rectangle.		
 
 		// constructor that doesn't process syntax
-		internal Rectangle(Report r, ReportLink p, XmlNode xNode, bool bNoLoop):base(r,p,xNode)
+		internal Rectangle(ReportDefn r, ReportLink p, XmlNode xNode, bool bNoLoop):base(r,p,xNode)
 		{
 			_ReportItems=null;
 			_PageBreakAtStart=false;
 			_PageBreakAtEnd=false;
 		}
 
-		internal Rectangle(Report r, ReportLink p, XmlNode xNode):base(r,p,xNode)
+		internal Rectangle(ReportDefn r, ReportLink p, XmlNode xNode):base(r,p,xNode)
 		{
 			_ReportItems=null;
 			_PageBreakAtStart=false;
@@ -102,22 +102,41 @@ namespace fyiReporting.RDL
 
 		override internal void RunPage(Pages pgs, Row row)
 		{
-			if (IsHidden(row))
+			Report r = pgs.Report;
+			if (IsHidden(r, row))
 				return;
 
 			SetPagePositionBegin(pgs);
+
+            // Handle page breaking at start
+            if (this.PageBreakAtStart && !IsTableOrMatrixCell(r) && !pgs.CurrentPage.IsEmpty())
+            {	// force page break at beginning of dataregion
+                pgs.NextOrNew();
+                pgs.CurrentPage.YOffset = OwnerReport.TopOfPage;
+            }
+
 			PageRectangle pr = new PageRectangle();
-			SetPagePositionAndStyle(pr, row);
+			SetPagePositionAndStyle(r, pr, row);
 			if (pr.SI.BackgroundImage != null)
 				pr.SI.BackgroundImage.H = pr.H;		//   and in the background image
 
 			Page p = pgs.CurrentPage;
 			p.AddObject(pr);
 
-			float saveY = p.YOffset;
-			p.YOffset += (Top == null? 0: this.Top.Points); 
-			_ReportItems.RunPage(pgs, row, OffsetCalc+LeftCalc);
-			p.YOffset = saveY;
+            // Handle page breaking at end
+            if (this.PageBreakAtEnd && !IsTableOrMatrixCell(r) && !pgs.CurrentPage.IsEmpty())
+            {	// force page break at beginning of dataregion
+                pgs.NextOrNew();
+                pgs.CurrentPage.YOffset = OwnerReport.TopOfPage;
+            }
+			else if (_ReportItems != null)
+			{
+				float saveY = p.YOffset;
+				p.YOffset += (Top == null? 0: this.Top.Points); 
+				_ReportItems.RunPage(pgs, row, GetOffsetCalc(pgs.Report)+LeftCalc(r));
+				p.YOffset = saveY;
+			}
+
 			SetPagePositionEnd(pgs, pgs.CurrentPage.YOffset);
 		}
 

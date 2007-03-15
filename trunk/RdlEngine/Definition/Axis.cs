@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -43,9 +43,9 @@ namespace fyiReporting.RDL
 		AxisTickMarksEnum _MinorTickMarks; // None (Default)
 		ChartGridLines _MajorGridLines;	// Indicates major gridlines should be displayed for this axis.
 		ChartGridLines _MinorGridLines;	// Indicates minor gridlines should be displayed for this axis.
-		int _MajorInterval;		// Unit for major gridlines/tickmarks
+		Expression _MajorInterval;		// Unit for major gridlines/tickmarks
 		// If omitted, the axis is autodivided
-		int _MinorInterval;		// Unit for minor gridlines/tickmarks
+		Expression _MinorInterval;		// Unit for minor gridlines/tickmarks
 		// If omitted, the axis is autodivided
 		bool _Reverse;	// If false (Default) the axis is plotted normally, if
 		//  true its direction is reversed.
@@ -64,13 +64,13 @@ namespace fyiReporting.RDL
 		//one grouping, if that grouping is static or has
 		//more than one group expression or if the axis
 		//values have a label.
-		int _Min;		// Minimum value for the axis
+		Expression _Min;		// Minimum value for the axis
 		// If omitted, the axis autoscales
-		int _Max;		// Maximum value for the axis
+		Expression _Max;		// Maximum value for the axis
 		// If omitted, the axis autoscales
 		bool _LogScale;	// Whether the axis is logarithmic. Default is false.		
 
-		internal Axis(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Axis(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Visible =false;
 			_Style = null;
@@ -80,14 +80,14 @@ namespace fyiReporting.RDL
 			_MinorTickMarks = AxisTickMarksEnum.None;
 			_MajorGridLines = null;
 			_MinorGridLines = null;
-			_MajorInterval = 0;
-			_MinorInterval = 0;
+			_MajorInterval = null;
+			_MinorInterval =null;
 			_Reverse = false;
 			_CrossAt = 0;
 			_Interlaced = false;
 			_Scalar=false;
-			_Min=int.MinValue;
-			_Max=int.MinValue;
+			_Min=null;
+			_Max=null;
 			_LogScale=false;
 
 			// Loop thru all the child nodes
@@ -122,10 +122,12 @@ namespace fyiReporting.RDL
 						_MinorGridLines = new ChartGridLines(r, this, xNodeLoop);
 						break;
 					case "MajorInterval":
-						_MajorInterval = XmlUtil.Integer(xNodeLoop.InnerText);
+						_MajorInterval = new Expression(OwnerReport, this, xNodeLoop, ExpressionType.Integer);
+						OwnerReport.rl.LogError(4, "Axis element MajorInterval is currently ignored.");
 						break;
 					case "MinorInterval":
-						_MinorInterval = XmlUtil.Integer(xNodeLoop.InnerText);
+						_MinorInterval = new Expression(OwnerReport, this, xNodeLoop, ExpressionType.Integer);
+						OwnerReport.rl.LogError(4, "Axis element MinorInterval is currently ignored.");
 						break;
 					case "Reverse":
 						_Reverse = XmlUtil.Boolean(xNodeLoop.InnerText, OwnerReport.rl);
@@ -140,10 +142,10 @@ namespace fyiReporting.RDL
 						_Scalar = XmlUtil.Boolean(xNodeLoop.InnerText, OwnerReport.rl);
 						break;
 					case "Min":
-						_Min = XmlUtil.Integer(xNodeLoop.InnerText);
+						_Min = new Expression(OwnerReport, this, xNodeLoop, ExpressionType.Integer);
 						break;
 					case "Max":
-						_Max = XmlUtil.Integer(xNodeLoop.InnerText);
+						_Max = new Expression(OwnerReport, this, xNodeLoop, ExpressionType.Integer);
 						break;
 					case "LogScale":
 						_LogScale = XmlUtil.Boolean(xNodeLoop.InnerText, OwnerReport.rl);
@@ -158,6 +160,14 @@ namespace fyiReporting.RDL
 		
 		override internal void FinalPass()
 		{
+			if (_MajorInterval != null)
+				_MajorInterval.FinalPass();
+			if (_MinorInterval != null)
+				_MinorInterval.FinalPass();
+			if (_Max != null)
+				_Max.FinalPass();
+			if (_Min != null)
+				_Min.FinalPass();
 			if (_Style != null)
 				_Style.FinalPass();
 			if (_Title != null)
@@ -217,13 +227,13 @@ namespace fyiReporting.RDL
 			set {  _MinorGridLines = value; }
 		}
 
-		internal int MajorInterval
+		internal Expression MajorInterval
 		{
 			get { return  _MajorInterval; }
 			set {  _MajorInterval = value; }
 		}
 
-		internal int MinorInterval
+		internal Expression MinorInterval
 		{
 			get { return  _MinorInterval; }
 			set {  _MinorInterval = value; }
@@ -253,16 +263,30 @@ namespace fyiReporting.RDL
 			set {  _Scalar = value; }
 		}
 
-		internal int Min
+		internal Expression Min
 		{
 			get { return  _Min; }
 			set {  _Min = value; }
 		}
 
-		internal int Max
+		internal Expression Max
 		{
 			get { return  _Max; }
 			set {  _Max = value; }
+		}
+
+		internal int MaxEval(Report r, Row row)
+		{
+			if (_Max == null)
+				return int.MinValue;
+			return (int) _Max.EvaluateDouble(r, row);
+		}
+
+		internal int MinEval(Report r, Row row)
+		{
+			if (_Min == null)
+				return int.MinValue;
+			return (int) _Min.EvaluateDouble(r, row);
 		}
 
 		internal bool LogScale

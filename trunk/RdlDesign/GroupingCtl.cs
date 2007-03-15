@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -32,7 +32,7 @@ using System.Text;
 namespace fyiReporting.RdlDesign
 {
 	/// <summary>
-	/// Filters specification: used for DataRegions (List, Chart, Table, Matrix), DataSets, group instances
+	/// Grouping specification: used for DataRegions (List, Chart, Table, Matrix), DataSets, group instances
 	/// </summary>
 	internal class GroupingCtl : System.Windows.Forms.UserControl, IProperty
 	{
@@ -60,6 +60,9 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.CheckBox chkRepeatFooter;
 		private System.Windows.Forms.CheckBox chkGrpFooter;
 		private System.Windows.Forms.Label lParent;
+		private System.Windows.Forms.Button bValueExpr;
+		private System.Windows.Forms.Button bLabelExpr;
+		private System.Windows.Forms.Button bParentExpr;
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
@@ -170,6 +173,16 @@ namespace fyiReporting.RdlDesign
 				this.cbParentExpr.Visible = this.lParent.Visible = false;
 				this.cbLabelExpr.Text =  _Draw.GetElementValue(_GroupingParent, "Label", "");
 			}
+
+			// load label and parent controls with fields
+			string dsn = _Draw.GetDataSetNameValue(_GroupingParent);
+			if (dsn != null)	// found it
+			{
+				string[] f = _Draw.GetFields(dsn, true);
+				this.cbParentExpr.Items.AddRange(f);
+				this.cbLabelExpr.Items.AddRange(f);
+			}
+
 		}
 
 		/// <summary> 
@@ -212,6 +225,9 @@ namespace fyiReporting.RdlDesign
 			this.chkGrpHeader = new System.Windows.Forms.CheckBox();
 			this.chkRepeatFooter = new System.Windows.Forms.CheckBox();
 			this.chkGrpFooter = new System.Windows.Forms.CheckBox();
+			this.bValueExpr = new System.Windows.Forms.Button();
+			this.bLabelExpr = new System.Windows.Forms.Button();
+			this.bParentExpr = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dgGroup)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -236,7 +252,7 @@ namespace fyiReporting.RdlDesign
 			// 
 			// bDelete
 			// 
-			this.bDelete.Location = new System.Drawing.Point(392, 48);
+			this.bDelete.Location = new System.Drawing.Point(392, 69);
 			this.bDelete.Name = "bDelete";
 			this.bDelete.Size = new System.Drawing.Size(48, 20);
 			this.bDelete.TabIndex = 2;
@@ -245,7 +261,7 @@ namespace fyiReporting.RdlDesign
 			// 
 			// bUp
 			// 
-			this.bUp.Location = new System.Drawing.Point(392, 80);
+			this.bUp.Location = new System.Drawing.Point(392, 94);
 			this.bUp.Name = "bUp";
 			this.bUp.Size = new System.Drawing.Size(48, 20);
 			this.bUp.TabIndex = 3;
@@ -254,7 +270,7 @@ namespace fyiReporting.RdlDesign
 			// 
 			// bDown
 			// 
-			this.bDown.Location = new System.Drawing.Point(392, 112);
+			this.bDown.Location = new System.Drawing.Point(392, 119);
 			this.bDown.Name = "bDown";
 			this.bDown.Size = new System.Drawing.Size(48, 20);
 			this.bDown.TabIndex = 4;
@@ -366,8 +382,47 @@ namespace fyiReporting.RdlDesign
 			this.chkGrpFooter.TabIndex = 14;
 			this.chkGrpFooter.Text = "Include group footer";
 			// 
+			// bValueExpr
+			// 
+			this.bValueExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bValueExpr.Location = new System.Drawing.Point(392, 48);
+			this.bValueExpr.Name = "bValueExpr";
+			this.bValueExpr.Size = new System.Drawing.Size(22, 16);
+			this.bValueExpr.TabIndex = 16;
+			this.bValueExpr.Tag = "value";
+			this.bValueExpr.Text = "fx";
+			this.bValueExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bValueExpr.Click += new System.EventHandler(this.bValueExpr_Click);
+			// 
+			// bLabelExpr
+			// 
+			this.bLabelExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bLabelExpr.Location = new System.Drawing.Point(392, 147);
+			this.bLabelExpr.Name = "bLabelExpr";
+			this.bLabelExpr.Size = new System.Drawing.Size(22, 16);
+			this.bLabelExpr.TabIndex = 17;
+			this.bLabelExpr.Tag = "label";
+			this.bLabelExpr.Text = "fx";
+			this.bLabelExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bLabelExpr.Click += new System.EventHandler(this.bExpr_Click);
+			// 
+			// bParentExpr
+			// 
+			this.bParentExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bParentExpr.Location = new System.Drawing.Point(392, 180);
+			this.bParentExpr.Name = "bParentExpr";
+			this.bParentExpr.Size = new System.Drawing.Size(22, 16);
+			this.bParentExpr.TabIndex = 18;
+			this.bParentExpr.Tag = "parent";
+			this.bParentExpr.Text = "fx";
+			this.bParentExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bParentExpr.Click += new System.EventHandler(this.bExpr_Click);
+			// 
 			// GroupingCtl
 			// 
+			this.Controls.Add(this.bParentExpr);
+			this.Controls.Add(this.bLabelExpr);
+			this.Controls.Add(this.bValueExpr);
 			this.Controls.Add(this.chkRepeatFooter);
 			this.Controls.Add(this.chkGrpFooter);
 			this.Controls.Add(this.chkRepeatHeader);
@@ -396,21 +451,18 @@ namespace fyiReporting.RdlDesign
 		public bool IsValid()
 		{
 			// Check to see if we have an expression
-			bool bRows=false;
-			foreach (DataRow dr in _DataTable.Rows)
-			{
-				if (dr[0] == DBNull.Value)
-					continue;
-				string ge = (string) dr[0];
-				if (ge.Length <= 0)
-					continue;
-				bRows = true;
-				break;
-			}
+			bool bRows=HasRows();
 
-			// If no rows and no data it's ok
+			// If no rows and no data 
 			if (!bRows && this.tbName.Text.Trim().Length == 0)
-				return true;
+			{
+				if (_GroupingParent.Name == "Details" ||
+					_GroupingParent.Name == "List")
+					return true;
+
+				MessageBox.Show("Group must be defined.", "Grouping");
+				return false;
+			}
 
 			// Grouping must have name
 			XmlNode grouping = _Draw.GetNamedChildNode(_GroupingParent, "Grouping");
@@ -438,8 +490,30 @@ namespace fyiReporting.RdlDesign
 			return false;
 		}
 
+		private bool HasRows()
+		{
+			bool bRows=false;
+			foreach (DataRow dr in _DataTable.Rows)
+			{
+				if (dr[0] == DBNull.Value)
+					continue;
+				string ge = (string) dr[0];
+				if (ge.Length <= 0)
+					continue;
+				bRows = true;
+				break;
+			}
+			return bRows;
+		}
+
 		public void Apply()
 		{
+			if (!HasRows())		// No expressions in grouping; get rid of grouping
+			{
+				_Draw.RemoveElement(_GroupingParent, "Grouping");	// can't have a grouping
+				return;
+			}
+
 			// Get the group
 			XmlNode grouping = _Draw.GetCreateNamedChildNode(_GroupingParent, "Grouping");
 
@@ -461,8 +535,12 @@ namespace fyiReporting.RdlDesign
 				else
 					_Draw.RemoveElement(grouping, "Label");
 
-				_Draw.SetElement(grouping, "PageBreakAtStart", this.chkPBS.Checked? "True": "False");
-				_Draw.SetElement(grouping, "PageBreakAtEnd", this.chkPBE.Checked? "True": "False");
+				_Draw.SetElement(grouping, "PageBreakAtStart", this.chkPBS.Checked? "true": "false");
+				_Draw.SetElement(grouping, "PageBreakAtEnd", this.chkPBE.Checked? "true": "false");
+				if (cbParentExpr.Text.Length > 0)
+					_Draw.SetElement(grouping, "Parent", cbParentExpr.Text);
+				else
+					_Draw.RemoveElement(grouping, "Parent");
 			}
 
 
@@ -493,7 +571,7 @@ namespace fyiReporting.RdlDesign
 				if (this.chkGrpHeader.Checked)
 				{
 					XmlNode header = _Draw.GetCreateNamedChildNode(_GroupingParent, "Header");
-					_Draw.SetElement(header, "RepeatOnNewPage", chkRepeatHeader.Checked? "True": "False");
+					_Draw.SetElement(header, "RepeatOnNewPage", chkRepeatHeader.Checked? "true": "false");
 					XmlNode tblRows = _Draw.GetCreateNamedChildNode(header, "TableRows");
 					if (!tblRows.HasChildNodes)
 					{	// We need to create a row
@@ -508,7 +586,7 @@ namespace fyiReporting.RdlDesign
 				if (this.chkGrpFooter.Checked)
 				{
 					XmlNode footer = _Draw.GetCreateNamedChildNode(_GroupingParent, "Footer");
-					_Draw.SetElement(footer, "RepeatOnNewPage", chkRepeatFooter.Checked? "True": "False");
+					_Draw.SetElement(footer, "RepeatOnNewPage", chkRepeatFooter.Checked? "true": "false");
 					XmlNode tblRows = _Draw.GetCreateNamedChildNode(footer, "TableRows");
 					if (!tblRows.HasChildNodes)
 					{	// We need to create a row
@@ -538,7 +616,16 @@ namespace fyiReporting.RdlDesign
 
 		private void bDelete_Click(object sender, System.EventArgs e)
 		{
-			this._DataTable.Rows.RemoveAt(this.dgGroup.CurrentRowIndex);
+			int cr = dgGroup.CurrentRowIndex;
+			if (cr < 0)		// already at the top
+				return;
+			else if (cr == 0)
+			{
+				DataRow dr = _DataTable.Rows[0];
+				dr[0] = null;
+			}
+
+			this._DataTable.Rows.RemoveAt(cr);
 		}
 
 		private void bUp_Click(object sender, System.EventArgs e)
@@ -582,11 +669,67 @@ namespace fyiReporting.RdlDesign
 
 		private void tbName_Validating(object sender, System.ComponentModel.CancelEventArgs e)
 		{
+			bool bRows=HasRows();
+
+			// If no rows and no data in name it's ok
+			if (!bRows && this.tbName.Text.Trim().Length == 0)
+				return;
+
 			if (!ReportNames.IsNameValid(tbName.Text))
 			{
 				e.Cancel = true;
 				MessageBox.Show(string.Format("{0} is an invalid name.", tbName.Text), "Name");
 			}
 		}
+
+		private void bValueExpr_Click(object sender, System.EventArgs e)
+		{
+			int cr = dgGroup.CurrentRowIndex;
+			if (cr < 0)
+			{	// No rows yet; create one
+				string[] rowValues = new string[1];
+				rowValues[0] = null;
+
+				_DataTable.Rows.Add(rowValues);
+				cr = 0;
+			}
+			DataGridCell dgc = dgGroup.CurrentCell;
+			int cc = dgc.ColumnNumber;
+			DataRow dr = _DataTable.Rows[cr];
+			string cv = dr[cc] as string;
+
+			DialogExprEditor ee = new DialogExprEditor(_Draw, cv, _GroupingParent, false);
+			DialogResult dlgr = ee.ShowDialog();
+			if (dlgr == DialogResult.OK)
+				dr[cc] = ee.Expression;
+
+		}
+
+		private void bExpr_Click(object sender, System.EventArgs e)
+		{
+			Button b = sender as Button;
+			if (b == null)
+				return;
+			Control c = null;
+			switch (b.Tag as string)
+			{
+				case "label":
+					c = this.cbLabelExpr;
+					break;
+				case "parent":
+					c = this.cbParentExpr;
+					break;
+			}
+
+			if (c == null)
+				return;
+
+			DialogExprEditor ee = new DialogExprEditor(_Draw, c.Text, _GroupingParent, false);
+			DialogResult dr = ee.ShowDialog();
+			if (dr == DialogResult.OK)
+				c.Text = ee.Expression;
+			return;
+		}
+
 	}
 }

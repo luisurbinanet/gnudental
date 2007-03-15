@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -25,6 +25,7 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace fyiReporting.RDL
 {
@@ -54,7 +55,7 @@ namespace fyiReporting.RDL
 								//as there is no valid DataSetName to
 								//use) Ignored for DataRegions that are
 								//not top level.
-		DataSet _DataSet;		//  resolved data set name;
+		DataSetDefn _DataSetDefn;	//  resolved data set name;
 		bool _PageBreakAtStart; // Indicates the report should page break
 								//  at the start of the data region.
 		bool _PageBreakAtEnd;	// Indicates the report should page break
@@ -62,12 +63,12 @@ namespace fyiReporting.RDL
 		Filters _Filters;		// Filters to apply to each row of data in the data region.
 		DataRegion _ParentDataRegion;	// when DataRegions are nested; the nested regions have the parent set 
 	
-		internal DataRegion(Report r, ReportLink p, XmlNode xNode):base(r,p,xNode)
+		internal DataRegion(ReportDefn r, ReportLink p, XmlNode xNode):base(r,p,xNode)
 		{
 			_KeepTogether=false;
 			_NoRows=null;
 			_DataSetName=null;
-			_DataSet=null;
+			_DataSetDefn=null;
 			_PageBreakAtStart=false;
 			_PageBreakAtEnd=false;
 			_Filters=null;
@@ -117,29 +118,29 @@ namespace fyiReporting.RDL
 
 			if (_ParentDataRegion != null)		// when nested we use the dataset of the parent
 			{
-				_DataSet = _ParentDataRegion.DataSet;
+				_DataSetDefn = _ParentDataRegion.DataSetDefn;
 			}
 			else if (_DataSetName != null)
 			{
-				if (OwnerReport.DataSets != null)
-					_DataSet = (DataSet) OwnerReport.DataSets.Items[_DataSetName];
-				if (_DataSet == null)
+				if (OwnerReport.DataSetsDefn != null)
+					_DataSetDefn = (DataSetDefn) OwnerReport.DataSetsDefn.Items[_DataSetName];
+				if (_DataSetDefn == null)
 				{
 					OwnerReport.rl.LogError(8, String.Format("DataSetName '{0}' not specified in DataSets list.", _DataSetName));
 				}
 			}
 			else
 			{		// No name but maybe we can default to a single Dataset
-				if (_DataSet == null && OwnerReport.DataSets != null &&
-					OwnerReport.DataSets.Items.Count == 1)
+				if (_DataSetDefn == null && OwnerReport.DataSetsDefn != null &&
+					OwnerReport.DataSetsDefn.Items.Count == 1)
 				{
-					foreach (DataSet d in OwnerReport.DataSets.Items.Values) 
+					foreach (DataSetDefn d in OwnerReport.DataSetsDefn.Items.Values) 
 					{	
-						_DataSet = d;
+						_DataSetDefn = d;
 						break;	// since there is only 1 this will obtain it
 					}
 				}
-				if (_DataSet == null)
+				if (_DataSetDefn == null)
 					OwnerReport.rl.LogError(8, string.Format("{0} must specify a DataSetName.",this.Name == null? "DataRegions": this.Name.Nm));
 			}
 
@@ -196,7 +197,7 @@ namespace fyiReporting.RDL
 			{
 				string msg;
 				if (this.NoRows != null)
-					msg = this.NoRows.EvaluateString(null);
+					msg = this.NoRows.EvaluateString(ip.Report(), null);
 				else
 					msg = null;
 				ip.DataRegionNoRows(this, msg);
@@ -214,7 +215,7 @@ namespace fyiReporting.RDL
 
 			string msg;
 			if (this.NoRows != null)
-				msg = this.NoRows.EvaluateString(null);
+				msg = this.NoRows.EvaluateString(pgs.Report, null);
 			else
 				msg = null;
 
@@ -225,7 +226,7 @@ namespace fyiReporting.RDL
 			RunPageRegionBegin(pgs);				// still perform page break if needed
 
 			PageText pt = new PageText(msg);
-			SetPagePositionAndStyle(pt, null);
+			SetPagePositionAndStyle(pgs.Report, pt, null);
 
 			if (pt.SI.BackgroundImage != null)
 				pt.SI.BackgroundImage.H = pt.H;		//   and in the background image
@@ -236,36 +237,43 @@ namespace fyiReporting.RDL
 			return false;
 		}
 
-		internal Rows GetFilteredData(Row row)
+		internal Rows GetFilteredData(Report rpt, Row row)
 		{
 			try
 			{
+				Rows data;
 				if (this._Filters == null)
 				{
 					if (this._ParentDataRegion == null)
-						return DataSet.Query.Data == null? null: new Rows(DataSet.Query.Data);	// We need to copy in case DataSet is shared by multiple DataRegions
+					{
+						data = DataSetDefn.Query.GetMyData(rpt);
+						return data == null? null: new Rows(rpt, data);	// We need to copy in case DataSet is shared by multiple DataRegions
+					}
 					else
-						return GetNestedData(row);
+						return GetNestedData(rpt, row);
 				}
 
-				Rows data;
 				if (this._ParentDataRegion == null)
-					data = DataSet.Query.Data == null? null: new Rows(DataSet.Query.Data);
+				{
+					data = DataSetDefn.Query.GetMyData(rpt);
+					if (data != null)
+						data = new Rows(rpt, data);
+				}
 				else
-					data = GetNestedData(row);
+					data = GetNestedData(rpt, row);
 
 				if (data == null)
 					return null;
 
-				ArrayList ar = new ArrayList();
+				List<Row> ar = new List<Row>();
 				foreach (Row r in data.Data)
 				{
-					if (_Filters.Apply(r))
+					if (_Filters.Apply(rpt, r))
 						ar.Add(r);
 				}
-				ar.TrimToSize();
+                ar.TrimExcess();
 				data.Data = ar;
-				_Filters.ApplyFinalFilters(data, true);
+				_Filters.ApplyFinalFilters(rpt, data, true);
 
 				// Adjust the rowcount
 				int rCount = 0;
@@ -282,7 +290,7 @@ namespace fyiReporting.RDL
 			}
 		}
 
-		Rows GetNestedData(Row row)
+		Rows GetNestedData(Report rpt, Row row)
 		{
 			if (row == null)
 				return null;
@@ -290,7 +298,7 @@ namespace fyiReporting.RDL
 			ReportLink rl = this.Parent;
 			while (rl != null)
 			{
-				if (rl is TableGroup || rl is List)
+				if (rl is TableGroup || rl is List || rl is MatrixCell)
 					break;
 				rl = rl.Parent;
 			}
@@ -308,12 +316,17 @@ namespace fyiReporting.RDL
 				List l = rl as List;
 				g = l.Grouping;
 			}
+			else if (rl is MatrixCell)
+			{
+				MatrixCellEntry mce = this.GetMC(rpt);
+				return new Rows(rpt, mce.Data);
+			}
 			if (g == null)
 				return null;
 
-			GroupEntry ge = row.R.CurrentGroups[g.Index];
+			GroupEntry ge = row.R.CurrentGroups[g.GetIndex(rpt)];
 
-			return new Rows(row.R, ge.StartRow, ge.EndRow, null);
+			return new Rows(rpt, row.R, ge.StartRow, ge.EndRow, null);
 		}
 
 		internal void DataRegionFinish()
@@ -351,10 +364,10 @@ namespace fyiReporting.RDL
 			set {  _DataSetName = value; }
 		}
 
-		internal DataSet DataSet
+		internal DataSetDefn DataSetDefn
 		{
-			get { return  _DataSet; }
-			set {  _DataSet = value; }
+			get { return  _DataSetDefn; }
+			set {  _DataSetDefn = value; }
 		}
 
 		internal bool PageBreakAtStart

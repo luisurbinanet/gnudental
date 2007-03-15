@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml;
@@ -40,7 +41,7 @@ namespace fyiReporting.RdlDesign
 	internal class SingleCtlDialog : System.Windows.Forms.Form
 	{
 		private DesignXmlDraw _Draw;		// design draw 
-		private ArrayList _Nodes;			// selected nodes
+		private List<XmlNode> _Nodes;			// selected nodes
 		private SingleCtlTypeEnum _Type;	
 		IProperty _Ctl;
 		private bool _Changed=false;		
@@ -54,7 +55,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal SingleCtlDialog(DesignXmlDraw dxDraw, ArrayList sNodes, SingleCtlTypeEnum type)
+		internal SingleCtlDialog(DesignXmlDraw dxDraw, List<XmlNode> sNodes, SingleCtlTypeEnum type)
 		{
 			this._Draw = dxDraw;
 			this._Nodes = sNodes;
@@ -151,7 +152,8 @@ namespace fyiReporting.RdlDesign
 			// PropertyDialog
 			// 
 			this.AcceptButton = this.bOK;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+            this.AutoScaleMode = AutoScaleMode.None;
+            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.bCancel;
 			this.ClientSize = new System.Drawing.Size(458, 366);
 			this.Controls.Add(this.panelMain);

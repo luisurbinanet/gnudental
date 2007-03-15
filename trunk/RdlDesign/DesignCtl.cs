@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -37,18 +38,23 @@ namespace fyiReporting.RdlDesign
 	/// DesignCtl is a designer view of an RDL report
 	/// </summary>
 	public class DesignCtl : System.Windows.Forms.Control
-	{
-		public event System.EventHandler ReportChanged;
-		public event System.EventHandler SelectionChanged;
+	{ 
+		public delegate void OpenSubreportEventHandler(object source, SubReportEventArgs e);
+        public delegate void HeightEventHandler(object source, HeightEventArgs e);
+        public event System.EventHandler ReportChanged;
+        public event System.EventHandler SelectionChanged;
 		public event System.EventHandler SelectionMoved;
 		public event System.EventHandler ReportItemInserted;
-		bool _InPaint;						// to prevent recursively invoking paint
+		public event OpenSubreportEventHandler OpenSubreport;
+        public event HeightEventHandler HeightChanged;
+        bool _InPaint;						// to prevent recursively invoking paint
 		// Scrollbars
 		private VScrollBar _vScroll;
 		private HScrollBar _hScroll;
 		private float _DpiX;
 		private float _DpiY;
-		private XmlDocument _ReportDoc;
+		private XmlDocument _ReportDoc;		// the xml document we're editting
+		private Undo _Undo;					//  the undo object tied to the _ReportDoc;
 		private string _CurrentInsert;		// current object to insert; null if none
 
 		// Mouse control
@@ -63,22 +69,14 @@ namespace fyiReporting.RdlDesign
 		private DesignXmlDraw _DrawPanel;		// the main drawing panel
 
 		// Context menus
-		MenuItem menuCopy;
+
+		MenuItem menuCopy;    
 		MenuItem menuPaste;
 		MenuItem menuDelete;
 		MenuItem menuFSep1;
 		MenuItem menuSelectAll;
 		MenuItem menuFSep2;
 		MenuItem menuInsert;
-		MenuItem menuInsertTextbox;
-		MenuItem menuInsertLine;
-		MenuItem menuInsertRectangle;
-		MenuItem menuInsertImage;
-		MenuItem menuInsertSubreport;
-		MenuItem menuInsertList;
-		MenuItem menuInsertMatrix;
-		MenuItem menuInsertTable;
-		MenuItem menuInsertChart;
 		MenuItem menuProperties;
 		ContextMenu menuContext;
 		MenuItem menuPropertiesLegend;
@@ -155,6 +153,11 @@ namespace fyiReporting.RdlDesign
 			set 
 			{
 				_ReportDoc = value;
+				if (_ReportDoc != null)
+				{
+					_Undo = new Undo(_ReportDoc, 300);
+					_Undo.GroupsOnly = true;				// don't record changes that we don't group.
+				}
 				int selCount = _DrawPanel.SelectedCount;
 				this._DrawPanel.ReportDocument = _ReportDoc;
 				if (selCount > 0)	// changing report document forces change to selection
@@ -173,18 +176,27 @@ namespace fyiReporting.RdlDesign
 			{
 				if (_ReportDoc == null)
 					return null;
-
-				// Convert the document into a string
-				StringWriter sw = new StringWriter();
-				XmlTextWriter xtw = new XmlTextWriter(sw);
-				xtw.IndentChar = ' ';
-				xtw.Indentation = 2;
-				xtw.Formatting = Formatting.Indented;
+				string result="";
+				try
+				{
+					// Convert the document into a string
+					StringWriter sw = new StringWriter();
+					XmlTextWriter xtw = new XmlTextWriter(sw);
+					xtw.IndentChar = ' ';
+					xtw.Indentation = 2;
+					xtw.Formatting = Formatting.Indented;
 			
-				_ReportDoc.WriteContentTo(xtw);
-				xtw.Close();
-				sw.Close();
-				return sw.ToString();
+					_ReportDoc.WriteContentTo(xtw);
+					xtw.Close();
+					sw.Close();	
+					result = sw.ToString();
+					result = result.Replace("xmlns=\"\"", "");
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message, "Unable to create RDL syntax");
+				}
+				return result;
 			}
 			set 
 			{
@@ -202,21 +214,458 @@ namespace fyiReporting.RdlDesign
 			}
 		}
 
-		public void ClearUndo()
+        public void ClearUndo()
 		{
+			_Undo.Reset();
 		}
 
 		public void Undo()
 		{
+			_Undo.undo();
+			_DrawPanel.ReportNames = null;	// may not be required; but if reportitem deleted/inserted it must be
+            // determine if any of the selected nodes has been affected
+            bool clearSelect = false;
+            foreach (XmlNode n in _DrawPanel.SelectedList)
+            {
+                // this is an imperfect test but it shows if the node has been unchained.
+                if (n.ParentNode == null)
+                {
+                    clearSelect = true;
+                    break;
+                }
+            }
+            if (clearSelect)
+                _DrawPanel.SelectedList.Clear();
+
+			_DrawPanel.Invalidate();   
 		}
+
+        public bool ShowReportItemOutline
+        {
+            get { return _DrawPanel.ShowReportItemOutline; }
+            set 
+            {
+                _DrawPanel.ShowReportItemOutline = value; 
+            }
+        }
 
 		public void Redo()
 		{
 		}
 
+		public string UndoDescription
+		{
+			get { return _Undo.Description; }
+		}
+
 		public bool CanUndo
 		{
-			get { return false; }
+			get { return _Undo.CanUndo; }
+		}
+
+		public void StartUndoGroup(string description)
+		{
+			_Undo.StartUndoGroup(description);
+		}
+
+		public void EndUndoGroup(bool keepChanges)
+		{
+			_Undo.EndUndoGroup(keepChanges);
+		}
+
+		public void AlignLefts()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			XmlNode l = _DrawPanel.GetNamedChildNode(model, "Left");
+			string left = l == null? "0pt": l.InnerText;
+
+			_Undo.StartUndoGroup("Align");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	// we even reset the first one; in case the attribute wasn't specified
+				_DrawPanel.SetElement(xNode, "Left", left);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		public void AlignRights()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF mrect = _DrawPanel.GetReportItemRect(model);	// size attributes in points
+			if (mrect.Width == float.MinValue)
+				return;			// model doesn't have width specified
+
+			float mright = mrect.Left + mrect.Width;	// the right side of the model
+
+			_Undo.StartUndoGroup("Align");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	
+				if (xNode == model)
+					continue;
+				RectangleF nrect = _DrawPanel.GetReportItemRect(xNode);
+				if (nrect.Width == float.MinValue)
+					continue;
+
+				float nleft = mright - nrect.Width;
+				if (nleft < 0)
+					nleft = 0;
+
+				string left = string.Format("{0:0.00}pt", nleft);
+				_DrawPanel.SetElement(xNode, "Left", left);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		public void AlignCenters()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF mrect = _DrawPanel.GetReportItemRect(model);	// size attributes in points
+			if (mrect.Width == float.MinValue)
+				return;			// model doesn't have width specified
+
+			float mc = mrect.Left + mrect.Width/2;	// the middle of the model
+
+			_Undo.StartUndoGroup("Align");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	
+				if (xNode == model)
+					continue;
+				RectangleF nrect = _DrawPanel.GetReportItemRect(xNode);
+				if (nrect.Width == float.MinValue)
+					continue;
+
+				float nleft =  (mc - (nrect.Left + nrect.Width/2));
+				nleft += nrect.Left;
+				if (nleft < 0)
+					nleft = 0;
+
+				string left = string.Format("{0:0.00}pt", nleft);
+				_DrawPanel.SetElement(xNode, "Left", left);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+		
+		public void AlignTops()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			XmlNode t = _DrawPanel.GetNamedChildNode(model, "Top");
+			string top = t == null? "0pt": t.InnerText;
+
+			_Undo.StartUndoGroup("Align");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	// we even reset the first one; in case the attribute wasn't specified
+				_DrawPanel.SetElement(xNode, "Top", top);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		public void AlignBottoms()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF mrect = _DrawPanel.GetReportItemRect(model);	// size attributes in points
+			if (mrect.Height == float.MinValue)
+				return;			// model doesn't have height specified
+
+			float mbottom = mrect.Top + mrect.Height;	// the bottom side of the model
+
+			_Undo.StartUndoGroup("Align");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	
+				if (xNode == model)
+					continue;
+				RectangleF nrect = _DrawPanel.GetReportItemRect(xNode);
+				if (nrect.Height == float.MinValue)
+					continue;
+
+				float ntop = mbottom - nrect.Height;
+				if (ntop < 0)
+					ntop = 0;
+
+				string top = string.Format("{0:0.00}pt", ntop);
+				_DrawPanel.SetElement(xNode, "Top", top);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		public void AlignMiddles()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF mrect = _DrawPanel.GetReportItemRect(model);	// size attributes in points
+			if (mrect.Height == float.MinValue)
+				return;			// model doesn't have height specified
+
+			float mc = mrect.Top + mrect.Height/2;	// the middle of the model
+
+			_Undo.StartUndoGroup("Align");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	
+				if (xNode == model)
+					continue;
+				RectangleF nrect = _DrawPanel.GetReportItemRect(xNode);
+				if (nrect.Height == float.MinValue)
+					continue;
+
+				float ntop =  (mc - (nrect.Top + nrect.Height/2));
+				ntop += nrect.Top;
+				if (ntop < 0)
+					ntop = 0;
+
+				string top = string.Format("{0:0.00}pt", ntop);
+				_DrawPanel.SetElement(xNode, "Top", top);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		public void SizeHeights()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			XmlNode h = _DrawPanel.GetNamedChildNode(model, "Height");
+			if (h == null)
+				return;
+			string height = h.InnerText;
+
+			_Undo.StartUndoGroup("Size");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	// we even reset the first one; in case the attribute wasn't specified
+				_DrawPanel.SetElement(xNode, "Height", height);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		public void SizeWidths()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			XmlNode w = _DrawPanel.GetNamedChildNode(model, "Width");
+			if (w == null)
+				return;
+			string width = w.InnerText;
+
+			_Undo.StartUndoGroup("Size");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	// we even reset the first one; in case the attribute wasn't specified
+				_DrawPanel.SetElement(xNode, "Width", width);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		public void SizeBoth()
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			XmlNode w = _DrawPanel.GetNamedChildNode(model, "Width");
+			if (w == null)
+				return;
+			string width = w.InnerText;
+
+			XmlNode h = _DrawPanel.GetNamedChildNode(model, "Height");
+			if (h == null)
+				return;
+			string height = h.InnerText;
+
+			_Undo.StartUndoGroup("Size");
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{	// we even reset the first one; in case the attribute wasn't specified
+				_DrawPanel.SetElement(xNode, "Height", height);
+				_DrawPanel.SetElement(xNode, "Width", width);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		void HorzSpacing(float diff)
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF rectm = _DrawPanel.GetReportItemRect(model);
+			if (rectm.Width == float.MinValue)
+				return;
+
+			_Undo.StartUndoGroup("Spacing");
+			float x = rectm.Left + rectm.Width + diff;
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{
+				if (xNode == model)
+					continue;
+				string left = string.Format("{0:0.00}pt", x);
+				_DrawPanel.SetElement(xNode, "Left", left);
+				RectangleF rectn = _DrawPanel.GetReportItemRect(xNode);
+				if (rectn.Width == float.MinValue)
+					rectn.Width = 77;
+				x += (rectn.Width + diff);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		float HorzSpacingDiff()
+		{
+			float diff = 0;
+			if (_DrawPanel.SelectedList.Count < 2)
+				return diff;
+
+			XmlNode m1 = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF r1 = _DrawPanel.GetReportItemRect(m1);
+			if (r1.Width == float.MinValue)
+				return diff;
+
+			XmlNode m2 = _DrawPanel.SelectedList[1] as XmlNode;
+			RectangleF r2 = _DrawPanel.GetReportItemRect(m2);
+
+			diff = r2.Left - (r1.Left + r1.Width);
+			if (diff < 0)
+				diff = 0;
+			return diff;
+		}
+
+		public void HorzSpacingMakeEqual()
+		{
+			if (_DrawPanel.SelectedList.Count < 2)
+				return;
+
+			HorzSpacing(HorzSpacingDiff());
+		}
+
+		public void HorzSpacingIncrease()
+		{
+			float diff = HorzSpacingDiff() + 8;
+			HorzSpacing(diff);
+		}
+
+		public void HorzSpacingDecrease()
+		{
+			float diff = HorzSpacingDiff() - 8;
+			if (diff < 0)
+				diff = 0;
+			HorzSpacing(diff);
+		}
+
+		public void HorzSpacingMakeZero()
+		{
+			HorzSpacing(0);
+		}
+
+		void VertSpacing(float diff)
+		{
+			XmlNode model = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF rectm = _DrawPanel.GetReportItemRect(model);
+			if (rectm.Height == float.MinValue)
+				return;
+
+			_Undo.StartUndoGroup("Spacing");
+			float y = rectm.Top + rectm.Height + diff;
+			foreach (XmlNode xNode in _DrawPanel.SelectedList)
+			{
+				if (xNode == model)
+					continue;
+				string top = string.Format("{0:0.00}pt", y);
+				_DrawPanel.SetElement(xNode, "Top", top);
+				RectangleF rectn = _DrawPanel.GetReportItemRect(xNode);
+				if (rectn.Height == float.MinValue)
+					rectn.Height = 16;
+				y += (rectn.Height + diff);
+			}
+			_Undo.EndUndoGroup();
+
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
+		}
+
+		float VertSpacingDiff()
+		{
+			float diff = 0;
+			if (_DrawPanel.SelectedList.Count < 2)
+				return diff;
+
+			XmlNode m1 = _DrawPanel.SelectedList[0] as XmlNode;
+			RectangleF r1 = _DrawPanel.GetReportItemRect(m1);
+			if (r1.Height == float.MinValue)
+				return diff;
+
+			XmlNode m2 = _DrawPanel.SelectedList[1] as XmlNode;
+			RectangleF r2 = _DrawPanel.GetReportItemRect(m2);
+
+			diff = r2.Top - (r1.Top + r1.Height);
+			if (diff < 0)
+				diff = 0;
+			return diff;
+		}
+
+		public void VertSpacingMakeEqual()
+		{
+			if (_DrawPanel.SelectedList.Count < 2)
+				return;
+
+			VertSpacing(VertSpacingDiff());
+		}
+
+		public void VertSpacingIncrease()
+		{
+			float diff = VertSpacingDiff() + 8;
+			VertSpacing(diff);
+		}
+
+		public void VertSpacingDecrease()
+		{
+			float diff = VertSpacingDiff() - 8;
+			if (diff < 0)
+				diff = 0;
+			VertSpacing(diff);
+		}
+
+		public void VertSpacingMakeZero()
+		{
+			VertSpacing(0);
+		}
+
+		public void SetPadding(string name, int diff)
+		{
+			if (_DrawPanel.SelectedList.Count < 1)
+				return;
+
+			_Undo.StartUndoGroup("Padding");
+			foreach (XmlNode n in _DrawPanel.SelectedList)
+			{
+				XmlNode sNode = this._DrawPanel.GetCreateNamedChildNode(n, "Style");
+				if (diff == 0)
+					_DrawPanel.SetElement(sNode, name, "0pt");
+				else
+				{
+					float pns = _DrawPanel.GetSize(sNode, name);
+					pns += diff;
+					if (pns < 0)
+						pns = 0;
+					string pad = string.Format("{0:0.00}pt", pns);
+					_DrawPanel.SetElement(sNode, name, pad);
+				}
+			}
+			_Undo.EndUndoGroup();
+			ReportChanged(this, new EventArgs());
+			_DrawPanel.Invalidate();   
 		}
 
 		public void Cut()
@@ -225,7 +674,9 @@ namespace fyiReporting.RdlDesign
 				return;
 
 			Clipboard.SetDataObject(GetCopy(), true);
+			_Undo.StartUndoGroup("Cut");
 			_DrawPanel.DeleteSelected();
+			_Undo.EndUndoGroup();
 			SelectionChanged(this, new EventArgs());
 		}
 
@@ -243,7 +694,10 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_DrawPanel.SelectedCount > 0)
 			{
+				_Undo.StartUndoGroup("Delete");
 				_DrawPanel.DeleteSelected();
+				_Undo.EndUndoGroup();
+
 				ReportChanged(this, new EventArgs());
 				SelectionChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
@@ -283,7 +737,7 @@ namespace fyiReporting.RdlDesign
 					return "";
 				if (_DrawPanel.SelectedCount > 1)
 					return "Group Selection";
-				XmlNode xNode = (XmlNode) _DrawPanel.SelectedList[0];
+				XmlNode xNode = _DrawPanel.SelectedList[0];
 				if (xNode.Name == "TableColumn" || xNode.Name == "TableRow")
 					return "";
 
@@ -350,10 +804,22 @@ namespace fyiReporting.RdlDesign
 			{
 				if (_DrawPanel.SelectedCount == 0)
 					return new PointF(float.MinValue,float.MinValue);
-				XmlNode xNode = (XmlNode) _DrawPanel.SelectedList[0];
+				XmlNode xNode = _DrawPanel.SelectedList[0];
 				return _DrawPanel.SelectionPosition(xNode);
 			}
 		}
+
+		public SizeF SelectionSize
+		{
+			get
+			{
+				if (_DrawPanel.SelectedCount == 0)
+					return new SizeF(float.MinValue,float.MinValue);
+				XmlNode xNode = _DrawPanel.SelectedList[0];
+				return _DrawPanel.SelectionSize(xNode);
+			}
+		}
+		
 		
 		public StyleInfo SelectedStyle
 		{
@@ -361,7 +827,7 @@ namespace fyiReporting.RdlDesign
 			{
 				if (_DrawPanel.SelectedCount == 0)
 					return null;
-				XmlNode xNode = (XmlNode) _DrawPanel.SelectedList[0];
+				XmlNode xNode = _DrawPanel.SelectedList[0];
 				return _DrawPanel.GetStyleInfo(xNode);
 			}
 		}
@@ -371,7 +837,25 @@ namespace fyiReporting.RdlDesign
 			if (_DrawPanel.SelectedCount == 0)
 				return;
 
+			_Undo.StartUndoGroup("Style");
 			_DrawPanel.ApplyStyleToSelected(name, v);
+			_Undo.EndUndoGroup(true);
+			ReportChanged(this, new EventArgs());
+		}
+
+		public void SetSelectedText(string v)
+		{
+			if (_DrawPanel.SelectedCount != 1)
+				return;
+
+			XmlNode tn = _DrawPanel.SelectedList[0] as XmlNode;
+			if (tn == null || tn.Name != "Textbox")
+				return;
+
+			_Undo.StartUndoGroup("Textbox Value");
+			_DrawPanel.SetElement(tn, "Value", v);
+			_Undo.EndUndoGroup(true);
+			_DrawPanel.Invalidate();	// force a repaint
 			ReportChanged(this, new EventArgs());
 		}
 
@@ -385,20 +869,21 @@ namespace fyiReporting.RdlDesign
 			menuSelectAll = new MenuItem("Select &All", new EventHandler(this.menuSelectAll_Click));
 			menuFSep2 = new MenuItem("-");
 
-			menuInsertTextbox = new MenuItem("&Textbox", new EventHandler(this.menuInsertTextbox_Click));
-			menuInsertLine = new MenuItem("&Line", new EventHandler(this.menuInsertLine_Click));
-			menuInsertRectangle = new MenuItem("&Rectangle", new EventHandler(this.menuInsertRectangle_Click));
-			menuInsertImage = new MenuItem("&Image", new EventHandler(this.menuInsertImage_Click));
-			menuInsertSubreport = new MenuItem("&Subreport", new EventHandler(this.menuInsertSubreport_Click));
-			menuInsertList = new MenuItem("&List", new EventHandler(this.menuInsertList_Click));
-			menuInsertMatrix = new MenuItem("&Matrix...", new EventHandler(this.menuInsertMatrix_Click));
-			menuInsertTable = new MenuItem("Ta&ble...", new EventHandler(this.menuInsertTable_Click));
-			menuInsertChart = new MenuItem("&Chart...", new EventHandler(this.menuInsertChart_Click));
+            List<MenuItem> insertItems = new List<MenuItem>();
+            insertItems.Add(new MenuItem("&Chart...", new EventHandler(this.menuInsertChart_Click)));
+            insertItems.Add(new MenuItem("&Image", new EventHandler(this.menuInsertImage_Click)));
+            insertItems.Add(new MenuItem("&Line", new EventHandler(this.menuInsertLine_Click)));
+			insertItems.Add(new MenuItem("&List", new EventHandler(this.menuInsertList_Click)));
+			insertItems.Add(new MenuItem("&Matrix...", new EventHandler(this.menuInsertMatrix_Click)));
+            insertItems.Add(new MenuItem("&Rectangle", new EventHandler(this.menuInsertRectangle_Click)));
+            insertItems.Add(new MenuItem("&Subreport", new EventHandler(this.menuInsertSubreport_Click)));
+            insertItems.Add(new MenuItem("Ta&ble...", new EventHandler(this.menuInsertTable_Click)));
+            insertItems.Add(new MenuItem("&Textbox", new EventHandler(this.menuInsertTextbox_Click)));
+            // Now add any CustomReportItems
+            BuildContextMenusCustom(insertItems);
+
 			menuInsert = new MenuItem("&Insert");
-			menuInsert.MenuItems.AddRange(new MenuItem[] { menuInsertChart, menuInsertImage, menuInsertLine, 
-															 menuInsertList, menuInsertMatrix, 
-															 menuInsertRectangle, menuInsertSubreport,
-															 menuInsertTable, menuInsertTextbox});
+			menuInsert.MenuItems.AddRange(insertItems.ToArray());
 
 			menuProperties = new MenuItem("&Properties...", new EventHandler(this.menuProperties_Click));
 
@@ -413,6 +898,29 @@ namespace fyiReporting.RdlDesign
 			menuPropertiesChartTitle = new MenuItem("Title...", new EventHandler(this.menuPropertiesChartTitle_Click));
 
 		}
+        
+        private void BuildContextMenusCustom(List<MenuItem> items)
+        {
+            try
+            {
+                string[] sa = RdlEngineConfig.GetCustomReportTypes();
+                if (sa == null || sa.Length == 0)
+                    return;
+
+                items.Add(new MenuItem("-"));       // put a separator
+                // Add the custom report items to the insert menu
+                foreach (string m in sa)
+                {
+                    MenuItem mi = new MenuItem(m+"...", new EventHandler(this.menuInsertCustomReportItem_Click));
+                    mi.Tag = m;
+                    items.Add(mi);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Error building CustomReportItem menus: {0}", ex.Message), "Insert", MessageBoxButtons.OK);
+            }   
+        }
 
 		private void DrawPanelPaint(object sender, System.Windows.Forms.PaintEventArgs e)
 		{
@@ -434,7 +942,14 @@ namespace fyiReporting.RdlDesign
 				_DrawPanel.Draw(g, PointsX(_hScroll.Value), PointsY(_vScroll.Value),	
 					e.ClipRectangle);
 			}
-			catch {}		// don't want to kill process if we die	   TODO: draw the error message
+			catch (Exception ex) 
+			{	// don't want to kill process if we die -- put up some kind of error message
+				StringFormat format = new StringFormat();
+				string msg = string.Format("Error drawing report.  Likely error in syntax.  Switch to syntax and correct report syntax.{0}{1}{0}{2}", 
+					Environment.NewLine, ex.Message, ex.StackTrace) ;
+				g.DrawString(msg, this.Font, Brushes.Black, new Rectangle(2, 2, this.Width, this.Height), format);
+
+			}		
 			
 			lock (this)
 			{
@@ -459,26 +974,26 @@ namespace fyiReporting.RdlDesign
 
 		private float PointsX(float x)		// pixels to points
 		{
-			return x * 72f / _DpiX;
+            return x * DesignXmlDraw.POINTSIZED / _DpiX;
 		}
 
 		private float PointsY(float y)
 		{
-			return y * 72f / _DpiY;
+            return y * DesignXmlDraw.POINTSIZED / _DpiY;
 		}
 
 		private int PixelsX(float x)		// points to pixels
 		{
-			return (int) (x * _DpiX / 72.0f);
+            return (int)(x * _DpiX / DesignXmlDraw.POINTSIZED);
 		}
 
 		private int PixelsY(float y)
 		{
-			return (int) (y * _DpiY / 72.0f);
+            return (int)(y * _DpiY / DesignXmlDraw.POINTSIZED);
 		}
 
 
-		private void SetScrollControls()
+		internal void SetScrollControls()
 		{
 			if (_ReportDoc == null)		// nothing loaded; nothing to do
 			{
@@ -569,6 +1084,12 @@ namespace fyiReporting.RdlDesign
 
 		private void DrawPanelMouseUp(object sender, MouseEventArgs e)
 		{
+			if (e.Button == MouseButtons.Left)
+				_Undo.EndUndoGroup(true);
+
+            if (_MouseDownNode != null && _MouseDownNode.Name == "Height")
+                HeightChanged(this, new HeightEventArgs(null));     // reset any mousemove
+            
 			_MouseDownNode = null;
 			
 			if (this._bHaveMouse)
@@ -603,9 +1124,11 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_DrawPanel.SelectedCount == 1)
 			{
-				XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+				XmlNode cNode = _DrawPanel.SelectedList[0];
 				if (cNode.Name == "Chart")
 					DrawPanelContextMenuChart(p, cNode);
+				else if (cNode.Name == "Subreport")
+					DrawPanelContextMenuSubreport(p, cNode);
 				else if (_DrawPanel.InTable(cNode))
 					DrawPanelContextMenuTable(p, cNode);
 				else if (_DrawPanel.InMatrix(cNode))
@@ -743,6 +1266,34 @@ namespace fyiReporting.RdlDesign
 			menuContext.Show(this, p);
 		}
 
+		private void DrawPanelContextMenuSubreport(Point p, XmlNode sr)
+		{
+			menuContext = new ContextMenu();
+			menuContext.Popup +=new EventHandler(this.menuContext_Popup);
+
+			// get the subreport name
+			string name = _DrawPanel.GetElementValue(sr, "ReportName", "");
+			if (name == null || name.Length == 0)
+			{	// No name; no way to open the subreport
+				menuContext.MenuItems.AddRange(
+					new MenuItem[] {
+									   menuProperties, 
+									   new MenuItem("-"), menuCopy, menuPaste, menuDelete, new MenuItem("-"), 
+									   menuSelectAll, menuFSep2,menuInsert});
+			}
+			else
+			{
+				string srmi = "Open " + name;
+
+				menuContext.MenuItems.AddRange(
+					new MenuItem[] {
+									   menuProperties, new MenuItem(srmi, new EventHandler(this.menuOpenSubreport_Click)),
+									   new MenuItem("-"), menuCopy, menuPaste, menuDelete, new MenuItem("-"), 
+									   menuSelectAll, menuFSep2,menuInsert});
+			}
+			menuContext.Show(this, p);
+		}
+
 		private void DrawPanelContextMenuTable(Point p, XmlNode riNode)
 		{
 			menuContext = new ContextMenu();
@@ -809,7 +1360,7 @@ namespace fyiReporting.RdlDesign
 
 		private void DrawPanelMouseMove(object sender, MouseEventArgs e)
 		{
-			XmlNode b=null;
+            XmlNode b=null;					
 			HitLocationEnum hle = HitLocationEnum.Inside;
 			Point newMousePosition = new Point(e.X, e.Y);
 
@@ -855,9 +1406,12 @@ namespace fyiReporting.RdlDesign
 							hle = HitLocationEnum.TableColumnResize;
 							if (e.X == _MousePosition.X)
 								break;
+
 							if (_DrawPanel.TableColumnResize(_MouseDownNode, e.X - _MousePosition.X))
 							{
+								SelectionMoved(this, new EventArgs());
 								ReportChanged(this, new EventArgs());
+								_AdjustScroll = true;
 								_DrawPanel.Invalidate();   
 							}
 							else	// trying to drag into invalid area; disallow
@@ -874,6 +1428,7 @@ namespace fyiReporting.RdlDesign
 								break;
 							if (_DrawPanel.TableRowResize(_MouseDownNode, e.Y - _MousePosition.Y))
 							{
+								SelectionMoved(this, new EventArgs());
 								ReportChanged(this, new EventArgs());
 								_DrawPanel.Invalidate();   
 							}
@@ -889,6 +1444,7 @@ namespace fyiReporting.RdlDesign
 							if (_DrawPanel.ChangeHeight(_MouseDownNode, e.Y - _MousePosition.Y, 0))
 							{
 								ReportChanged(this, new EventArgs());
+                                HeightChanged(this, new HeightEventArgs(b.InnerText));
 								_DrawPanel.Invalidate();   
 								_AdjustScroll = true;		// this will force scroll bars to be adjusted on MouseUp
 							}
@@ -897,7 +1453,15 @@ namespace fyiReporting.RdlDesign
 								Cursor.Position = this.PointToScreen(_MousePosition);
 								newMousePosition = this.PointToClient(Cursor.Position);
 							}
-							break;
+                            // Force scroll when off end of page
+                            //if (e.Y > _DrawPanel.Height)
+                            //{
+                            //    int hs = _vScroll.Value + _vScroll.SmallChange;
+                            //    _vScroll.Value = Math.Min(_vScroll.Maximum, hs);
+                            //    _DrawPanel.Refresh();
+                            //}
+
+                            break;
 						case "Textbox":
 						case "Image":
 						case "Rectangle":
@@ -907,14 +1471,17 @@ namespace fyiReporting.RdlDesign
 						case "Chart":
 						case "Subreport":
 						case "Line":
+                        case "CustomReportItem":
 							hle = this._MouseDownLoc;
 							if (e.Y == _MousePosition.Y && e.X == _MousePosition.X)
 								break;
+
 							if (_DrawPanel.MoveSelectedItems(e.X - _MousePosition.X, e.Y - _MousePosition.Y, this._MouseDownLoc))
 							{
 								SelectionMoved(this, new EventArgs());
 								ReportChanged(this, new EventArgs());
 								_DrawPanel.Invalidate();   
+								_AdjustScroll = true;
 							}
 							else	// trying to drag into invalid area; disallow
 							{
@@ -950,6 +1517,9 @@ namespace fyiReporting.RdlDesign
 			if (DrawPanelMouseDownInsert(hl, sender, e))		// Handle ReportItem insertion
 				return;
 
+			if (e.Button == MouseButtons.Left)
+				_Undo.StartUndoGroup("Move/Size");
+
 			if (DrawPanelMouseDownRubberBand(sender, e))	// Handle rubber banding
 				return;
 
@@ -963,7 +1533,8 @@ namespace fyiReporting.RdlDesign
 			{
 				_DrawPanel.ClearSelected();
 				SelectionChanged(this, new EventArgs());
-			}
+                HeightChanged(this, new HeightEventArgs(_MouseDownNode.InnerText)); // Set the height
+            }
 			else if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
 			{
 				_DrawPanel.AddRemoveSelection(_MouseDownNode);
@@ -1277,7 +1848,7 @@ namespace fyiReporting.RdlDesign
 			{
 				if (_DrawPanel.SelectNext((Control.ModifierKeys & Keys.Shift) == Keys.Shift))
 				{
-					RectangleF r = _DrawPanel.GetRectangle((XmlNode) _DrawPanel.SelectedList[0]);
+					RectangleF r = _DrawPanel.GetRectangle(_DrawPanel.SelectedList[0]);
 					Rectangle nr = new Rectangle(PixelsX(r.X), PixelsY(r.Y), PixelsX(r.Width), PixelsY(r.Height));
 					if (nr.Right > _hScroll.Value + Width - _vScroll.Width ||
 						nr.Left < _hScroll.Value - _vScroll.Width)
@@ -1288,6 +1859,11 @@ namespace fyiReporting.RdlDesign
 					this.SelectionChanged(this, new EventArgs());
 					_DrawPanel.Invalidate();   
 				}
+				e.Handled = true;
+			}
+			else if (e.KeyCode == Keys.Delete)
+			{
+				this.Delete();
 				e.Handled = true;
 			}
 			
@@ -1313,12 +1889,16 @@ namespace fyiReporting.RdlDesign
 				{
 					hle = incX != 0? HitLocationEnum.RightMiddle: HitLocationEnum.BottomMiddle;
 				}
+				_Undo.StartUndoGroup("Move");
 				if (_DrawPanel.MoveSelectedItems(incX, incY, hle))
 				{
+					_Undo.EndUndoGroup(true);
 					SelectionMoved(this, new EventArgs());
 					ReportChanged(this, new EventArgs());
 					_DrawPanel.Invalidate();   
 				}
+				else
+					_Undo.EndUndoGroup(false);
 				e.Handled = true;
 			}
 
@@ -1407,6 +1987,7 @@ namespace fyiReporting.RdlDesign
 					return;
 			}
 
+			_Undo.StartUndoGroup("Paste");
 			if (iData.GetDataPresent(DataFormats.Text))
 			{
 				// Build the xml string in case it is a straight pasting of text
@@ -1435,6 +2016,7 @@ namespace fyiReporting.RdlDesign
 
 				_DrawPanel.PasteImage(lNode, bo, p);
 			}
+			_Undo.EndUndoGroup();
 			_DrawPanel.Invalidate();
 			ReportChanged(this, new EventArgs());
 			SelectionChanged(this, new EventArgs());
@@ -1459,11 +2041,14 @@ namespace fyiReporting.RdlDesign
 				return;
 			}
 
+			_Undo.StartUndoGroup("Insert Chart");
 			DialogNewChart dnc = new DialogNewChart(this._DrawPanel, hl.HitContainer);
 			DialogResult dr = dnc.ShowDialog(this);
 			if (dr != DialogResult.OK)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
-			
+			}
 			XmlNode chart;
 			if (hl.HitContainer.Name == "Table")
 			{
@@ -1473,25 +2058,60 @@ namespace fyiReporting.RdlDesign
 				chart = _DrawPanel.PasteTableMatrixOrChart(hl.HitContainer, dnc.ChartXml, hl.HitRelative);
 
 			if (chart == null)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
+			}
+			_Undo.EndUndoGroup(true);
 			ReportChanged(this, new EventArgs());
 			SelectionChanged(this, new EventArgs());
 			ReportItemInserted(this, new EventArgs());
 			_DrawPanel.Invalidate();   
 
 			// Now bring up the property dialog
-			ArrayList ar = new ArrayList();
+            List<XmlNode> ar = new List<XmlNode>();
 			ar.Add(chart);
+			_Undo.StartUndoGroup("Dialog");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.ReportItems);
 			dr = pd.ShowDialog(this);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
+
 			SetFocus();
 		}
 	
+		private void menuInsertCustomReportItem_Click(object sender, EventArgs e)
+		{
+			string ri;
+            ICustomReportItem cri = null;
+            try
+            {
+                MenuItem mi = sender as MenuItem;
+
+                cri = RdlEngineConfig.CreateCustomReportItem((string) mi.Tag);
+                ri = "<ReportItems>" +
+                    string.Format(cri.GetCustomReportItemXml(), mi.Tag) +     // substitute the type of custom report item
+                    "</ReportItems>";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string .Format("Exception building CustomReportItem insert: {0}", ex.Message), "Insert");
+                return;
+            }
+            finally
+            {
+                if (cri != null)
+                    cri.Dispose();
+            }
+            menuInsertReportItem(sender, e, ri);
+		}
+
 		private void menuInsertLine_Click(object sender, EventArgs e)
 		{
 			string ri = "<ReportItems><Line><Height>0in</Height><Width>1in</Width><Style><BorderStyle><Default>Solid</Default></BorderStyle></Style></Line></ReportItems>";
@@ -1535,28 +2155,37 @@ namespace fyiReporting.RdlDesign
 				return;
 			}
 
+			_Undo.StartUndoGroup("Insert Matrix");
 			DialogNewMatrix dnm = new DialogNewMatrix(this._DrawPanel, hl.HitContainer);
 			DialogResult dr = dnm.ShowDialog(this);
 			if (dr != DialogResult.OK)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
-			
+			}
 			XmlNode matrix;
 			if (hl.HitContainer.Name == "Table")
 				matrix = _DrawPanel.ReplaceTableMatrixOrChart(hl, dnm.MatrixXml);
 			else
 				matrix = _DrawPanel.PasteTableMatrixOrChart(hl.HitContainer, dnm.MatrixXml, hl.HitRelative);
 			if (matrix == null)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
+			}
+			_Undo.EndUndoGroup(true);
 			ReportChanged(this, new EventArgs());
 			SelectionChanged(this, new EventArgs());
 			ReportItemInserted(this, new EventArgs());
 			_DrawPanel.Invalidate();   
 
 			// Now bring up the property dialog
-			ArrayList ar = new ArrayList();
+            List<XmlNode> ar = new List<XmlNode>();
 			ar.Add(matrix);
+			_Undo.StartUndoGroup("Dialog");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.ReportItems);
 			dr = pd.ShowDialog(this);
+			_Undo.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -1583,12 +2212,26 @@ namespace fyiReporting.RdlDesign
 		
 		private void menuInsertReportItem(HitLocation hl, string reportItem)
 		{
-			if (hl.HitContainer.Name == "Table")
-			{
-				_DrawPanel.ReplaceReportItems(hl, reportItem);
-			}
-			else
-				_DrawPanel.PasteReportItems(hl.HitContainer, reportItem, hl.HitRelative);
+			_Undo.StartUndoGroup("Insert");
+            try
+            {
+                if (hl.HitContainer.Name == "Table")
+                {
+                    _DrawPanel.ReplaceReportItems(hl, reportItem);
+                }
+                else
+                    _DrawPanel.PasteReportItems(hl.HitContainer, reportItem, hl.HitRelative);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Internal error: illegal insert syntax:" + Environment.NewLine + 
+                    reportItem + Environment.NewLine + ex.Message);
+                return;
+            }
+            finally
+            {
+                _Undo.EndUndoGroup(true);
+            }
 			_DrawPanel.Invalidate();
 			ReportChanged(this, new EventArgs());
 			SelectionChanged(this, new EventArgs());
@@ -1628,28 +2271,37 @@ namespace fyiReporting.RdlDesign
 				return;
 			}
 
+			_Undo.StartUndoGroup("Insert Table");
 			DialogNewTable dnt = new DialogNewTable(this._DrawPanel, hl.HitContainer);
 			DialogResult dr = dnt.ShowDialog(this);
 			if (dr != DialogResult.OK)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
-			
+			}
 			XmlNode table;
 			if (hl.HitContainer.Name == "Table")
 				table = _DrawPanel.ReplaceTableMatrixOrChart(hl, dnt.TableXml);
 			else
 				table = _DrawPanel.PasteTableMatrixOrChart(hl.HitContainer, dnt.TableXml, hl.HitRelative);
 			if (table == null)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
+			}
+			_Undo.EndUndoGroup(true);
 			ReportChanged(this, new EventArgs());
 			SelectionChanged(this, new EventArgs());
 			ReportItemInserted(this, new EventArgs());
 			_DrawPanel.Invalidate();   
 
 			// Now bring up the property dialog
-			ArrayList ar = new ArrayList();
+			List<XmlNode> ar = new List<XmlNode>();
 			ar.Add(table);
+			_Undo.StartUndoGroup("Dialog");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.ReportItems);
 			dr = pd.ShowDialog(this);
+			_Undo.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -1662,6 +2314,23 @@ namespace fyiReporting.RdlDesign
 		{
 			string ri = "<ReportItems><Textbox><Height>12pt</Height><Width>1in</Width><Value>Text</Value></Textbox></ReportItems>";
 			menuInsertReportItem(sender, e, ri);
+		}
+
+		private void menuOpenSubreport_Click(object sender, EventArgs e)
+		{
+			if (_DrawPanel.SelectedList.Count == 0)
+				return;
+
+			XmlNode sr = _DrawPanel.SelectedList[0];
+			if (sr.Name != "Subreport")
+				return;
+
+			string name = _DrawPanel.GetElementValue(sr, "ReportName", "");
+			if (name == null || name.Length == 0)
+				return;
+			
+			if (OpenSubreport != null)
+				OpenSubreport(this, new SubReportEventArgs(name));
 		}
 
 		private void menuSelectAll_Click(object sender, EventArgs e)
@@ -1714,14 +2383,18 @@ namespace fyiReporting.RdlDesign
 			if (menu == null)
 				return;
 			string gname = menu.Text;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 			_DrawPanel.ClearSelected();
 			this.SelectionChanged(this, new EventArgs());
+			_Undo.StartUndoGroup("Delete Grouping");
+			bool bSuccess=false;
 			if (_DrawPanel.DeleteChartGrouping(cNode, gname))
 			{
+				bSuccess = true;
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			_Undo.EndUndoGroup(bSuccess);
 		}
 
 		private void menuChartEditGrouping_Click(object sender, EventArgs e)
@@ -1732,14 +2405,16 @@ namespace fyiReporting.RdlDesign
 			if (menu == null)
 				return;
 			string gname = menu.Text;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 
 			XmlNode group = _DrawPanel.GetChartGrouping(cNode, gname);
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(group.ParentNode);
+			_Undo.StartUndoGroup("Dialog Grouping");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
+			_Undo.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -1751,44 +2426,60 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+
+			_Undo.StartUndoGroup("Insert Category Grouping");
+
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 			XmlNode colGroup = _DrawPanel.InsertChartCategoryGrouping(cNode);
 			if (colGroup == null)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
-
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			}
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(colGroup);
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
 			else
+			{
 				_DrawPanel.DeleteChartGrouping(colGroup);
+				_Undo.EndUndoGroup(false);
+			}
 		}
 
 		private void menuChartInsertSeriesGrouping_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Insert Series Grouping");
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 			XmlNode colGroup = _DrawPanel.InsertChartSeriesGrouping(cNode);
 			if (colGroup == null)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
-
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			}
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(colGroup);
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
 			else
+			{
 				_DrawPanel.DeleteChartGrouping(colGroup);
+				_Undo.EndUndoGroup(false);
+			}
 		}
 				
 		private void menuPropertiesLegend_Click(object sender, EventArgs e)
@@ -1825,15 +2516,17 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode riNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode riNode = _DrawPanel.SelectedList[0];
 			XmlNode table = _DrawPanel.GetMatrixFromReportItem(riNode);
 			if (table == null)
 				return;
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(table);
+			_Undo.StartUndoGroup("Matrix Dialog");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.ReportItems);
 			DialogResult dr = pd.ShowDialog(this);
+			_Undo.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -1845,14 +2538,18 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Matrix Delete");
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 			_DrawPanel.ClearSelected();
 			this.SelectionChanged(this, new EventArgs());
 			if (_DrawPanel.DeleteMatrix(cNode))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 
 		private void menuMatrixDeleteGroup_Click(object sender, EventArgs e)
@@ -1862,15 +2559,19 @@ namespace fyiReporting.RdlDesign
 			MenuItem menu = sender as MenuItem;
 			if (menu == null)
 				return;
+			_Undo.StartUndoGroup("Matrix Delete Group");
 			string gname = menu.Text;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 			_DrawPanel.ClearSelected();
 			this.SelectionChanged(this, new EventArgs());
 			if (_DrawPanel.DeleteMatrixGroup(cNode, gname))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 
 		private void menuMatrixEditGroup_Click(object sender, EventArgs e)
@@ -1881,14 +2582,16 @@ namespace fyiReporting.RdlDesign
 			if (menu == null)
 				return;
 			string gname = menu.Text;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 
 			XmlNode group = _DrawPanel.GetMatrixGroup(cNode, gname);
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(group.ParentNode);
+			_Undo.StartUndoGroup("Matrix Edit");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
+			_Undo.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -1900,86 +2603,109 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 			XmlNode colGroup = _DrawPanel.InsertMatrixColumnGroup(cNode);
 			if (colGroup == null)
 				return;
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(colGroup);
+			_Undo.StartUndoGroup("Matrix Insert Column Group");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
 			else
+			{
 				_DrawPanel.DeleteMatrixGroup(colGroup);
+				_Undo.EndUndoGroup(false);
+			}
 		}
 
 		private void menuMatrixInsertRowGroup_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode =  _DrawPanel.SelectedList[0];
 			XmlNode rowGroup = _DrawPanel.InsertMatrixRowGroup(cNode);
 			if (rowGroup == null)
 				return;
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(rowGroup);
+			_Undo.StartUndoGroup("Matrix Insert Row Group");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
 			else
+			{
 				_DrawPanel.DeleteMatrixGroup(rowGroup);
+				_Undo.EndUndoGroup(false);
+			}
 		}
 
 		private void menuTableDeleteColumn_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode =  _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Delete Table Column");
+
 			_DrawPanel.ClearSelected();
 			this.SelectionChanged(this, new EventArgs());
 			if (_DrawPanel.DeleteTableColumn(cNode))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 
 		private void menuTableDelete_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode =  _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Delete Table");
 			_DrawPanel.ClearSelected();
 			this.SelectionChanged(this, new EventArgs());
 			if (_DrawPanel.DeleteTable(cNode))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 
 		private void menuTableDeleteRow_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Delete Table Row");
 			_DrawPanel.ClearSelected();
 			this.SelectionChanged(this, new EventArgs());
 			if (_DrawPanel.DeleteTableRow(cNode))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 
 		private void menuTableDeleteGroup_Click(object sender, EventArgs e)
@@ -1990,14 +2716,18 @@ namespace fyiReporting.RdlDesign
 			if (menu == null)
 				return;
 			string gname = menu.Text;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Delete Table Group");
 			_DrawPanel.ClearSelected();
 			this.SelectionChanged(this, new EventArgs());
 			if (_DrawPanel.DeleteTableGroup(cNode, gname))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 
 		private void menuTableEditGroup_Click(object sender, EventArgs e)
@@ -2008,14 +2738,16 @@ namespace fyiReporting.RdlDesign
 			if (menu == null)
 				return;
 			string gname = menu.Text;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
 
+			_Undo.StartUndoGroup("Dialog Table Group Edit");
 			XmlNode tblGroup = _DrawPanel.GetTableGroup(cNode, gname);
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(tblGroup);
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
+			_Undo.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -2027,85 +2759,114 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Insert Table Column");
 			if (_DrawPanel.InsertTableColumn(cNode, true))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 				
 		private void menuTableInsertColumnAfter_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Insert Table Column");
 			if (_DrawPanel.InsertTableColumn(cNode, false))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 				
 		private void menuTableInsertGroup_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Insert Table Group");
 			XmlNode tblGroup = _DrawPanel.InsertTableGroup(cNode);
 			if (tblGroup == null)
+			{
+				_Undo.EndUndoGroup(false);
 				return;
+			}
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(tblGroup);
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.Grouping);
 			DialogResult dr = pd.ShowDialog(this);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
 			else
+			{
 				_DrawPanel.DeleteTableGroup(tblGroup);
+				_Undo.EndUndoGroup(false);
+			}
 		}
 
 		private void menuTableInsertRowBefore_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode =  _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Insert Table Row");
+
 			if (_DrawPanel.InsertTableRow(cNode, true))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 				
 		private void menuTableInsertRowAfter_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode cNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode cNode = _DrawPanel.SelectedList[0];
+			_Undo.StartUndoGroup("Insert Table Row");
 			if (_DrawPanel.InsertTableRow(cNode, false))
 			{
+				_Undo.EndUndoGroup(true);
 				ReportChanged(this, new EventArgs());
 				_DrawPanel.Invalidate();   
 			}
+			else
+				_Undo.EndUndoGroup(false);
 		}
 				
 		private void menuTableProperties_Click(object sender, EventArgs e)
 		{
 			if (_DrawPanel.SelectedCount != 1)
 				return;
-			XmlNode riNode = (XmlNode) _DrawPanel.SelectedList[0];
+			XmlNode riNode = _DrawPanel.SelectedList[0];
 			XmlNode table = _DrawPanel.GetTableFromReportItem(riNode);
 			if (table == null)
 				return;
+			XmlNode tc = _DrawPanel.GetTableColumn(riNode);
+			XmlNode tr = _DrawPanel.GetTableRow(riNode);
 
-			ArrayList ar = new ArrayList();		// need to put this is a list for dialog to handle
+			List<XmlNode> ar = new List<XmlNode>();		// need to put this is a list for dialog to handle
 			ar.Add(table);
-			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.ReportItems);
+			_Undo.StartUndoGroup("Table Dialog");
+			PropertyDialog pd = new PropertyDialog(_DrawPanel, ar, PropertyTypeEnum.ReportItems, tc, tr);
 			DialogResult dr = pd.ShowDialog(this);
+			_Undo.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -2115,8 +2876,10 @@ namespace fyiReporting.RdlDesign
 
 		private void DoPropertyDialog(PropertyTypeEnum type)
 		{
+			this.StartUndoGroup("Dialog");
 			PropertyDialog pd = new PropertyDialog(_DrawPanel, _DrawPanel.SelectedList, type);
 			DialogResult dr = pd.ShowDialog(this);
+			this.EndUndoGroup(pd.Changed || dr == DialogResult.OK);
 			if (pd.Changed || dr == DialogResult.OK)
 			{
 				ReportChanged(this, new EventArgs());
@@ -2137,7 +2900,7 @@ namespace fyiReporting.RdlDesign
 			menuCopy.Enabled = bEnable;
 			menuDelete.Enabled = bEnable;
 
-			ArrayList al=new ArrayList();
+			List<XmlNode> al=new List<XmlNode>();
 			IDataObject iData = Clipboard.GetDataObject();
 			if (iData == null)
 				bEnable = false;
@@ -2154,4 +2917,33 @@ namespace fyiReporting.RdlDesign
 			return;
 		}
 	}
+
+	public class SubReportEventArgs : EventArgs
+	{
+		string _name;			// name of subreport user has requested be opened
+		public SubReportEventArgs(string name) : base()
+		{
+			_name = name;
+		}
+
+		public string SubReportName
+		{
+			get {return _name;}
+		}
+	}
+
+    public class HeightEventArgs : EventArgs
+    {
+        string _height;			// current height
+        public HeightEventArgs(string height)
+            : base()
+        {
+            _height = height;
+        }
+
+        public string Height
+        {
+            get { return _height; }
+        }
+    }
 }
