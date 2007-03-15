@@ -2,6 +2,10 @@
 Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
+/*
+   2007-03-15: Frederik Carlier <frederik.carlier@gnudental.org>
+               Work around Mono limitations
+*/
 //#define ISXP
 using System;
 using System.Collections;
@@ -142,7 +146,11 @@ namespace OpenDental{
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.panelNote = new System.Windows.Forms.Panel();
 			this.labelInvalidSig = new System.Windows.Forms.Label();
+#if !MONO
 			this.sigBoxTopaz = new Topaz.SigPlusNET();
+#else
+#warning SigPlusNET makes Mono crash. Disabled
+#endif
 			this.sigBox = new OpenDental.UI.SignatureBox();
 			this.label15 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
@@ -302,12 +310,16 @@ namespace OpenDental{
 			// 
 			// sigBoxTopaz
 			// 
+#if !MONO
 			this.sigBoxTopaz.Location = new System.Drawing.Point(437,15);
 			this.sigBoxTopaz.Name = "sigBoxTopaz";
 			this.sigBoxTopaz.Size = new System.Drawing.Size(394,91);
 			this.sigBoxTopaz.TabIndex = 93;
 			this.sigBoxTopaz.Text = "sigPlusNET1";
 			this.sigBoxTopaz.DoubleClick += new System.EventHandler(this.sigBoxTopaz_DoubleClick);
+#else
+#warning SigPlusNET makes Mono crash. Disabled
+#endif
 			// 
 			// sigBox
 			// 
@@ -1643,6 +1655,7 @@ namespace OpenDental{
 		}
 
 		private void FillSignature(){
+#if !MONO
 			textNote.Text=DocCur.Note;
 			sigBoxTopaz.Location=sigBox.Location;//this puts both boxes in the same spot.
 			sigBoxTopaz.Visible=false;
@@ -1681,6 +1694,10 @@ namespace OpenDental{
 					sigBox.SetTabletState(0);//not accepting input.
 				}
 			}
+#else
+#warning SigPlusNET makes Mono crash. Disabled
+            MessageBox.Show("This functionality is currently not supported on Mono.");
+#endif
 		}
 
 		private string GetHashString() {

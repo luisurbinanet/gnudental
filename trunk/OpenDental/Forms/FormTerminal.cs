@@ -210,11 +210,7 @@ namespace OpenDental{
 			this.tabMain.SelectedIndex = 0;
 			this.tabMain.Size = new System.Drawing.Size(992,713);
 			this.tabMain.TabIndex = 2;
-#if !MONO
 			this.tabMain.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabMain_Selecting);
-#else
-#warning Working around missing TabControl.Selecting event in Mono
-#endif
 			// 
 			// tabPage1
 			// 

@@ -44,7 +44,9 @@
  * rendering. The event arguments will give you the error code and a brief description of the
  * error that occurred.
  */
-
+/* 15-03-2007: Frederik Carlier <frederik.carlier@gnudental.org>
+               Disable functionality to make this run on Mono/Linux
+*/
 #region Imported Namespaces
 
 using System;
@@ -267,6 +269,7 @@ namespace CodeBase {
 		/// </summary>
 		protected virtual void CreateContexts() {
 			//Make sure the handle for this control has been created
+#if !MONO
 			if(this.Handle == IntPtr.Zero) {
 				throw new Exception("CreateContexts: The control's window handle has not been created.");
 			}
@@ -302,6 +305,10 @@ namespace CodeBase {
 
 			//Make this the current context
 			MakeCurrentContext();
+#else
+#warning OpenGLWinFormsControl currently broken in the Mono build.
+            return;
+#endif
 		}
 
 		/// <summary>
