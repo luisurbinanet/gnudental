@@ -33,6 +33,12 @@ svn co svn://svn.myrealbox.com/source/trunk/mono
 svn co svn://svn.myrealbox.com/source/trunk/mcs
 }}}
 
+Note: This will create three directories (libgdiplus, mono, mcs) at the working directory (where svn command is issued). Building mono (see below) requires mcs as a subdirectory of mono. Better change the last command to:
+{{{
+svn co svn://svn.myrealbox.com/source/trunk/mcs mono/mcs
+}}}
+or move mcs directory under mono by hand as a second step.
+
 There is more! To build mono, you need to have quite some packages installed. Here's a partial list of Ubuntu packages.
 
 == List of required packages ==
@@ -156,6 +162,9 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
+
+
+
 
 
 
