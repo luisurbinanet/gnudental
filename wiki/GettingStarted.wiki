@@ -76,7 +76,9 @@ You are now ready to go!
 
 = Building GNUdental(tm) =
 
-First, you'll need some dll files.  We are currently basing our build on v4.6.19 of Open Dental, so download http://www.gnudental.org/ODSource-4-6-19.zip and unzip it in a directory, say "od".  For the sake of the following, the directory where you checked out the sources of GNUdental^TM^ will be called "gd".
+First, you need to [http://code.google.com/p/gnudental/source check out gnudental svn repository.]
+
+Then, you'll need some dll files.  We are currently basing our build on v4.6.19 of Open Dental, so download http://www.gnudental.org/ODSource-4-6-19.zip and unzip it in a directory, say "od".  For the sake of the following, the directory where you checked out the sources of GNUdental^TM^ will be called "gd".
 
 For each directory that recursively matches the bash expansion: {{{Required*}}} in od where there is not a correspondingly named directory in gd, copy over that directory to its corresponding relative path in gd.  Or you can just do the following which is much easier to say:
 
@@ -128,6 +130,7 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
+
 
 
 
