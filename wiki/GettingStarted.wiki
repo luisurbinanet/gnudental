@@ -58,7 +58,8 @@ If you encounter any problem, that's most likely because of a missing dependency
 
 *_Do not proceed if you cannot build Mono from source!_*
 
-*Remove the pre-build version of Mono*
+*Remove the pre-build version of Mono.*
+
 On Ubuntu:
 {{{
 sudo apt-get remove mono mono-gmcs mono-gac mono-utils
@@ -130,7 +131,6 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
-
 
 
 
