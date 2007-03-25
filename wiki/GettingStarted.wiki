@@ -49,7 +49,7 @@ nant`
 
 == Mono ==
 To successfully build GNUdental^TM^ you need the SVN version of libgdiplus, mono and mcs.
-Follow instructions in [http://www.mono-project.com/Compiling_Mono compiling mono] for more information.
+Follow these instructions for [http://www.mono-project.com/Compiling_Mono compiling mono].
 
 *Check out and build* libgdiplus, mono and mcs modules. 
 Run `make` but *do not* run `make install` yet.
@@ -131,7 +131,6 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
-
 
 
 
