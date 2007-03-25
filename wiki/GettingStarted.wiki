@@ -8,7 +8,7 @@ This page will help you get started with GNUdental^TM^ on your Linux computer.
 
 First you need to set your development environment properly. Instructions below use an Ubuntu-6.10 installation as an example. Your GNU/Linux distribution may use different names, package management and conventions; use the following as suggestions.
 
-== List of required packages ==
+== Development tools and libraries ==
 If you are running ubuntu, you would typically do:
 
 `sudo apt-get install
@@ -39,13 +39,14 @@ m4
 mono
 mono-gmcs
 mono-gac
-mono-utils
-nant`
+mono-utils`
 
 *Notes:*
  # Mono is currently in the universe repository. Make sure you enable this repository. 
  # You currently need to have the latest version of Mono installed on your computer. To build Mono from SVN, you first need to have a Mono runtime and C# compiler installed on your computer.
- # NAnt is used to build GNUdental^TM^. NAnt probably already ships with your distribution. If not, [http://nant.sourceforge.net download NAnt].
+
+== Nant ==
+NAnt is used to build GNUdental^TM^. NAnt probably already ships with your distribution. Although you could perfectly use that, it will be removed when you uninstall pre-build mono (see bellow), due to its dependency on mono. It is thus recommented to [http://nant.sourceforge.net download NAnt] and follow [http://nant.sourceforge.net/release/0.85/help/introduction/installation.html these installation instructions].
 
 == Mono ==
 To successfully build GNUdental^TM^ you need the SVN version of libgdiplus, mono and mcs.
@@ -131,6 +132,8 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
+
+
 
 
 
