@@ -5,3 +5,6 @@ This screenshot shows the Choose Database Window:
 
 This screenshot shows the main window:
 [http://www.gnudental.org/GNUdentalMainWindow.png]
+
+This screenshot shows the main window in a Debian GNU/Linux desktop:
+[http://www.gnudental.org/Members/mmaglis/GNUdentalOnDebian.png]
