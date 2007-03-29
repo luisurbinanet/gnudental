@@ -145,6 +145,15 @@ It'll start the build and invoke NAnt.
 
 If the build breaks, check for previously [http://code.google.com/p/gnudental/issues/list reported issues]
 
+At the moment, the Open Dental code base is at revision 93 and the GNUdental(tm) code base is at revision 125.  If you're trying this for the first time, you can expect that:
+
+# both of these revisions should *compile* successfully,
+# both of these revisions should produce two executable files named 'OpenDental.exe' and 'OpenDentServer.exe' in the build tree relative path 'build/mono-2.0.unix/opendental-4.7-debug/bin/'.
+
+If you've checked out these versions and you're finding that one or more of the above is not true for you, then you've probably done something wrong and you should go back, read these instructions again more carefully, and try again.  Feel free to file a bug if you think it is appropriate to do so, however.
+
+Please also note that both of these revisions are expected to break during runtime with various unhandled exceptions.  See the issue tracker for more details.
+
 = Creating the GNUdental(TM) directories =
 
 It is recommended you create a directory structure like this:
@@ -182,7 +191,6 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
-
 
 
 
