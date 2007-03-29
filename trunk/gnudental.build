@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <!-- 
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
      the Free Software Foundation; either version 2 of the License, or
@@ -15,14 +16,19 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
     Copyright (c) 2007 Frederik Carlier
+
+    Authors:
+        Frederik Carlier <frederik.carlier@carlier-online.be>
+        (Based on the NAnt build file)
+
 -->
-<project name="gnudental" default="build">
+<project name="opendental" default="build">
 	<!-- set build.date property to current date in format yyyy-MM-dd -->
 	<tstamp property="build.date" pattern="yyyy-MM-dd" />
 
 	<!-- global project settings -->
-	<property name="project.name" value="gnudental" />
-	<property name="project.version" value="0.1" unless="${property::exists('project.version')}" />
+	<property name="project.name" value="opendental" />
+	<property name="project.version" value="4.7" unless="${property::exists('project.version')}" />
 	<property name="project.release.type" value="dev" unless="${property::exists('project.release.type')}" /> <!-- nightly / dev / alpha / beta# / rc# / release -->
 
 	<!-- global build settings -->
@@ -76,6 +82,36 @@
 		</nant>
 	</target>
 
+    <target name="install" depends="build" if="${platform::is-unix()}">
+        <property name="install.realprefix" value="/usr/local" />
+        <if test="${property::exists('install.prefix') and string::get-length(install.prefix) != 0}">
+            <property name="install.realprefix" value="${install.prefix}" />
+        </if>
+        <property name="install.bindir" value="${path::combine(install.realprefix, 'bin')}"/>
+        <property name="install.share" value="${path::combine(install.realprefix, 'share')}"/>
+        <property name="install.copylocation" value="${path::combine (install.share, 'opendental')}"/>
+        <property name="prefix" value="${pkg-config::get-variable('mono', 'prefix')}"/>
+        <echo message="Installing Open Dental to '${install.copylocation}' ..." />
+        
+        <copy todir="${install.copylocation}" overwrite="true">
+            <fileset basedir="${build.dir}">
+                <include name="bin/**/*" />
+                <include name="doc/**/*" />
+            </fileset>
+        </copy>
+        <echo message="Installing Open Dental wrapper script to '${install.bindir}' ..." />
+        <!-- store filename of wrapper script in property -->
+        <property name="wrapper" value="${path::combine(install.bindir, 'opendental')}" />
+        <!-- 
+            create wrapper file using separate echo tasks for each line to ensure
+            the line endings of the generated file match the platform on which 
+            the wrapper is created
+        -->
+        <echo file="${wrapper}" append="false">#!/bin/sh</echo>
+        <echo file="${wrapper}" append="true">exec ${path::combine(prefix, 'bin')}/mono ${path::combine(install.copylocation, 'bin')}/OpenDental.exe "$@"</echo>
+        <exec program="chmod" commandline="a+x ${path::combine(install.bindir, 'opendental')}"/>
+    </target>
+
 	<target name="clean">
 		<delete dir="${project::get-base-directory()}/build"/>
 		<nant target="clean">
@@ -85,7 +121,7 @@
 
 	<target name="set-framework-configuration">
 		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
-		        <fail message="The '${framework::get-target-framework()}' framework is not supported by this version of NAnt." />
+		        <fail message="The '${framework::get-target-framework()}' framework is not supported by this version of Open Dental." />
 		</if>
 		<call target="set-${framework::get-target-framework()}-framework-configuration" />
 	</target>
