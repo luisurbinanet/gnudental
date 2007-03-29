@@ -145,10 +145,10 @@ It'll start the build and invoke NAnt.
 
 If the build breaks, check for previously [http://code.google.com/p/gnudental/issues/list reported issues]
 
-At the moment, the Open Dental code base is at revision 93 and the GNUdental(tm) code base is at revision 127.  If you're trying this for the first time, you can expect that:
+At the moment, the Open Dental code base is at revision 93 and the GNUdental(tm) code base is at revision 128.  If you're trying this for the first time, you can expect that:
 
-# both of these revisions should *compile* successfully,
-# both of these revisions should produce two executable files named 'OpenDental.exe' and 'OpenDentServer.exe' in the build tree relative path 'build/mono-2.0.unix/opendental-4.7-debug/bin/'.
+  # both of these revisions should *compile* successfully,
+  # both of these revisions should produce two executable files named 'OpenDental.exe' and 'OpenDentServer.exe' in the build tree relative path 'build/mono-2.0.unix/opendental-4.7-debug/bin/'.
 
 If you've checked out these versions and you're finding that one or more of the above is not true for you, then you've probably done something wrong and you should go back, read these instructions again more carefully, and try again.  Feel free to file a bug if you think it is appropriate to do so, however.
 
