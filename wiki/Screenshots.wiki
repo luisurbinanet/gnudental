@@ -1,4 +1,4 @@
 #summary Showing GNUdental in action
 
 The main window in a Debian GNU/Linux desktop:
-[http://www.gnudental.org/Members/mmaglis/screenshots/Screenshot1-800x500.png/image_view_fullscreen]
+[http://www.gnudental.org/Members/mmaglis/screenshots/Screenshot1-800x500.png]
