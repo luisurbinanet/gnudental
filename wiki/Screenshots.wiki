@@ -1,10 +1,4 @@
 #summary Showing GNUdental in action
 
-This screenshot shows the Choose Database Window:
-[http://www.gnudental.org/GNUdentalRunsInLinux.png]
-
-This screenshot shows the main window:
-[http://www.gnudental.org/GNUdentalMainWindow.png]
-
-This screenshot shows the main window in a Debian GNU/Linux desktop:
-[http://www.gnudental.org/Members/mmaglis/GNUdentalOnDebian.png]
+The main window in a Debian GNU/Linux desktop:
+[http://www.gnudental.org/Members/mmaglis/screenshots/Screenshot1-800x500.png/image_view_fullscreen]
