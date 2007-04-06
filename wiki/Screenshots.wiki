@@ -2,3 +2,6 @@
 
 The main window in a Debian GNU/Linux desktop:
 [http://www.gnudental.org/Members/mmaglis/screenshots/Screenshot1-800x500.png]
+
+The appointments screen:
+[http://www.gnudental.org/Members/mmaglis/screenshots/Screenshot-Open%20Dental.png]
