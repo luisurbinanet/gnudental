@@ -1,6 +1,6 @@
 #summary Showing GNUdental in action.
 
-These are sample screenshots.  Look here for more: http://www.gnudental.org/Members/mmaglis/screenshots .
+These are sample screenshots. [http://www.gnudental.org/Members/mmaglis/screenshots Look here for more].
 
 The main window in a Debian GNU/Linux desktop:
 
