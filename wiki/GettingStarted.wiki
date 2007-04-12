@@ -189,44 +189,14 @@ Then, run
 mysql -h localhost -u root < opendental.sql
 }}}
 
+or, depending on your MySQL configuration,
+
+{{{
+mysql -h localhost -u root -p < opendental.sql
+}}}
+
+and enter your MySQL root password when prompted.
+
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
