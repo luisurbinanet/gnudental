@@ -122,7 +122,7 @@ You are now ready to go!
 
 ~~First, you need to [http://code.google.com/p/gnudental/source check out gnudental svn repository]. This will create a directory gnudental.~~
 
-Because of the very rapid pace of development on the Open Dental code base, we are currently recommending that developers check code out from [https://70.90.133.65:23793/svn/opendental/opendental4.7 there] and first work on just building and testing that code.  This is a rapidly evolving code tree at the moment and unless you're anxious to make changes that you don't see being made already, we recommend that new developers adopt the role of bug reporter (use the issue tracker in this project as the Bugzilla at Open Dental is open only to reports from developers with write access to that repository) and make a point of building and running as many of the new revisions at that code tree as possible and reporting problems found by doing so [http://code.google.com/p/gnudental/issues/list here].
+Because of the very rapid pace of development on the Open Dental code base, we are currently recommending that developers check code out from [https://70.90.133.65:23793/svn/opendental/opendental4.7 there] and first work on just building and testing that code.  This is a rapidly evolving code tree at the moment and unless you're anxious to make changes that you don't see being made already, we recommend that new developers adopt the role of bug reporter (use the issue tracker in this project because the Bugzilla at Open Dental is open only to reports from developers with write access to that repository) and make a point of building and running as many of the new revisions at that code tree as possible and reporting problems found by doing so [http://code.google.com/p/gnudental/issues/list here].
 
 More detailed instructions on building the Open Dental code can be found [http://opendental.carlier-online.be/ here].
 
@@ -207,4 +207,3 @@ and enter your MySQL root password when prompted.
 
 = Running GNUdental(TM) for the first time =
 The first time you run GNUdental^TM^, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental^TM^ will complain.
-
